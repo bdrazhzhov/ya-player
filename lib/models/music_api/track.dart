@@ -1,0 +1,50 @@
+import 'package:ya_player/models/music_api/album.dart';
+
+import 'artist.dart';
+
+class Track {
+  final String id;
+  final String title;
+  final Duration duration;
+  final List<Artist> artists;
+  final List<Album> albums;
+  final String coverUri;
+  final String ogImage;
+  bool liked;
+  final TrackParameters parameters;
+  final String batchId;
+
+  Track(this.id, this.title, this.duration, this.artists, this.albums,
+      this.coverUri, this.ogImage, this.liked, this.parameters, this.batchId);
+
+  int get firstAlbumId => albums.first.id;
+
+  factory Track.fromJson(Map<String, dynamic> json, String batchId) {
+    final track = json['track'];
+    final duration = Duration(milliseconds: track['durationMs']);
+    List<Artist> artists = [];
+    track['artists'].forEach((item){
+      artists.add(Artist.fromJson(item));
+    });
+    List<Album> albums = [];
+    track['albums'].forEach((item){
+      albums.add(Album.fromJson(item));
+    });
+
+    return Track(track['id'], track['title'], duration, artists,
+        albums, track['coverUri'], track['ogImage'], json['liked'],
+        TrackParameters.fromJson(json['trackParameters']), batchId);
+  }
+}
+
+class TrackParameters {
+  final int bpm;
+  final int hue;
+  final double energy;
+
+  TrackParameters(this.bpm, this.hue, this.energy);
+
+  factory TrackParameters.fromJson(Map<String, dynamic> json) {
+    return TrackParameters(json['bpm'], json['hue'], json['energy']);
+  }
+}
