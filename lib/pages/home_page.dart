@@ -2,10 +2,9 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ya_player/utils/ym_login.dart';
 
 import '../app_state.dart';
-import '../controls/login_dialog.dart';
+import '../controls/account_area.dart';
 import '../controls/play_controls.dart';
 import '../controls/track_image.dart';
 import '../controls/track_name.dart';
@@ -101,18 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: const Icon(Icons.list),
                     ),
                   ],
-                  footer: TextButton(
-                    child: const Text('Login'),
-                    onPressed: (){
-                      ymLogin('login', 'password');
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (BuildContext context){
-                      //     return LoginDialog();
-                      //   }
-                      // );
-                    },
-                  ),
+                  footer: AccountArea(),
                 ),
                 Expanded(
                   child: PageView(
@@ -152,7 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   if(value != null && value.liked) {
                     iconData = Icons.favorite;
                   }
-
                   return IconButton(
                     icon: Icon(iconData),
                     onPressed: appState.likeCurrentTrack
@@ -166,13 +153,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-

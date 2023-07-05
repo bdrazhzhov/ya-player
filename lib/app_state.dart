@@ -1,6 +1,8 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'models/music_api/account.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
 import 'models/play_info.dart';
@@ -9,6 +11,7 @@ import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
+import 'utils/ym_login.dart';
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -16,6 +19,8 @@ class AppState {
   final playButtonNotifier = PlayButtonNotifier();
   final trackNotifier = ValueNotifier<Track?>(null);
   final currentStationNotifier = ValueNotifier<Station?>(null);
+  final stationsNotifier = ValueNotifier<List<Station>>([]);
+  final accountNotifier = ValueNotifier<Account?>(null);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -29,6 +34,9 @@ class AppState {
     _listenToCurrentPosition();
     _listenToBufferedPosition();
     _listenToTotalDuration();
+
+    requestAccountData();
+    requestStations();
   }
 
   void _listenToPlaybackState() {
@@ -173,5 +181,51 @@ class AppState {
     }
 
     track.liked = !track.liked;
+  }
+
+  void _reset() {
+    stop();
+    playlist.clear();
+    _currentIndex = -1;
+    _currentPlayInfo = null;
+    playButtonNotifier.value = ButtonState.paused;
+    trackNotifier.value = null;
+    currentStationNotifier.value = null;
+    stationsNotifier.value = [];
+    accountNotifier.value = null;
+  }
+
+  Future<void> login(String login, String password) async {
+    final YmToken? result = await ymLogin(login, password);
+    if(result == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('authToken', result.accessToken);
+    await prefs.setInt('expiresIn', result.expiresIn.inSeconds);
+
+    _musicApi.authToken = result.accessToken;
+    _reset();
+    await requestAccountData();
+    requestStations();
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
+    await prefs.remove('expiresIn');
+    _reset();
+  }
+
+  Future<void> requestAccountData() async {
+    final accountStatus = await _musicApi.accountStatus();
+    if(accountStatus.account == null) return;
+
+    _musicApi.uid = accountStatus.account!.uid;
+    accountNotifier.value = accountStatus.account;
+  }
+
+  void requestStations() async {
+    final dashboard = await _musicApi.stationsDashboard();
+    stationsNotifier.value = dashboard.stations;
   }
 }

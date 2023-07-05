@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ya_player/app_state.dart';
+import 'package:ya_player/services/service_locator.dart';
 
 class LoginDialog extends StatefulWidget {
   const LoginDialog({super.key});
@@ -8,17 +10,22 @@ class LoginDialog extends StatefulWidget {
 }
 
 class _LoginDialogState extends State<LoginDialog> {
+  final _appState = getIt<AppState>();
   final _formKey = GlobalKey<FormState>();
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isValid = false;
   bool _isDirty = false;
 
-  void _onSubmit() {
+  void _onSubmit() async {
     setState(() {
       _isDirty = true;
       _isValid = _formKey.currentState!.validate();
     });
+    if(!_isValid) return;
+
+    await _appState.login(_loginController.text, _passwordController.text);
+    Navigator.pop(context);
   }
 
   @override

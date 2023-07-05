@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
+import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
 
+import 'models/music_api/account_status.dart';
 import 'models/music_api/album.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
@@ -15,8 +17,11 @@ import 'models/music_api/dashboard.dart';
 class MusicApi {
   static const String _magicSalt = "XGRlBW9FXlekgbPrRHuSiA";
   static const String _baseUri = 'https://api.music.yandex.net';
-  final String? _authToken;
-  final int? _uid;
+  String? _authToken;
+  int? _uid;
+
+  set authToken(String value) { _authToken = value; }
+  set uid(int value) { _uid = value; }
 
   MusicApi(String? authToken, int? uid) : _authToken = authToken, _uid = uid;
 
@@ -193,5 +198,17 @@ class MusicApi {
     List<Artist> artists = [];
 
     return artists;
+  }
+
+  Future<AccountStatus> accountStatus() async {
+    const url = '$_baseUri/account/status';
+    Map<String, dynamic> json = await _getRequest(url, null);
+
+    Account? account;
+    if(json['result']['account']['uid'] != null) {
+      account = Account.fromJson(json['result']['account']);
+    }
+
+    return AccountStatus(account);
   }
 }

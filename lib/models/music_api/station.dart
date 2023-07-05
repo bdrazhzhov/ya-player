@@ -4,14 +4,12 @@ class Station extends Equatable {
   final StationId id;
   final String name;
   final StationIcon icon;
-  final String fullImageUrl;
 
-  Station(this.id, this.name, this.icon, this.fullImageUrl);
+  const Station(this.id, this.name, this.icon);
 
   factory Station.fromJson(Map<String, dynamic> json) {
     return Station(StationId.fromJson(json['id']),
-        json['name'], StationIcon.fromJson(json['icon']),
-        json['fullImageUrl']);
+        json['name'], StationIcon.fromJson(json['icon']));
   }
 
   @override
@@ -22,7 +20,7 @@ class StationId extends Equatable {
   final String type;
   final String tag;
 
-  StationId(this.type, this.tag);
+  const StationId(this.type, this.tag);
 
   factory StationId.fromJson(Map<String, dynamic> json) {
     return StationId(json['type'], json['tag']);

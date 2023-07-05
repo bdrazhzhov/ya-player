@@ -17,14 +17,7 @@ class StationsPage extends StatefulWidget {
 
 class _StationsPageState extends State<StationsPage> {
   late final Future<StationsDashboard> dashboard;
-  late final MusicApi musicApi;
-  late final AppState appState;
-
-  _StationsPageState() {
-    appState = getIt<AppState>();
-    musicApi = getIt<MusicApi>();
-    dashboard = musicApi.stationsDashboard();
-  }
+  final appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +25,10 @@ class _StationsPageState extends State<StationsPage> {
       child: Column(
         children: [
           const Text('Stations'),
-          FutureBuilder<StationsDashboard>(
-            future: dashboard,
-            builder: (context, snapshot){
-              if(snapshot.hasData) {
-                final List<Station> stations = snapshot.data!.stations;
-                return ValueListenableBuilder<Station?>(
+          ValueListenableBuilder<List<Station>>(
+            valueListenable: appState.stationsNotifier,
+            builder: (_, stations, __) {
+              return ValueListenableBuilder<Station?>(
                   valueListenable: appState.currentStationNotifier,
                   builder: (_, currentStation, __) {
                     return Wrap(
@@ -45,17 +36,13 @@ class _StationsPageState extends State<StationsPage> {
                       runSpacing: 12,
                       children: stations.map(
                               (station) => _StationCard(
-                                  station: station,
-                                  isCurrent: currentStation == station
-                                )
+                              station: station,
+                              isCurrent: currentStation == station
+                          )
                       ).toList(),
                     );
                   }
-                );
-              }
-              else {
-                return const Text('No stations');
-              }
+              );
             }
           )
         ],
@@ -77,10 +64,11 @@ class _StationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BoxDecoration? decoration;
+    final theme = Theme.of(context);
 
     if(isCurrent) {
       decoration = BoxDecoration(
-        border: Border.all(width: 3, color: Colors.black12),
+        border: Border.all(width: 3, color: theme.colorScheme.outline),
         borderRadius: BorderRadius.circular(8),
       );
     }
