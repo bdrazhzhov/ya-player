@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
@@ -14,38 +16,44 @@ Future<MyAudioHandler> initAudioService() async {
   );
 }
 
+enum TrackSkipType { previous, next }
+
 class MyAudioHandler extends BaseAudioHandler {
   final _player = AudioPlayer();
+  bool _isPlaying = false;
+  List<MediaControl> _mediaControls = [
+    MediaControl.skipToPrevious,
+    MediaControl.play,
+    MediaControl.stop,
+    MediaControl.skipToNext
+  ];
+
+  final _skipController = StreamController<TrackSkipType>();
+  Stream<TrackSkipType> get skipStream => _skipController.stream;
 
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
-    _listenForDurationChanges();
     _player.playingStream.listen((playing) {
       // debugPrint('PlayingStream: $playing');
+      _isPlaying = playing;
+      _mediaControls = [
+        MediaControl.skipToPrevious,
+        if (playing) MediaControl.pause else MediaControl.play,
+        MediaControl.stop,
+        MediaControl.skipToNext,
+      ];
       playbackState.add(playbackState.value.copyWith(
-        playing: playing,
-        controls: [
-          MediaControl.skipToPrevious,
-          if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
-          MediaControl.skipToNext,
-        ],
+        playing: _isPlaying,
+        controls: _mediaControls,
       ));
     });
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _player.playbackEventStream.listen((PlaybackEvent event) {
-      // debugPrint('Playback event: $event\nPlaying: ${_player.playing}');
-      // final playing = _player.playing;
+      debugPrint('Playback event: $event\nPlaying: ${_player.playing}/$_isPlaying');
       playbackState.add(playbackState.value.copyWith(
-        controls: [
-          MediaControl.skipToPrevious,
-          MediaControl.play,
-          MediaControl.pause,
-          MediaControl.stop,
-          MediaControl.skipToNext,
-        ],
+        controls: _mediaControls,
         systemActions: const { MediaAction.seek },
         androidCompactActionIndices: const [0, 1, 3],
         processingState: const {
@@ -55,29 +63,12 @@ class MyAudioHandler extends BaseAudioHandler {
           ProcessingState.ready: AudioProcessingState.ready,
           ProcessingState.completed: AudioProcessingState.completed,
         }[_player.processingState]!,
-        // playing: playing,
+        playing: _isPlaying,
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
         queueIndex: event.currentIndex,
       ));
-    });
-  }
-
-  void _listenForDurationChanges() {
-    _player.durationStream.listen((duration) {
-      // debugPrint('Duration: $duration');
-      // var index = _player.currentIndex;
-      // final newQueue = queue.value;
-      // if (index == null || newQueue.isEmpty) return;
-      // if (_player.shuffleModeEnabled) {
-      //   index = _player.shuffleIndices!.indexOf(index);
-      // }
-      // final oldMediaItem = newQueue[index];
-      // final newMediaItem = oldMediaItem.copyWith(duration: duration);
-      // newQueue[index] = newMediaItem;
-      // queue.add(newQueue);
-      // mediaItem.add(newMediaItem);
     });
   }
 
@@ -100,10 +91,14 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> seek(Duration position) => _player.seek(position);
 
   @override
-  Future<void> skipToNext() => _player.seekToNext();
+  Future<void> skipToNext() async {
+    _skipController.add(TrackSkipType.next);
+  }
 
   @override
-  Future<void> skipToPrevious() => _player.seekToPrevious();
+  Future<void> skipToPrevious() async {
+    _skipController.add(TrackSkipType.previous);
+  }
 
   @override
   Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {

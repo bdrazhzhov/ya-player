@@ -4,7 +4,7 @@ class Album {
   final int id;
   final String title;
   final int year;
-  final DateTime releaseDate;
+  final DateTime? releaseDate;
   final String coverUri;
   final String ogImage;
   final String genre;
@@ -20,7 +20,12 @@ class Album {
       artists.add(Artist.fromJson(item));
     });
 
-    return Album(json['id'], json['title'], json['year'], DateTime.parse(json['releaseDate']),
+    DateTime? releaseDate;
+    if(json['releaseDate'] != null) {
+      releaseDate = DateTime.parse(json['releaseDate']);
+    }
+
+    return Album(json['id'], json['title'], json['year'], releaseDate,
         json['coverUri'], json['ogImage'], json['genre'], json['trackCount'], artists);
   }
 }

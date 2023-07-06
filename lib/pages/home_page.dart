@@ -133,13 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
               PlayControls(appState: appState),
               TrackImage(appState: appState),
               TrackName(appState: appState),
-              ValueListenableBuilder<Track?>(
-                valueListenable: appState.trackNotifier,
+              ValueListenableBuilder<bool>(
+                valueListenable: appState.trackLikeNotifier,
                 builder: (_, value, __) {
-                  var iconData = Icons.favorite_border;
-                  if(value != null && value.liked) {
-                    iconData = Icons.favorite;
-                  }
+                  var iconData = value ? Icons.favorite : Icons.favorite_border;
                   return IconButton(
                     icon: Icon(iconData),
                     onPressed: appState.likeCurrentTrack

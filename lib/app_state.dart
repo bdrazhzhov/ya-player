@@ -18,6 +18,7 @@ class AppState {
   final progressNotifier = ProgressNotifier();
   final playButtonNotifier = PlayButtonNotifier();
   final trackNotifier = ValueNotifier<Track?>(null);
+  final trackLikeNotifier = ValueNotifier<bool>(false);
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final stationsNotifier = ValueNotifier<List<Station>>([]);
   final accountNotifier = ValueNotifier<Account?>(null);
@@ -34,6 +35,7 @@ class AppState {
     _listenToCurrentPosition();
     _listenToBufferedPosition();
     _listenToTotalDuration();
+    _listenToSkipEvents();
 
     requestAccountData();
     requestStations();
@@ -88,6 +90,15 @@ class AppState {
         buffered: oldState.buffered,
         total: mediaItem?.duration ?? Duration.zero,
       );
+    });
+  }
+
+  void _listenToSkipEvents() {
+    _audioHandler.skipStream.listen((TrackSkipType event) {
+      switch(event) {
+        case TrackSkipType.next: next();
+        case TrackSkipType.previous: previous();
+      }
     });
   }
 
@@ -147,6 +158,7 @@ class AppState {
     );
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
+    trackLikeNotifier.value = track.liked;
     debugPrint('Track: ${track.artists.first.name} - ${track.title} — ${track.liked}');
   }
 
@@ -181,6 +193,7 @@ class AppState {
     }
 
     track.liked = !track.liked;
+    trackLikeNotifier.value = track.liked;
   }
 
   void _reset() {
@@ -193,6 +206,7 @@ class AppState {
     currentStationNotifier.value = null;
     stationsNotifier.value = [];
     accountNotifier.value = null;
+    trackLikeNotifier.value = false;
   }
 
   Future<void> login(String login, String password) async {
