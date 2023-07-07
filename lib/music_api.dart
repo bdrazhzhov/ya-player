@@ -6,9 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
+import 'package:ya_player/models/music_api/liked_track.dart';
 
 import 'models/music_api/account_status.dart';
 import 'models/music_api/album.dart';
+import 'models/music_api/queue.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
 import 'models/music_api/download_info.dart';
@@ -78,13 +80,32 @@ class MusicApi {
     return json;
   }
 
+  Future<Map<String, dynamic>> _postEmpty(String uri) async {
+    // debugPrint('Api request to: $uri\nwith data: $formData');
+    http.Response resp = await http.post(Uri.parse(uri),
+        headers: { HttpHeaders.authorizationHeader: 'OAuth $_authToken' }
+    );
+    // debugPrint('Api response body: ${resp.body}');
+
+    Map<String, dynamic> json = {};
+
+    if(resp.statusCode >= 200 && resp.statusCode < 400) {
+      json = jsonDecode(resp.body);
+    }
+
+    return json;
+  }
+
   Future<StationsDashboard> stationsDashboard() async {
     Map<String, dynamic> json = await _getRequest('$_baseUri/rotor/stations/dashboard', null);
     return StationsDashboard.fromJson(json['result']);
   }
 
-  Future<List<Track>> stationTacks(StationId stationId) async {
-    final url = '$_baseUri/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
+  Future<List<Track>> stationTacks(StationId stationId, List<String> queueTracks) async {
+    String url = '$_baseUri/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
+    if(queueTracks.isNotEmpty) {
+      url += '&${queueTracks.join('%2C')}';
+    }
     Map<String, dynamic> json = await _getRequest(url, null);
     List<Track> tracks = [];
 
@@ -182,6 +203,18 @@ class MusicApi {
     await _postForm(url, data);
   }
 
+  Future<List<LikedTrack>> likedTracks() async {
+    final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=0';
+    Map<String, dynamic> json = await _getRequest(url, null);
+    List<LikedTrack> tracks = [];
+
+    json['result']['library']['tracks'].forEach((item){
+      tracks.add(LikedTrack.fromJson(item));
+    });
+
+    return tracks;
+  }
+
   Future<List<Album>> likedAlbums() async {
     final url = '$_baseUri/users/$_uid/likes/albums?rich=true';
     Map<String, dynamic> json = await _getRequest(url, null);
@@ -210,5 +243,23 @@ class MusicApi {
     }
 
     return AccountStatus(account);
+  }
+
+  Future<String> createQueueForStation(Station station, List<QueueTrack> tracks) async {
+    const url = '$_baseUri/queues';
+    final from = station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
+    final queue = Queue(
+      QueueContext(station.name, station.id),
+      null, 'desktop_win-radio-radio_$from-default',
+      false, tracks
+    );
+    final result = await _postJson(url, queue.toJons());
+
+    return result['result']['id'].toString();
+  }
+
+  Future<void> updateQueuePosition(String queueId, int position) async {
+    final url = '$_baseUri/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
+    await _postEmpty(url);
   }
 }

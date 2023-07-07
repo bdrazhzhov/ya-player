@@ -1,5 +1,6 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,7 +9,6 @@ import '../controls/account_area.dart';
 import '../controls/play_controls.dart';
 import '../controls/track_image.dart';
 import '../controls/track_name.dart';
-import '../models/music_api/track.dart';
 import 'albums_page.dart';
 import 'artists_page.dart';
 import 'playlists_page.dart';
@@ -29,6 +29,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final pageController = PageController();
   final sideMenu = SideMenuController();
+  final _appState = getIt<AppState>();
+  double _volume = 100;
 
   void _onItemTap(int index, SideMenuController sideMenuController) {
     sideMenuController.changePage(index);
@@ -40,14 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
     sideMenu.addListener((index) {
       pageController.jumpToPage(index);
     });
-    getIt<AppState>().init();
+    _appState.init();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final appState = getIt<AppState>();
-
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -118,33 +118,46 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           ValueListenableBuilder<ProgressBarState>(
-            valueListenable: appState.progressNotifier,
+            valueListenable: _appState.progressNotifier,
             builder: (_, value, __) {
               return ProgressBar(
                 progress: value.current,
                 buffered: value.buffered,
                 total: value.total,
-                onSeek: appState.seek,
+                onSeek: _appState.seek,
               );
             },
           ),
           Row(
             children: [
-              PlayControls(appState: appState),
-              TrackImage(appState: appState),
-              TrackName(appState: appState),
+              PlayControls(appState: _appState),
+              TrackImage(appState: _appState),
+              TrackName(appState: _appState),
               ValueListenableBuilder<bool>(
-                valueListenable: appState.trackLikeNotifier,
+                valueListenable: _appState.trackLikeNotifier,
                 builder: (_, value, __) {
                   var iconData = value ? Icons.favorite : Icons.favorite_border;
                   return IconButton(
                     icon: Icon(iconData),
-                    onPressed: appState.likeCurrentTrack
+                    onPressed: _appState.likeCurrentTrack
                   );
                 }
               ),
+              const Expanded(child: SizedBox(),),
+              if(defaultTargetPlatform == TargetPlatform.windows ||
+                  defaultTargetPlatform == TargetPlatform.linux ||
+                  defaultTargetPlatform == TargetPlatform.macOS) Slider(
+                // value: _volume,
+                value: _appState.volume,
+                onChanged: (double value) {
+                  setState((){
+                    _appState.volume = value;
+                    // _volume = value;
+                  });
+                },
+              )
             ]
-          )
+          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
@@ -51,7 +52,7 @@ class MyAudioHandler extends BaseAudioHandler {
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _player.playbackEventStream.listen((PlaybackEvent event) {
-      debugPrint('Playback event: $event\nPlaying: ${_player.playing}/$_isPlaying');
+      // debugPrint('Playback event: $event\nPlaying: ${_player.playing}/$_isPlaying');
       playbackState.add(playbackState.value.copyWith(
         controls: _mediaControls,
         systemActions: const { MediaAction.seek },
@@ -113,4 +114,11 @@ class MyAudioHandler extends BaseAudioHandler {
     await _player.stop();
     return super.stop();
   }
+
+  double _linearVolume = 1;
+  set volume(double value) {
+    _linearVolume = value;
+    _player.setVolume(pow(value, 3).toDouble());
+  }
+  double get volume => _linearVolume;
 }

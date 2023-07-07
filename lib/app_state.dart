@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/music_api/account.dart';
+import 'models/music_api/liked_track.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
 import 'models/play_info.dart';
@@ -28,6 +31,8 @@ class AppState {
   final _musicApi = getIt<MusicApi>();
   int _currentIndex = -1;
   PlayInfo? _currentPlayInfo;
+  late final SharedPreferences _prefs;
+  late final List<LikedTrack> _likedTracks;
 
   // Events: Calls coming from the UI
   void init() async {
@@ -39,6 +44,10 @@ class AppState {
 
     requestAccountData();
     requestStations();
+
+    _prefs = await SharedPreferences.getInstance();
+    _audioHandler.volume = _prefs.getDouble('volume') ?? 1;
+    _likedTracks = await _musicApi.likedTracks();
   }
 
   void _listenToPlaybackState() {
@@ -102,6 +111,12 @@ class AppState {
     });
   }
 
+  double get volume => _audioHandler.volume;
+  set volume(double value) {
+    _audioHandler.volume = value;
+    _prefs.setDouble('volume', value);
+  }
+
   void play() => _audioHandler.play();
   void pause() => _audioHandler.pause();
   void stop() => _audioHandler.stop();
@@ -115,6 +130,10 @@ class AppState {
     await _playStationTrack(currentStationNotifier.value!, track);
   }
 
+  List<String> _getLastTrackIds() {
+    return playlist.isNotEmpty ? playlist.reversed.take(3).map((e) => e.id).toList() : [];
+  }
+
   Future<void> next() async {
     if(playlist.isEmpty || _currentIndex == playlist.length - 1) return;
 
@@ -125,7 +144,8 @@ class AppState {
     // When playlist almost reached its end loading new tracks
     // and adding to the end of playlist
     if(playlist.length - _currentIndex <= 3) {
-      final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id);
+      final lastTrackIds = _getLastTrackIds();
+      final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
       playlist.addAll(tracks);
       debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
     }
@@ -133,7 +153,8 @@ class AppState {
 
   Future<void> selectStation(Station station) async {
     currentStationNotifier.value = station;
-    final List<Track> tracks = await _musicApi.stationTacks(station.id);
+    final lastTrackIds = _getLastTrackIds();
+    final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
     playlist.clear();
     _currentIndex = 0;
     playlist.addAll(tracks);
@@ -158,7 +179,7 @@ class AppState {
     );
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
-    trackLikeNotifier.value = track.liked;
+    trackLikeNotifier.value = _likedTracks.any((element) => element.id == track.id);
     debugPrint('Track: ${track.artists.first.name} - ${track.title} — ${track.liked}');
   }
 
@@ -187,12 +208,13 @@ class AppState {
 
     if(track.liked) {
       await _musicApi.unlikeTrack(track);
+      _likedTracks.add(LikedTrack(track.id, track.firstAlbumId.toString()));
     }
     else {
       await _musicApi.likeTrack(track);
+      _likedTracks.removeWhere((element) => element.id == track.id);
     }
 
-    track.liked = !track.liked;
     trackLikeNotifier.value = track.liked;
   }
 
@@ -227,6 +249,7 @@ class AppState {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('authToken');
     await prefs.remove('expiresIn');
+    await prefs.remove('volume');
     _reset();
   }
 

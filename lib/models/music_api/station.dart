@@ -28,6 +28,11 @@ class StationId extends Equatable {
 
   @override
   List<Object> get props => [type, tag];
+
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'tag': tag
+  };
 }
 
 class StationIcon {
