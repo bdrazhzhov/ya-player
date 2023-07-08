@@ -16,3 +16,9 @@ class Account {
         json['serviceAvailable']);
   }
 }
+
+class AccountStatus {
+  final Account? account;
+
+  AccountStatus(this.account);
+}

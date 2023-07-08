@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ya_player/services/preferences.dart';
 
 import 'models/music_api/account.dart';
-import 'models/music_api/liked_track.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
 import 'models/play_info.dart';
@@ -31,7 +31,7 @@ class AppState {
   final _musicApi = getIt<MusicApi>();
   int _currentIndex = -1;
   PlayInfo? _currentPlayInfo;
-  late final SharedPreferences _prefs;
+  final _prefs = getIt<Preferences>();
   late final List<int> _likedTracks;
 
   // Events: Calls coming from the UI
@@ -45,8 +45,11 @@ class AppState {
     requestAccountData();
     requestStations();
 
-    _prefs = await SharedPreferences.getInstance();
-    _audioHandler.volume = _prefs.getDouble('volume') ?? 1;
+    _audioHandler.volume = _prefs.volume;
+    await _requestLikedTracks();
+  }
+
+  Future<void> _requestLikedTracks() async {
     _likedTracks = await _musicApi.likedTracks();
     _likedTracks.sort();
   }
@@ -115,7 +118,7 @@ class AppState {
   double get volume => _audioHandler.volume;
   set volume(double value) {
     _audioHandler.volume = value;
-    _prefs.setDouble('volume', value);
+    _prefs.setVolume(value);
   }
 
   void play() => _audioHandler.play();
@@ -237,9 +240,8 @@ class AppState {
     final YmToken? result = await ymLogin(login, password);
     if(result == null) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('authToken', result.accessToken);
-    await prefs.setInt('expiresIn', result.expiresIn.inSeconds);
+    await _prefs.setAuthToken(result.accessToken);
+    await _prefs.setExpiresIn(result.expiresIn.inSeconds);
 
     _musicApi.authToken = result.accessToken;
     _reset();
@@ -248,10 +250,7 @@ class AppState {
   }
 
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('authToken');
-    await prefs.remove('expiresIn');
-    await prefs.remove('volume');
+    _prefs.clear();
     _reset();
   }
 

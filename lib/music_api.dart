@@ -6,9 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
-import 'package:ya_player/models/music_api/liked_track.dart';
 
-import 'models/music_api/account_status.dart';
 import 'models/music_api/album.dart';
 import 'models/music_api/queue.dart';
 import 'models/music_api/station.dart';
@@ -203,8 +201,8 @@ class MusicApi {
     await _postForm(url, data);
   }
 
-  Future<List<int>> likedTracks() async {
-    final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=0';
+  Future<List<int>> likedTracks({int revision = 0}) async {
+    final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=$revision';
     Map<String, dynamic> json = await _getRequest(url, null);
     List<int> tracks = [];
 
@@ -220,6 +218,7 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(url, null);
 
     List<Album> albums = [];
+    json['result'].forEach((item) => albums.add(Album.fromJson(item['album'])));
 
     return albums;
   }
@@ -229,6 +228,7 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(url, null);
 
     List<Artist> artists = [];
+    json['result'].forEach((item) => artists.add(Artist.fromJson(item['artist'])));
 
     return artists;
   }
