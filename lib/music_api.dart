@@ -101,7 +101,7 @@ class MusicApi {
     return StationsDashboard.fromJson(json['result']);
   }
 
-  Future<List<Track>> stationTacks(StationId stationId, List<String> queueTracks) async {
+  Future<List<Track>> stationTacks(StationId stationId, List<int> queueTracks) async {
     String url = '$_baseUri/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
     if(queueTracks.isNotEmpty) {
       url += '&${queueTracks.join('%2C')}';
@@ -116,7 +116,7 @@ class MusicApi {
     return tracks;
   }
 
-  Future<TrackDownloadInfo?> _trackDownloadInfo(String trackId) async {
+  Future<TrackDownloadInfo?> _trackDownloadInfo(int trackId) async {
     Map<String, dynamic> json = await _getRequest('$_baseUri/tracks/$trackId/download-info', null);
     TrackDownloadInfo? selectedInfo;
 
@@ -133,7 +133,7 @@ class MusicApi {
     return selectedInfo;
   }
 
-  Future<FileDownloadInfo?> _fileDownloadInfo(String trackId) async {
+  Future<FileDownloadInfo?> _fileDownloadInfo(int trackId) async {
     FileDownloadInfo? fileInfo;
 
     TrackDownloadInfo? info = await _trackDownloadInfo(trackId);
@@ -145,7 +145,7 @@ class MusicApi {
     return fileInfo;
   }
 
-  Future<String?> trackDownloadUrl(String trackId) async {
+  Future<String?> trackDownloadUrl(int trackId) async {
     String? downloadUrl;
     FileDownloadInfo? fileInfo = await _fileDownloadInfo(trackId);
 
@@ -203,13 +203,13 @@ class MusicApi {
     await _postForm(url, data);
   }
 
-  Future<List<LikedTrack>> likedTracks() async {
+  Future<List<int>> likedTracks() async {
     final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=0';
     Map<String, dynamic> json = await _getRequest(url, null);
-    List<LikedTrack> tracks = [];
+    List<int> tracks = [];
 
     json['result']['library']['tracks'].forEach((item){
-      tracks.add(LikedTrack.fromJson(item));
+      tracks.add(int.parse(item['id']));
     });
 
     return tracks;

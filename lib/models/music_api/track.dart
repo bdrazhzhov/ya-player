@@ -3,7 +3,7 @@ import 'package:ya_player/models/music_api/album.dart';
 import 'artist.dart';
 
 class Track {
-  final String id;
+  final int id;
   final String title;
   final Duration duration;
   final List<Artist> artists;
@@ -31,7 +31,7 @@ class Track {
       albums.add(Album.fromJson(item));
     });
 
-    return Track(track['id'], track['title'], duration, artists,
+    return Track(int.parse(track['id']), track['title'], duration, artists,
         albums, track['coverUri'], track['ogImage'], json['liked'],
         TrackParameters.fromJson(json['trackParameters']), batchId);
   }

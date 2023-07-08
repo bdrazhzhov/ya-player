@@ -21,7 +21,7 @@ class PlayInfo {
     final totalPlayedSeconds = (totalPlayed.inMilliseconds / 1000.0).toString();
 
     return {
-      'track-id': track.id,
+      'track-id': track.id.toString(),
       'album-id': track.firstAlbumId.toString(),
       'from-cache': 'False',
       'from': 'desktop_win-radio-radio_$_from-default',

@@ -1,10 +1,13 @@
 class LikedTrack {
-  final String id;
-  final String albumId;
+  final int id;
+  final int albumId;
 
   LikedTrack(this.id, this.albumId);
 
   factory LikedTrack.fromJson(Map<String, dynamic> json) {
-    return LikedTrack(json['id'], json['albumId']);
+    return LikedTrack(
+      int.parse(json['id']),
+      int.parse(json['albumId'])
+    );
   }
 }
