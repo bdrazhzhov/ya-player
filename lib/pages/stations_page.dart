@@ -22,7 +22,12 @@ class _StationsPageState extends State<StationsPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final widthFactor = size.width / 170;
+    var width = size.width / 3;
+    if(width < 130) {
+      width = 130;
+    } else if(width > 200) {
+      width = 200;
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -41,7 +46,7 @@ class _StationsPageState extends State<StationsPage> {
                               (station) => _StationCard(
                               station: station,
                               isCurrent: currentStation == station,
-                              width: size.width / widthFactor,
+                              width: width,
                           )
                       ).toList(),
                     );
@@ -49,7 +54,6 @@ class _StationsPageState extends State<StationsPage> {
               );
             }
           ),
-          Text('Size: $size'),
         ],
       ),
     );
