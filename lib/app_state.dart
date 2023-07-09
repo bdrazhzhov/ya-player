@@ -209,19 +209,20 @@ class AppState {
     if(_currentPlayInfo == null) return;
 
     final Track track = _currentPlayInfo!.track;
+    int likedIndex = binarySearch(_likedTracks, track.id);
+    final isLiked = likedIndex != -1;
 
-    if(track.liked) {
+    if(isLiked) {
       await _musicApi.unlikeTrack(track);
-      _likedTracks.add(track.id);
+      _likedTracks.removeAt(likedIndex);
     }
     else {
       await _musicApi.likeTrack(track);
-      _likedTracks.removeWhere((trackId) => trackId == track.id);
+      _likedTracks.add(track.id);
     }
 
     _likedTracks.sort();
-
-    trackLikeNotifier.value = track.liked;
+    trackLikeNotifier.value = !isLiked;
   }
 
   void _reset() {
