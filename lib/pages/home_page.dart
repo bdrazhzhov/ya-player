@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final pageController = PageController();
   final sideMenu = SideMenuController();
   final _appState = getIt<AppState>();
-  double _volume = 100;
+  int _currentPageIndex = 0;
 
   void _onItemTap(int index, SideMenuController sideMenuController) {
     sideMenuController.changePage(index);
@@ -50,6 +50,35 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    Widget? navBar;
+    if(defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      navBar = NavigationBar(
+        height: 50,
+        selectedIndex: _currentPageIndex,
+        onDestinationSelected: (int index) {
+          pageController.jumpToPage(index);
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        destinations: [
+          NavigationDestination(
+            icon: Icon(const FaIcon(FontAwesomeIcons.radio).icon),
+            label: 'Stations',
+          ),
+          NavigationDestination(
+            icon: Icon(const FaIcon(FontAwesomeIcons.compactDisc).icon),
+            label: 'Tracks',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.list),
+            label: 'Albums',
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       body: Column(
         children: [
@@ -57,66 +86,69 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SideMenu(
-                  controller: sideMenu,
-                  collapseWidth: 700,
-                  style: SideMenuStyle(
-                    openSideMenuWidth: 200,
-                    itemHeight: 42.0,
-                    selectedTitleTextStyle: theme.textTheme.headlineMedium,
-                    unselectedTitleTextStyle: theme.textTheme.headlineMedium,
-                    selectedIconColor: theme.iconTheme.color,
-                    unselectedIconColor: theme.iconTheme.color,
-                  ),
-                  items: [
-                    SideMenuItem(
-                      priority: 0,
-                      title: 'Stations',
-                      onTap: _onItemTap,
-                      icon: Icon(const FaIcon(FontAwesomeIcons.radio).icon),
+                if(defaultTargetPlatform != TargetPlatform.android &&
+                    defaultTargetPlatform != TargetPlatform.iOS)
+                  SideMenu(
+                      controller: sideMenu,
+                      collapseWidth: 700,
+                      style: SideMenuStyle(
+                        openSideMenuWidth: 200,
+                        itemHeight: 42.0,
+                        selectedTitleTextStyle: theme.textTheme.headlineMedium,
+                        unselectedTitleTextStyle: theme.textTheme.headlineMedium,
+                        selectedIconColor: theme.iconTheme.color,
+                        unselectedIconColor: theme.iconTheme.color,
+                      ),
+                      items: [
+                        SideMenuItem(
+                          priority: 0,
+                          title: 'Stations',
+                          onTap: _onItemTap,
+                          icon: Icon(const FaIcon(FontAwesomeIcons.radio).icon),
+                        ),
+                        SideMenuItem(
+                          priority: 1,
+                          title: 'Tracks',
+                          onTap: _onItemTap,
+                          icon: Icon(const FaIcon(FontAwesomeIcons.compactDisc).icon),
+                        ),
+                        SideMenuItem(
+                          priority: 2,
+                          title: 'Albums',
+                          onTap: _onItemTap,
+                          icon: const Icon(Icons.list),
+                        ),
+                        SideMenuItem(
+                          priority: 3,
+                          title: 'Artists',
+                          onTap: _onItemTap,
+                          icon: const Icon(Icons.list),
+                        ),
+                        SideMenuItem(
+                          priority: 4,
+                          title: 'Playlists',
+                          onTap: _onItemTap,
+                          icon: const Icon(Icons.list),
+                        ),
+                      ],
+                      footer: AccountArea(),
                     ),
-                    SideMenuItem(
-                      priority: 1,
-                      title: 'Tracks',
-                      onTap: _onItemTap,
-                      icon: Icon(const FaIcon(FontAwesomeIcons.compactDisc).icon),
-                    ),
-                    SideMenuItem(
-                      priority: 2,
-                      title: 'Albums',
-                      onTap: _onItemTap,
-                      icon: const Icon(Icons.list),
-                    ),
-                    SideMenuItem(
-                      priority: 3,
-                      title: 'Artists',
-                      onTap: _onItemTap,
-                      icon: const Icon(Icons.list),
-                    ),
-                    SideMenuItem(
-                      priority: 4,
-                      title: 'Playlists',
-                      onTap: _onItemTap,
-                      icon: const Icon(Icons.list),
-                    ),
-                  ],
-                  footer: AccountArea(),
-                ),
                 Expanded(
                   child: PageView(
                     controller: pageController,
-                    children: const [
-                      StationsPage(),
-                      TracksPage(),
-                      AlbumsPage(),
-                      ArtistsPage(),
-                      PlaylistsPage()
+                    children: [
+                      const StationsPage(),
+                      const TracksPage(),
+                      const AlbumsPage(),
+                      const ArtistsPage(),
+                      const PlaylistsPage(),
+                      AccountArea()
                     ],
                   )
                 )
               ],
             ),
-          ),
+          ) ,
           ValueListenableBuilder<ProgressBarState>(
             valueListenable: _appState.progressNotifier,
             builder: (_, value, __) {
@@ -156,10 +188,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 },
               )
+              else
+                IconButton(
+                  onPressed: (){
+                    pageController.jumpToPage(5);
+                  },
+                  icon: const Icon(Icons.account_box)
+                )
             ]
           ),
         ],
       ),
+      bottomNavigationBar: navBar,
     );
   }
 }

@@ -21,14 +21,17 @@ class _StationsPageState extends State<StationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final widthFactor = size.width / 170;
+
     return SingleChildScrollView(
       child: Column(
         children: [
           const Text('Stations'),
           ValueListenableBuilder<List<Station>>(
-            valueListenable: appState.stationsNotifier,
-            builder: (_, stations, __) {
-              return ValueListenableBuilder<Station?>(
+              valueListenable: appState.stationsNotifier,
+              builder: (_, stations, __) {
+                return ValueListenableBuilder<Station?>(
                   valueListenable: appState.currentStationNotifier,
                   builder: (_, currentStation, __) {
                     return Wrap(
@@ -37,14 +40,16 @@ class _StationsPageState extends State<StationsPage> {
                       children: stations.map(
                               (station) => _StationCard(
                               station: station,
-                              isCurrent: currentStation == station
+                              isCurrent: currentStation == station,
+                              width: size.width / widthFactor,
                           )
                       ).toList(),
                     );
                   }
               );
             }
-          )
+          ),
+          Text('Size: $size'),
         ],
       ),
     );
@@ -52,46 +57,48 @@ class _StationsPageState extends State<StationsPage> {
 }
 
 class _StationCard extends StatelessWidget {
+  final Station station;
+  final bool isCurrent;
+  final double width;
+
   _StationCard({
     required this.station,
     required this.isCurrent,
+    required this.width,
   });
 
-  final Station station;
-  final bool isCurrent;
   final appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
-    BoxDecoration? decoration;
     final theme = Theme.of(context);
-
-    if(isCurrent) {
-      decoration = BoxDecoration(
-        border: Border.all(width: 3, color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(8),
-      );
-    }
+    final outlineColor = isCurrent ? theme.colorScheme.outline : Colors.transparent;
 
     return InkResponse(
       onTap: () { appState.selectStation(station); },
       child: Container(
-        decoration: decoration,
+        decoration: BoxDecoration(
+          border: Border.all(width: 3, color: outlineColor),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Column(
           children: [
             Container(
-              width: 208,
-              height: 208,
+              width: width,
+              height: width,
               decoration: BoxDecoration(
                   color: station.icon.backgroundColor.toColor(),
                   shape: BoxShape.circle
               ),
-              child: CachedNetworkImage(
-                width: 150,
-                height: 150,
-                imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '150x150').toString(),
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              child: Center(
+                child: CachedNetworkImage(
+                  width: width / 1.5,
+                  height: width / 1.5,
+                  fit: BoxFit.fitWidth,
+                  imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '300x300').toString(),
+                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
             ),
             Padding(

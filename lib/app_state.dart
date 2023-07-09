@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ya_player/services/preferences.dart';
 
 import 'models/music_api/account.dart';
@@ -42,14 +41,16 @@ class AppState {
     _listenToTotalDuration();
     _listenToSkipEvents();
 
-    requestAccountData();
+    await requestAccountData();
     requestStations();
 
     _audioHandler.volume = _prefs.volume;
-    await _requestLikedTracks();
+    _requestLikedTracks();
   }
 
   Future<void> _requestLikedTracks() async {
+    if((_prefs.authToken?.length ?? 0) == 0) return;
+
     _likedTracks = await _musicApi.likedTracks();
     _likedTracks.sort();
   }
@@ -262,7 +263,7 @@ class AppState {
     accountNotifier.value = accountStatus.account;
   }
 
-  void requestStations() async {
+  Future<void> requestStations() async {
     final dashboard = await _musicApi.stationsDashboard();
     stationsNotifier.value = dashboard.stations;
   }

@@ -40,6 +40,10 @@ class MusicApi {
     if(resp.statusCode >= 200 && resp.statusCode < 400) {
       json = jsonDecode(resp.body);
     }
+    else {
+      debugPrint('Response error: ${resp.statusCode}');
+      debugPrint(resp.body);
+    }
 
     // debugPrint('Api response body: ${resp.body}');
 
