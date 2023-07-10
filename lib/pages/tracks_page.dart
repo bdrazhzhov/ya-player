@@ -10,8 +10,13 @@ class TracksPage extends StatefulWidget {
 class _TracksPageState extends State<TracksPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Tracks'),
+    return Center(
+      child: Column(
+        children: [
+          const Text('Tracks'),
+          ListView(children: [],)
+        ],
+      ),
     );
   }
 }

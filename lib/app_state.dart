@@ -31,7 +31,7 @@ class AppState {
   int _currentIndex = -1;
   PlayInfo? _currentPlayInfo;
   final _prefs = getIt<Preferences>();
-  late final List<int> _likedTracks;
+  late final List<int> _likedTrackIds;
 
   // Events: Calls coming from the UI
   void init() async {
@@ -51,12 +51,12 @@ class AppState {
   Future<void> _requestLikedTracks() async {
     if((_prefs.authToken?.length ?? 0) == 0) return;
 
-    final resultTuple = await _musicApi.likedTracks(revision: _prefs.likedTracksRevision);
+    final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
     if(resultTuple.revision == null) return;
 
-    _likedTracks = resultTuple.tracks;
-    _likedTracks.sort();
-    await _prefs.setLikedTracks(_likedTracks);
+    _likedTrackIds = resultTuple.ids;
+    _likedTrackIds.sort();
+    await _prefs.setLikedTracks(_likedTrackIds);
     await _prefs.setLikedTracksRevision(resultTuple.revision!);
   }
 
@@ -191,7 +191,7 @@ class AppState {
     );
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
-    trackLikeNotifier.value = binarySearch(_likedTracks, track.id) != -1;
+    trackLikeNotifier.value = binarySearch(_likedTrackIds, track.id) != -1;
   }
 
   Future<void> _playStationTrack(Station station, Track track) async {
@@ -216,19 +216,19 @@ class AppState {
     if(_currentPlayInfo == null) return;
 
     final Track track = _currentPlayInfo!.track;
-    int likedIndex = binarySearch(_likedTracks, track.id);
+    int likedIndex = binarySearch(_likedTrackIds, track.id);
     final isLiked = likedIndex != -1;
 
     if(isLiked) {
       await _musicApi.unlikeTrack(track);
-      _likedTracks.removeAt(likedIndex);
+      _likedTrackIds.removeAt(likedIndex);
     }
     else {
       await _musicApi.likeTrack(track);
-      _likedTracks.add(track.id);
+      _likedTrackIds.add(track.id);
     }
 
-    _likedTracks.sort();
+    _likedTrackIds.sort();
     trackLikeNotifier.value = !isLiked;
   }
 
