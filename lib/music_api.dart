@@ -205,16 +205,20 @@ class MusicApi {
     await _postForm(url, data);
   }
 
-  Future<List<int>> likedTracks({int revision = 0}) async {
+  Future<({List<int> tracks, int? revision})> likedTracks({int revision = 0}) async {
     final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=$revision';
     Map<String, dynamic> json = await _getRequest(url, null);
     List<int> tracks = [];
 
-    json['result']['library']['tracks'].forEach((item){
-      tracks.add(int.parse(item['id']));
-    });
+    int? newRevision;
+    if(json['result'] != 'no-updates') {
+      newRevision = json['result']['library']['revision'];
+      json['result']['library']['tracks'].forEach((item){
+        tracks.add(int.parse(item['id']));
+      });
+    }
 
-    return tracks;
+    return (tracks: tracks, revision: newRevision);
   }
 
   Future<List<Album>> likedAlbums() async {

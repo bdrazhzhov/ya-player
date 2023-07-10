@@ -275,11 +275,12 @@ packages:
   just_audio_mpv:
     dependency: "direct main"
     description:
-      name: just_audio_mpv
-      sha256: "98ac36712f3fe4fb0cf545f29c250fbd55e52c8445a4b0a4ee0bc9322f192797"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.6"
+      path: "."
+      ref: HEAD
+      resolved-ref: "0dda8b01adacfdc49f342a4835d355a8c9a9c278"
+      url: "https://github.com/bdrazhzhov/just_audio_mpv.git"
+    source: git
+    version: "0.1.6-custom"
   just_audio_platform_interface:
     dependency: transitive
     description:

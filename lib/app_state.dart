@@ -51,12 +51,18 @@ class AppState {
   Future<void> _requestLikedTracks() async {
     if((_prefs.authToken?.length ?? 0) == 0) return;
 
-    _likedTracks = await _musicApi.likedTracks();
+    final resultTuple = await _musicApi.likedTracks(revision: _prefs.likedTracksRevision);
+    if(resultTuple.revision == null) return;
+
+    _likedTracks = resultTuple.tracks;
     _likedTracks.sort();
+    await _prefs.setLikedTracks(_likedTracks);
+    await _prefs.setLikedTracksRevision(resultTuple.revision!);
   }
 
   void _listenToPlaybackState() {
-    _audioHandler.playbackState.listen((playbackState) {
+    _audioHandler.playbackState.listen((playbackState) async {
+      // debugPrint('PlaybackState: $playbackState');
       final isPlaying = playbackState.playing;
       final processingState = playbackState.processingState;
       if (processingState == AudioProcessingState.loading ||
@@ -69,6 +75,7 @@ class AppState {
       } else {
         // _audioHandler.seek(Duration.zero);
         // _audioHandler.pause();
+        await _audioHandler.stop();
         next();
       }
     });

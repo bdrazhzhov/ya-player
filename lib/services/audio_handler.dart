@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 Future<MyAudioHandler> initAudioService() async {
@@ -33,8 +34,15 @@ class MyAudioHandler extends BaseAudioHandler {
 
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
+    _listenToPlayingStream();
+    _player.playerStateStream.listen((state) {
+      debugPrint('PlayerStateStream: $state');
+    });
+  }
+
+  void _listenToPlayingStream() {
     _player.playingStream.listen((playing) {
-      // debugPrint('PlayingStream: $playing');
+      debugPrint('PlayingStream: $playing');
       _isPlaying = playing;
       _mediaControls = [
         MediaControl.skipToPrevious,
@@ -51,7 +59,7 @@ class MyAudioHandler extends BaseAudioHandler {
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _player.playbackEventStream.listen((PlaybackEvent event) {
-      // debugPrint('Playback event: $event\nPlaying: ${_player.playing}/$_isPlaying');
+      // debugPrint('Playback event: $event');
       playbackState.add(playbackState.value.copyWith(
         controls: _mediaControls,
         systemActions: const { MediaAction.seek },
@@ -76,7 +84,7 @@ class MyAudioHandler extends BaseAudioHandler {
     await _player.setUrl(track.extras!['url']);
     // looks like some kind of bug:
     // playing doesn't start without this line
-    await _player.setVolume(_player.volume);
+    await _player.setVolume(volume);
     mediaItem.add(track);
     return _player.play();
   }
