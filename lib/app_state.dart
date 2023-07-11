@@ -279,6 +279,10 @@ class AppState {
     stationsNotifier.value = [];
     accountNotifier.value = null;
     trackLikeNotifier.value = false;
+    likedTracksNotifier.value = [];
+    albumsNotifier.value = [];
+    artistsNotifier.value = [];
+    playlistsNotifier.value = [];
   }
 
   Future<void> login(String login, String password) async {
@@ -292,6 +296,10 @@ class AppState {
     _reset();
     await requestAccountData();
     requestStations();
+    _requestLikedTracks();
+    _requestLikedAlbums();
+    _requestArtists();
+    _requestPlaylists();
   }
 
   Future<void> logout() async {
