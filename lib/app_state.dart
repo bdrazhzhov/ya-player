@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ya_player/models/music_api/album.dart';
+import 'package:ya_player/models/music_api/artist.dart';
+import 'package:ya_player/models/music_api/playlist.dart';
 import 'package:ya_player/services/preferences.dart';
 
 import 'models/music_api/account.dart';
@@ -26,7 +28,9 @@ class AppState {
   final stationsNotifier = ValueNotifier<List<Station>>([]);
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
-  final likedAlbumsNotifier = ValueNotifier<List<Album>>([]);
+  final albumsNotifier = ValueNotifier<List<Album>>([]);
+  final artistsNotifier = ValueNotifier<List<LikedArtist>>([]);
+  final playlistsNotifier = ValueNotifier<List<Playlist>>([]);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -50,6 +54,8 @@ class AppState {
     _audioHandler.volume = _prefs.volume;
     _requestLikedTracks();
     _requestLikedAlbums();
+    _requestArtists();
+    _requestPlaylists();
   }
 
   Future<void> _requestLikedTracks() async {
@@ -136,7 +142,15 @@ class AppState {
   }
 
   Future<void> _requestLikedAlbums() async {
-    likedAlbumsNotifier.value = await _musicApi.likedAlbums();
+    albumsNotifier.value = await _musicApi.likedAlbums();
+  }
+
+  Future<void> _requestArtists() async {
+    artistsNotifier.value = await _musicApi.likedArtists();
+  }
+
+  Future<void> _requestPlaylists() async {
+    playlistsNotifier.value = await _musicApi.playlists();
   }
 
   double get volume => _audioHandler.volume;

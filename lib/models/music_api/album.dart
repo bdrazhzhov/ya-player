@@ -9,15 +9,15 @@ class Album {
   final String ogImage;
   final String genre;
   final int tracksCount;
-  final List<Artist> artists;
+  final List<ArtistBase> artists;
 
   Album(this.id, this.title, this.year, this.releaseDate, this.coverUri,
       this.ogImage, this.genre, this.tracksCount, this.artists);
   
   factory Album.fromJson(Map<String, dynamic> json) {
-    List<Artist> artists = [];
+    List<ArtistBase> artists = [];
     json['artists'].forEach((item) {
-      artists.add(Artist.fromJson(item));
+      artists.add(ArtistBase.fromJson(item));
     });
 
     DateTime? releaseDate;

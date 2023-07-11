@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
+import 'package:ya_player/models/music_api/playlist.dart';
 
 import 'models/music_api/album.dart';
 import 'models/music_api/queue.dart';
@@ -243,14 +244,24 @@ class MusicApi {
     return albums;
   }
 
-  Future<List<Artist>> likedArtists() async {
+  Future<List<LikedArtist>> likedArtists() async {
     final url = '$_baseUri/users/$_uid/likes/artists?with-timestamps=true';
     Map<String, dynamic> json = await _getRequest(url, null);
 
-    List<Artist> artists = [];
-    json['result'].forEach((item) => artists.add(Artist.fromJson(item['artist'])));
+    List<LikedArtist> artists = [];
+    json['result'].forEach((item) => artists.add(LikedArtist.fromJson(item['artist'])));
 
     return artists;
+  }
+
+  Future<List<Playlist>> playlists() async {
+    final url = '$_baseUri/users/$_uid/playlists/list';
+    Map<String, dynamic> json = await _getRequest(url, null);
+
+    List<Playlist> playlists = [];
+    json['result'].forEach((item) => playlists.add(Playlist.fromJson(item)));
+
+    return playlists;
   }
 
   Future<AccountStatus> accountStatus() async {

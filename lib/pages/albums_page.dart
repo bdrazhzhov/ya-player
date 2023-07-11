@@ -24,14 +24,14 @@ class _AlbumsPageState extends State<AlbumsPage> {
         children: [
           const Text('Albums'),
           ValueListenableBuilder<List<Album>>(
-              valueListenable: appState.likedAlbumsNotifier,
-              builder: (_, albums, __) {
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: albums.map((album) => _AlbumCard(album)).toList(),
-                );
-              }
+            valueListenable: appState.albumsNotifier,
+            builder: (_, albums, __) {
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: albums.map((album) => _AlbumCard(album)).toList(),
+              );
+            }
           ),
         ],
       ),

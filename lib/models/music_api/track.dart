@@ -7,7 +7,7 @@ class Track {
   final String title;
   final String? version;
   final Duration duration;
-  final List<Artist> artists;
+  final List<ArtistBase> artists;
   final List<Album> albums;
   final String coverUri;
   final String ogImage;
@@ -21,9 +21,9 @@ class Track {
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
     final track = json['id'] != null ? json : json['track'];
     final duration = Duration(milliseconds: track['durationMs']);
-    List<Artist> artists = [];
+    List<ArtistBase> artists = [];
     track['artists'].forEach((item){
-      artists.add(Artist.fromJson(item));
+      artists.add(ArtistBase.fromJson(item));
     });
     List<Album> albums = [];
     track['albums'].forEach((item){
