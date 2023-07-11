@@ -19,6 +19,20 @@ class _TracksPageState extends State<TracksPage> {
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final bool isWide = size.width > 650;
+
+    final columnWidths = isWide ? const <int, TableColumnWidth>{
+      0: FixedColumnWidth(60),
+      1: FlexColumnWidth(1.5),
+      2: FlexColumnWidth(1),
+      3: FlexColumnWidth(1),
+      4: FixedColumnWidth(50),
+    } : const <int, TableColumnWidth>{
+      0: FixedColumnWidth(60),
+      1: FlexColumnWidth(),
+      2: FixedColumnWidth(50),
+    };
 
     return Center(
       child: Column(
@@ -30,72 +44,67 @@ class _TracksPageState extends State<TracksPage> {
                 valueListenable: appState.likedTracksNotifier,
                 builder: (_, tracks, __) {
                   final df = DateFormat('mm:ss');
+
                   return Table(
-                    columnWidths: const <int, TableColumnWidth>{
-                      0: FixedColumnWidth(60),
-                      1: FlexColumnWidth(1.5),
-                      2: FlexColumnWidth(1),
-                      3: FlexColumnWidth(1),
-                      4: FixedColumnWidth(50),
-                    },
+                    columnWidths: columnWidths,
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: tracks.map((track) {
-                      Widget image;
-                      if(track.coverUri == null) {
-                        image = const Text('No image');
-                      }
-                      else {
-                        image = CachedNetworkImage(
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.fitWidth,
-                          imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
-                          placeholder: (context, url) => const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => const Icon(Icons.error),
-                        );
-                      }
-
                       return TableRow(children: [
                       Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: image,
+                        child: track.coverUri == null ?
+                          const Text('No image') :
+                          CachedNetworkImage(
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.fitWidth,
+                            imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
+                            placeholder: (context, url) => const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                          ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(track.title),
-                            if(track.version != null) Expanded(
-                              child: Text(
-                                ' ${track.version!}',
-                                style: TextStyle(color: theme.colorScheme.outline),
-                                softWrap: false,
-                                maxLines: 1,
-                                overflow: TextOverflow.clip,
-                              ),
-                            )
+                            Row(
+                              children: [
+                                Text(track.title),
+                                if(track.version != null) Expanded(
+                                  child: Text(
+                                    ' (${track.version!})',
+                                    style: TextStyle(color: theme.colorScheme.outline),
+                                    softWrap: false,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.clip,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if(!isWide) _buildArtistName(track),
                           ],
                         ),
                       ),
+                      if(isWide) ...[
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: _buildArtistName(track),
+                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Text(
+                              track.albums.first.title,
+                              softWrap: false,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Text(
-                          track.artists.map((e) => e.name).join(', '),
-                          softWrap: false,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Text(
-                          track.albums.first.title,
-                          softWrap: false,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true)))
+                        child: Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true))),
+                      )
                     ]);
                     }).toList()
                   );
@@ -106,5 +115,14 @@ class _TracksPageState extends State<TracksPage> {
         ],
       ),
     );
+  }
+
+  Text _buildArtistName(Track track) {
+    return Text(
+                        track.artists.map((e) => e.name).join(', '),
+                        softWrap: false,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      );
   }
 }
