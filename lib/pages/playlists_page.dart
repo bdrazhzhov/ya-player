@@ -62,7 +62,10 @@ class _PlaylistCard extends StatelessWidget {
         Text(playlist.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(
           '${playlist.tracksCount} tracks',
-          style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
+          style: TextStyle(
+            color: theme.colorScheme.outline,
+            fontSize: theme.textTheme.labelMedium?.fontSize
+          ),
         ),
       ],
     );

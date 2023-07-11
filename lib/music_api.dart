@@ -7,6 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
 import 'package:ya_player/models/music_api/playlist.dart';
+import 'package:collection/collection.dart';
 
 import 'models/music_api/album.dart';
 import 'models/music_api/queue.dart';
@@ -164,10 +165,6 @@ class MusicApi {
     return downloadUrl;
   }
 
-  static Uri trackImageUrl(Track track, String imageDimensions) {
-    return imageUrl(track.coverUri, imageDimensions);
-  }
-
   static Uri imageUrl(String placeholder, String dimensions) {
     return Uri.parse('https://${placeholder.replaceAll('%%', dimensions)}');
   }
@@ -234,6 +231,22 @@ class MusicApi {
     return tracks;
   }
 
+  Future<List<Track>> tracks(List<TrackOfList> ids) async {
+    final String trackIds = ids.map((e) => '${e.id}:${e.albumId}').join(',');
+    const url = '$_baseUri/tracks';
+    final data = {
+      'track-ids': trackIds,
+      'with-positions': 'True'
+    };
+    Map<String, dynamic> json = await _postForm(url, data);
+    List<Track> tracks = [];
+    json['result'].forEach((item){
+      tracks.add(Track.fromJson(item, ''));
+    });
+
+    return tracks;
+  }
+
   Future<List<Album>> likedAlbums() async {
     final url = '$_baseUri/users/$_uid/likes/albums?rich=true';
     Map<String, dynamic> json = await _getRequest(url, null);
@@ -255,13 +268,45 @@ class MusicApi {
   }
 
   Future<List<Playlist>> playlists() async {
+    List<int> kinds = await _playlistKinds();
+    final url = '$_baseUri/users/$_uid/playlists';
+    Map<String, dynamic> json = await _postForm(url, {'kinds': kinds.join(',')});
+
+    final List<Playlist> playlists = [];
+    json['result'].forEach((item) {
+      playlists.add(Playlist.fromJson(item));
+    });
+
+    final List<TrackOfList> trackIds = [];
+    for (Playlist playlist in playlists) {
+      for (TrackOfList trackOfList in playlist.trackOfLists) {
+        trackIds.add(trackOfList);
+      }
+    }
+
+    List<Track> allTracks = await tracks(trackIds);
+    for (Playlist playlist in playlists) {
+      for (TrackOfList trackOfList in playlist.trackOfLists) {
+        Track? track = allTracks.firstWhereOrNull(
+                (element) => element.id == trackOfList.id &&
+                    element.albums.firstOrNull?.id == trackOfList.albumId
+        );
+        if(track == null) continue;
+        playlist.tracks.add(track);
+      }
+    }
+
+    return playlists;
+  }
+
+  Future<List<int>> _playlistKinds() async {
     final url = '$_baseUri/users/$_uid/playlists/list';
     Map<String, dynamic> json = await _getRequest(url, null);
 
-    List<Playlist> playlists = [];
-    json['result'].forEach((item) => playlists.add(Playlist.fromJson(item)));
+    List<int> kinds = [];
+    json['result'].forEach((item) => kinds.add(item['kind']));
 
-    return playlists;
+    return kinds;
   }
 
   Future<AccountStatus> accountStatus() async {

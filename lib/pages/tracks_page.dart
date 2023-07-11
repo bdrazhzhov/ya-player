@@ -39,17 +39,26 @@ class _TracksPageState extends State<TracksPage> {
                       4: FixedColumnWidth(50),
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: tracks.map((track) => TableRow(children: [
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: CachedNetworkImage(
+                    children: tracks.map((track) {
+                      Widget image;
+                      if(track.coverUri == null) {
+                        image = const Text('No image');
+                      }
+                      else {
+                        image = CachedNetworkImage(
                           width: 60,
                           height: 60,
                           fit: BoxFit.fitWidth,
-                          imageUrl: MusicApi.trackImageUrl(track, '120x120').toString(),
+                          imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
                           placeholder: (context, url) => const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => const Icon(Icons.error),
-                        ),
+                        );
+                      }
+
+                      return TableRow(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: image,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(2.0),
@@ -86,8 +95,9 @@ class _TracksPageState extends State<TracksPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration.inMilliseconds, isUtc: true)))
-                    ])).toList()
+                      Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true)))
+                    ]);
+                    }).toList()
                   );
                 }
               ),

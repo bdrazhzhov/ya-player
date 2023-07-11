@@ -208,17 +208,23 @@ class AppState {
 
     if(url == null) return;
 
+    Uri? artUri;
+    if(track.coverUri != null) {
+      artUri = MusicApi.imageUrl(track.coverUri!, '150x150');
+    }
+
     final mediaItem = MediaItem(
       id: track.id.toString(),
       title: track.title,
       artist: track.artists.first.name,
       album: track.albums.first.title,
       duration: track.duration,
-      artUri: MusicApi.trackImageUrl(track, '150x150'),
+      artUri: artUri,
       extras: {
         'url': url
       }
     );
+
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
     trackLikeNotifier.value = binarySearch(_likedTrackIds, track.id) != -1;
@@ -227,7 +233,7 @@ class AppState {
   Future<void> _playStationTrack(Station station, Track track) async {
     if(_currentPlayInfo != null) {
       _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
-      final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration.inMilliseconds < 0.9;
+      final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
       _sendTrackStatistics(_currentPlayInfo!, isSkipped ? 'skip' : 'trackFinished');
     }
 

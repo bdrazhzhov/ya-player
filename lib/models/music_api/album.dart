@@ -3,7 +3,7 @@ import 'artist.dart';
 class Album {
   final int id;
   final String title;
-  final int year;
+  final int? year;
   final DateTime? releaseDate;
   final String coverUri;
   final String ogImage;
@@ -26,6 +26,6 @@ class Album {
     }
 
     return Album(json['id'], json['title'], json['year'], releaseDate,
-        json['coverUri'], json['ogImage'], json['genre'], json['trackCount'], artists);
+        json['coverUri'], json['ogImage'], json['genre'] ?? '', json['trackCount'], artists);
   }
 }

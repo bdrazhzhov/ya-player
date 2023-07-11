@@ -28,7 +28,7 @@ class PlayInfo {
       'play-id': _uuid,
       'timestamp': dateTime,
       'client-now': dateTime,
-      'track-length-seconds': (track.duration.inMilliseconds / 1000.0).toString(),
+      'track-length-seconds': (track.duration!.inMilliseconds / 1000.0).toString(),
       'total-played-seconds': totalPlayedSeconds,
       'end-position-seconds': totalPlayedSeconds
     };

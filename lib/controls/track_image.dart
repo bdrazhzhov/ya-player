@@ -16,18 +16,23 @@ class TrackImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: appState.trackNotifier,
-        builder: (_, value, __) {
-          if(value != null) {
-            return Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: CachedNetworkImage(
-                width: 75,
-                height: 75,
-                imageUrl: MusicApi.trackImageUrl(value, '75x75').toString(),
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              )
-            );
+        builder: (_, track, __) {
+          if(track != null) {
+            if(track.coverUri != null) {
+              return Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CachedNetworkImage(
+                    width: 75,
+                    height: 75,
+                    imageUrl: MusicApi.imageUrl(track.coverUri!, '75x75').toString(),
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  )
+              );
+            }
+            else {
+              return const Text('No image');
+            }
           }
           else {
             return const Text('No image');
