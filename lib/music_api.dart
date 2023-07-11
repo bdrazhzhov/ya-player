@@ -221,6 +221,18 @@ class MusicApi {
     return (ids: ids, revision: newRevision);
   }
 
+  Future<List<Track>> likedTracks(List<int> ids) async {
+    const url = '$_baseUri/tracks';
+    final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
+    Map<String, dynamic> json = await _postForm(url, data);
+    List<Track> tracks = [];
+    json['result'].forEach((item){
+      tracks.add(Track.fromJson(item, ''));
+    });
+
+    return tracks;
+  }
+
   Future<List<Album>> likedAlbums() async {
     final url = '$_baseUri/users/$_uid/likes/albums?rich=true';
     Map<String, dynamic> json = await _getRequest(url, null);

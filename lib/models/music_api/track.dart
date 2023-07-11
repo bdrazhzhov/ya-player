@@ -5,22 +5,21 @@ import 'artist.dart';
 class Track {
   final int id;
   final String title;
+  final String? version;
   final Duration duration;
   final List<Artist> artists;
   final List<Album> albums;
   final String coverUri;
   final String ogImage;
-  bool liked;
-  final TrackParameters parameters;
   final String batchId;
 
-  Track(this.id, this.title, this.duration, this.artists, this.albums,
-      this.coverUri, this.ogImage, this.liked, this.parameters, this.batchId);
+  Track(this.id, this.title, this.version, this.duration, this.artists,
+      this.albums, this.coverUri, this.ogImage, this.batchId);
 
   int get firstAlbumId => albums.first.id;
 
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
-    final track = json['track'];
+    final track = json['id'] != null ? json : json['track'];
     final duration = Duration(milliseconds: track['durationMs']);
     List<Artist> artists = [];
     track['artists'].forEach((item){
@@ -31,9 +30,8 @@ class Track {
       albums.add(Album.fromJson(item));
     });
 
-    return Track(int.parse(track['id']), track['title'], duration, artists,
-        albums, track['coverUri'], track['ogImage'], json['liked'],
-        TrackParameters.fromJson(json['trackParameters']), batchId);
+    return Track(int.parse(track['id']), track['title'], track['version'], duration,
+        artists, albums, track['coverUri'], track['ogImage'], batchId);
   }
 }
 

@@ -24,6 +24,7 @@ class AppState {
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final stationsNotifier = ValueNotifier<List<Station>>([]);
   final accountNotifier = ValueNotifier<Account?>(null);
+  final likedTracksNotifier = ValueNotifier<List<Track>>([]);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -52,12 +53,20 @@ class AppState {
     if((_prefs.authToken?.length ?? 0) == 0) return;
 
     final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
-    if(resultTuple.revision == null) return;
 
-    _likedTrackIds = resultTuple.ids;
-    _likedTrackIds.sort();
-    await _prefs.setLikedTracks(_likedTrackIds);
-    await _prefs.setLikedTracksRevision(resultTuple.revision!);
+    if(resultTuple.revision != null) {
+      _likedTrackIds = resultTuple.ids;
+      await _prefs.setLikedTracks(_likedTrackIds);
+      await _prefs.setLikedTracksRevision(resultTuple.revision!);
+    }
+    else {
+      _likedTrackIds = _prefs.likedTracks;
+    }
+
+    if(_likedTrackIds.isNotEmpty) {
+      likedTracksNotifier.value = await _musicApi.likedTracks(_likedTrackIds);
+      _likedTrackIds.sort();
+    }
   }
 
   void _listenToPlaybackState() {
