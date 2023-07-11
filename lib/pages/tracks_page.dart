@@ -19,6 +19,7 @@ class _TracksPageState extends State<TracksPage> {
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
     final theme = Theme.of(context);
+
     return Center(
       child: Column(
         children: [

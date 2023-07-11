@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ya_player/models/music_api/album.dart';
 import 'package:ya_player/services/preferences.dart';
 
 import 'models/music_api/account.dart';
@@ -25,6 +26,7 @@ class AppState {
   final stationsNotifier = ValueNotifier<List<Station>>([]);
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
+  final likedAlbumsNotifier = ValueNotifier<List<Album>>([]);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -47,6 +49,7 @@ class AppState {
 
     _audioHandler.volume = _prefs.volume;
     _requestLikedTracks();
+    _requestLikedAlbums();
   }
 
   Future<void> _requestLikedTracks() async {
@@ -130,6 +133,10 @@ class AppState {
         case TrackSkipType.previous: previous();
       }
     });
+  }
+
+  Future<void> _requestLikedAlbums() async {
+    likedAlbumsNotifier.value = await _musicApi.likedAlbums();
   }
 
   double get volume => _audioHandler.volume;
