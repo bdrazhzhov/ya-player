@@ -125,7 +125,12 @@ class MyAudioHandler extends BaseAudioHandler {
   double _linearVolume = 1;
   set volume(double value) {
     _linearVolume = value;
-    _player.setVolume(pow(value, 3).toDouble());
+    if(defaultTargetPlatform == TargetPlatform.windows) {
+      _player.setVolume(pow(value, 3).toDouble());
+    }
+    else {
+      _player.setVolume(value);
+    }
   }
   double get volume => _linearVolume;
 }
