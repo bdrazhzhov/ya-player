@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/music_api.dart';
 
@@ -17,10 +18,23 @@ class _AlbumsPageState extends State<AlbumsPage> {
   @override
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
+    final size = MediaQuery.of(context).size;
+    double width = size.width / 3;
+    if(width < 130) {
+      width = 130;
+    } else if(width > 200) {
+      width = 200;
+    }
+
+    var crossAxisAlignment = CrossAxisAlignment.start;
+    if(defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android) {
+      crossAxisAlignment = CrossAxisAlignment.center;
+    }
 
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: crossAxisAlignment,
         children: [
           const Text('Albums'),
           ValueListenableBuilder<List<Album>>(
@@ -29,7 +43,7 @@ class _AlbumsPageState extends State<AlbumsPage> {
               return Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: albums.map((album) => _AlbumCard(album)).toList(),
+                children: albums.map((album) => _AlbumCard(album, width)).toList(),
               );
             }
           ),
@@ -41,34 +55,46 @@ class _AlbumsPageState extends State<AlbumsPage> {
 
 class _AlbumCard extends StatelessWidget {
   final Album album;
+  final double width;
 
-  const _AlbumCard(this.album);
+  const _AlbumCard(this.album, this.width);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: CachedNetworkImage(
-            width: 200,
-            height: 200,
-            imageUrl: MusicApi.imageUrl(album.ogImage, '600x600').toString()
+    return Container(
+      constraints: BoxConstraints(maxWidth: width),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: CachedNetworkImage(
+              width: width,
+              height: width,
+              imageUrl: MusicApi.imageUrl(album.ogImage, '600x600').toString()
+            ),
           ),
-        ),
-        Text(album.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        Text(
-          album.artists.first.name,
-          style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
-        ),
-        Text(
-          album.year.toString(),
-          style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
-        )
-      ],
+          Text(
+            album.title,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.bold)
+          ),
+          Text(
+            album.artists.first.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: theme.colorScheme.outline,
+              fontSize: theme.textTheme.labelMedium?.fontSize
+            ),
+          ),
+          Text(
+            album.year.toString(),
+            style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
+          )
+        ],
+      ),
     );
   }
 }

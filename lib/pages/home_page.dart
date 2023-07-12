@@ -62,18 +62,22 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentPageIndex = index;
           });
         },
-        destinations: [
+        destinations: const [
           NavigationDestination(
-            icon: Icon(const FaIcon(FontAwesomeIcons.radio).icon),
+            icon: Icon(Icons.radio_outlined),
             label: 'Stations',
           ),
           NavigationDestination(
-            icon: Icon(const FaIcon(FontAwesomeIcons.compactDisc).icon),
+            icon: Icon(Icons.list),
             label: 'Tracks',
           ),
-          const NavigationDestination(
+          NavigationDestination(
             icon: Icon(Icons.list),
             label: 'Albums',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.mic),
+            label: 'Artists',
           ),
         ],
       );
@@ -104,31 +108,31 @@ class _MyHomePageState extends State<MyHomePage> {
                           priority: 0,
                           title: 'Stations',
                           onTap: _onItemTap,
-                          icon: Icon(const FaIcon(FontAwesomeIcons.radio).icon),
+                          icon: const Icon(Icons.radio_outlined),
                         ),
                         SideMenuItem(
                           priority: 1,
                           title: 'Tracks',
                           onTap: _onItemTap,
-                          icon: Icon(const FaIcon(FontAwesomeIcons.compactDisc).icon),
+                          icon: const Icon(Icons.list),
                         ),
                         SideMenuItem(
                           priority: 2,
                           title: 'Albums',
                           onTap: _onItemTap,
-                          icon: const Icon(Icons.list),
+                          icon: const Icon(Icons.album),
                         ),
                         SideMenuItem(
                           priority: 3,
                           title: 'Artists',
                           onTap: _onItemTap,
-                          icon: const Icon(Icons.list),
+                          icon: const Icon(Icons.mic),
                         ),
                         SideMenuItem(
                           priority: 4,
                           title: 'Playlists',
                           onTap: _onItemTap,
-                          icon: const Icon(Icons.list),
+                          icon: const Icon(Icons.queue_music),
                         ),
                       ],
                       footer: AccountArea(),
