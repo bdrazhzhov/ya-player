@@ -14,7 +14,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.dark
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const SafeArea(
+          child: MyHomePage(title: 'Flutter Demo Home Page')
+      ),
     );
   }
 }

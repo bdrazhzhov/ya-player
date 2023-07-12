@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Tracks',
           ),
           NavigationDestination(
-            icon: Icon(Icons.list),
+            icon: Icon(Icons.album_outlined),
             label: 'Albums',
           ),
           NavigationDestination(
