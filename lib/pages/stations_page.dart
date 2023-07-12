@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import "package:collection/collection.dart";
 
 import '../app_state.dart';
 import '../music_api.dart';
@@ -21,6 +22,7 @@ class _StationsPageState extends State<StationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     var width = size.width / 3;
     if(width < 130) {
@@ -34,7 +36,7 @@ class _StationsPageState extends State<StationsPage> {
         children: [
           const Text('Stations'),
           ValueListenableBuilder<List<Station>>(
-              valueListenable: appState.stationsNotifier,
+              valueListenable: appState.stationsDashboardNotifier,
               builder: (_, stations, __) {
                 return ValueListenableBuilder<Station?>(
                   valueListenable: appState.currentStationNotifier,
@@ -52,6 +54,35 @@ class _StationsPageState extends State<StationsPage> {
                     );
                   }
               );
+            }
+          ),
+          ValueListenableBuilder<List<Station>>(
+            valueListenable: appState.stationsNotifier,
+            builder: (_, stations, __) {
+              final groups = stations.groupListsBy((element) => element.id.type);
+              List<Widget> widgets = [];
+
+              groups.forEach((String groupName, List<Station> stations) {
+                widgets.add(
+                  Column(
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        groupName,
+                        style: theme.textTheme.headlineSmall,
+                      ),
+                      Wrap(children: stations.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: _StationGenreCard(e),
+                        );
+                      }).toList())
+                    ],
+                  )
+                );
+              });
+
+              return Column(children: widgets);
             }
           ),
         ],
@@ -113,6 +144,51 @@ class _StationCard extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StationGenreCard extends StatelessWidget {
+  final Station station;
+
+  const _StationGenreCard(this.station);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 300),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: station.icon.backgroundColor.toColor(),
+              shape: BoxShape.circle
+            ),
+            child: Center(
+              child: CachedNetworkImage(
+                width: 30,
+                height: 30,
+                fit: BoxFit.fitWidth,
+                imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '100x100').toString(),
+                placeholder: (context, url) => const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 240),
+              child: Text(station.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

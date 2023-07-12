@@ -25,6 +25,7 @@ class AppState {
   final trackNotifier = ValueNotifier<Track?>(null);
   final trackLikeNotifier = ValueNotifier<bool>(false);
   final currentStationNotifier = ValueNotifier<Station?>(null);
+  final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<List<Station>>([]);
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
@@ -51,6 +52,7 @@ class AppState {
     volume = _prefs.volume;
     
     await _requestAccountData();
+    _requestStationsDashboard();
     _requestStations();
     _requestLikedTracks();
     _requestLikedAlbums();
@@ -276,7 +278,7 @@ class AppState {
     playButtonNotifier.value = ButtonState.paused;
     trackNotifier.value = null;
     currentStationNotifier.value = null;
-    stationsNotifier.value = [];
+    stationsDashboardNotifier.value = [];
     accountNotifier.value = null;
     trackLikeNotifier.value = false;
     likedTracksNotifier.value = [];
@@ -295,6 +297,7 @@ class AppState {
     _musicApi.authToken = result.accessToken;
     _reset();
     await _requestAccountData();
+    _requestStationsDashboard();
     _requestStations();
     _requestLikedTracks();
     _requestLikedAlbums();
@@ -315,8 +318,13 @@ class AppState {
     accountNotifier.value = accountStatus.account;
   }
 
-  Future<void> _requestStations() async {
+  Future<void> _requestStationsDashboard() async {
     final dashboard = await _musicApi.stationsDashboard();
-    stationsNotifier.value = dashboard.stations;
+    stationsDashboardNotifier.value = dashboard.stations;
+  }
+
+  Future<void> _requestStations() async {
+    final stations = await _musicApi.stationsList();
+    stationsNotifier.value = stations;
   }
 }

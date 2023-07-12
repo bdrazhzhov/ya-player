@@ -105,6 +105,14 @@ class MusicApi {
     return StationsDashboard.fromJson(json['result']);
   }
 
+  Future<List<Station>> stationsList() async {
+    Map<String, dynamic> json = await _getRequest('$_baseUri/rotor/stations/list', null);
+    List<Station> stations = [];
+    json['result'].forEach((item) => stations.add(Station.fromJson(item['station'])));
+
+    return stations;
+  }
+
   Future<List<Track>> stationTacks(StationId stationId, List<int> queueTracks) async {
     String url = '$_baseUri/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
     if(queueTracks.isNotEmpty) {
