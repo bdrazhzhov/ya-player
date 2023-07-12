@@ -183,12 +183,10 @@ class _MyHomePageState extends State<MyHomePage> {
               if(defaultTargetPlatform == TargetPlatform.windows ||
                   defaultTargetPlatform == TargetPlatform.linux ||
                   defaultTargetPlatform == TargetPlatform.macOS) Slider(
-                // value: _volume,
                 value: _appState.volume,
                 onChanged: (double value) {
                   setState((){
                     _appState.volume = value;
-                    // _volume = value;
                   });
                 },
               )

@@ -48,10 +48,10 @@ class AppState {
     _listenToTotalDuration();
     _listenToSkipEvents();
 
-    await requestAccountData();
-    requestStations();
-
-    _audioHandler.volume = _prefs.volume;
+    volume = _prefs.volume;
+    
+    await _requestAccountData();
+    _requestStations();
     _requestLikedTracks();
     _requestLikedAlbums();
     _requestArtists();
@@ -294,8 +294,8 @@ class AppState {
 
     _musicApi.authToken = result.accessToken;
     _reset();
-    await requestAccountData();
-    requestStations();
+    await _requestAccountData();
+    _requestStations();
     _requestLikedTracks();
     _requestLikedAlbums();
     _requestArtists();
@@ -307,7 +307,7 @@ class AppState {
     _reset();
   }
 
-  Future<void> requestAccountData() async {
+  Future<void> _requestAccountData() async {
     final accountStatus = await _musicApi.accountStatus();
     if(accountStatus.account == null) return;
 
@@ -315,7 +315,7 @@ class AppState {
     accountNotifier.value = accountStatus.account;
   }
 
-  Future<void> requestStations() async {
+  Future<void> _requestStations() async {
     final dashboard = await _musicApi.stationsDashboard();
     stationsNotifier.value = dashboard.stations;
   }
