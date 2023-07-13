@@ -166,9 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Row(
             children: [
-              PlayControls(appState: _appState),
-              TrackImage(appState: _appState),
-              TrackName(appState: _appState),
+              PlayControls(),
+              TrackImage(),
+              TrackName(),
               ValueListenableBuilder<bool>(
                 valueListenable: _appState.trackLikeNotifier,
                 builder: (_, value, __) {

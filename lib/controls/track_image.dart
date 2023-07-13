@@ -3,19 +3,17 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../music_api.dart';
+import '../services/service_locator.dart';
 
 class TrackImage extends StatelessWidget {
-  const TrackImage({
-    super.key,
-    required this.appState,
-  });
+  TrackImage({super.key,});
 
-  final AppState appState;
+  final AppState _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: appState.trackNotifier,
+        valueListenable: _appState.trackNotifier,
         builder: (_, track, __) {
           if(track != null) {
             if(track.coverUri != null) {

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../services/service_locator.dart';
 
 class TrackName extends StatelessWidget {
-  const TrackName({
-    super.key,
-    required this.appState,
-  });
+  TrackName({super.key,});
 
-  final AppState appState;
+  final AppState _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: appState.trackNotifier,
+        valueListenable: _appState.trackNotifier,
         builder: (_, value, __) {
           if(value != null) {
             return Container(

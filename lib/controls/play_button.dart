@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../notifiers/play_button_notifier.dart';
+import '../services/service_locator.dart';
 
 class PlayButton extends StatelessWidget {
-  const PlayButton({
-    super.key,
-    required this.appState,
-  });
+  PlayButton({super.key,});
 
-  final AppState appState;
+  final AppState _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ButtonState>(
-      valueListenable: appState.playButtonNotifier,
+      valueListenable: _appState.playButtonNotifier,
       builder: (_, value, __) {
         switch (value) {
           case ButtonState.loading:
@@ -28,13 +26,13 @@ class PlayButton extends StatelessWidget {
             return IconButton(
               icon: const Icon(Icons.play_arrow),
               iconSize: 40.0,
-              onPressed: appState.play,
+              onPressed: _appState.play,
             );
           case ButtonState.playing:
             return IconButton(
               icon: const Icon(Icons.pause),
               iconSize: 40.0,
-              onPressed: appState.pause,
+              onPressed: _appState.pause,
             );
         }
       },
