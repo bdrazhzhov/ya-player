@@ -2,14 +2,19 @@ import 'package:equatable/equatable.dart';
 
 class Station extends Equatable {
   final StationId id;
+  final StationId? parentId;
   final String name;
   final StationIcon icon;
+  final List<Station> subStations = [];
 
-  const Station(this.id, this.name, this.icon);
+  Station(this.id, this.name, this.icon, this.parentId);
 
   factory Station.fromJson(Map<String, dynamic> json) {
+    StationId? parent = json['parentId'] != null
+        ? StationId.fromJson(json['parentId']) : null;
+
     return Station(StationId.fromJson(json['id']),
-        json['name'], StationIcon.fromJson(json['icon']));
+        json['name'], StationIcon.fromJson(json['icon']), parent);
   }
 
   @override

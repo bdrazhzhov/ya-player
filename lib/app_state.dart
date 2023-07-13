@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
-import 'package:ya_player/models/music_api/album.dart';
-import 'package:ya_player/models/music_api/artist.dart';
-import 'package:ya_player/models/music_api/playlist.dart';
-import 'package:ya_player/services/preferences.dart';
 
+import 'models/music_api/album.dart';
+import 'models/music_api/artist.dart';
+import 'models/music_api/playlist.dart';
+import 'services/preferences.dart';
 import 'models/music_api/account.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
@@ -26,7 +27,7 @@ class AppState {
   final trackLikeNotifier = ValueNotifier<bool>(false);
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
-  final stationsNotifier = ValueNotifier<List<Station>>([]);
+  final stationsNotifier = ValueNotifier<Map<String,List<Station>>>({});
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
   final albumsNotifier = ValueNotifier<List<Album>>([]);
@@ -325,6 +326,17 @@ class AppState {
 
   Future<void> _requestStations() async {
     final stations = await _musicApi.stationsList();
-    stationsNotifier.value = stations;
+    final groups = stations.groupListsBy((element) => element.id.type);
+    final genres = groups['genre']!;
+
+    for(Station station in genres) {
+      if(station.parentId == null) continue;
+
+      Station? parent = genres.firstWhereOrNull((genre) => genre.id == station.parentId);
+      if(parent != null) parent.subStations.add(station);
+    }
+    genres.removeWhere((station) => station.parentId != null);
+
+    stationsNotifier.value = groups;
   }
 }

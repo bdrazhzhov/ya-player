@@ -19,6 +19,7 @@ class StationsPage extends StatefulWidget {
 class _StationsPageState extends State<StationsPage> {
   late final Future<StationsDashboard> dashboard;
   final appState = getIt<AppState>();
+  Station? genre;
 
   @override
   Widget build(BuildContext context) {
@@ -34,57 +35,73 @@ class _StationsPageState extends State<StationsPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const Text('Stations'),
-          ValueListenableBuilder<List<Station>>(
-              valueListenable: appState.stationsDashboardNotifier,
-              builder: (_, stations, __) {
-                return ValueListenableBuilder<Station?>(
-                  valueListenable: appState.currentStationNotifier,
-                  builder: (_, currentStation, __) {
-                    return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: stations.map(
-                              (station) => _StationCard(
-                              station: station,
-                              isCurrent: currentStation == station,
-                              width: width,
-                          )
-                      ).toList(),
-                    );
-                  }
-              );
-            }
-          ),
-          ValueListenableBuilder<List<Station>>(
-            valueListenable: appState.stationsNotifier,
-            builder: (_, stations, __) {
-              final groups = stations.groupListsBy((element) => element.id.type);
-              List<Widget> widgets = [];
-
-              groups.forEach((String groupName, List<Station> stations) {
-                widgets.add(
-                  Column(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        groupName,
-                        style: theme.textTheme.headlineSmall,
-                      ),
-                      Wrap(children: stations.map((e) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: _StationGenreCard(e),
+          if(genre == null)
+            ...[const Text('Stations'),
+              ValueListenableBuilder<List<Station>>(
+                  valueListenable: appState.stationsDashboardNotifier,
+                  builder: (_, stations, __) {
+                    return ValueListenableBuilder<Station?>(
+                      valueListenable: appState.currentStationNotifier,
+                      builder: (_, currentStation, __) {
+                        return Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: stations.map(
+                                  (station) => _StationCard(
+                                  station: station,
+                                  isCurrent: currentStation == station,
+                                  width: width,
+                              )
+                          ).toList(),
                         );
-                      }).toList())
-                    ],
-                  )
-                );
-              });
+                      }
+                  );
+                }
+              ),
+              ValueListenableBuilder<Map<String,List<Station>>>(
+                valueListenable: appState.stationsNotifier,
+                builder: (_, groups, __) {
+                  List<Widget> widgets = [];
 
-              return Column(children: widgets);
-            }
-          ),
+                  groups.forEach((String groupName, List<Station> stations) {
+                    widgets.add(
+                      Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            groupName,
+                            style: theme.textTheme.headlineSmall,
+                          ),
+                          Wrap(children: stations.map((station) {
+                            return Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: GestureDetector(
+                                onTap: (){ setState(() {
+                                  genre = station;
+                                }); },
+                                child: _StationGenreCard(station)
+                              ),
+                            );
+                          }).toList())
+                        ],
+                      )
+                    );
+                  });
+
+                  return Column(children: widgets);
+                }
+              ),
+            ]
+          else
+            ...[
+              Text(genre!.name, style: theme.textTheme.headlineLarge,),
+              Wrap(children: genre!.subStations.map((station) {
+                return Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: _StationGenreCard(station),
+                );
+              }).toList())
+            ]
         ],
       ),
     );
@@ -156,6 +173,8 @@ class _StationGenreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Row(
@@ -182,8 +201,8 @@ class _StationGenreCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 10),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 240),
-              child: Text(station.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              child: Text(station.name + (station.subStations.isNotEmpty ? ' *' : ''),
+                style: theme.textTheme.bodyMedium?.copyWith(fontSize: 15, fontWeight: FontWeight.w500),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
