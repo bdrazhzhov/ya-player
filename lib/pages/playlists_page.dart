@@ -6,6 +6,7 @@ import 'package:ya_player/models/music_api/playlist.dart';
 import '../app_state.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
+import 'page_base_layout.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
@@ -26,28 +27,19 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       width = 200;
     }
 
-    var crossAxisAlignment = CrossAxisAlignment.start;
-    if(defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
-      crossAxisAlignment = CrossAxisAlignment.center;
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: crossAxisAlignment,
-        children: [
-          const Text('Playlists'),
-          ValueListenableBuilder<List<Playlist>>(
-              valueListenable: appState.playlistsNotifier,
-              builder: (_, playlists, __) {
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: playlists.map((playlist) => _PlaylistCard(playlist, width)).toList(),
-                );
-              }
-          ),
-        ],
+    return PageBaseLayout(
+      title: 'Playlists',
+      body: SingleChildScrollView(
+        child: ValueListenableBuilder<List<Playlist>>(
+            valueListenable: appState.playlistsNotifier,
+            builder: (_, playlists, __) {
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: playlists.map((playlist) => _PlaylistCard(playlist, width)).toList(),
+              );
+            }
+        ),
       ),
     );
   }

@@ -1,20 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/music_api.dart';
 
 import '../app_state.dart';
 import '../models/music_api/album.dart';
 import '../services/service_locator.dart';
+import 'page_base_layout.dart';
 
-class AlbumsPage extends StatefulWidget {
+class AlbumsPage extends StatelessWidget {
   const AlbumsPage({super.key});
 
-  @override
-  State<AlbumsPage> createState() => _AlbumsPageState();
-}
-
-class _AlbumsPageState extends State<AlbumsPage> {
   @override
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
@@ -26,28 +21,19 @@ class _AlbumsPageState extends State<AlbumsPage> {
       width = 200;
     }
 
-    var crossAxisAlignment = CrossAxisAlignment.start;
-    if(defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
-      crossAxisAlignment = CrossAxisAlignment.center;
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: crossAxisAlignment,
-        children: [
-          const Text('Albums'),
-          ValueListenableBuilder<List<Album>>(
-            valueListenable: appState.albumsNotifier,
-            builder: (_, albums, __) {
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: albums.map((album) => _AlbumCard(album, width)).toList(),
-              );
-            }
-          ),
-        ],
+    return PageBaseLayout(
+      title: 'Albums',
+      body: SingleChildScrollView(
+        child: ValueListenableBuilder<List<Album>>(
+          valueListenable: appState.albumsNotifier,
+          builder: (_, albums, __) {
+            return Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: albums.map((album) => _AlbumCard(album, width)).toList(),
+            );
+          }
+        ),
       ),
     );
   }

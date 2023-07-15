@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/models/music_api/artist.dart';
 
 import '../app_state.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
+import 'page_base_layout.dart';
 
 class ArtistsPage extends StatefulWidget {
   const ArtistsPage({super.key});
@@ -26,28 +26,19 @@ class _ArtistsPageState extends State<ArtistsPage> {
       width = 200;
     }
 
-    var crossAxisAlignment = CrossAxisAlignment.start;
-    if(defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
-      crossAxisAlignment = CrossAxisAlignment.center;
-    }
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: crossAxisAlignment,
-        children: [
-          const Text('Artists'),
-          ValueListenableBuilder<List<LikedArtist>>(
-              valueListenable: appState.artistsNotifier,
-              builder: (_, artists, __) {
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: artists.map((artist) => _ArtistCard(artist, width)).toList(),
-                );
-              }
-          ),
-        ],
+    return PageBaseLayout(
+      title: 'Artists',
+      body: SingleChildScrollView(
+        child: ValueListenableBuilder<List<LikedArtist>>(
+            valueListenable: appState.artistsNotifier,
+            builder: (_, artists, __) {
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: artists.map((artist) => _ArtistCard(artist, width)).toList(),
+              );
+            }
+        ),
       ),
     );
   }
