@@ -40,9 +40,17 @@ class StationGenresPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 10),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 240),
-              child: Text(station.name + (station.subStations.isNotEmpty ? ' *' : ''),
-                style: theme.textTheme.bodyMedium?.copyWith(fontSize: 15, fontWeight: FontWeight.w500),
-                overflow: TextOverflow.ellipsis,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      station.name,
+                      style: theme.textTheme.bodyMedium?.copyWith(fontSize: 15, fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if(station.subStations.isNotEmpty) const Icon(Icons.arrow_forward_ios, size: 14)
+                ],
               ),
             ),
           )

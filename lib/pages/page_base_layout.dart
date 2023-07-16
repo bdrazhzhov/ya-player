@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ya_player/controls/account_area.dart';
 
 import '../helpers/nav_keys.dart';
 
@@ -21,30 +22,41 @@ class PageBaseLayout extends StatelessWidget {
       ),
       body: body,
       drawer: Drawer(
-        child: ListView(
+        child: Column(
           children: [
-            ListTile(
-              leading: const Icon(Icons.radio_outlined),
-              title: const Text('Stations'),
-              onTap: () => _goToRoute('/stations'),
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.radio_outlined),
+                    title: const Text('Stations'),
+                    onTap: () => _goToRoute('/stations'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('Tracks'),
+                    onTap: () => _goToRoute('/tracks'),
+                  ),ListTile(
+                    leading: const Icon(Icons.album),
+                    title: const Text('Albums'),
+                    onTap: () => _goToRoute('/albums'),
+                  ),ListTile(
+                    leading: const Icon(Icons.mic),
+                    title: const Text('Artists'),
+                    onTap: () => _goToRoute('/artists'),
+                  ),ListTile(
+                    leading: const Icon(Icons.queue_music),
+                    title: const Text('Playlists'),
+                    onTap: () => _goToRoute('/playlists'),
+                  )
+                ],
+              ),
             ),
+            const Divider(),
             ListTile(
-              leading: const Icon(Icons.list),
-              title: const Text('Tracks'),
-              onTap: () => _goToRoute('/tracks'),
-            ),ListTile(
-              leading: const Icon(Icons.album),
-              title: const Text('Albums'),
-              onTap: () => _goToRoute('/albums'),
-            ),ListTile(
-              leading: const Icon(Icons.mic),
-              title: const Text('Artists'),
-              onTap: () => _goToRoute('/artists'),
-            ),ListTile(
-              leading: const Icon(Icons.queue_music),
-              title: const Text('Playlists'),
-              onTap: () => _goToRoute('/playlists'),
-            ),
+              leading: const Icon(Icons.man),
+              title: AccountArea()
+            )
           ],
         ),
       ),
