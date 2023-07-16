@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/pages/main_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'pages/home_page.dart';
+import 'pages/main_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,14 +10,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.black54),
         useMaterial3: true,
         brightness: Brightness.dark
       ),
-      // home: const SafeArea(
-      //     child: MyHomePage(title: 'Flutter Demo Home Page')
-      // ),
       home: const SafeArea(child: MainPage())
     );
   }

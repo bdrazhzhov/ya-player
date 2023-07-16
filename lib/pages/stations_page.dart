@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'page_base_layout.dart';
 import '../app_state.dart';
@@ -52,6 +53,16 @@ class _StationsWidgetState extends State<_StationsWidget> {
       width = 200;
     }
 
+    final i10n = AppLocalizations.of(context);
+    final genreNames = {
+      'genre': i10n?.genre,
+      'mood': i10n?.mood,
+      'activity': i10n?.activity,
+      'epoch': i10n?.epoch,
+      'personal': i10n?.personal,
+      'editorial': i10n?.editorial
+    };
+
     return PageBaseLayout(
       title: 'Stations',
       body: SingleChildScrollView(
@@ -89,9 +100,15 @@ class _StationsWidgetState extends State<_StationsWidget> {
                 groups.forEach((String groupName, List<Station> stations) {
                   widgets.addAll(
                     [
-                      Text(
-                        groupName,
-                        style: theme.textTheme.headlineSmall,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24, bottom: 12),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            genreNames[groupName] ?? '',
+                            style: theme.textTheme.headlineSmall,
+                          ),
+                        ),
                       ),
                       Wrap(children: stations.map((station) {
                         Widget child = StationGenresPage(station);
