@@ -22,7 +22,7 @@ class MainScreen extends StatelessWidget {
           case '/tracks':
             page = const TracksPage();
           case '/albums':
-            page = const AlbumsPage();
+            page = AlbumsPage();
           case '/artists':
             page = const ArtistsPage();
           case '/playlists':

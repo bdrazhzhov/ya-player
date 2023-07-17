@@ -33,6 +33,7 @@ class AppState {
   final albumsNotifier = ValueNotifier<List<Album>>([]);
   final artistsNotifier = ValueNotifier<List<LikedArtist>>([]);
   final playlistsNotifier = ValueNotifier<List<Playlist>>([]);
+  final albumNotifier = ValueNotifier<AlbumWithTracks?>(null);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -338,5 +339,10 @@ class AppState {
     genres.removeWhere((station) => station.parentId != null);
 
     stationsNotifier.value = groups;
+  }
+
+  Future<void> requestAlbumData(int albumId) async {
+    albumNotifier.value = null;
+    albumNotifier.value = await _musicApi.albumWithTracks(albumId);
   }
 }

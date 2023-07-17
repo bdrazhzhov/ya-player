@@ -1,4 +1,5 @@
 import 'artist.dart';
+import 'track.dart';
 
 class Album {
   final int id;
@@ -27,5 +28,23 @@ class Album {
 
     return Album(json['id'], json['title'], json['year'], releaseDate,
         json['coverUri'], json['ogImage'], json['genre'] ?? '', json['trackCount'], artists);
+  }
+}
+
+class AlbumWithTracks {
+  final Album album;
+  final List<Track> tracks;
+
+  AlbumWithTracks(this.album, this.tracks);
+
+
+  factory AlbumWithTracks.fromJson(Map<String, dynamic> json) {
+    List<Track> tracks = [];
+
+    json['result']['volumes'].first.forEach((trackJson){
+      tracks.add(Track.fromJson(trackJson, ''));
+    });
+
+    return AlbumWithTracks(Album.fromJson(json['result']), tracks);
   }
 }

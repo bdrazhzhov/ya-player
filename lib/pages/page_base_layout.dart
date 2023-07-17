@@ -4,10 +4,10 @@ import 'package:ya_player/controls/account_area.dart';
 import '../helpers/nav_keys.dart';
 
 class PageBaseLayout extends StatelessWidget {
-  final String title;
+  final String? title;
   final Widget body;
 
-  const PageBaseLayout({super.key, required this.body, required this.title});
+  const PageBaseLayout({super.key, required this.body, this.title});
 
   void _goToRoute(String route) {
     NavKeys.mainNav.currentState!.pushReplacementNamed(route);
@@ -15,11 +15,16 @@ class PageBaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    PreferredSizeWidget? appBar;
+    if(title != null) {
+      appBar = AppBar(
         leading: (ModalRoute.of(context)?.canPop ?? false) ? const BackButton() : null,
-        title: Text(title),
-      ),
+        title: Text(title!),
+      );
+    }
+
+    return Scaffold(
+      appBar: appBar,
       body: body,
       drawer: Drawer(
         child: Column(

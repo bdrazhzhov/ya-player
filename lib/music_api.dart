@@ -346,4 +346,12 @@ class MusicApi {
     final url = '$_baseUri/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
     await _postEmpty(url);
   }
+
+  Future<AlbumWithTracks> albumWithTracks(int albumId) async {
+    final url = '$_baseUri/albums/$albumId/with-tracks';
+    Map<String, dynamic> json = await _getRequest(url, null);
+    final result = AlbumWithTracks.fromJson(json);
+
+    return result;
+  }
 }
