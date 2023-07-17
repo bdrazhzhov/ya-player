@@ -24,7 +24,7 @@ class MainScreen extends StatelessWidget {
           case '/albums':
             page = AlbumsPage();
           case '/artists':
-            page = const ArtistsPage();
+            page = ArtistsPage();
           case '/playlists':
             page = const PlaylistsPage();
           case '/stations':

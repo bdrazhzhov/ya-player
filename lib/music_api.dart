@@ -10,6 +10,7 @@ import 'package:ya_player/models/music_api/playlist.dart';
 import 'package:collection/collection.dart';
 
 import 'models/music_api/album.dart';
+import 'models/music_api/artist_info.dart';
 import 'models/music_api/queue.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
@@ -351,6 +352,14 @@ class MusicApi {
     final url = '$_baseUri/albums/$albumId/with-tracks';
     Map<String, dynamic> json = await _getRequest(url, null);
     final result = AlbumWithTracks.fromJson(json);
+
+    return result;
+  }
+
+  Future<ArtistInfo> artistInfo(int artistId) async {
+    final url = '$_baseUri/artists/$artistId/brief-info';
+    Map<String, dynamic> json = await _getRequest(url, null);
+    final result = ArtistInfo.fromJson(json);
 
     return result;
   }

@@ -7,7 +7,7 @@ import '../models/music_api/album.dart';
 import '../app_state.dart';
 import '../models/music_api/track.dart';
 import '../services/service_locator.dart';
-import 'page_base_layout.dart';
+import '../controls/page_base_layout.dart';
 
 class AlbumPage extends StatelessWidget {
   final Album album;

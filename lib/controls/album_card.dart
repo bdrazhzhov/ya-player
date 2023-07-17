@@ -1,0 +1,62 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
+import '../models/music_api/album.dart';
+import '../music_api.dart';
+import '../pages/album_page.dart';
+
+class AlbumCard extends StatelessWidget {
+  final Album album;
+  final double width;
+
+  const AlbumCard(this.album, this.width, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return InkResponse(
+      onTap: () {
+        Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => AlbumPage(album),
+              reverseTransitionDuration: Duration.zero,
+            )
+        );
+      },
+      child: Container(
+        constraints: BoxConstraints(maxWidth: width),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: CachedNetworkImage(
+                  width: width,
+                  height: width,
+                  imageUrl: MusicApi.imageUrl(album.ogImage, '600x600').toString()
+              ),
+            ),
+            Text(
+                album.title,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold)
+            ),
+            Text(
+              album.artists.first.name,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: theme.colorScheme.outline,
+                  fontSize: theme.textTheme.labelMedium?.fontSize
+              ),
+            ),
+            Text(
+              album.year.toString(),
+              style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

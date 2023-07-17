@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'page_base_layout.dart';
+import '../controls/page_base_layout.dart';
 import '../app_state.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';

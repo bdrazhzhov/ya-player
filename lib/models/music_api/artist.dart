@@ -11,20 +11,26 @@ class ArtistBase {
 
 class LikedArtist extends ArtistBase {
   final ArtistCover cover;
-  final String ogImage;
-  List<String> genres;
-  ArtistCounts counts;
+  final List<String> genres;
+  final ArtistCounts counts;
+  final List<ArtistLink> links;
 
-  LikedArtist(super.id, super.name, this.cover,
-      this.ogImage, this.genres, this.counts);
+  LikedArtist(super.id, super.name, this.cover, this.genres, this.counts, this.links);
 
   factory LikedArtist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];
     json['genres'].forEach((genre) => genres.add(genre));
 
-    return LikedArtist(json['id'] is String ? int.parse(json['id']) : json['id'],
-        json['name'], ArtistCover.fromJson(json['cover']), json['ogImage'],
-        genres, ArtistCounts.fromJson(json['counts']));
+    List<ArtistLink> links = [];
+    if(json['links'] != null) {
+      json['links'].forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
+    }
+
+    return LikedArtist(
+      json['id'] is String ? int.parse(json['id']) : json['id'],
+      json['name'], ArtistCover.fromJson(json['cover']), genres,
+      ArtistCounts.fromJson(json['counts']), links
+    );
   }
 }
 
@@ -51,5 +57,19 @@ class ArtistCounts {
   factory ArtistCounts.fromJson(Map<String, dynamic> json) {
     return ArtistCounts(json['tracks'], json['directAlbums'],
         json['alsoAlbums'], json['alsoTracks']);
+  }
+}
+
+class ArtistLink {
+  final String title;
+  final String href;
+  final String type;
+  final String? socialNetwork;
+
+  ArtistLink(this.title, this.href, this.type, this.socialNetwork);
+
+  factory ArtistLink.fromJson(Map<String, dynamic> json) {
+    return ArtistLink(json['title'], json['href'],
+        json['type'], json['socialNetwork']);
   }
 }

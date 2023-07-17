@@ -1,20 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/models/music_api/artist.dart';
 
 import '../app_state.dart';
-import '../music_api.dart';
+import '../controls/artist_card.dart';
 import '../services/service_locator.dart';
-import 'page_base_layout.dart';
+import '../controls/page_base_layout.dart';
 
-class ArtistsPage extends StatefulWidget {
-  const ArtistsPage({super.key});
+class ArtistsPage extends StatelessWidget {
+  final GlobalKey<NavigatorState> _navKey = GlobalKey();
 
-  @override
-  State<ArtistsPage> createState() => _ArtistsPageState();
-}
+  ArtistsPage({super.key});
 
-class _ArtistsPageState extends State<ArtistsPage> {
   @override
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
@@ -26,61 +22,28 @@ class _ArtistsPageState extends State<ArtistsPage> {
       width = 200;
     }
 
-    return PageBaseLayout(
-      title: 'Artists',
-      body: SingleChildScrollView(
-        child: ValueListenableBuilder<List<LikedArtist>>(
-            valueListenable: appState.artistsNotifier,
-            builder: (_, artists, __) {
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: artists.map((artist) => _ArtistCard(artist, width)).toList(),
-              );
-            }
-        ),
-      ),
-    );
-  }
-}
-
-class _ArtistCard extends StatelessWidget {
-  final LikedArtist artist;
-  final double width;
-
-  const _ArtistCard(this.artist, this.width);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      constraints: BoxConstraints(maxWidth: width),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
-                width: width,
-                height: width,
-                imageUrl: MusicApi.imageUrl(artist.ogImage, '600x600').toString()
+    return Navigator(
+      key: _navKey,
+      initialRoute: '/',
+      onGenerateRoute: (RouteSettings settings){
+        return PageRouteBuilder(
+          pageBuilder: (_, __, ___) => PageBaseLayout(
+            title: 'Artists',
+            body: SingleChildScrollView(
+              child: ValueListenableBuilder<List<LikedArtist>>(
+                valueListenable: appState.artistsNotifier,
+                builder: (_, artists, __) {
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: artists.map((artist) => ArtistCard(artist, width)).toList(),
+                  );
+                }
+              ),
             ),
-          ),
-          Text(
-            artist.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            "${artist.counts.tracks} tracks",
-            style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
-          ),
-          Text(
-            artist.genres.map((e) => '${e[0].toUpperCase()}${e.substring(1)}').join(', '),
-            style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
           )
-        ],
-      ),
+        );
+      },
     );
   }
 }

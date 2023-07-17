@@ -6,7 +6,7 @@ import 'package:ya_player/models/music_api/playlist.dart';
 import '../app_state.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
-import 'page_base_layout.dart';
+import '../controls/page_base_layout.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
