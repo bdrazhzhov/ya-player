@@ -81,11 +81,13 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   Future<void> playTrack(MediaItem track) async {
+    debugPrint('Playing URL: ${track.extras!['url']}');
     await _player.setUrl(track.extras!['url']);
     // looks like some kind of bug:
     // playing doesn't start without this line
-    await _player.setVolume(volume);
     mediaItem.add(track);
+    await _player.setVolume(volume);
+
     return _player.play();
   }
 

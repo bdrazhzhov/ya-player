@@ -214,19 +214,17 @@ class AppState {
 
     Uri? artUri;
     if(track.coverUri != null) {
-      artUri = MusicApi.imageUrl(track.coverUri!, '150x150');
+      artUri = MusicApi.imageUrl(track.coverUri!, '260x260');
     }
 
     final mediaItem = MediaItem(
       id: track.id.toString(),
       title: track.title,
-      artist: track.artists.first.name,
+      artist: track.artists.map((artist) => artist.name).join(', '),
       album: track.albums.first.title,
       duration: track.duration,
       artUri: artUri,
-      extras: {
-        'url': url
-      }
+      extras: {'url': url}
     );
 
     _audioHandler.playTrack(mediaItem);
