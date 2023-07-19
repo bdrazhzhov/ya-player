@@ -25,6 +25,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void dispose() {
+    _appState.stop();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       child: Column(

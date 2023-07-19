@@ -159,7 +159,7 @@ class AppState {
 
   double get volume => _audioHandler.volume;
   set volume(double value) {
-    _audioHandler.volume = value;
+    _audioHandler.setVolume(value);
     _prefs.setVolume(value);
   }
 
