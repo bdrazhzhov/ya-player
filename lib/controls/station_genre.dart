@@ -5,10 +5,10 @@ import '../utils/color_extension.dart';
 import '../models/music_api/station.dart';
 import '../music_api.dart';
 
-class StationGenresPage extends StatelessWidget {
+class StationGenre extends StatelessWidget {
   final Station station;
 
-  const StationGenresPage(this.station, {super.key});
+  const StationGenre(this.station, {super.key});
 
   @override
   Widget build(BuildContext context) {

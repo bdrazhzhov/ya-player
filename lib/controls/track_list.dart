@@ -51,7 +51,12 @@ class TrackList extends StatelessWidget {
           ]
         ),
         ...tracks.map((track) {
-        return TableRow(children: [
+        return TableRow(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.onInverseSurface,
+            border: Border.all(width: 1, color: theme.colorScheme.background)
+          ),
+          children: [
           Table(
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             columnWidths: [

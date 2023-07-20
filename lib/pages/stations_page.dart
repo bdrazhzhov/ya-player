@@ -10,7 +10,7 @@ import '../utils/color_extension.dart';
 import '../models/music_api/dashboard.dart';
 import '../models/music_api/station.dart';
 import 'genre_page.dart';
-import 'station_genres_page.dart';
+import '../controls/station_genre.dart';
 
 class StationsPage extends StatelessWidget {
   final GlobalKey<NavigatorState> _navKey = GlobalKey();
@@ -111,24 +111,27 @@ class _StationsWidgetState extends State<_StationsWidget> {
                         ),
                       ),
                       Wrap(children: stations.map((station) {
-                        Widget child = StationGenresPage(station);
-                        if(station.subStations.isNotEmpty){
-                          child = GestureDetector(
-                            onTap: (){
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => GenrePage(genre: station),
-                                  reverseTransitionDuration: Duration.zero,
-                                )
-                              );
-                            },
-                            child: StationGenresPage(station)
-                          );
-                        }
-
                         return Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: child,
+                          child: GestureDetector(
+                            onTap: (){
+                              if(station.subStations.isNotEmpty){
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) => GenrePage(genre: station),
+                                    reverseTransitionDuration: Duration.zero,
+                                  )
+                                );
+                              }
+                              else {
+                                appState.selectStation(station);
+                              }
+                            },
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: StationGenre(station)
+                            )
+                          ),
                         );
                       }).toList())
                     ],

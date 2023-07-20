@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/music_api/station.dart';
 import '../controls/page_base_layout.dart';
-import 'station_genres_page.dart';
+import '../controls/station_genre.dart';
 
 
 class GenrePage extends StatelessWidget {
@@ -19,7 +19,7 @@ class GenrePage extends StatelessWidget {
       body: Wrap(children: genre.subStations.map((station) {
         return Padding(
           padding: const EdgeInsets.all(4.0),
-          child: StationGenresPage(station)
+          child: StationGenre(station)
         );
       }).toList()),
     );
