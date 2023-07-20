@@ -85,9 +85,8 @@ class MyAudioHandler extends BaseAudioHandler {
     await _player.setUrl(track.extras!['url']);
     // looks like some kind of bug:
     // playing doesn't start without this line
-    mediaItem.add(track);
     await _player.setVolume(volume);
-
+    mediaItem.add(track);
     return _player.play();
   }
 
@@ -112,9 +111,17 @@ class MyAudioHandler extends BaseAudioHandler {
 
   @override
   Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {
-    if (name == 'dispose') {
-      await _player.dispose();
-      super.stop();
+    switch(name) {
+      case 'dbusVolume':
+        if(extras == null || extras['value'] == null) break;
+
+        final value = extras['value'] as double;
+        await setVolume(value);
+      case 'dispose':
+        await _player.dispose();
+        super.stop();
+      default:
+        debugPrint('Unknown custom action: $name wit extras: $extras');
     }
   }
 
