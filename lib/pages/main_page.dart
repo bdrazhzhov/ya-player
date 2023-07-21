@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../controls/controls_bar.dart';
 import '../controls/play_controls.dart';
 import '../controls/track_image.dart';
 import '../controls/track_name.dart';
@@ -32,56 +33,11 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return const Material(
       child: Column(
         children: [
-          const Expanded(child: MainScreen()),
-          ValueListenableBuilder<ProgressBarState>(
-            valueListenable: _appState.progressNotifier,
-            builder: (_, value, __) {
-              return ProgressBar(
-                progress: value.current,
-                buffered: value.buffered,
-                total: value.total,
-                onSeek: _appState.seek,
-              );
-            },
-          ),
-          Row(
-              children: [
-                PlayControls(),
-                TrackImage(),
-                TrackName(),
-                ValueListenableBuilder<bool>(
-                    valueListenable: _appState.trackLikeNotifier,
-                    builder: (_, value, __) {
-                      var iconData = value ? Icons.favorite : Icons.favorite_border;
-                      return IconButton(
-                          icon: Icon(iconData),
-                          onPressed: _appState.likeCurrentTrack
-                      );
-                    }
-                ),
-                const Expanded(child: SizedBox(),),
-                if(defaultTargetPlatform == TargetPlatform.windows ||
-                    defaultTargetPlatform == TargetPlatform.linux ||
-                    defaultTargetPlatform == TargetPlatform.macOS) Slider(
-                  value: _appState.volume,
-                  onChanged: (double value) {
-                    setState((){
-                      _appState.volume = value;
-                    });
-                  },
-                )
-                else
-                  IconButton(
-                      onPressed: (){
-                        // pageController.jumpToPage(5);
-                      },
-                      icon: const Icon(Icons.account_box)
-                  )
-              ]
-          )
+          Expanded(child: MainScreen()),
+          ControlsBar(isExpandable: true)
         ],
       ),
     );

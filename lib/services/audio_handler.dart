@@ -85,7 +85,7 @@ class MyAudioHandler extends BaseAudioHandler {
     await _player.setUrl(track.extras!['url']);
     // looks like some kind of bug:
     // playing doesn't start without this line
-    await _player.setVolume(volume);
+    await setVolume(volume);
     mediaItem.add(track);
     return _player.play();
   }
