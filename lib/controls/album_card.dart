@@ -43,7 +43,7 @@ class AlbumCard extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold)
             ),
             Text(
-              album.artists.first.name,
+              album.artists.isNotEmpty ? album.artists.first.name : '',
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: theme.colorScheme.outline,

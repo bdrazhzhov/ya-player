@@ -51,88 +51,94 @@ class TrackList extends StatelessWidget {
           ]
         ),
         ...tracks.map((track) {
-        return TableRow(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.onInverseSurface,
-            border: Border.all(width: 1, color: theme.colorScheme.background)
-          ),
-          children: [
-          Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            columnWidths: [
-              const FixedColumnWidth(50),
-              const FlexColumnWidth(),
-            ].asMap(),
+          String trackDuration = '';
+          if(track.duration != null) {
+            trackDuration = df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true));
+          }
+
+          return TableRow(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onInverseSurface,
+              border: Border.all(width: 1, color: theme.colorScheme.background)
+            ),
             children: [
-              TableRow(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: track.coverUri == null ?
-                    const Text('No image') :
-                    CachedNetworkImage(
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.fitWidth,
-                      imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
-                      placeholder: (context, url) => const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+            Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: [
+                const FixedColumnWidth(50),
+                const FlexColumnWidth(),
+              ].asMap(),
+              children: [
+                TableRow(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: track.coverUri == null ?
+                      const Text('No image') :
+                      CachedNetworkImage(
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.fitWidth,
+                        imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
+                        placeholder: (context, url) => const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              track.title,
-                              softWrap: false,
-                              maxLines: 1,
-                              overflow: TextOverflow.clip,
-                            ),
-                            if(track.version != null) Expanded(
-                              child: Text(
-                                ' (${track.version!})',
-                                style: TextStyle(color: theme.colorScheme.outline),
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                track.title,
                                 softWrap: false,
                                 maxLines: 1,
                                 overflow: TextOverflow.clip,
                               ),
-                            ),
-                          ],
-                        ),
-                        if(!isWide) _buildArtistName(track),
-                      ],
+                              if(track.version != null) Expanded(
+                                child: Text(
+                                  ' (${track.version!})',
+                                  style: TextStyle(color: theme.colorScheme.outline),
+                                  softWrap: false,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.clip,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if(!isWide) _buildArtistName(track),
+                        ],
+                      ),
                     ),
-                  ),
-                ]
-              )
-            ],
-          ),
+                  ]
+                )
+              ],
+            ),
 
-          if(isWide) ...[
+            if(isWide) ...[
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: _buildArtistName(track),
+              ),
+              if(showAlbum) Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  track.albums.isNotEmpty ? track.albums.first.title : '',
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
             Padding(
               padding: const EdgeInsets.all(2.0),
-              child: _buildArtistName(track),
-            ),
-            if(showAlbum) Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(
-                track.albums.first.title,
-                softWrap: false,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-          Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true))),
-          )
-        ]);
-      }).toList()]
+              child: Text(trackDuration),
+            )
+          ]);
+        }
+      ).toList()]
     );
   }
 

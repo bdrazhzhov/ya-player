@@ -1,13 +1,11 @@
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:ui';
+
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:ya_player/controls/main_menu.dart';
 
 import '../app_state.dart';
 import '../controls/controls_bar.dart';
-import '../controls/play_controls.dart';
-import '../controls/track_image.dart';
-import '../controls/track_name.dart';
-import '../notifiers/progress_notifier.dart';
 import '../services/service_locator.dart';
 import 'main_screen.dart';
 
@@ -20,6 +18,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _appState = getIt<AppState>();
+  bool isSearching = false;
 
   _MainPageState() {
     _appState.init();
@@ -33,13 +32,103 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Material(
-      child: Column(
+    return Material(
+      child: Stack(
         children: [
-          Expanded(child: MainScreen()),
-          ControlsBar(isExpandable: true)
+          Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    const MainMenu(),
+                    Expanded(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(top: 134, left: 32, right: 32),
+                            child: const MainScreen()
+                          ),
+                          if(isSearching) ClipRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 12.0,
+                                sigmaY: 12.0,
+                              ),
+                              child: Container(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 34, left: 34, right: 34),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Expanded(child: TextField()),
+                                Checkbox(
+                                  value: isSearching,
+                                  onChanged: (value){
+                                    setState(() {
+                                      isSearching = value ?? false;
+                                    });
+                                  }
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                )
+              ),
+              const ControlsBar(isExpandable: true)
+            ],
+          ),
+          const TitleBar(),
         ],
-      ),
+      )
+    );
+  }
+}
+
+class TitleBar extends StatelessWidget {
+  const TitleBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return WindowTitleBarBox(
+      child: Row(
+        children: [
+          Expanded(
+            child: MoveWindow(
+              child: Container(
+                padding: const EdgeInsets.only(left: 16, top: 8),
+                child: const Row(
+                  children: [
+                    Image(
+                      image: AssetImage('assets/window_icon.png'),
+                      filterQuality: FilterQuality.none,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 24.0),
+                      child: Text('Window title'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ),
+          Row(
+            children: [
+              MinimizeWindowButton(),
+              MaximizeWindowButton(),
+              CloseWindowButton(),
+            ],
+          ),
+        ]
+      )
     );
   }
 }

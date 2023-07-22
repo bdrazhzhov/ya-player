@@ -325,6 +325,9 @@ class AppState {
 
   Future<void> _requestStations() async {
     final stations = await _musicApi.stationsList();
+
+    if(stations.isEmpty) return;
+
     final groups = stations.groupListsBy((element) => element.id.type);
     final genres = groups['genre']!;
 

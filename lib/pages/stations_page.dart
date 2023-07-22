@@ -69,6 +69,10 @@ class _StationsWidgetState extends State<_StationsWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 68),
+              child: Text('Stations', style: theme.textTheme.headlineLarge,),
+            ),
             ValueListenableBuilder<List<Station>>(
               valueListenable: appState.stationsDashboardNotifier,
               builder: (_, stations, __) {
