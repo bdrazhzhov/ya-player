@@ -28,12 +28,12 @@ class ArtistCard extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: width),
         child: Column(
           children: [
-            ClipRRect(
+            if(artist.cover != null) ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: CachedNetworkImage(
                   width: width,
                   height: width,
-                  imageUrl: MusicApi.imageUrl(artist.cover.uri, '600x600').toString()
+                  imageUrl: MusicApi.imageUrl(artist.cover!.uri, '600x600').toString()
               ),
             ),
             Text(

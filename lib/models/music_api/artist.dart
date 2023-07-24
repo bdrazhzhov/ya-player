@@ -10,7 +10,7 @@ class ArtistBase {
 }
 
 class LikedArtist extends ArtistBase {
-  final ArtistCover cover;
+  final ArtistCover? cover;
   final List<String> genres;
   final ArtistCounts counts;
   final List<ArtistLink> links;
@@ -26,9 +26,12 @@ class LikedArtist extends ArtistBase {
       json['links'].forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
     }
 
+    ArtistCover? cover;
+    if(json['cover'] != null) cover = ArtistCover.fromJson(json['cover']);
+
     return LikedArtist(
       json['id'] is String ? int.parse(json['id']) : json['id'],
-      json['name'], ArtistCover.fromJson(json['cover']), genres,
+      json['name'], cover, genres,
       ArtistCounts.fromJson(json['counts']), links
     );
   }

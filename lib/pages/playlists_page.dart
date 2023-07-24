@@ -1,10 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/models/music_api/playlist.dart';
 
 import '../app_state.dart';
-import '../music_api.dart';
+import '../controls/playlist_card.dart';
 import '../services/service_locator.dart';
 import '../controls/page_base_layout.dart';
 
@@ -36,7 +34,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
               return Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: playlists.map((playlist) => _PlaylistCard(playlist, width)).toList(),
+                children: playlists.map((playlist) => PlaylistCard(playlist, width)).toList(),
               );
             }
         ),
@@ -45,43 +43,3 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
   }
 }
 
-class _PlaylistCard extends StatelessWidget {
-  final Playlist playlist;
-  final double width;
-
-  const _PlaylistCard(this.playlist, this.width);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      constraints: BoxConstraints(maxWidth: width),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
-                width: width,
-                height: width,
-                imageUrl: MusicApi.imageUrl(playlist.ogImage, '600x600').toString()
-            ),
-          ),
-          Text(
-            playlist.title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            '${playlist.tracksCount} tracks',
-            style: TextStyle(
-              color: theme.colorScheme.outline,
-              fontSize: theme.textTheme.labelMedium?.fontSize
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

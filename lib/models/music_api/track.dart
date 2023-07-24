@@ -33,8 +33,10 @@ class Track {
       albums.add(Album.fromJson(item));
     });
 
-    return Track(int.parse(track['id']), track['title'], track['version'], duration,
-        artists, albums, track['coverUri'], track['ogImage'], batchId);
+    return Track(json['id'] is String ? int.parse(json['id']) : json['id'],
+      track['title'], track['version'], duration, artists,
+      albums, track['coverUri'], track['ogImage'], batchId
+    );
   }
 }
 

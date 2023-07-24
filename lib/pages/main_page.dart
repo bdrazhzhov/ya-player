@@ -1,11 +1,14 @@
 import 'dart:ui';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/controls/main_menu.dart';
+import 'package:ya_player/music_api.dart';
 
 import '../app_state.dart';
 import '../controls/controls_bar.dart';
+import '../models/music_api/search.dart';
 import '../services/service_locator.dart';
 import 'main_screen.dart';
 
@@ -19,6 +22,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final _appState = getIt<AppState>();
   bool isSearching = false;
+  final searchFieldController = TextEditingController();
 
   _MainPageState() {
     _appState.init();
@@ -32,7 +36,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return const Material(
       child: Stack(
         children: [
           Column(
@@ -40,53 +44,15 @@ class _MainPageState extends State<MainPage> {
               Expanded(
                 child: Row(
                   children: [
-                    const MainMenu(),
-                    Expanded(
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(top: 134, left: 32, right: 32),
-                            child: const MainScreen()
-                          ),
-                          if(isSearching) ClipRect(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 12.0,
-                                sigmaY: 12.0,
-                              ),
-                              child: Container(
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 34, left: 34, right: 34),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Expanded(child: TextField()),
-                                Checkbox(
-                                  value: isSearching,
-                                  onChanged: (value){
-                                    setState(() {
-                                      isSearching = value ?? false;
-                                    });
-                                  }
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    )
+                    MainMenu(),
+                    Expanded(child: MainScreen())
                   ],
                 )
               ),
-              const ControlsBar(isExpandable: true)
+              ControlsBar(isExpandable: true)
             ],
           ),
-          const TitleBar(),
+          TitleBar(),
         ],
       )
     );

@@ -12,6 +12,7 @@ import 'package:collection/collection.dart';
 import 'models/music_api/album.dart';
 import 'models/music_api/artist_info.dart';
 import 'models/music_api/queue.dart';
+import 'models/music_api/search.dart';
 import 'models/music_api/station.dart';
 import 'models/music_api/track.dart';
 import 'models/music_api/download_info.dart';
@@ -362,5 +363,21 @@ class MusicApi {
     final result = ArtistInfo.fromJson(json);
 
     return result;
+  }
+
+  Future<SearchSuggestions> searchSuggestions(String text) async {
+    final url = '$_baseUri/search/suggest?part=$text';
+    Map<String, dynamic> json = await _getRequest(url, null);
+    final result = SearchSuggestions.fromJson(json);
+
+    return result;
+  }
+
+  Future<SearchResult> searchResult({required String text, String type = 'all', int page = 0}) async {
+    final url = '$_baseUri/search?text=${Uri.encodeComponent(text)}'
+        '&nocorrect=false&type=$type&page=$page&playlist-in-best=true';
+    Map<String, dynamic> json = await _getRequest(url, null);
+
+    return SearchResult.fromJson(json);
   }
 }

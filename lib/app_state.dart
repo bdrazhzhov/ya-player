@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'models/music_api/album.dart';
 import 'models/music_api/artist.dart';
 import 'models/music_api/playlist.dart';
+import 'models/music_api/search.dart';
 import 'services/preferences.dart';
 import 'models/music_api/account.dart';
 import 'models/music_api/station.dart';
@@ -34,6 +35,8 @@ class AppState {
   final artistsNotifier = ValueNotifier<List<LikedArtist>>([]);
   final playlistsNotifier = ValueNotifier<List<Playlist>>([]);
   final albumNotifier = ValueNotifier<AlbumWithTracks?>(null);
+  final searchSuggestionsNotifier = ValueNotifier<SearchSuggestions?>(null);
+  final searchResultNotifier = ValueNotifier<SearchResult?>(null);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -345,5 +348,13 @@ class AppState {
   Future<void> requestAlbumData(int albumId) async {
     albumNotifier.value = null;
     albumNotifier.value = await _musicApi.albumWithTracks(albumId);
+  }
+
+  void searchSuggestions(String text) async {
+    searchSuggestionsNotifier.value = await _musicApi.searchSuggestions(text);
+  }
+
+  void searchResult(String text) async {
+    searchResultNotifier.value = await _musicApi.searchResult(text: text);
   }
 }

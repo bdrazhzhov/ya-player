@@ -11,7 +11,9 @@ class Playlist {
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
     List<TrackOfList> tracks = [];
-    json['tracks'].forEach((t) => tracks.add(TrackOfList.fromJson(t)));
+    if(json['tracks'] != null) {
+      json['tracks'].forEach((t) => tracks.add(TrackOfList.fromJson(t)));
+    }
 
     return Playlist(json['title'], json['trackCount'], json['ogImage'], tracks);
   }

@@ -8,25 +8,15 @@ import '../music_api.dart';
 class TrackList extends StatelessWidget {
   final List<Track> tracks;
   final bool showAlbum;
+  final bool showHeader;
 
-  const TrackList(this.tracks, {super.key, required this.showAlbum});
+  const TrackList(this.tracks, {super.key, required this.showAlbum, this.showHeader = false});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final bool isWide = size.width > 650;
-    // final columnWidths = isWide ? const <int, TableColumnWidth>{
-    //   0: FixedColumnWidth(60),
-    //   1: FlexColumnWidth(1.5),
-    //   2: FlexColumnWidth(1),
-    //   3: FlexColumnWidth(1),
-    //   4: FixedColumnWidth(50),
-    // } : const <int, TableColumnWidth>{
-    //   0: FixedColumnWidth(60),
-    //   1: FlexColumnWidth(),
-    //   2: FixedColumnWidth(50),
-    // };
     final columnWidths = isWide ? [
       const FlexColumnWidth(1.5),
       const FlexColumnWidth(1),
@@ -42,7 +32,7 @@ class TrackList extends StatelessWidget {
       columnWidths: columnWidths.asMap(),
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: [
-        if(isWide) TableRow(
+        if(showHeader && isWide) TableRow(
           children: [
             const Text('TRACK'),
             const Text('ARTIST'),
