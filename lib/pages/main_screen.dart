@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:ya_player/helpers/app_route_observer.dart';
 
 import '../app_state.dart';
 import '../models/music_api/search.dart';
@@ -38,6 +39,7 @@ class _MainScreen extends State<MainScreen> {
             padding: const EdgeInsets.only(top: 100),
             child: Navigator(
               key: NavKeys.mainNav,
+              observers: [getIt<AppRouteObserver>()],
               initialRoute: '/',
               onGenerateRoute: (RouteSettings settings){
                 Widget page;
@@ -46,9 +48,9 @@ class _MainScreen extends State<MainScreen> {
                   case '/tracks':
                     page = const TracksPage();
                   case '/albums':
-                    page = AlbumsPage();
+                    page = const AlbumsPage();
                   case '/artists':
-                    page = ArtistsPage();
+                    page = const ArtistsPage();
                   case '/playlists':
                     page = const PlaylistsPage();
                   case '/stations':

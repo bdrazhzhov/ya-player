@@ -18,7 +18,7 @@ import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
-import 'utils/ym_login.dart';
+import 'helpers/ym_login.dart';
 
 class AppState {
   // Listeners: Updates going to the UI

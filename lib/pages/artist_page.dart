@@ -27,7 +27,7 @@ class ArtistPage extends StatelessWidget {
         slivers: [
           SliverAppBar(
             title: Text(artist.name),
-            leading: const BackButton(),
+            leading: const SizedBox.shrink(),
             pinned: true,
             collapsedHeight: 60,
             expandedHeight: 200,

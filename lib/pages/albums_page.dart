@@ -4,12 +4,9 @@ import '../app_state.dart';
 import '../controls/album_card.dart';
 import '../models/music_api/album.dart';
 import '../services/service_locator.dart';
-import '../controls/page_base_layout.dart';
 
 class AlbumsPage extends StatelessWidget {
-  final GlobalKey<NavigatorState> _navKey = GlobalKey();
-
-  AlbumsPage({super.key});
+  const AlbumsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,28 +19,17 @@ class AlbumsPage extends StatelessWidget {
       width = 200;
     }
 
-    return Navigator(
-      key: _navKey,
-      initialRoute: '/',
-      onGenerateRoute: (RouteSettings settings){
-        return PageRouteBuilder(
-          pageBuilder: (_, __, ___) => PageBaseLayout(
-            title: 'Albums',
-            body: SingleChildScrollView(
-              child: ValueListenableBuilder<List<Album>>(
-                valueListenable: appState.albumsNotifier,
-                builder: (_, albums, __) {
-                  return Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: albums.map((album) => AlbumCard(album, width)).toList(),
-                  );
-                }
-              ),
-            ),
-          )
-        );
-      },
+    return SingleChildScrollView(
+      child: ValueListenableBuilder<List<Album>>(
+        valueListenable: appState.albumsNotifier,
+        builder: (_, albums, __) {
+          return Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: albums.map((album) => AlbumCard(album, width)).toList(),
+          );
+        }
+      ),
     );
   }
 }

@@ -54,7 +54,7 @@ class MusicApi {
     return json;
   }
 
-  Future<Map<String, dynamic>> _postJson(String uri, Map<String, String> data) async {
+  Future<Map<String, dynamic>> _postJson(String uri, Map<String, dynamic> data) async {
     // debugPrint('Api request to: $uri\nwith data: $data');
     http.Response resp = await http.post(Uri.parse(uri),
         headers: { HttpHeaders.authorizationHeader: 'OAuth $_authToken' },
@@ -331,17 +331,43 @@ class MusicApi {
     return AccountStatus(account);
   }
 
-  Future<String> createQueueForStation(Station station, List<QueueTrack> tracks) async {
+  Future<String> _createQueue(Queue queue) async {
     const url = '$_baseUri/queues';
-    final from = station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
-    final queue = Queue(
-      QueueContext(station.name, station.id),
-      null, 'desktop_win-radio-radio_$from-default',
-      false, tracks
-    );
-    final result = await _postJson(url, queue.toJons());
+    final result = await _postJson(url, queue.toMap());
 
     return result['result']['id'].toString();
+  }
+
+  Future<String> createQueueForStation(Station station, List<QueueTrack> tracks) {
+    final from = station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
+    final queue = Queue(
+      context: QueueContext(
+        description: station.name,
+        id: '${station.id.type}:${station.id.tag}',
+        type: 'radio'
+      ),
+      currentIndex: null,
+      from: 'desktop_win-radio-radio_$from-default',
+      isInteractive: false,
+      tracks: tracks
+    );
+
+    return _createQueue(queue);
+  }
+
+  Future<String> createQueueForLikedTracks(List<QueueTrack> tracks, int currentIndex) {
+    final queue = Queue(
+        context: QueueContext(
+          description: '',
+          id: 'fonoteca',
+          type: 'radio'
+        ),
+        currentIndex: currentIndex,
+        isInteractive: true,
+        tracks: tracks
+    );
+
+    return _createQueue(queue);
   }
 
   Future<void> updateQueuePosition(String queueId, int position) async {

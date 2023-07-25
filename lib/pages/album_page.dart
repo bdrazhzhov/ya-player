@@ -22,15 +22,13 @@ class AlbumPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return PageBaseLayout(
-      // title: album.title,
       body: ValueListenableBuilder<AlbumWithTracks?>(
         valueListenable: _appState.albumNotifier,
         builder: (_, albumWithTracks, __) {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                // title: Text('Title'),
-                leading: const BackButton(),
+                leading: const SizedBox.shrink(),
                 pinned: true,
                 collapsedHeight: 60,
                 expandedHeight: 200,

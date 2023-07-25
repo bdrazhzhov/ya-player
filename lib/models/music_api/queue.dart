@@ -1,35 +1,37 @@
-import 'dart:convert';
-
-import 'station.dart';
-
 class Queue {
   final QueueContext context;
   final int? currentIndex;
-  final String from;
-  final bool isInteractive;
+  final String? from;
+  final bool? isInteractive;
   final List<QueueTrack> tracks;
 
-  Queue(this.context, this.currentIndex, this.from, this.isInteractive, this.tracks);
+  Queue({required this.context, this.currentIndex,this.from,
+    this.isInteractive, required this.tracks});
 
-  Map<String, String> toJons() => {
-    'context': jsonEncode(context.toJons()),
-    'currentIndex': jsonEncode(currentIndex),
-    'from': from,
-    'isInteractive': jsonEncode(isInteractive),
-    'tracks': jsonEncode(tracks)
-  };
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> data = {
+      'context': context.toMap(),
+      'currentIndex': currentIndex,
+      'from': from,
+      'tracks': tracks
+    };
+
+    if(isInteractive != null) (data['isInteractive'] as bool) ? 'True' : 'False';
+
+    return data;
+  }
 }
 
 class QueueContext {
   final String description;
-  final StationId id;
-  final String type = 'radio';
+  final String id;
+  final String type;
 
-  QueueContext(this.description, this.id);
+  QueueContext({required this.description, required this.id, required this.type});
 
-  Map<String, String> toJons() => {
+  Map<String, String> toMap() => {
     'description': description,
-    'id': jsonEncode(id.toJson()),
+    'id': id,
     'type': type
   };
 }

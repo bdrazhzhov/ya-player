@@ -4,9 +4,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../controls/page_base_layout.dart';
 import '../app_state.dart';
+import '../helpers/nav_keys.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
-import '../utils/color_extension.dart';
+import '../helpers/color_extension.dart';
 import '../models/music_api/dashboard.dart';
 import '../models/music_api/station.dart';
 import 'genre_page.dart';
@@ -169,14 +170,15 @@ class StationsList extends StatelessWidget {
             constraints: BoxConstraints(maxWidth: width),
             padding: const EdgeInsets.all(4.0),
             child: GestureDetector(
-                onTap: (){
+                onTap: () async {
                   if(station.subStations.isNotEmpty){
-                    Navigator.of(context).push(
-                        PageRouteBuilder(
-                          pageBuilder: (_, __, ___) => GenrePage(genre: station),
-                          reverseTransitionDuration: Duration.zero,
-                        )
+                    await NavKeys.mainNav.currentState!.push(
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => GenrePage(genre: station),
+                        reverseTransitionDuration: Duration.zero,
+                      )
                     );
+                    debugPrint(Navigator.of(NavKeys.mainNav.currentState!.context).canPop().toString());
                   }
                   else {
                     appState.selectStation(station);
