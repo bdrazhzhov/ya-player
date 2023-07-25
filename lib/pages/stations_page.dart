@@ -114,30 +114,7 @@ class _StationsWidgetState extends State<_StationsWidget> {
                           ),
                         ),
                       ),
-                      Wrap(children: stations.map((station) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: GestureDetector(
-                            onTap: (){
-                              if(station.subStations.isNotEmpty){
-                                Navigator.of(context).push(
-                                  PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) => GenrePage(genre: station),
-                                    reverseTransitionDuration: Duration.zero,
-                                  )
-                                );
-                              }
-                              else {
-                                appState.selectStation(station);
-                              }
-                            },
-                            child: MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: StationGenre(station)
-                            )
-                          ),
-                        );
-                      }).toList())
+                      StationsList(stations: stations)
                     ],
                   );
                 });
@@ -153,6 +130,66 @@ class _StationsWidgetState extends State<_StationsWidget> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class StationsList extends StatelessWidget {
+  final List<Station> stations;
+  final appState = getIt<AppState>();
+
+  static const double _minWidth = 250;
+  static const double _maxWidth = 412;
+
+  StationsList({super.key, required this.stations});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        int columnsNumber = 3;
+        double width = constraints.maxWidth / columnsNumber;
+
+        while(true) {
+          if(width < _minWidth) columnsNumber -= 1;
+          if(columnsNumber == 0) {
+            columnsNumber = 1;
+            width = constraints.maxWidth;
+            break;
+          }
+          if(width > _maxWidth) columnsNumber += 1;
+
+          width = constraints.maxWidth / columnsNumber;
+
+          if(columnsNumber == 1 || width >= _minWidth && width <= _maxWidth) break;
+        }
+
+        return Wrap(children: stations.map((station) {
+          return Container(
+            constraints: BoxConstraints(maxWidth: width),
+            padding: const EdgeInsets.all(4.0),
+            child: GestureDetector(
+                onTap: (){
+                  if(station.subStations.isNotEmpty){
+                    Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => GenrePage(genre: station),
+                          reverseTransitionDuration: Duration.zero,
+                        )
+                    );
+                  }
+                  else {
+                    appState.selectStation(station);
+                  }
+                },
+                child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: StationGenre(station)
+                )
+            ),
+          );
+        }).toList());
+      }
     );
   }
 }
