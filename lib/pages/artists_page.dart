@@ -18,17 +18,21 @@ class ArtistsPage extends StatelessWidget {
     } else if(width > 200) {
       width = 200;
     }
+    final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: ValueListenableBuilder<List<LikedArtist>>(
-          valueListenable: appState.artistsNotifier,
-          builder: (_, artists, __) {
-            return Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: artists.map((artist) => ArtistCard(artist, width)).toList(),
-            );
-          }
+    return Container(
+      decoration: BoxDecoration(color: theme.colorScheme.background),
+      child: SingleChildScrollView(
+        child: ValueListenableBuilder<List<LikedArtist>>(
+            valueListenable: appState.artistsNotifier,
+            builder: (_, artists, __) {
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: artists.map((artist) => ArtistCard(artist, width)).toList(),
+              );
+            }
+        ),
       ),
     );
   }

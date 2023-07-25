@@ -114,7 +114,7 @@ class MenuItem extends StatelessWidget {
               height: 48,
               child: Center(child: icon)
             ),
-            if(!collapsed) SizedBox(width: 204, child: Text(text))
+            if(!collapsed && text.isNotEmpty) SizedBox(width: 204, child: Text(text))
           ],
         ),
       ),

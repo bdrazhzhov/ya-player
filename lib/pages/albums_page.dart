@@ -18,17 +18,21 @@ class AlbumsPage extends StatelessWidget {
     } else if(width > 200) {
       width = 200;
     }
+    final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: ValueListenableBuilder<List<Album>>(
-        valueListenable: appState.albumsNotifier,
-        builder: (_, albums, __) {
-          return Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: albums.map((album) => AlbumCard(album, width)).toList(),
-          );
-        }
+    return Container(
+      decoration: BoxDecoration(color: theme.colorScheme.background),
+      child: SingleChildScrollView(
+        child: ValueListenableBuilder<List<Album>>(
+          valueListenable: appState.albumsNotifier,
+          builder: (_, albums, __) {
+            return Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: albums.map((album) => AlbumCard(album, width)).toList(),
+            );
+          }
+        ),
       ),
     );
   }
