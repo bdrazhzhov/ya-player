@@ -50,7 +50,7 @@ class _MainMenu extends State<MainMenu> {
           icon: const Icon(Icons.music_note),
           text: 'Podcasts and books',
           collapsed: _collapsed,
-
+          onTap: () => _goToRoute('/podcasts_books'),
         ),
         const SizedBox(height: 50),
         if(!_collapsed) const Text('MY MUSIC'),

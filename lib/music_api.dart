@@ -11,6 +11,7 @@ import 'package:collection/collection.dart';
 
 import 'models/music_api/album.dart';
 import 'models/music_api/artist_info.dart';
+import 'models/music_api/non_music_catalog.dart';
 import 'models/music_api/queue.dart';
 import 'models/music_api/search.dart';
 import 'models/music_api/station.dart';
@@ -405,5 +406,12 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(url, null);
 
     return SearchResult.fromJson(json);
+  }
+
+  Future<NonMusicCatalog> nonMusicCatalog() async {
+    const url = '$_baseUri/non-music/catalogue?language=en';
+    Map<String, dynamic> json = await _getRequest(url, null);
+
+    return NonMusicCatalog.fromJson(json['result']);
   }
 }
