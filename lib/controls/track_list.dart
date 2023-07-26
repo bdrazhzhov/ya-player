@@ -16,6 +16,8 @@ class TrackList extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    // TODO: remake isWide. it should depend on the main
+    // screen width but not the whole app width
     final bool isWide = size.width > 650;
     final columnWidths = isWide ? [
       const FlexColumnWidth(1.5),
@@ -79,25 +81,40 @@ class TrackList extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                track.title,
-                                softWrap: false,
-                                maxLines: 1,
-                                overflow: TextOverflow.clip,
-                              ),
-                              if(track.version != null) Expanded(
-                                child: Text(
-                                  ' (${track.version!})',
-                                  style: TextStyle(color: theme.colorScheme.outline),
-                                  softWrap: false,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.clip,
-                                ),
-                              ),
-                            ],
+                          RichText(
+                            softWrap: false,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              text: track.title,
+                              children: [
+                                if(track.version != null)
+                                  TextSpan(
+                                    text: ' (${track.version!})',
+                                    style: TextStyle(color: theme.colorScheme.outline),
+                                  )
+                              ]
+                            )
                           ),
+                          // Row(
+                          //   children: [
+                          //     Text(
+                          //       track.title,
+                          //       softWrap: false,
+                          //       maxLines: 1,
+                          //       overflow: TextOverflow.clip,
+                          //     ),
+                          //     if(track.version != null) Expanded(
+                          //       child: Text(
+                          //         ' (${track.version!})',
+                          //         style: TextStyle(color: theme.colorScheme.outline),
+                          //         softWrap: false,
+                          //         maxLines: 1,
+                          //         overflow: TextOverflow.clip,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           if(!isWide) _buildArtistName(track),
                         ],
                       ),
