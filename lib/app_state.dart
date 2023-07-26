@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
+import 'package:ya_player/models/music_api/block.dart';
 import 'package:ya_player/models/music_api/non_music_catalog.dart';
 
 import 'models/music_api/album.dart';
@@ -39,6 +40,7 @@ class AppState {
   final searchSuggestionsNotifier = ValueNotifier<SearchSuggestions?>(null);
   final searchResultNotifier = ValueNotifier<SearchResult?>(null);
   final nonMusicNotifier = ValueNotifier<NonMusicCatalog?>(null);
+  final landingNotifier = ValueNotifier<List<Block>>([]);
   final List<Track> playlist = [];
 
   final _audioHandler = getIt<MyAudioHandler>();
@@ -66,6 +68,7 @@ class AppState {
     _requestArtists();
     _requestPlaylists();
     _requestNonMusicCatalog();
+    _requestLanding();
   }
 
   Future<void> _requestLikedTracks() async {
@@ -165,6 +168,10 @@ class AppState {
 
   Future<void> _requestNonMusicCatalog() async {
     nonMusicNotifier.value = await _musicApi.nonMusicCatalog();
+  }
+
+  Future<void> _requestLanding() async {
+    landingNotifier.value = await _musicApi.landing();
   }
 
   double get volume => _audioHandler.volume;
@@ -295,6 +302,8 @@ class AppState {
     albumsNotifier.value = [];
     artistsNotifier.value = [];
     playlistsNotifier.value = [];
+    nonMusicNotifier.value = null;
+    landingNotifier.value = [];
   }
 
   Future<void> login(String login, String password) async {

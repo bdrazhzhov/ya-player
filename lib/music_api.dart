@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:ya_player/models/music_api/account.dart';
 import 'package:ya_player/models/music_api/artist.dart';
+import 'package:ya_player/models/music_api/block.dart';
 import 'package:ya_player/models/music_api/playlist.dart';
 import 'package:collection/collection.dart';
 
@@ -32,6 +33,7 @@ class MusicApi {
 
   Future<Map<String, dynamic>> _getRequest(String uri, Map<String, String>? headers) async {
     Map<String, String> allHeaders = {
+      HttpHeaders.acceptLanguageHeader: 'en',
       if(_authToken != null) HttpHeaders.authorizationHeader: 'OAuth $_authToken',
       if(headers != null) ...headers
     };
@@ -413,5 +415,16 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(url, null);
 
     return NonMusicCatalog.fromJson(json['result']);
+  }
+
+  Future<List<Block>> landing() async {
+    const url = '$_baseUri/landing3?blocks=personalplaylists,promotions,new-releases,'
+        'new-playlists,mixes,chart,charts,artists,albums,playlists,play_contexts,podcasts';
+    Map<String, dynamic> json = await _getRequest(url, null);
+    List<Block> blocks = [];
+
+    json['result']['blocks'].forEach((blockJson) => blocks.add(Block.fromJson(blockJson)));
+
+    return blocks;
   }
 }

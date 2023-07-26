@@ -39,6 +39,7 @@ class _MainMenu extends State<MainMenu> {
           ),
           text: 'Main',
           collapsed: _collapsed,
+          onTap: () => _goToRoute('/home'),
         ),
         MenuItem(
           icon: const Icon(Icons.radio_outlined),

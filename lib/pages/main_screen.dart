@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/helpers/app_route_observer.dart';
+import 'package:ya_player/pages/home_page.dart';
 import 'package:ya_player/pages/podcasts_books_page.dart';
 
 import '../app_state.dart';
@@ -56,6 +57,8 @@ class _MainScreen extends State<MainScreen> {
                     page = const PlaylistsPage();
                   case '/podcasts_books':
                     page = PodcastsBooksPage();
+                  case '/home':
+                    page = HomePage();
                   case '/stations':
                   default:
                     page = StationsPage();
