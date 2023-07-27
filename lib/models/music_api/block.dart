@@ -43,6 +43,8 @@ class Block {
         json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity)));
       case 'new-releases':
         json['entities'].forEach((entity) => entities.add(Album.fromJson(entity['data'])));
+      case 'new-playlists':
+        json['entities'].forEach((entity) => entities.add(Playlist.fromJson(entity['data'])));
       default:
         debugPrint('Unknown block type: "$type"');
     }
