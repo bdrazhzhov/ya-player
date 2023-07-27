@@ -5,6 +5,7 @@ import 'podcast.dart';
 import 'promotion.dart';
 import 'album.dart';
 import 'playlist.dart';
+import 'track.dart';
 
 class Block {
   final String id;
@@ -45,6 +46,8 @@ class Block {
         json['entities'].forEach((entity) => entities.add(Album.fromJson(entity['data'])));
       case 'new-playlists':
         json['entities'].forEach((entity) => entities.add(Playlist.fromJson(entity['data'])));
+      case 'chart':
+        json['entities'].forEach((entity) => entities.add(Track.fromJson(entity['data']['track'], '')));
       default:
         debugPrint('Unknown block type: "$type"');
     }

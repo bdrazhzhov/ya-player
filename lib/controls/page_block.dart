@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ya_player/controls/podcast_card.dart';
+import 'package:ya_player/controls/track_list.dart';
 
 import '../models/music_api_types.dart';
 import 'album_card.dart';
@@ -21,14 +22,31 @@ class PageBlock extends StatelessWidget {
       children: [
         Text(block.title ?? '', style: theme.textTheme.titleLarge,),
         if(block.entities.isNotEmpty)
-          SizedBox(
-            height: 300,
-            child: ListView(
-              // shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: _createEntityCards(context),
-            ),
-          )
+          if(block.type == 'chart')
+            _createChartBlock()
+          else
+            SizedBox(
+              height: 300,
+              child: ListView(
+                // shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                children: _createEntityCards(context),
+              ),
+            )
+      ],
+    );
+  }
+
+  Widget _createChartBlock() {
+    final tracks = block.entities.map((e) => e as Track);
+
+    List<Track> leftTracks = tracks.take(5).toList();
+    List<Track> rightTracks = tracks.skip(5).take(5).toList();
+
+    return Row(
+      children: [
+        Flexible(child: TrackList(leftTracks, showAlbum: true)),
+        Flexible(child: TrackList(rightTracks, showAlbum: true)),
       ],
     );
   }

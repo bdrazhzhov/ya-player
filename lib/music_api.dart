@@ -421,7 +421,12 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(url);
     List<Block> blocks = [];
 
-    json['result']['blocks'].forEach((blockJson) => blocks.add(Block.fromJson(blockJson)));
+    json['result']['blocks'].forEach((blockJson) {
+      if(blockJson['type'] == 'charts') return;
+      if(blockJson['type'] == 'mixes') return;
+
+      blocks.add(Block.fromJson(blockJson));
+    });
 
     return blocks;
   }
