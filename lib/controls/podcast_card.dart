@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/models/music_api/podcast.dart';
+import 'package:ya_player/pages/podcast_page.dart';
 
 import '../music_api.dart';
 
@@ -24,12 +25,12 @@ class PodcastCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigator.of(context).push(
-        //     PageRouteBuilder(
-        //       pageBuilder: (_, __, ___) => AlbumPage(podcast),
-        //       reverseTransitionDuration: Duration.zero,
-        //     )
-        // );
+        Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => PodcastPage(podcast),
+              reverseTransitionDuration: Duration.zero,
+            )
+        );
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,

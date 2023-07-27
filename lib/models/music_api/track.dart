@@ -12,9 +12,10 @@ class Track {
   final String? coverUri;
   final String? ogImage;
   final String batchId;
+  final DateTime? pubDate;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
-      this.albums, this.coverUri, this.ogImage, this.batchId);
+      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate);
 
   int get firstAlbumId => albums.first.id;
 
@@ -35,9 +36,12 @@ class Track {
 
     final id = json['id'] ?? json['realId'];
 
+    DateTime? pubDate;
+    if(track['pubDate'] != null) pubDate = DateTime.tryParse(track['pubDate']);
+
     return Track(id is String ? int.parse(id) : id,
-      track['title'], track['version'], duration, artists,
-      albums, track['coverUri'], track['ogImage'], batchId
+      track['title'], track['version'], duration, artists, albums,
+      track['coverUri'], track['ogImage'], batchId, pubDate
     );
   }
 }

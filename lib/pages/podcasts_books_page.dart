@@ -40,7 +40,7 @@ class PodcastsBooksPage extends StatelessWidget {
                       style: theme.textTheme.bodySmall,
                     ),
                     SizedBox(
-                      height: 220,
+                      height: 250,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: block.entities.map((e) {
