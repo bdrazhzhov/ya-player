@@ -24,7 +24,7 @@ class PlaylistCard extends StatelessWidget {
             child: CachedNetworkImage(
                 width: width,
                 height: width,
-                imageUrl: MusicApi.imageUrl(playlist.ogImage, '600x600').toString()
+                imageUrl: MusicApi.imageUrl(playlist.image, '600x600').toString()
             ),
           ),
           Text(

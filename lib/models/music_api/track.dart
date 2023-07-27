@@ -19,7 +19,8 @@ class Track {
   int get firstAlbumId => albums.first.id;
 
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
-    final track = json['id'] != null ? json : json['track'];
+    // final track = json['id'] != null ? json : json['track'];
+    final track = json['track'];
     Duration? duration;
     if(track['durationMs'] != null) {
       duration = Duration(milliseconds: track['durationMs']);

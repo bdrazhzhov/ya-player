@@ -3,8 +3,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/models/music_api/block.dart';
 import 'package:ya_player/music_api.dart';
+import 'package:ya_player/pages/playlist_page.dart';
 
 import '../app_state.dart';
+import '../models/music_api/playlist.dart';
 import '../services/service_locator.dart';
 
 class HomePage extends StatelessWidget {
@@ -61,40 +63,49 @@ class LandingBlock extends StatelessWidget {
     );
   }
 
-  Widget? _createBlockEntityCard(BuildContext context, BlockEntity entity) {
+  Widget? _createBlockEntityCard(BuildContext context, entity) {
     final theme = Theme.of(context);
 
     switch(entity.runtimeType) {
-      case BlockPlaylist:
-        final playlist = entity as BlockPlaylist;
-        return SizedBox(
-          width: 180,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: CachedNetworkImage(
-                  width: 180,
-                  height: 180,
-                  imageUrl: MusicApi.imageUrl(playlist.image, '200x200').toString()
+      case Playlist:
+        final playlist = entity as Playlist;
+        return GestureDetector(
+          onTap: (){ Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => PlaylistPage(playlist),
+                  reverseTransitionDuration: Duration.zero,
+                )
+              );
+            },
+          child: SizedBox(
+            width: 180,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    width: 180,
+                    height: 180,
+                    imageUrl: MusicApi.imageUrl(playlist.image, '200x200').toString()
+                  ),
                 ),
-              ),
-              Text(playlist.title),
-              Expanded(
-                child: Text(
-                  playlist.description,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
+                Text(playlist.title),
+                Expanded(
+                  child: (playlist.description != null) ? Text(
+                    playlist.description!,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                    style: TextStyle(color: theme.colorScheme.outline,)
+                  ) : const SizedBox.shrink()
+                ),
+                Text(
+                  '${playlist.tracksCount} tracks',
                   style: TextStyle(color: theme.colorScheme.outline,)
                 )
-              ),
-              Text(
-                '${playlist.trackCount} tracks',
-                style: TextStyle(color: theme.colorScheme.outline,)
-              )
-            ],
+              ],
+            ),
           ),
         );
       default:

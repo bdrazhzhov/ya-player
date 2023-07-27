@@ -1,20 +1,43 @@
 import 'track.dart';
 
 class Playlist {
+  final int kind;
   final String title;
+  final int uid;
+  final String? description;
+  final String ownerName;
+  final Duration duration;
+  final String image;
   final int tracksCount;
-  final String ogImage;
-  final List<TrackOfList> trackOfLists;
-  final List<Track> tracks = [];
+  final List<Track> tracks;
 
-  Playlist(this.title, this.tracksCount, this.ogImage, this.trackOfLists);
+  Playlist({
+    required this.kind,
+    required this.title,
+    required this.uid,
+    this.description,
+    required this.ownerName,
+    required this.duration,
+    required this.image,
+    required this.tracksCount,
+    required this.tracks
+  });
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
-    List<TrackOfList> tracks = [];
+    List<Track> tracks = [];
+    // if(json['tracks'] != null) {
+    //   json['tracks'].forEach((t) => tracks.add(TrackOfList.fromJson(t)));
+    // }
     if(json['tracks'] != null) {
-      json['tracks'].forEach((t) => tracks.add(TrackOfList.fromJson(t)));
+      json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
 
-    return Playlist(json['title'], json['trackCount'], json['ogImage'], tracks);
+    String image = json['ogImage'];
+    if(json['cover'] != null && json['cover']['uri'] != null) image = json['cover']['uri'];
+
+    return Playlist(kind: json['kind'], title: json['title'], uid: json['uid'],
+        description: json['description'], ownerName: json['owner']['name'],
+        duration: Duration(milliseconds: json['durationMs']),
+        tracksCount: json['trackCount'], image: image, tracks: tracks);
   }
 }
