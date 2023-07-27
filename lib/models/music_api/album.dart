@@ -12,9 +12,11 @@ class Album {
   final int tracksCount;
   final List<ArtistBase> artists;
   final String? description;
+  final String? version;
 
   Album(this.id, this.title, this.year, this.releaseDate, this.coverUri,
-      this.ogImage, this.genre, this.tracksCount, this.artists, this.description);
+      this.ogImage, this.genre, this.tracksCount, this.artists,
+      this.description, this.version);
   
   factory Album.fromJson(Map<String, dynamic> json) {
     List<ArtistBase> artists = [];
@@ -29,7 +31,7 @@ class Album {
 
     return Album(json['id'], json['title'], json['year'], releaseDate,
         json['coverUri'], json['ogImage'], json['genre'] ?? '',
-        json['trackCount'], artists, json['description']);
+        json['trackCount'], artists, json['description'], json['version']);
   }
 }
 

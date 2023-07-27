@@ -51,7 +51,7 @@ class AlbumCard extends StatelessWidget {
               ),
             ),
             Text(
-              album.year.toString(),
+              <String>[album.year.toString(), if(album.version != null )...[' · ', album.version!]].join(),
               style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
             )
           ],
