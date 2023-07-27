@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'track.dart';
 
 class Playlist {
@@ -7,7 +9,7 @@ class Playlist {
   final String? description;
   final String ownerName;
   final Duration duration;
-  final String image;
+  final String? image;
   final int tracksCount;
   final List<Track> tracks;
 
@@ -32,12 +34,12 @@ class Playlist {
       json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
 
-    String image = json['ogImage'];
+    String? image;
     if(json['cover'] != null && json['cover']['uri'] != null) image = json['cover']['uri'];
 
     return Playlist(kind: json['kind'], title: json['title'], uid: json['uid'],
         description: json['description'], ownerName: json['owner']['name'],
-        duration: Duration(milliseconds: json['durationMs']),
+        duration: Duration(milliseconds: json['durationMs'] ?? 0),
         tracksCount: json['trackCount'], image: image, tracks: tracks);
   }
 }

@@ -37,11 +37,18 @@ class PlaylistPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              CachedNetworkImage(
-                width: 200,
-                height: 200,
-                imageUrl: MusicApi.imageUrl(playlist.image, '200x200').toString()
-              ),
+              if(playlist.image != null)
+                CachedNetworkImage(
+                  width: 200,
+                  height: 200,
+                  imageUrl: MusicApi.imageUrl(playlist.image!, '200x200').toString()
+                )
+              else
+                const SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Center(child: Text('No Image'),),
+                ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

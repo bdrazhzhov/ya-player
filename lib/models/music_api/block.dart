@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:ya_player/models/music_api/artist.dart';
 
+import 'album.dart';
 import 'playlist.dart';
 
 class Block {
@@ -25,6 +27,12 @@ class Block {
         json['entities'].forEach(
           (entity) => entities.add(Playlist.fromJson(entity['data']['data']))
         );
+      case 'play-contexts':
+        json['entities'].forEach((entity) {
+          final object = _createPlayContext(entity);
+          if(object == null) return;
+          entities.add(object);
+        });
       default:
         debugPrint('Unknown block type: "$type"');
     }
@@ -32,5 +40,24 @@ class Block {
     return Block(id: json['id'], title: json['title'], description: json['description'],
         type: type, typeForFrom: json['typeForFrom'], viewAllUrl: json['viewAllUrl'],
         viewAllUrlScheme: json['viewAllUrlScheme'], entities: entities);
+  }
+
+  static Object? _createPlayContext(entity) {
+    final String context = entity['data']['context'];
+    final payload = entity['data']['payload'];
+    if(payload == null) return null;
+
+    switch(context) {
+      case 'album':
+        return Album.fromJson(payload);
+      case 'playlist':
+        return Playlist.fromJson(payload);
+      case 'artist':
+        return LikedArtist.fromJson(payload);
+      default:
+        debugPrint('Unknown play context: $context');
+    }
+
+    return null;
   }
 }

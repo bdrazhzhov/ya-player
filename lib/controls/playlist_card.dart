@@ -21,10 +21,15 @@ class PlaylistCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
+            child: (playlist.image != null) ?
+            CachedNetworkImage(
                 width: width,
                 height: width,
-                imageUrl: MusicApi.imageUrl(playlist.image, '600x600').toString()
+                imageUrl: MusicApi.imageUrl(playlist.image!, '600x600').toString()
+            ) : SizedBox(
+              width: width,
+              height: width,
+              child: const Center(child: Text('No Image'),),
             ),
           ),
           Text(
