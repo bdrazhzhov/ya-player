@@ -53,7 +53,6 @@ class PodcastsBlock {
       entities.add(Podcast.fromJson(entityJson['data']));
     }
 
-
     return PodcastsBlock(id: json['id'], title: json['title'], description: json['description'],
         type: json['type'], typeForFrom: json['typeForFrom'], viewAllUrl: json['viewAllUrl'],
         viewAllUrlScheme: json['viewAllUrlScheme'], entities: entities);

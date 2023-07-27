@@ -4,21 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
-import 'package:ya_player/models/music_api/account.dart';
-import 'package:ya_player/models/music_api/artist.dart';
-import 'package:ya_player/models/music_api/block.dart';
-import 'package:ya_player/models/music_api/playlist.dart';
-import 'package:collection/collection.dart';
-
-import 'models/music_api/album.dart';
-import 'models/music_api/artist_info.dart';
-import 'models/music_api/non_music_catalog.dart';
-import 'models/music_api/queue.dart';
-import 'models/music_api/search.dart';
-import 'models/music_api/station.dart';
-import 'models/music_api/track.dart';
-import 'models/music_api/download_info.dart';
-import 'models/music_api/dashboard.dart';
+import 'models/music_api_types.dart';
 
 class MusicApi {
   static const String _magicSalt = "XGRlBW9FXlekgbPrRHuSiA";
@@ -178,8 +164,8 @@ class MusicApi {
     return downloadUrl;
   }
 
-  static Uri imageUrl(String placeholder, String dimensions) {
-    return Uri.parse('https://${placeholder.replaceAll('%%', dimensions)}');
+  static String imageUrl(String placeholder, String dimensions) {
+    return 'https://${placeholder.replaceAll('%%', dimensions)}';
   }
 
   Future<void> sendStationTrackFeedback(StationId stationId, Track track,

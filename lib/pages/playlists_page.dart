@@ -34,7 +34,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
               return Wrap(
                 spacing: 12,
                 runSpacing: 12,
-                children: playlists.map((playlist) => PlaylistCard(playlist, width)).toList(),
+                children: playlists.map((playlist) => PlaylistCard(playlist, width: width)).toList(),
               );
             }
         ),

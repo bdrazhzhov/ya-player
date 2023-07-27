@@ -41,7 +41,7 @@ class PodcastEpisodesList extends StatelessWidget {
                 width: 60,
                 height: 60,
                 fit: BoxFit.fitWidth,
-                imageUrl: MusicApi.imageUrl(episode.albums.first.ogImage, '60x60').toString(),
+                imageUrl: MusicApi.imageUrl(episode.albums.first.image, '60x60').toString(),
                 placeholder: (context, url) => const CircularProgressIndicator(),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),

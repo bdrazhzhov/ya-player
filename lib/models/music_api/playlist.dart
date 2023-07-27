@@ -26,16 +26,13 @@ class Playlist {
   });
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
+    String? image;
+    if(json['cover'] != null && json['cover']['uri'] != null) image = json['cover']['uri'];
+
     List<Track> tracks = [];
-    // if(json['tracks'] != null) {
-    //   json['tracks'].forEach((t) => tracks.add(TrackOfList.fromJson(t)));
-    // }
     if(json['tracks'] != null) {
       json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
-
-    String? image;
-    if(json['cover'] != null && json['cover']['uri'] != null) image = json['cover']['uri'];
 
     return Playlist(kind: json['kind'], title: json['title'], uid: json['uid'],
         description: json['description'], ownerName: json['owner']['name'],

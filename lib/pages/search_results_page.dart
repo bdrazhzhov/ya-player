@@ -83,7 +83,7 @@ class SearchResultsPage extends StatelessWidget {
                               child: Wrap(
                                 spacing: 12,
                                 runSpacing: 12,
-                                children: searchResult.playlists!.results.take(5).map((playlist) => PlaylistCard(playlist, _cardSize)).toList(),
+                                children: searchResult.playlists!.results.take(5).map((playlist) => PlaylistCard(playlist, width: _cardSize)).toList(),
                               )
                           ),
                       ],

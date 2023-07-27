@@ -3,18 +3,10 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
-import 'package:ya_player/models/music_api/block.dart';
-import 'package:ya_player/models/music_api/non_music_catalog.dart';
 
-import 'models/music_api/album.dart';
-import 'models/music_api/artist.dart';
-import 'models/music_api/playlist.dart';
-import 'models/music_api/search.dart';
-import 'services/preferences.dart';
-import 'models/music_api/account.dart';
-import 'models/music_api/station.dart';
-import 'models/music_api/track.dart';
 import 'models/play_info.dart';
+import 'services/preferences.dart';
+import 'models/music_api_types.dart';
 import 'music_api.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -231,7 +223,7 @@ class AppState {
 
     Uri? artUri;
     if(track.coverUri != null) {
-      artUri = MusicApi.imageUrl(track.coverUri!, '260x260');
+      artUri = Uri.parse(MusicApi.imageUrl(track.coverUri!, '260x260'));
     }
 
     final mediaItem = MediaItem(

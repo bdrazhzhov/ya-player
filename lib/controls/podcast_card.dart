@@ -14,7 +14,15 @@ class PodcastCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return InkResponse(
+    String? podcastDescription;
+    if(podcast.shortDescription != null) {
+      podcastDescription = podcast.shortDescription!;
+    }
+    else if(podcast.description != null) {
+      podcastDescription = podcast.description!;
+    }
+
+    return GestureDetector(
       onTap: () {
         // Navigator.of(context).push(
         //     PageRouteBuilder(
@@ -23,29 +31,58 @@ class PodcastCard extends StatelessWidget {
         //     )
         // );
       },
-      child: Container(
-        constraints: BoxConstraints(maxWidth: width),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                  width: width,
-                  height: width,
-                  imageUrl: MusicApi.imageUrl(podcast.ogImage, '460x460').toString()
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          constraints: BoxConstraints(maxWidth: width),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: CachedNetworkImage(
+                    width: width,
+                    height: width,
+                    imageUrl: MusicApi.imageUrl(podcast.image, '200x200')
+                ),
               ),
-            ),
-            Text(
-                podcast.title,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.bold)
-            ),
-            Text(
-              '${podcast.trackCount} episodes',
-              style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
-            )
-          ],
+              Text(
+                  podcast.title,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.bold)
+              ),
+              if(podcast.type == PodcastType.podcast)
+                ...[
+                  if(podcastDescription!= null)
+                    Text(
+                      podcastDescription,
+                      maxLines: 2,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  Text(
+                    '${podcast.tracksCount} episodes',
+                    style: TextStyle(
+                      color: theme.colorScheme.outline,
+                      fontSize: theme.textTheme.labelMedium?.fontSize
+                    ),
+                  )
+                ]
+              else
+                Text(
+                  podcast.artists.map((a) => a.name).join(', '),
+                  style: TextStyle(
+                    color: theme.colorScheme.outline,
+                    fontSize: theme.textTheme.labelMedium?.fontSize
+                  ),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                )
+            ],
+          ),
         ),
       ),
     );

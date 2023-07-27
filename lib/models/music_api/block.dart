@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:ya_player/models/music_api/artist.dart';
 
+import 'artist.dart';
+import 'podcast.dart';
+import 'promotion.dart';
 import 'album.dart';
 import 'playlist.dart';
 
@@ -33,6 +35,12 @@ class Block {
           if(object == null) return;
           entities.add(object);
         });
+      case 'promotions':
+        json['entities'].forEach(
+          (entity) => entities.add(Promotion.fromJson(entity['data']))
+        );
+      case 'podcasts':
+        json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity)));
       default:
         debugPrint('Unknown block type: "$type"');
     }
