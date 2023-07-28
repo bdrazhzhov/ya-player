@@ -33,7 +33,7 @@ class TrackName extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 6.0),
                       child: Text(
-                        value.artists.map((e) => e.name).join(', '),
+                        value.artist,
                         softWrap: false,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

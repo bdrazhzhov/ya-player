@@ -207,13 +207,13 @@ class AppState {
   }
 
   Future<void> selectStation(Station station) async {
-    currentStationNotifier.value = station;
-    final lastTrackIds = _getLastTrackIds();
-    final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
-    playlist.clear();
-    _currentIndex = 0;
-    playlist.addAll(tracks);
-    await _playStationTrack(station, playlist.first);
+    // currentStationNotifier.value = station;
+    // final lastTrackIds = _getLastTrackIds();
+    // final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
+    // playlist.clear();
+    // _currentIndex = 0;
+    // playlist.addAll(tracks);
+    // await _playStationTrack(station, playlist.first);
   }
 
   Future<void> _playTrack(Track track) async {
@@ -229,7 +229,7 @@ class AppState {
     final mediaItem = MediaItem(
       id: track.id.toString(),
       title: track.title,
-      artist: track.artists.map((artist) => artist.name).join(', '),
+      artist: track.artist,
       album: track.albums.first.title,
       duration: track.duration,
       artUri: artUri,

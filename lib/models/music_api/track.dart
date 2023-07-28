@@ -13,9 +13,12 @@ class Track {
   final String? ogImage;
   final String batchId;
   final DateTime? pubDate;
+  late final String artist;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
-      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate);
+      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate) {
+    artist = artists.map((artist) => artist.name).join(', ');
+  }
 
   int get firstAlbumId => albums.first.id;
 

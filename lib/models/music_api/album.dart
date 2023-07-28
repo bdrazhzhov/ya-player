@@ -13,10 +13,13 @@ class Album {
   final List<ArtistBase> artists;
   final String? description;
   final String? version;
+  late final String artist;
 
   Album(this.id, this.title, this.year, this.releaseDate, this.coverUri,
       this.ogImage, this.genre, this.tracksCount, this.artists,
-      this.description, this.version);
+      this.description, this.version) {
+    artist = artists.map((artist) => artist.name).join(', ');
+  }
   
   factory Album.fromJson(Map<String, dynamic> json) {
     List<ArtistBase> artists = [];

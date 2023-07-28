@@ -13,6 +13,7 @@ class Podcast {
   final bool? isAvailable;
   final String? shortDescription;
   final String? description;
+  late final String artist;
 
   Podcast({
     required this.id,
@@ -25,7 +26,9 @@ class Podcast {
     this.isAvailable,
     this.shortDescription,
     this.description
-  });
+  }) {
+    artist = artists.map((artist) => artist.name).join(', ');
+  }
 
   factory Podcast.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> data = json;

@@ -63,7 +63,7 @@ class CurrentTrackPage extends StatelessWidget {
                             style: theme.textTheme.labelLarge?.copyWith(fontSize: theme.textTheme.titleLarge?.fontSize),
                           ),
                           Text(
-                            '${track.artists.map((e) => e.name).join(', ')} — ${track.albums.first.title}',
+                            '${track.artist} — ${track.albums.first.title}',
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             softWrap: false,

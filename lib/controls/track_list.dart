@@ -135,7 +135,7 @@ class TrackList extends StatelessWidget {
 
   Text _buildArtistName(Track track) {
     return Text(
-      track.artists.map((e) => e.name).join(', '),
+      track.artist,
       softWrap: false,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

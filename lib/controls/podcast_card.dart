@@ -73,7 +73,7 @@ class PodcastCard extends StatelessWidget {
                 ]
               else
                 Text(
-                  podcast.artists.map((a) => a.name).join(', '),
+                  podcast.artist,
                   style: TextStyle(
                     color: theme.colorScheme.outline,
                     fontSize: theme.textTheme.labelMedium?.fontSize
