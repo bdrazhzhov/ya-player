@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'track.dart';
 
 class Playlist {

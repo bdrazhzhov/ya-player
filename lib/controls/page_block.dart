@@ -27,11 +27,10 @@ class PageBlock extends StatelessWidget {
           if(block.type == 'chart')
             _createChartBlock()
           else
-            SizedBox(
-              height: 300,
-              child: ListView(
-                // shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: _createEntityCards(context),
               ),
             )

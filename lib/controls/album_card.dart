@@ -34,7 +34,7 @@ class AlbumCard extends StatelessWidget {
               child: CachedNetworkImage(
                   width: width,
                   height: width,
-                  imageUrl: MusicApi.imageUrl(album.ogImage, '600x600').toString()
+                  imageUrl: MusicApi.imageUrl(album.ogImage, '200x200')
               ),
             ),
             Text(
