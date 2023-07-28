@@ -17,11 +17,12 @@ class MusicApi {
   set authToken(String value) { _authToken = value; }
   set uid(int value) { _uid = value; }
 
-  MusicApi(String? authToken, int? uid) : _authToken = authToken, _uid = uid {
+  MusicApi(String authToken, int uid, String deviceId, String deviceUuid)
+      : _authToken = authToken, _uid = uid {
     _deviceId = 'os=Windows.Desktop; os_version=10.0.22621.1992; '
         'manufacturer=Micro-Star International Co., Ltd.; model=MS-0A00; '
-        'clid=WindowsPhone; device_id=${const Uuid().v4()}; '
-        'uuid=generated-by-music-${const Uuid().v4()}';
+        'clid=WindowsPhone; device_id=$deviceId; '
+        'uuid=generated-by-music-$deviceUuid';
   }
 
   Future<Map<String, dynamic>> _getRequest({ required String uri, Map<String, String>? headers }) async {

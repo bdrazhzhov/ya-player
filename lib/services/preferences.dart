@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class Preferences {
   final SharedPreferences _prefs;
@@ -30,6 +31,28 @@ class Preferences {
   int get likedTracksRevision => _prefs.getInt('likedTracksRevision') ?? 0;
   Future<void> setLikedTracksRevision(int value) async =>
       await _prefs.setInt('likedTracksRevision', value);
+
+  String get deviceId {
+    String? value = _prefs.getString('deviceId');
+
+    if(value == null) {
+      value = const Uuid().v4();
+      _prefs.setString('deviceId', value);
+    }
+
+    return value;
+  }
+
+  String get deviceUuid {
+    String? value = _prefs.getString('deviceUuid');
+
+    if(value == null) {
+      value = const Uuid().v4();
+      _prefs.setString('deviceUuid', value);
+    }
+
+    return value;
+  }
 
   Future<void> clear() async {
     await _prefs.clear();

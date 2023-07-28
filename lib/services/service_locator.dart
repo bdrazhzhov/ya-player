@@ -19,7 +19,7 @@ Future<void> setupServiceLocator() async {
 Future<MusicApi> _initMusicApi() async {
   final prefs = getIt<Preferences>();
 
-  return MusicApi(prefs.authToken ?? '', prefs.uid ?? 0);
+  return MusicApi(prefs.authToken ?? '', prefs.uid ?? 0, prefs.deviceId, prefs.deviceUuid);
 }
 
 Future<Preferences> _initPreferences() async {
