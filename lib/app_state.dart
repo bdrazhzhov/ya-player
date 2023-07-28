@@ -33,7 +33,9 @@ class AppState {
   final searchResultNotifier = ValueNotifier<SearchResult?>(null);
   final nonMusicNotifier = ValueNotifier<NonMusicCatalog?>(null);
   final landingNotifier = ValueNotifier<List<Block>>([]);
-  final List<Track> playlist = [];
+  final List<Track> _playlist = [];
+  String? _queueId;
+  String _from = '';
 
   final _audioHandler = getIt<MyAudioHandler>();
   final _musicApi = getIt<MusicApi>();
@@ -178,32 +180,33 @@ class AppState {
   void seek(Duration position) => _audioHandler.seek(position);
 
   Future<void> previous() async {
-    if(playlist.isEmpty || _currentIndex == 0) return;
+    if(_playlist.isEmpty || _currentIndex == 0) return;
     _currentIndex -= 1;
-    final track = playlist[_currentIndex];
-    // playTrack(track);
-    await _playStationTrack(currentStationNotifier.value!, track);
+    final track = _playlist[_currentIndex];
+    _playTrack(track);
+    // await _playStationTrack(currentStationNotifier.value!, track);
   }
 
   List<int> _getLastTrackIds() {
-    return playlist.isNotEmpty ? playlist.reversed.take(3).map((e) => e.id).toList() : [];
+    return _playlist.isNotEmpty ? _playlist.reversed.take(3).map((e) => e.id).toList() : [];
   }
 
   Future<void> next() async {
-    if(playlist.isEmpty || _currentIndex == playlist.length - 1) return;
+    if(_playlist.isEmpty || _currentIndex == _playlist.length - 1) return;
 
     _currentIndex += 1;
-    final track = playlist[_currentIndex];
-    await _playStationTrack(currentStationNotifier.value!, track);
+    final track = _playlist[_currentIndex];
+    // await _playStationTrack(currentStationNotifier.value!, track);
+    _playTrack(track);
 
     // When playlist almost reached its end loading new tracks
     // and adding to the end of playlist
-    if(playlist.length - _currentIndex <= 3) {
-      final lastTrackIds = _getLastTrackIds();
-      final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
-      playlist.addAll(tracks);
-      debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
-    }
+    // if(_playlist.length - _currentIndex <= 3) {
+    //   final lastTrackIds = _getLastTrackIds();
+    //   final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
+    //   _playlist.addAll(tracks);
+    //   debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
+    // }
   }
 
   Future<void> selectStation(Station station) async {
@@ -216,7 +219,27 @@ class AppState {
     // await _playStationTrack(station, playlist.first);
   }
 
+  Future<void> playTrackList(List<Track> tracks, int selectedIndex) async {
+    _playlist.clear();
+    _currentIndex = selectedIndex - 1;
+    _playlist.addAll(tracks);
+    _from = 'desktop_win-own_tracks-track-default';
+    final queueTracks = tracks.map((track) => QueueTrack(
+        track.id.toString(),
+        track.albums.first.id.toString(),
+        _from
+      )
+    ).toList();
+    _queueId = await _musicApi.createQueueForLikedTracks(queueTracks, selectedIndex);
+
+    return next();
+  }
+
   Future<void> _playTrack(Track track) async {
+    if(_currentPlayInfo != null) {
+      _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
+      _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    }
     String? url = await _musicApi.trackDownloadUrl(track.id);
 
     if(url == null) return;
@@ -239,24 +262,28 @@ class AppState {
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
     trackLikeNotifier.value = binarySearch(_likedTrackIds, track.id) != -1;
+    _currentPlayInfo = PlayInfo(track, _from);
+
+    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    if(_queueId != null) _musicApi.updateQueuePosition(_queueId!, _currentIndex);
   }
 
   Future<void> _playStationTrack(Station station, Track track) async {
-    if(_currentPlayInfo != null) {
-      _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
-      final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
-      _sendTrackStatistics(_currentPlayInfo!, isSkipped ? 'skip' : 'trackFinished');
-    }
-
-    await _playTrack(track);
-    _currentPlayInfo = PlayInfo(track, station.id);
-    _sendTrackStatistics(_currentPlayInfo!, 'trackStarted');
+    // if(_currentPlayInfo != null) {
+    //   _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
+    //   final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
+    //   _sendTrackStatistics(_currentPlayInfo!, isSkipped ? 'skip' : 'trackFinished');
+    // }
+    //
+    // await _playTrack(track);
+    // _currentPlayInfo = PlayInfo(track, station.id);
+    // _sendTrackStatistics(_currentPlayInfo!, 'trackStarted');
   }
 
   Future<void> _sendTrackStatistics(PlayInfo playInfo, String feedback) async {
-    await _musicApi.sendStationTrackFeedback(playInfo.stationId,
-        playInfo.track, feedback, playInfo.totalPlayed);
-    await _musicApi.sendPlayingStatistics(playInfo.toYmPlayAudio());
+    // await _musicApi.sendStationTrackFeedback(playInfo.stationId,
+    //     playInfo.track, feedback, playInfo.totalPlayed);
+    // await _musicApi.sendPlayingStatistics(playInfo.toYmPlayAudio());
   }
 
   Future<void> likeCurrentTrack() async {
@@ -281,7 +308,7 @@ class AppState {
 
   void _reset() {
     stop();
-    playlist.clear();
+    _playlist.clear();
     _currentIndex = -1;
     _currentPlayInfo = null;
     playButtonNotifier.value = ButtonState.paused;

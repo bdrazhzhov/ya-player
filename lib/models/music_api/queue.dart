@@ -16,7 +16,7 @@ class Queue {
       'tracks': tracks
     };
 
-    if(isInteractive != null) (data['isInteractive'] as bool) ? 'True' : 'False';
+    if(isInteractive != null) data['isInteractive'] = isInteractive! ? 'True' : 'False';
 
     return data;
   }
@@ -43,7 +43,7 @@ class QueueTrack {
 
   QueueTrack(this.trackId, this.albumId, this.from);
 
-  Map<String, String> toJons() => {
+  Map<String, String> toJson() => {
     'trackId': trackId,
     'albumId': albumId,
     'from': from

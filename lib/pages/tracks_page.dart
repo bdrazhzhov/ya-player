@@ -14,10 +14,10 @@ class TracksPage extends StatefulWidget {
 }
 
 class _TracksPageState extends State<TracksPage> {
+  final appState = getIt<AppState>();
+
   @override
   Widget build(BuildContext context) {
-    final appState = getIt<AppState>();
-
     return PageBaseLayout(
       title: 'Tracks',
       body: SingleChildScrollView(

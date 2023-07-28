@@ -1,16 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../app_state.dart';
 import '../models/music_api/track.dart';
 import '../music_api.dart';
+import '../services/service_locator.dart';
 
 class TrackList extends StatelessWidget {
   final List<Track> tracks;
   final bool showAlbum;
   final bool showHeader;
+  final _appState = getIt<AppState>();
 
-  const TrackList(this.tracks, {super.key, required this.showAlbum, this.showHeader = false});
+  TrackList(this.tracks, {super.key, required this.showAlbum, this.showHeader = false});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +47,7 @@ class TrackList extends StatelessWidget {
                     const Center(child: Icon(Icons.schedule))
                   ]
               ),
-              ...tracks.map((track) {
+              ...tracks.mapIndexed((index, track) {
                 String trackDuration = '';
                 if(track.duration != null) {
                   trackDuration = df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true));
@@ -59,11 +63,16 @@ class TrackList extends StatelessWidget {
                         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                         columnWidths: [
                           const FixedColumnWidth(50),
+                          const FixedColumnWidth(50),
                           const FlexColumnWidth(),
                         ].asMap(),
                         children: [
                           TableRow(
                               children: [
+                                IconButton(
+                                  onPressed: () => _appState.playTrackList(tracks, index),
+                                  icon: const Icon(Icons.play_arrow)
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.all(2.0),
                                   child: track.coverUri == null ?

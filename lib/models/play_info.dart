@@ -1,18 +1,15 @@
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
-import 'music_api/station.dart';
 import 'music_api/track.dart';
 
 class PlayInfo {
   final Track track;
-  final StationId stationId;
+  final String from;
   var totalPlayed = const Duration();
   late final String _uuid;
-  late final String _from;
 
-  PlayInfo(this.track, this.stationId) {
-    _from = stationId.type == 'user' ? stationId.tag : "${stationId.type}_${stationId.tag}";
+  PlayInfo(this.track, this.from) {
     _uuid = const Uuid().v4();
   }
 
@@ -24,7 +21,7 @@ class PlayInfo {
       'track-id': track.id.toString(),
       'album-id': track.firstAlbumId.toString(),
       'from-cache': 'False',
-      'from': 'desktop_win-radio-radio_$_from-default',
+      'from': from,
       'play-id': _uuid,
       'timestamp': dateTime,
       'client-now': dateTime,

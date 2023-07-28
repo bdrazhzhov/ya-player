@@ -4,18 +4,25 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
+import 'package:uuid/uuid.dart';
 import 'models/music_api_types.dart';
 
 class MusicApi {
   static const String _magicSalt = "XGRlBW9FXlekgbPrRHuSiA";
   static const String _baseUri = 'https://api.music.yandex.net';
+  late final String _deviceId;
   String? _authToken;
   int? _uid;
 
   set authToken(String value) { _authToken = value; }
   set uid(int value) { _uid = value; }
 
-  MusicApi(String? authToken, int? uid) : _authToken = authToken, _uid = uid;
+  MusicApi(String? authToken, int? uid) : _authToken = authToken, _uid = uid {
+    _deviceId = 'os=Windows.Desktop; os_version=10.0.22621.1992; '
+        'manufacturer=Micro-Star International Co., Ltd.; model=MS-0A00; '
+        'clid=WindowsPhone; device_id=${const Uuid().v4()}; '
+        'uuid=generated-by-music-${const Uuid().v4()}';
+  }
 
   Future<Map<String, dynamic>> _getRequest(String uri, { Map<String, String>? headers }) async {
     Map<String, String> allHeaders = {
@@ -48,8 +55,12 @@ class MusicApi {
   Future<Map<String, dynamic>> _postJson(String uri, Map<String, dynamic> data) async {
     // debugPrint('Api request to: $uri\nwith data: $data');
     http.Response resp = await http.post(Uri.parse(uri),
-        headers: { HttpHeaders.authorizationHeader: 'OAuth $_authToken' },
-        body: jsonEncode(data));
+      headers: {
+        HttpHeaders.authorizationHeader: 'OAuth $_authToken',
+        'X-Yandex-Music-Device': _deviceId
+      },
+      body: jsonEncode(data)
+    );
     // debugPrint('Api response body: ${resp.body}');
 
     Map<String, dynamic> json = {};
@@ -64,7 +75,10 @@ class MusicApi {
   Future<Map<String, dynamic>> _postForm(String uri, Map<String, dynamic> formData) async {
     // debugPrint('Api request to: $uri\nwith data: $formData');
     http.Response resp = await http.post(Uri.parse(uri),
-        headers: { HttpHeaders.authorizationHeader: 'OAuth $_authToken' },
+        headers: {
+          HttpHeaders.authorizationHeader: 'OAuth $_authToken',
+          'X-Yandex-Music-Device': _deviceId
+        },
         body: formData);
     // debugPrint('Api response body: ${resp.body}');
 
@@ -80,7 +94,10 @@ class MusicApi {
   Future<Map<String, dynamic>> _postEmpty(String uri) async {
     // debugPrint('Api request to: $uri\nwith data: $formData');
     http.Response resp = await http.post(Uri.parse(uri),
-        headers: { HttpHeaders.authorizationHeader: 'OAuth $_authToken' }
+      headers: {
+        HttpHeaders.authorizationHeader: 'OAuth $_authToken',
+        'X-Yandex-Music-Device': _deviceId
+      }
     );
     // debugPrint('Api response body: ${resp.body}');
 
@@ -363,7 +380,7 @@ class MusicApi {
         context: QueueContext(
           description: '',
           id: 'fonoteca',
-          type: 'radio'
+          type: 'my_music'
         ),
         currentIndex: currentIndex,
         isInteractive: true,
