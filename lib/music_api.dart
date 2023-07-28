@@ -24,7 +24,7 @@ class MusicApi {
         'uuid=generated-by-music-${const Uuid().v4()}';
   }
 
-  Future<Map<String, dynamic>> _getRequest(String uri, { Map<String, String>? headers }) async {
+  Future<Map<String, dynamic>> _getRequest({ required String uri, Map<String, String>? headers }) async {
     Map<String, String> allHeaders = {
       HttpHeaders.acceptLanguageHeader: 'en',
       HttpHeaders.userAgentHeader: 'Windows 10',
@@ -52,7 +52,7 @@ class MusicApi {
     return json;
   }
 
-  Future<Map<String, dynamic>> _postJson(String uri, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> _postJson({ required String uri, required Map<String, dynamic> data}) async {
     // debugPrint('Api request to: $uri\nwith data: $data');
     http.Response resp = await http.post(Uri.parse(uri),
       headers: {
@@ -72,7 +72,7 @@ class MusicApi {
     return json;
   }
 
-  Future<Map<String, dynamic>> _postForm(String uri, Map<String, dynamic> formData) async {
+  Future<Map<String, dynamic>> _postForm({required String uri, Map<String, dynamic>? formData}) async {
     // debugPrint('Api request to: $uri\nwith data: $formData');
     http.Response resp = await http.post(Uri.parse(uri),
         headers: {
@@ -91,32 +91,17 @@ class MusicApi {
     return json;
   }
 
-  Future<Map<String, dynamic>> _postEmpty(String uri) async {
-    // debugPrint('Api request to: $uri\nwith data: $formData');
-    http.Response resp = await http.post(Uri.parse(uri),
-      headers: {
-        HttpHeaders.authorizationHeader: 'OAuth $_authToken',
-        'X-Yandex-Music-Device': _deviceId
-      }
-    );
-    // debugPrint('Api response body: ${resp.body}');
-
-    Map<String, dynamic> json = {};
-
-    if(resp.statusCode >= 200 && resp.statusCode < 400) {
-      json = jsonDecode(resp.body);
-    }
-
-    return json;
+  Future<Map<String, dynamic>> _postEmpty(String uri) {
+    return _postForm(uri: uri);
   }
 
   Future<StationsDashboard> stationsDashboard() async {
-    Map<String, dynamic> json = await _getRequest('$_baseUri/rotor/stations/dashboard');
+    Map<String, dynamic> json = await _getRequest(uri: '$_baseUri/rotor/stations/dashboard');
     return StationsDashboard.fromJson(json['result']);
   }
 
   Future<List<Station>> stationsList() async {
-    Map<String, dynamic> json = await _getRequest('$_baseUri/rotor/stations/list');
+    Map<String, dynamic> json = await _getRequest(uri: '$_baseUri/rotor/stations/list');
     List<Station> stations = [];
     json['result'].forEach((item) => stations.add(Station.fromJson(item['station'])));
 
@@ -128,7 +113,7 @@ class MusicApi {
     if(queueTracks.isNotEmpty) {
       url += '&${queueTracks.join('%2C')}';
     }
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     List<Track> tracks = [];
 
     json['result']['sequence'].forEach((item){
@@ -139,7 +124,7 @@ class MusicApi {
   }
 
   Future<TrackDownloadInfo?> _trackDownloadInfo(int trackId) async {
-    Map<String, dynamic> json = await _getRequest('$_baseUri/tracks/$trackId/download-info');
+    Map<String, dynamic> json = await _getRequest(uri: '$_baseUri/tracks/$trackId/download-info');
     TrackDownloadInfo? selectedInfo;
 
     json['result'].forEach((item){
@@ -160,7 +145,7 @@ class MusicApi {
 
     TrackDownloadInfo? info = await _trackDownloadInfo(trackId);
     if(info != null) {
-      Map<String, dynamic> json = await _getRequest('${info.downloadInfoUrl}&format=json');
+      Map<String, dynamic> json = await _getRequest(uri: '${info.downloadInfoUrl}&format=json');
       fileInfo = FileDownloadInfo.fromJson(json);
     }
 
@@ -201,29 +186,29 @@ class MusicApi {
     final url = '$_baseUri/rotor/station/${stationId.type}:'
         '${stationId.tag}/feedback?batch-id=${track.batchId}';
 
-    await _postJson(url, data);
+    await _postJson(uri: url, data: data);
   }
 
   Future<void> sendPlayingStatistics(Map<String, String> playInfo) async {
     playInfo['uid'] = _uid.toString();
-    await _postForm('$_baseUri/play-audio', playInfo);
+    await _postForm(uri: '$_baseUri/play-audio', formData: playInfo);
   }
 
   Future<void> likeTrack(Track track) async {
     final url = '$_baseUri/users/$_uid/likes/tracks/add-multiple';
     final data = {'track-ids': '${track.id}:${track.albums.first.id}'};
-    await _postForm(url, data);
+    await _postForm(uri: url, formData: data);
   }
 
   Future<void> unlikeTrack(Track track) async {
     final url = '$_baseUri/users/$_uid/likes/tracks/remove';
     final data = {'track-ids': '${track.id}:${track.albums.first.id}'};
-    await _postForm(url, data);
+    await _postForm(uri: url, formData: data);
   }
 
   Future<({List<int> ids, int? revision})> likedTrackIds({int revision = 0}) async {
     final url = '$_baseUri/users/$_uid/likes/tracks?if-modified-since-revision=$revision';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     List<int> ids = [];
 
     int? newRevision;
@@ -240,7 +225,7 @@ class MusicApi {
   Future<List<Track>> likedTracks(List<int> ids) async {
     const url = '$_baseUri/tracks';
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
-    Map<String, dynamic> json = await _postForm(url, data);
+    Map<String, dynamic> json = await _postForm(uri: url, formData: data);
     List<Track> tracks = [];
     json['result'].forEach((item){
       tracks.add(Track.fromJson(item, ''));
@@ -256,7 +241,7 @@ class MusicApi {
       'track-ids': trackIds,
       'with-positions': 'True'
     };
-    Map<String, dynamic> json = await _postForm(url, data);
+    Map<String, dynamic> json = await _postForm(uri: url, formData: data);
     List<Track> tracks = [];
     json['result'].forEach((item){
       tracks.add(Track.fromJson(item, ''));
@@ -267,7 +252,7 @@ class MusicApi {
 
   Future<List<Album>> likedAlbums() async {
     final url = '$_baseUri/users/$_uid/likes/albums?rich=true';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     List<Album> albums = [];
     json['result'].forEach((item) => albums.add(Album.fromJson(item['album'])));
@@ -277,7 +262,7 @@ class MusicApi {
 
   Future<List<LikedArtist>> likedArtists() async {
     final url = '$_baseUri/users/$_uid/likes/artists?with-timestamps=true';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     List<LikedArtist> artists = [];
     json['result'].forEach((item) => artists.add(LikedArtist.fromJson(item['artist'])));
@@ -288,7 +273,7 @@ class MusicApi {
   Future<List<Playlist>> playlistsWithTracks() async {
     List<int> kinds = await _playlistKinds();
     final url = '$_baseUri/users/$_uid/playlists';
-    Map<String, dynamic> json = await _postForm(url, {'kinds': kinds.join(',')});
+    Map<String, dynamic> json = await _postForm(uri: url, formData: {'kinds': kinds.join(',')});
 
     final List<Playlist> playlists = [];
     json['result'].forEach((item) {
@@ -319,7 +304,7 @@ class MusicApi {
 
   Future<List<Playlist>> playlists() async {
     final url = '$_baseUri/users/$_uid/playlists/list';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     final List<Playlist> playlists = [];
     json['result'].forEach((item) {
@@ -331,7 +316,7 @@ class MusicApi {
 
   Future<List<int>> _playlistKinds() async {
     final url = '$_baseUri/users/$_uid/playlists/list';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     List<int> kinds = [];
     json['result'].forEach((item) => kinds.add(item['kind']));
@@ -341,7 +326,7 @@ class MusicApi {
 
   Future<AccountStatus> accountStatus() async {
     const url = '$_baseUri/account/status';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     Account? account;
     if(json['result']['account']['uid'] != null) {
@@ -353,7 +338,7 @@ class MusicApi {
 
   Future<String> _createQueue(Queue queue) async {
     const url = '$_baseUri/queues';
-    final result = await _postJson(url, queue.toMap());
+    final result = await _postJson(uri: url, data: queue.toMap());
 
     return result['result']['id'].toString();
   }
@@ -397,7 +382,7 @@ class MusicApi {
 
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {
     final url = '$_baseUri/albums/$albumId/with-tracks';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     final result = AlbumWithTracks.fromJson(json);
 
     return result;
@@ -405,7 +390,7 @@ class MusicApi {
 
   Future<ArtistInfo> artistInfo(int artistId) async {
     final url = '$_baseUri/artists/$artistId/brief-info';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     final result = ArtistInfo.fromJson(json);
 
     return result;
@@ -413,7 +398,7 @@ class MusicApi {
 
   Future<SearchSuggestions> searchSuggestions(String text) async {
     final url = '$_baseUri/search/suggest?part=$text';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     final result = SearchSuggestions.fromJson(json);
 
     return result;
@@ -422,14 +407,14 @@ class MusicApi {
   Future<SearchResult> searchResult({required String text, String type = 'all', int page = 0}) async {
     final url = '$_baseUri/search?text=${Uri.encodeComponent(text)}'
         '&nocorrect=false&type=$type&page=$page&playlist-in-best=true';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     return SearchResult.fromJson(json);
   }
 
   Future<NonMusicCatalog> nonMusicCatalog() async {
     const url = '$_baseUri/non-music/catalogue';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     return NonMusicCatalog.fromJson(json['result']);
   }
@@ -437,7 +422,7 @@ class MusicApi {
   Future<List<Block>> landing() async {
     const url = '$_baseUri/landing3?blocks=personalplaylists,promotions,new-releases,'
         'new-playlists,mixes,chart,charts,artists,albums,playlists,play_contexts,podcasts';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
     List<Block> blocks = [];
 
     json['result']['blocks'].forEach((blockJson) {
@@ -451,7 +436,7 @@ class MusicApi {
 
   Future<Playlist> playlist(int uid, int kind) async {
     final String url = '$_baseUri/users/$uid/playlists/$kind';
-    Map<String, dynamic> json = await _getRequest(url);
+    Map<String, dynamic> json = await _getRequest(uri: url);
 
     return Playlist.fromJson(json['result']);
   }
