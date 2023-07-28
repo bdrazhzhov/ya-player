@@ -20,6 +20,8 @@ class MusicApi {
   Future<Map<String, dynamic>> _getRequest(String uri, { Map<String, String>? headers }) async {
     Map<String, String> allHeaders = {
       HttpHeaders.acceptLanguageHeader: 'en',
+      HttpHeaders.userAgentHeader: 'Windows 10',
+      'X-Yandex-Music-Client': 'WindowsPhone/4.54',
       if(_authToken != null) HttpHeaders.authorizationHeader: 'OAuth $_authToken',
       if(headers != null) ...headers
     };
