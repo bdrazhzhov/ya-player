@@ -178,7 +178,6 @@ class StationsList extends StatelessWidget {
                         reverseTransitionDuration: Duration.zero,
                       )
                     );
-                    debugPrint(Navigator.of(NavKeys.mainNav.currentState!.context).canPop().toString());
                   }
                   else {
                     appState.selectStation(station);

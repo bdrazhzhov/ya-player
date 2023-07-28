@@ -4,7 +4,6 @@ import 'package:ya_player/models/music_api/playlist.dart';
 import '../app_state.dart';
 import '../controls/playlist_card.dart';
 import '../services/service_locator.dart';
-import '../controls/page_base_layout.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
@@ -14,30 +13,44 @@ class PlaylistsPage extends StatefulWidget {
 }
 
 class _PlaylistsPageState extends State<PlaylistsPage> {
+  final appState = getIt<AppState>();
+  static const double _minWidth = 162;
+  static const double _maxWidth = 208;
+
   @override
   Widget build(BuildContext context) {
-    final appState = getIt<AppState>();
-    final size = MediaQuery.of(context).size;
-    double width = size.width / 3;
-    if(width < 130) {
-      width = 130;
-    } else if(width > 200) {
-      width = 200;
-    }
+    return SingleChildScrollView(
+      child: ValueListenableBuilder<List<Playlist>>(
+        valueListenable: appState.playlistsNotifier,
+        builder: (_, playlists, __) {
+          return LayoutBuilder(
+            builder: (_, BoxConstraints constraints) {
+              int columnsNumber = 3;
+              double width = constraints.maxWidth / columnsNumber;
 
-    return PageBaseLayout(
-      title: 'Playlists',
-      body: SingleChildScrollView(
-        child: ValueListenableBuilder<List<Playlist>>(
-            valueListenable: appState.playlistsNotifier,
-            builder: (_, playlists, __) {
+              //TODO: rework for case with width and spacing
+              while(true) {
+                if(width < _minWidth) columnsNumber -= 1;
+                if(columnsNumber == 0) {
+                  columnsNumber = 1;
+                  width = constraints.maxWidth;
+                  break;
+                }
+                if(width > _maxWidth) columnsNumber += 1;
+
+                width = constraints.maxWidth / columnsNumber;
+
+                if(columnsNumber == 1 || width >= _minWidth && width <= _maxWidth) break;
+              }
+
               return Wrap(
                 spacing: 12,
                 runSpacing: 12,
                 children: playlists.map((playlist) => PlaylistCard(playlist, width: width)).toList(),
               );
-            }
-        ),
+            },
+          );
+        }
       ),
     );
   }

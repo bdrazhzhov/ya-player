@@ -25,7 +25,12 @@ class Playlist {
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
     String? image;
-    if(json['cover'] != null && json['cover']['uri'] != null) image = json['cover']['uri'];
+    if(json['cover'] != null && json['cover']['uri'] != null) {
+      image = json['cover']['uri'];
+    }
+    else {
+      image = json['ogImage'];
+    }
 
     List<Track> tracks = [];
     if(json['tracks'] != null) {
