@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ya_player/music_api.dart';
@@ -44,22 +45,20 @@ class AlbumPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 40, right: 40),
                   child: Table(
-                    columnWidths: const <int, TableColumnWidth>{
-                      0: FixedColumnWidth(50),
-                      1: FlexColumnWidth(),
-                      2: FixedColumnWidth(40),
-                      3: FixedColumnWidth(50),
-                    },
-                    children: albumWithTracks.tracks.asMap().entries.map((entry) {
-                      Track track = entry.value;
-                      int index = entry.key;
-
+                    columnWidths: [
+                      const FixedColumnWidth(50),
+                      const FixedColumnWidth(50),
+                      const FlexColumnWidth(),
+                      const FixedColumnWidth(40),
+                      const FixedColumnWidth(50),
+                    ].asMap(),
+                    children: albumWithTracks.tracks.mapIndexed((int index, Track track) {
                       return TableRow(
                         decoration: BoxDecoration(
                           color: theme.colorScheme.onInverseSurface,
                           border: Border.all(width: 1, color: theme.colorScheme.background)
                         ),
-                        children: _tableRowWidgets(index, track)
+                        children: _tableRowWidgets(index, track, albumWithTracks)
                       );
                     }).toList(),
                   ),
@@ -70,6 +69,36 @@ class AlbumPage extends StatelessWidget {
         }
       ),
     );
+  }
+
+  List<Widget> _tableRowWidgets(index, track, AlbumWithTracks albumWithTracks) {
+    final df = DateFormat('mm:ss');
+
+    return [
+      IconButton(
+        onPressed: () => _appState.playAlbum(albumWithTracks, index),
+        icon: const Icon(Icons.play_arrow)
+      ),
+      Center(child: Text('${index + 1}')),
+      Padding(
+        padding: const EdgeInsets.only(left: 12.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            track.title,
+            softWrap: false,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      const Center(child: Icon(Icons.favorite)),
+      Center(
+        child: Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true))),
+      ),
+    ].map((widget) {
+      return SizedBox(height: 40, child: widget,);
+    }).toList();
   }
 }
 
@@ -191,32 +220,6 @@ class _CustomFlexibleSpace extends StatelessWidget {
     });
   }
 
-}
-
-List<Widget> _tableRowWidgets(index, track) {
-  final df = DateFormat('mm:ss');
-
-  return [
-    Center(child: Text('${index + 1}')),
-    Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          track.title,
-          softWrap: false,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ),
-    const Center(child: Icon(Icons.favorite)),
-    Center(
-      child: Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true))),
-    ),
-  ].map((widget) {
-    return SizedBox(height: 40, child: widget,);
-  }).toList();
 }
 
 class _TracksHeader extends SliverPersistentHeaderDelegate {

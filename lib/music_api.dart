@@ -343,6 +343,11 @@ class MusicApi {
     return result['result']['id'].toString();
   }
 
+  Future<void> updateQueuePosition(String queueId, int position) async {
+    final url = '$_baseUri/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
+    await _postEmpty(url);
+  }
+
   Future<String> createQueueForStation(Station station, List<QueueTrack> tracks) {
     final from = station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
     final queue = Queue(
@@ -375,9 +380,19 @@ class MusicApi {
     return _createQueue(queue);
   }
 
-  Future<void> updateQueuePosition(String queueId, int position) async {
-    final url = '$_baseUri/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
-    await _postEmpty(url);
+  Future<String> createQueueForAlbum(Album album, List<QueueTrack> tracks, int currentIndex) {
+    final queue = Queue(
+        context: QueueContext(
+          description: album.title,
+          id: album.id.toString(),
+          type: 'album'
+        ),
+        currentIndex: currentIndex,
+        isInteractive: true,
+        tracks: tracks
+    );
+
+    return _createQueue(queue);
   }
 
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {

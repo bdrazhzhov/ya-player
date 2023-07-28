@@ -235,6 +235,22 @@ class AppState {
     return next();
   }
 
+  Future<void> playAlbum(AlbumWithTracks albumWithTracks, int selectedIndex) async {
+    _playlist.clear();
+    _currentIndex = selectedIndex - 1;
+    _playlist.addAll(albumWithTracks.tracks);
+    _from = 'desktop_win-album-album-default';
+    final queueTracks = albumWithTracks.tracks.map((track) => QueueTrack(
+        track.id.toString(),
+        track.albums.first.id.toString(),
+        _from
+      )
+    ).toList();
+    _queueId = await _musicApi.createQueueForAlbum(albumWithTracks.album, queueTracks, selectedIndex);
+
+    return next();
+  }
+
   Future<void> _playTrack(Track track) async {
     if(_currentPlayInfo != null) {
       _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
