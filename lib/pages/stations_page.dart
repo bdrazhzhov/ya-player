@@ -180,7 +180,7 @@ class StationsList extends StatelessWidget {
                     );
                   }
                   else {
-                    appState.selectStation(station);
+                    appState.playStationTracks(station);
                   }
                 },
                 child: MouseRegion(
@@ -214,7 +214,7 @@ class _StationCard extends StatelessWidget {
     final outlineColor = isCurrent ? theme.colorScheme.outline : Colors.transparent;
 
     return InkResponse(
-      onTap: () { appState.selectStation(station); },
+      onTap: () { appState.playStationTracks(station); },
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(width: 3, color: outlineColor),

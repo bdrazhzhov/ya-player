@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
-import 'package:uuid/uuid.dart';
 import 'models/music_api_types.dart';
 
 class MusicApi {

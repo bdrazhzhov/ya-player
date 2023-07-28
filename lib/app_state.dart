@@ -199,27 +199,32 @@ class AppState {
     // await _playStationTrack(currentStationNotifier.value!, track);
     _playTrack(track);
 
-    // When playlist almost reached its end loading new tracks
-    // and adding to the end of playlist
-    // if(_playlist.length - _currentIndex <= 3) {
-    //   final lastTrackIds = _getLastTrackIds();
-    //   final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
-    //   _playlist.addAll(tracks);
-    //   debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
-    // }
+    // When the playlist almost reached its end loading
+    // new tracks and adding to the end of the playlist
+    if(currentStationNotifier.value != null && _playlist.length - _currentIndex <= 3) {
+      final lastTrackIds = _getLastTrackIds();
+      final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
+      _playlist.addAll(tracks);
+      debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
+    }
   }
 
-  Future<void> selectStation(Station station) async {
-    // currentStationNotifier.value = station;
-    // final lastTrackIds = _getLastTrackIds();
-    // final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
-    // playlist.clear();
-    // _currentIndex = 0;
-    // playlist.addAll(tracks);
-    // await _playStationTrack(station, playlist.first);
+  Future<void> playStationTracks(Station station) async {
+    currentStationNotifier.value = station;
+    final lastTrackIds = _getLastTrackIds();
+    final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
+    _playlist.clear();
+    _currentIndex = 0;
+    _playlist.addAll(tracks);
+    String stationId = station.id.type != 'user' ? '${station.id.type}_' : '';
+    stationId += station.id.tag;
+    _from = 'desktop_win-radio-radio_$stationId-default';
+    // await _playStationTrack(station, _playlist.first);
+    return next();
   }
 
   Future<void> playTrackList(List<Track> tracks, int selectedIndex) async {
+    currentStationNotifier.value = null;
     _playlist.clear();
     _currentIndex = selectedIndex - 1;
     _playlist.addAll(tracks);
@@ -236,6 +241,7 @@ class AppState {
   }
 
   Future<void> playAlbum(AlbumWithTracks albumWithTracks, int selectedIndex) async {
+    currentStationNotifier.value = null;
     _playlist.clear();
     _currentIndex = selectedIndex - 1;
     _playlist.addAll(albumWithTracks.tracks);
@@ -254,6 +260,12 @@ class AppState {
   Future<void> _playTrack(Track track) async {
     if(_currentPlayInfo != null) {
       _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
+      if(currentStationNotifier.value != null) {
+        final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
+        final String feedback = isSkipped ? 'skip' : 'trackFinished';
+        _musicApi.sendStationTrackFeedback(currentStationNotifier.value!.id,
+            _currentPlayInfo!.track, feedback, _currentPlayInfo!.totalPlayed);
+      }
       _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     }
     String? url = await _musicApi.trackDownloadUrl(track.id);
@@ -280,27 +292,32 @@ class AppState {
     trackLikeNotifier.value = binarySearch(_likedTrackIds, track.id) != -1;
     _currentPlayInfo = PlayInfo(track, _from);
 
+    if(currentStationNotifier.value != null) {
+      _musicApi.sendStationTrackFeedback(currentStationNotifier.value!.id,
+          _currentPlayInfo!.track, 'trackStarted', _currentPlayInfo!.totalPlayed);
+    }
     _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     if(_queueId != null) _musicApi.updateQueuePosition(_queueId!, _currentIndex);
   }
 
-  Future<void> _playStationTrack(Station station, Track track) async {
-    // if(_currentPlayInfo != null) {
-    //   _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
-    //   final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
-    //   _sendTrackStatistics(_currentPlayInfo!, isSkipped ? 'skip' : 'trackFinished');
-    // }
-    //
-    // await _playTrack(track);
-    // _currentPlayInfo = PlayInfo(track, station.id);
-    // _sendTrackStatistics(_currentPlayInfo!, 'trackStarted');
-  }
+  // Future<void> _playStationTrack(Station station, Track track) async {
+  //   if(_currentPlayInfo != null) {
+  //     _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
+  //     final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
+  //     _sendTrackStatistics(_currentPlayInfo!, isSkipped ? 'skip' : 'trackFinished');
+  //   }
+  //
+  //   await _playTrack(track);
+  //
+  //   _currentPlayInfo = PlayInfo(track, _from);
+  //   _sendTrackStatistics(_currentPlayInfo!, 'trackStarted');
+  // }
 
-  Future<void> _sendTrackStatistics(PlayInfo playInfo, String feedback) async {
-    // await _musicApi.sendStationTrackFeedback(playInfo.stationId,
-    //     playInfo.track, feedback, playInfo.totalPlayed);
-    // await _musicApi.sendPlayingStatistics(playInfo.toYmPlayAudio());
-  }
+  // Future<void> _sendTrackStatistics(PlayInfo playInfo, String feedback) async {
+  //   await _musicApi.sendStationTrackFeedback(playInfo.stationId,
+  //       playInfo.track, feedback, playInfo.totalPlayed);
+  //   await _musicApi.sendPlayingStatistics(playInfo.toYmPlayAudio());
+  // }
 
   Future<void> likeCurrentTrack() async {
     if(_currentPlayInfo == null) return;

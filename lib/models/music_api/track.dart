@@ -37,7 +37,7 @@ class Track {
       albums.add(Album.fromJson(item));
     });
 
-    final id = json['id'] ?? json['realId'];
+    final id = json['id'] ?? json['realId'] ?? track['id'] ?? track['realId'];
 
     DateTime? pubDate;
     if(track['pubDate'] != null) pubDate = DateTime.tryParse(track['pubDate']);
