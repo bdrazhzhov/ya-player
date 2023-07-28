@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ya_player/controls/mix_link_card.dart';
 import 'package:ya_player/controls/podcast_card.dart';
 import 'package:ya_player/controls/track_list.dart';
 
@@ -21,6 +22,7 @@ class PageBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(block.title ?? '', style: theme.textTheme.titleLarge,),
+        if(block.description != null) Text(block.description!),
         if(block.entities.isNotEmpty)
           if(block.type == 'chart')
             _createChartBlock()
@@ -82,6 +84,9 @@ class PageBlock extends StatelessWidget {
       case Podcast:
         final podcast = entity as Podcast;
         return PodcastCard(podcast, 180);
+      case MixLink:
+        final mixLink = entity as MixLink;
+        return MixLinkCard(mixLink, width: 180);
       default:
         debugPrint('Unknown entity type: ${entity.runtimeType.toString()}');
         return null;

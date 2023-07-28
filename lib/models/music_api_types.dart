@@ -5,6 +5,7 @@ export 'music_api/artist_info.dart';
 export 'music_api/block.dart';
 export 'music_api/dashboard.dart';
 export 'music_api/download_info.dart';
+export 'music_api/mix_link.dart';
 export 'music_api/non_music_catalog.dart';
 export 'music_api/playlist.dart';
 export 'music_api/podcast.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'artist.dart';
+import 'mix_link.dart';
 import 'podcast.dart';
 import 'promotion.dart';
 import 'album.dart';
@@ -48,6 +49,8 @@ class Block {
         json['entities'].forEach((entity) => entities.add(Playlist.fromJson(entity['data'])));
       case 'chart':
         json['entities'].forEach((entity) => entities.add(Track.fromJson(entity['data']['track'], '')));
+      case 'mixes':
+        json['entities'].forEach((entity) => entities.add(MixLink.fromJson(entity['data'])));
       default:
         debugPrint('Unknown block type: "$type"');
     }

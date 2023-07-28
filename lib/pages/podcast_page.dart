@@ -18,11 +18,13 @@ class PodcastPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(podcast.title),
+          Text(podcast.title, style: theme.textTheme.displayMedium,),
           FutureBuilder<AlbumWithTracks>(
             future: _albumWidthTracks,
             builder: (_, AsyncSnapshot<AlbumWithTracks> snapshot) {
@@ -47,7 +49,10 @@ class PodcastPage extends StatelessWidget {
                           Text((podcast.tracksCount - index).toString()),
                         if(track.pubDate != null)
                           Text(DateFormat.yMMMMd().format(track.pubDate!)),
-                        Text(track.title),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(track.title),
+                        ),
                         Text(
                           _durationFormat.format(
                               DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true)

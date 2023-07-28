@@ -425,7 +425,6 @@ class MusicApi {
 
     json['result']['blocks'].forEach((blockJson) {
       if(blockJson['type'] == 'charts') return;
-      if(blockJson['type'] == 'mixes') return;
 
       blocks.add(Block.fromJson(blockJson));
     });
