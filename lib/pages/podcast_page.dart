@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../app_state.dart';
 import '../models/music_api_types.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
@@ -9,6 +10,7 @@ import '../services/service_locator.dart';
 class PodcastPage extends StatelessWidget {
   final Podcast podcast;
   late final Future<AlbumWithTracks> _albumWidthTracks;
+  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
   final _durationFormat = DateFormat('mm:ss');
 
@@ -32,6 +34,7 @@ class PodcastPage extends StatelessWidget {
                 List<Track> tracks = snapshot.data!.tracks;
 
                 final columnWidths = [
+                  if(podcast.isAvailable) const FixedColumnWidth(50),
                   const FixedColumnWidth(40),
                   if(tracks.first.pubDate != null) const FlexColumnWidth(1),
                   const FlexColumnWidth(7),
@@ -43,6 +46,11 @@ class PodcastPage extends StatelessWidget {
                   children: tracks.mapIndexed((int index, Track track) {
                     return TableRow(
                       children: [
+                        if(podcast.isAvailable)
+                          IconButton(
+                              onPressed: () => _appState.playAlbum(snapshot.data!, index),
+                              icon: const Icon(Icons.play_arrow)
+                          ),
                         if(podcast.tracksCount == 0)
                           Text((index + 1).toString())
                         else

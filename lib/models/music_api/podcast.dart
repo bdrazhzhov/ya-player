@@ -10,7 +10,7 @@ class Podcast {
   final int tracksCount;
   final int? likesCount;
   final List<ArtistBase> artists;
-  final bool? isAvailable;
+  final bool isAvailable;
   final String? shortDescription;
   final String? description;
   late final String artist;
@@ -23,7 +23,7 @@ class Podcast {
     required this.tracksCount,
     this.likesCount,
     required this.artists,
-    this.isAvailable,
+    required this.isAvailable,
     this.shortDescription,
     this.description
   }) {
@@ -45,7 +45,7 @@ class Podcast {
       image: data['ogImage'],
       tracksCount: data['trackCount'],
       likesCount: data['likesCount'],
-      isAvailable: data['isAvailable'],
+      isAvailable: data['available'] ?? true,
       shortDescription: data['shortDescription'] ?? json['shortDescription'],
       description: data['description'] ?? json['description'],
       artists: artists
