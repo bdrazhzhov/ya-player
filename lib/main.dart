@@ -12,7 +12,7 @@ void main() async {
   await setupServiceLocator();
   runApp(const MyApp());
 
-  if(!kIsWeb && (Platform.isWindows)) {
+  if(!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
     doWhenWindowReady(() {
       const initialSize = Size(1024, 768);
       appWindow.minSize = const Size(320, 500);
