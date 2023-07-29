@@ -80,8 +80,8 @@ class _MainMenu extends State<MainMenu> {
           onTap: () => _goToRoute('/playlists'),
         ),
         const Spacer(),
-        MenuItem(icon: const Icon(Icons.settings),text: 'Settings', collapsed: _collapsed),
-        MenuItem(icon: const Icon(Icons.person),text: 'User name', collapsed: _collapsed),
+        MenuItem(icon: const Icon(Icons.settings),text: 'Settings', collapsed: _collapsed, disabled: true),
+        MenuItem(icon: const Icon(Icons.person),text: 'User name', collapsed: _collapsed, disabled: true),
         const SizedBox(height: 16),
       ],
     );
@@ -97,17 +97,23 @@ class MenuItem extends StatelessWidget {
   final String text;
   final bool collapsed;
   final void Function()? onTap;
+  final bool disabled;
 
   const MenuItem({
-    super.key, required this.icon, required this.text, required this.collapsed, this.onTap,
+    super.key, required this.icon, required this.text,
+    required this.collapsed, this.onTap, this.disabled = false
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    TextStyle? textStyle;
+    if(disabled) textStyle = TextStyle(color: theme.colorScheme.outline);
+
     return GestureDetector(
       onTap: onTap,
       child: MouseRegion(
-        cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+        cursor: !disabled && onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
         child: Row(
           children: [
             SizedBox(
@@ -115,7 +121,11 @@ class MenuItem extends StatelessWidget {
               height: 48,
               child: Center(child: icon)
             ),
-            if(!collapsed && text.isNotEmpty) SizedBox(width: 204, child: Text(text))
+            if(!collapsed && text.isNotEmpty)
+              SizedBox(
+                width: 204,
+                child: Text(text, style: textStyle)
+              )
           ],
         ),
       ),
