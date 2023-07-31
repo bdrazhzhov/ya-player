@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ya_player/app_state.dart';
 
 import '../helpers/nav_keys.dart';
+import '../models/music_api_types.dart';
+import '../services/service_locator.dart';
+import 'login_dialog.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -12,6 +16,7 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenu extends State<MainMenu> {
   bool _collapsed = false;
+  final _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +86,27 @@ class _MainMenu extends State<MainMenu> {
         ),
         const Spacer(),
         MenuItem(icon: const Icon(Icons.settings),text: 'Settings', collapsed: _collapsed, disabled: true),
-        MenuItem(icon: const Icon(Icons.person),text: 'User name', collapsed: _collapsed, disabled: true),
+        ValueListenableBuilder(
+          valueListenable: _appState.accountNotifier,
+          builder: (_, Account? account, __){
+            return MenuItem(
+              icon: const Icon(Icons.person),
+              text: account == null ? 'User name' : account.displayName,
+              collapsed: _collapsed,
+              onTap: () {
+                if(account == null) {
+                  showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) => const LoginDialog()
+                  );
+                }
+                else {
+                  _appState.logout();
+                }
+              },
+            );
+          }
+        ),
         const SizedBox(height: 16),
       ],
     );
