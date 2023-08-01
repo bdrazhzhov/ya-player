@@ -12,8 +12,10 @@ dependencies:
   audio_video_progress_bar: ^1.0.1
   just_audio: ^0.9.34
   just_audio_windows: ^0.2.0
-  just_audio_mpv:
-    git: https://github.com/bdrazhzhov/just_audio_mpv.git
+  just_audio_gst:
+    path: ../just_audio_gst
+#  just_audio_mpv:
+#    git: https://github.com/bdrazhzhov/just_audio_mpv.git
   audio_service: ^0.18.10
   audio_service_mpris: ^0.1.0
   cached_network_image: ^3.2.3

@@ -134,6 +134,8 @@ Future<Map<String,dynamic>> _step02(String csrfToken, String login) async {
   _saveCookies(response.cookies);
   final stringData = await response.transform(utf8.decoder).join();
 
+  debugPrint('Step 02 response: $stringData');
+
   return jsonDecode(stringData);
 }
 
@@ -171,6 +173,8 @@ Future<Map<String,dynamic>> _step03(String password, String trackId, String csrf
   final response = await request.close();
   _saveCookies(response.cookies);
   final stringData = await response.transform(utf8.decoder).join();
+
+  debugPrint('Step 03 response: $stringData');
 
   return jsonDecode(stringData);
 }
@@ -216,6 +220,8 @@ Future<Map<String,dynamic>> _step04() async {
   request.write(params);
   final response = await request.close();
   final stringData = await response.transform(utf8.decoder).join();
+
+  debugPrint('Step 04 response: $stringData');
 
   return jsonDecode(stringData);
 }

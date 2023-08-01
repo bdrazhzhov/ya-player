@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audio_player_gst
   bitsdojo_window_linux
   url_launcher_linux
 )
