@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -138,8 +139,13 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> setVolume(double value){
     _linearVolume = value;
 
-    if(defaultTargetPlatform == TargetPlatform.windows) {
-      value = pow(value, 3).toDouble();
+    if(!kIsWeb) {
+      if(Platform.isWindows) {
+        value = pow(value, 3).toDouble();
+      }
+      else if(Platform.isLinux) {
+        value = pow(value, 2).toDouble();
+      }
     }
 
     return _player.setVolume(value);
