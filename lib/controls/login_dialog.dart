@@ -16,6 +16,7 @@ class _LoginDialogState extends State<LoginDialog> {
   final _passwordController = TextEditingController();
   bool _isValid = false;
   bool _isDirty = false;
+  bool _showRetry = false;
 
   void _onSubmit() async {
     setState(() {
@@ -24,8 +25,34 @@ class _LoginDialogState extends State<LoginDialog> {
     });
     if(!_isValid) return;
 
-    await _appState.login(_loginController.text, _passwordController.text);
-    Navigator.pop(context);
+    LoginState loginState = await _appState.login(_loginController.text, _passwordController.text);
+    if(loginState == LoginState.success) {
+      Navigator.pop(context);
+    }
+    else if(loginState == LoginState.browserAction) {
+      _showRetry = true;
+      _isDirty = false;
+      setState(() {});
+    }
+    else if(loginState == LoginState.failure) {
+      // Failure
+    }
+  }
+
+  void _onRetry() async {
+    setState(() {
+      _isDirty = true;
+      _isValid = _formKey.currentState!.validate();
+    });
+    if(!_isValid) return;
+
+    LoginState loginState = await _appState.login(_loginController.text, _passwordController.text);
+    if(loginState == LoginState.success) {
+      Navigator.pop(context);
+    }
+    else if(loginState == LoginState.failure) {
+      // Failure
+    }
   }
 
   @override
@@ -67,10 +94,16 @@ class _LoginDialogState extends State<LoginDialog> {
                 },
               ),
               const SizedBox(height: 50,),
-              ElevatedButton(
-                onPressed: !_isDirty || _isValid ? _onSubmit : null,
-                child: const Text('Submit')
-              )
+              if(_showRetry)
+                ElevatedButton(
+                  onPressed: !_isDirty || _isValid ? _onRetry : null,
+                  child: const Text('Retry')
+                )
+              else
+                ElevatedButton(
+                  onPressed: !_isDirty || _isValid ? _onSubmit : null,
+                  child: const Text('Submit')
+                )
             ],
           ),
         )

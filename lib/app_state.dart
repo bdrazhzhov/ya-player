@@ -14,6 +14,8 @@ import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
 
+enum LoginState { success, failure, browserAction }
+
 class AppState {
   // Listeners: Updates going to the UI
   final progressNotifier = ProgressNotifier();
@@ -42,7 +44,7 @@ class AppState {
   int _currentIndex = -1;
   PlayInfo? _currentPlayInfo;
   final _prefs = getIt<Preferences>();
-  late final List<int> _likedTrackIds;
+  final List<int> _likedTrackIds = [];
 
   // Events: Calls coming from the UI
   void init() async {
@@ -53,7 +55,12 @@ class AppState {
     _listenToSkipEvents();
 
     volume = _prefs.volume;
+    if(_prefs.authToken == null) return;
     
+    await _requestAppData();
+  }
+
+  Future<void> _requestAppData() async {
     await _requestAccountData();
     _requestStationsDashboard();
     _requestStations();
@@ -71,12 +78,14 @@ class AppState {
     final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
 
     if(resultTuple.revision != null) {
-      _likedTrackIds = resultTuple.ids;
+      _likedTrackIds.clear();
+      _likedTrackIds.addAll(resultTuple.ids);
       await _prefs.setLikedTracks(_likedTrackIds);
       await _prefs.setLikedTracksRevision(resultTuple.revision!);
     }
     else {
-      _likedTrackIds = _prefs.likedTracks;
+      _likedTrackIds.clear();
+      _likedTrackIds.addAll(_prefs.likedTracks);
     }
 
     if(_likedTrackIds.isNotEmpty) {
@@ -358,22 +367,43 @@ class AppState {
     landingNotifier.value = [];
   }
 
-  Future<void> login(String login, String password) async {
-    final YmToken? result = await ymLogin(login, password);
-    if(result == null) return;
+  Future<LoginState> login(String login, String password) async {
+    final LoginResult result = await ymLogin(login, password);
 
-    await _prefs.setAuthToken(result.accessToken);
-    await _prefs.setExpiresIn(result.expiresIn.inSeconds);
+    if(result.redirectPath != null) {
+      followRedirect(result.redirectPath);
+      return LoginState.browserAction;
+    }
+    else if(result.tokenData == null) {
+      return LoginState.failure;
+    }
+    
+    await _afterLoginSuccess(result);
 
-    _musicApi.authToken = result.accessToken;
-    _reset();
-    await _requestAccountData();
-    _requestStationsDashboard();
-    _requestStations();
-    _requestLikedTracks();
-    _requestLikedAlbums();
-    _requestArtists();
-    _requestPlaylists();
+    return LoginState.success;
+  }
+
+  Future<LoginState> loginRetry(String login, String password, bool isFirstAttempt) async {
+    final LoginResult result = await ymLogin(login, password);
+
+    if(result.tokenData == null) {
+      return LoginState.failure;
+    }
+
+    await _afterLoginSuccess(result);
+
+    return LoginState.success;
+  }
+
+  Future<void> _afterLoginSuccess(LoginResult result) async {
+    final tokenData = result.tokenData!;
+    
+    await _prefs.setAuthToken(tokenData.accessToken);
+    final expiresAt = DateTime.now().add(Duration(seconds: tokenData.expiresIn.inSeconds));
+    await _prefs.setExpiresAt(expiresAt.millisecondsSinceEpoch ~/ 1000);
+    
+    _musicApi.authToken = tokenData.accessToken;
+    _requestAppData();
   }
 
   Future<void> logout() async {

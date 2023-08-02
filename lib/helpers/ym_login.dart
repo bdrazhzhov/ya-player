@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class YmToken {
@@ -22,17 +23,24 @@ class YmToken {
   }
 }
 
-Future<YmToken?> ymLogin(String login, String password) async {
+class LoginResult {
+  final YmToken? tokenData;
+  final String? redirectPath;
+
+  LoginResult({this.tokenData, this.redirectPath});
+}
+
+Future<LoginResult> ymLogin(String login, String password) async {
   final csrfToken = await _step01();
   if(csrfToken == null) {
     debugPrint('No CSRF token');
-    return null;
+    return LoginResult();
   }
 
   final step02Data = await _step02(csrfToken, login);
   if(step02Data['status'] != 'ok') {
     debugPrint('Incorrect Step 02 result data');
-    return null;
+    return LoginResult();
   }
 
   if(step02Data['can_register'] != null && step02Data['can_register'] as bool) {
@@ -42,12 +50,15 @@ Future<YmToken?> ymLogin(String login, String password) async {
   final step03Data = await _step03(password, step02Data['track_id']!, csrfToken);
   if(step03Data['status'] != 'ok') {
     debugPrint('Incorrect Step 03 result data');
-    return null;
+    return LoginResult();
+  }
+  else if(step03Data['state'] == 'auth_challenge' && step03Data['redirect_url'] != null) {
+    return LoginResult(redirectPath: step03Data['redirect_url']);
   }
 
   final step04Data = await _step04();
   if(step04Data['access_token'] != null) {
-    return YmToken.fromJson(step04Data);
+    return LoginResult(tokenData: YmToken.fromJson(step04Data));
   }
 
   // if(!await _step04()) return null;
@@ -55,7 +66,7 @@ Future<YmToken?> ymLogin(String login, String password) async {
   // if(tokenData.isNotEmpty) {
   //   return YmToken.fromJson(tokenData);
   // }
-  return null;
+  return LoginResult();
 }
 
 final _client = HttpClient();
@@ -247,4 +258,11 @@ Future<Map<String,String>> _step05() async {
   }
 
   return result;
+}
+
+Future<void> followRedirect(urlPart) async {
+  final url = Uri.parse('https://passport.yandex.ru$urlPart');
+  debugPrint('Following redirect: $url');
+
+  await launchUrl(url);
 }

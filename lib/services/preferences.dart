@@ -13,8 +13,8 @@ class Preferences {
   int? get uid => _prefs.getInt('uid');
   Future<void> setUid(int value) async => await _prefs.setInt('uid', value);
 
-  int? get expiresIn => _prefs.getInt('expiresIn');
-  Future<void> setExpiresIn(int value) async => await _prefs.setInt('expiresIn', value);
+  int? get expiresIn => _prefs.getInt('expiresAt');
+  Future<void> setExpiresAt(int value) async => await _prefs.setInt('expiresAt', value);
 
   double get volume => _prefs.getDouble('volume') ?? 1;
   Future<void> setVolume(double value) async => await _prefs.setDouble('volume', value);
