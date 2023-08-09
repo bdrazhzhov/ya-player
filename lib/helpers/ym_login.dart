@@ -37,7 +37,7 @@ Future<LoginResult> ymLogin(String login, String password) async {
     return LoginResult();
   }
 
-  final step02Data = await _step02(csrfToken, login);
+  final step02Data = await _multiStepStart(csrfToken, login);
   if(step02Data['status'] != 'ok') {
     debugPrint('Incorrect Step 02 result data');
     return LoginResult();
@@ -47,12 +47,32 @@ Future<LoginResult> ymLogin(String login, String password) async {
     throw 'Account "$login" not found';
   }
 
-  final step03Data = await _step03(password, step02Data['track_id']!, csrfToken);
+  final String trackId = step02Data['track_id']!;
+  final step03Data = await _commitPassword(password, trackId, csrfToken);
   if(step03Data['status'] != 'ok') {
     debugPrint('Incorrect Step 03 result data');
     return LoginResult();
   }
   else if(step03Data['state'] == 'auth_challenge' && step03Data['redirect_url'] != null) {
+    final Map<String, dynamic> challengeData = await _challengeSubmit(trackId, csrfToken);
+    if(challengeData['status'] != 'ok') {
+      throw 'Error during challenge submitting: $challengeData';
+    }
+
+    final String challengeType = challengeData['challenge']['challengeType'];
+
+    switch(challengeType) {
+      case 'mobile_id':
+        final int phoneId = challengeData['challenge']['phoneId'];
+        final Map<String, dynamic> data = await _requestConfirmationSms(trackId, csrfToken, phoneId);
+        if(data['status'] != 'ok') {
+          throw 'Error during phone confirmation code submitting: $data';
+        }
+        // TODO: need to show text field for confirmation code input
+      default:
+        debugPrint('Unknown challenge type: $challengeType');
+    }
+
     return LoginResult(redirectPath: step03Data['redirect_url']);
   }
 
@@ -78,9 +98,44 @@ void _saveCookies(List<Cookie> cookies) {
   }
 }
 
+Future<Map<String,dynamic>> _postFormData(String url, Map<String,dynamic> formData) async {
+  final uri = Uri.parse(url);
+  final request = await _client.postUrl(uri);
+  request.cookies.addAll(_cookieStore.values);
+  request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
+  final params = Uri(queryParameters: formData).query;
+  request.write(params);
+  final response = await request.close();
+  _saveCookies(response.cookies);
+  final stringData = await response.transform(utf8.decoder).join();
+
+  debugPrint('postFormData() response: $stringData');
+
+  return jsonDecode(stringData);
+}
+
+Future<String?> _step01() async {
+  final query = {'origin': 'music_app'};
+  final uri = Uri.https('passport.yandex.ru', '/auth', query);
+  final request = await _client.getUrl(uri);
+  request.cookies.addAll(_cookieStore.values);
+  final response = await request.close();
+  _saveCookies(response.cookies);
+  final stringData = await response.transform(utf8.decoder).join();
+  // debugPrint(stringData);
+  var regexp = RegExp(r'name="csrf_token" value="([a-z0-9]+:[0-9]+)"/>');
+  var match = regexp.firstMatch(stringData);
+  if(match == null) {
+    regexp = RegExp(r'"common":{"csrf":"([a-z0-9]+:[0-9]+)",');
+    match = regexp.firstMatch(stringData);
+  }
+
+  return match?.group(1);
+}
+
 // Future<String?> _step01() async {
-//   final query = {'origin': 'music_app'};
-//   final uri = Uri.https('passport.yandex.ru', '/auth', query);
+//   final query = {'app_platform': 'android'};
+//   final uri = Uri.https('passport.yandex.ru', '/am', query);
 //   final request = await _client.getUrl(uri);
 //   request.cookies.addAll(_cookieStore.values);
 //   final response = await request.close();
@@ -96,22 +151,17 @@ void _saveCookies(List<Cookie> cookies) {
 //   return match?.group(1);
 // }
 
-Future<String?> _step01() async {
-  final query = {'app_platform': 'android'};
-  final uri = Uri.https('passport.yandex.ru', '/am', query);
-  final request = await _client.getUrl(uri);
-  request.cookies.addAll(_cookieStore.values);
-  final response = await request.close();
-  _saveCookies(response.cookies);
-  final stringData = await response.transform(utf8.decoder).join();
-  var regexp = RegExp(r'name="csrf_token" value="([a-z0-9]+:[0-9]+)"/>');
-  var match = regexp.firstMatch(stringData);
-  if(match == null) {
-    regexp = RegExp(r'"common":{"csrf":"([a-z0-9]+:[0-9]+)",');
-    match = regexp.firstMatch(stringData);
-  }
-
-  return match?.group(1);
+Future<Map<String,dynamic>> _multiStepStart(String csrfToken, String login) {
+  return _postFormData(
+    'https://passport.yandex.ru/registration-validations/auth/multi_step/start',
+    {
+      'csrf_token': csrfToken,
+      'login': login,
+      'process_uuid': const Uuid().v4(),
+      'retpath': 'https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d',
+      'origin': 'music_app'
+    }
+  );
 }
 
 // Future<Map<String,dynamic>> _step02(String csrfToken, String login) async {
@@ -119,13 +169,7 @@ Future<String?> _step01() async {
 //   final request = await _client.postUrl(uri);
 //   request.cookies.addAll(_cookieStore.values);
 //   request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
-//   final params = Uri(queryParameters: {
-//     'csrf_token': csrfToken,
-//     'login': login,
-//     'process_uuid': const Uuid().v4(),
-//     'retpath': 'https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d',
-//     'origin': 'music_app'
-//   }).query;
+//   final params = Uri(queryParameters: { 'csrf_token': csrfToken, 'login': login }).query;
 //   request.write(params);
 //   final response = await request.close();
 //   _saveCookies(response.cookies);
@@ -134,60 +178,61 @@ Future<String?> _step01() async {
 //   return jsonDecode(stringData);
 // }
 
-Future<Map<String,dynamic>> _step02(String csrfToken, String login) async {
-  final uri = Uri.parse('https://passport.yandex.ru/registration-validations/auth/multi_step/start');
-  final request = await _client.postUrl(uri);
-  request.cookies.addAll(_cookieStore.values);
-  request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
-  final params = Uri(queryParameters: { 'csrf_token': csrfToken, 'login': login }).query;
-  request.write(params);
-  final response = await request.close();
-  _saveCookies(response.cookies);
-  final stringData = await response.transform(utf8.decoder).join();
-
-  debugPrint('Step 02 response: $stringData');
-
-  return jsonDecode(stringData);
+Future<Map<String,dynamic>> _commitPassword(String password, String trackId, String csrfToken) {
+  return _postFormData(
+    'https://passport.yandex.ru/registration-validations/auth/multi_step/commit_password',
+    {
+      'csrf_token': csrfToken,
+      'track_id': trackId,
+      'password': password,
+      'retpath': 'https://passport.yandex.ru/am/finish?status=ok&from=Login'
+    }
+  );
 }
 
-// Future<Map<String,dynamic>> _step03(String password, String trackId, String csrfToken) async {
-//   final uri = Uri.parse('https://passport.yandex.ru/registration-validations/auth/multi_step/commit_password');
-//   final request = await _client.postUrl(uri);
-//   request.cookies.addAll(_cookieStore.values);
-//   request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
-//   final params = Uri(queryParameters: {
-//     'csrf_token': csrfToken,
-//     'track_id': trackId,
-//     'password': password,
-//     'retpath': 'https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d'
-//   }).query;
-//   request.write(params);
-//   final response = await request.close();
-//   _saveCookies(response.cookies);
-//   final stringData = await response.transform(utf8.decoder).join();
-//
-//   return jsonDecode(stringData);
-// }
+Future<Map<String, dynamic>> _challengeSubmit(String trackId, String csrfToken) {
+  return _postFormData(
+      'https://passport.yandex.ru/registration-validations/auth/challenge/submit',
+      {
+        'csrf_token': csrfToken,
+        'track_id': trackId
+      }
+  );
+}
 
-Future<Map<String,dynamic>> _step03(String password, String trackId, String csrfToken) async {
-  final uri = Uri.parse('https://passport.yandex.ru/registration-validations/auth/multi_step/commit_password');
-  final request = await _client.postUrl(uri);
-  request.cookies.addAll(_cookieStore.values);
-  request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
-  final params = Uri(queryParameters: {
-    'csrf_token': csrfToken,
-    'track_id': trackId,
-    'password': password,
-    'retpath': 'https://passport.yandex.ru/am/finish?status=ok&from=Login'
-  }).query;
-  request.write(params);
-  final response = await request.close();
-  _saveCookies(response.cookies);
-  final stringData = await response.transform(utf8.decoder).join();
+Future<Map<String, dynamic>> _requestConfirmationSms(String trackId, String csrfToken, int phoneId) {
+  return _postFormData(
+      'https://passport.yandex.ru/registration-validations/phone-confirm-code-submit',
+      {
+        'csrf_token': csrfToken,
+        'track_id': trackId,
+        'phone_id': phoneId,
+        'confirm_method': 'by_sms',
+        'isCodeWithFormat': 'true'
+      }
+  );
+}
 
-  debugPrint('Step 03 response: $stringData');
+Future<Map<String, dynamic>> _checkConfirmationCode(String trackId, String csrfToken, String confirmationCode) {
+  return _postFormData(
+      'https://passport.yandex.ru/registration-validations/phone-confirm-code',
+      {
+        'csrf_token': csrfToken,
+        'track_id': trackId,
+        'code': confirmationCode,
+      }
+  );
+}
 
-  return jsonDecode(stringData);
+Future<Map<String, dynamic>> _challengeCommit(String trackId, String csrfToken, String challengeType) {
+  return _postFormData(
+      'https://passport.yandex.ru/registration-validations/phone-confirm-code',
+      {
+        'csrf_token': csrfToken,
+        'track_id': trackId,
+        'challenge': challengeType,
+      }
+  );
 }
 
 // Future<bool> _step04() async {
@@ -218,23 +263,15 @@ Future<Map<String,dynamic>> _step04() async {
     throw 'Could not get session id from cookies';
   }
 
-  final uri = Uri.https('oauth.yandex.ru', '/token');
-  final request = await _client.postUrl(uri);
-  request.cookies.addAll(_cookieStore.values);
-  request.headers.set(HttpHeaders.contentTypeHeader, 'application/x-www-form-urlencoded');
-  final params = Uri(queryParameters: {
-    'grant_type': 'sessionid',
-    'client_id': '23cabbbdc6cd418abb4b39c32c41195d',
-    'client_secret': '53bc75238f0c4d08a118e51fe9203300',
-    'host': 'yandex.ru'
-  }).query;
-  request.write(params);
-  final response = await request.close();
-  final stringData = await response.transform(utf8.decoder).join();
-
-  debugPrint('Step 04 response: $stringData');
-
-  return jsonDecode(stringData);
+  return _postFormData(
+      'https://oauth.yandex.ru/token',
+      {
+        'grant_type': 'sessionid',
+        'client_id': '23cabbbdc6cd418abb4b39c32c41195d',
+        'client_secret': '53bc75238f0c4d08a118e51fe9203300',
+        'host': 'yandex.ru'
+      }
+  );
 }
 
 Future<Map<String,String>> _step05() async {
