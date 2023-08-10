@@ -14,10 +14,13 @@ import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
 
-enum LoginState { success, failure, browserAction }
+enum LoginState { success, failure, phoneConfirmation }
+
+enum UiState { loading, auth, main }
 
 class AppState {
   // Listeners: Updates going to the UI
+  final mainPageState = ValueNotifier<UiState>(UiState.loading);
   final progressNotifier = ProgressNotifier();
   final playButtonNotifier = PlayButtonNotifier();
   final trackNotifier = ValueNotifier<Track?>(null);
@@ -55,9 +58,14 @@ class AppState {
     _listenToSkipEvents();
 
     volume = _prefs.volume;
-    if(_prefs.authToken == null) return;
-    
+    if(_prefs.authToken == null) {
+      mainPageState.value = UiState.auth;
+
+      return;
+    }
+
     await _requestAppData();
+    mainPageState.value = UiState.main;
   }
 
   Future<void> _requestAppData() async {
@@ -372,7 +380,7 @@ class AppState {
 
     if(result.redirectPath != null) {
       followRedirect(result.redirectPath);
-      return LoginState.browserAction;
+      return LoginState.phoneConfirmation;
     }
     else if(result.tokenData == null) {
       return LoginState.failure;

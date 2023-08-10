@@ -15,7 +15,7 @@ void main() async {
   if(!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
     doWhenWindowReady(() {
       const initialSize = Size(1024, 768);
-      appWindow.minSize = const Size(320, 500);
+      appWindow.minSize = const Size(370, 512);
       appWindow.size = initialSize;
       appWindow.alignment = Alignment.center;
       appWindow.title = 'YaPlayer';

@@ -29,7 +29,7 @@ class _LoginDialogState extends State<LoginDialog> {
     if(loginState == LoginState.success) {
       Navigator.pop(context);
     }
-    else if(loginState == LoginState.browserAction) {
+    else if(loginState == LoginState.phoneConfirmation) {
       _showRetry = true;
       _isDirty = false;
       setState(() {});
