@@ -5,7 +5,6 @@ import 'package:ya_player/app_state.dart';
 import '../helpers/nav_keys.dart';
 import '../models/music_api_types.dart';
 import '../services/service_locator.dart';
-import 'login_dialog.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -93,17 +92,7 @@ class _MainMenu extends State<MainMenu> {
               icon: const Icon(Icons.person),
               text: account == null ? 'User name' : account.displayName,
               collapsed: _collapsed,
-              onTap: () {
-                if(account == null) {
-                  showDialog<void>(
-                    context: context,
-                    builder: (BuildContext context) => const LoginDialog()
-                  );
-                }
-                else {
-                  _appState.logout();
-                }
-              },
+              onTap: _appState.logout,
             );
           }
         ),

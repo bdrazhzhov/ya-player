@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../helpers/nav_keys.dart';
+import '../../helpers/nav_keys.dart';
 import 'login_form.dart';
-import '../helpers/app_route_observer.dart';
-import '../services/service_locator.dart';
+import '../../helpers/app_route_observer.dart';
+import '../../services/service_locator.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -11,7 +11,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: NavKeys.mainNav,
+      key: NavKeys.loginNav,
       observers: [getIt<AppRouteObserver>()],
       onGenerateRoute: (RouteSettings settings){
         return PageRouteBuilder(

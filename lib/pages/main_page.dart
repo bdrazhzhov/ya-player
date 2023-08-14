@@ -7,7 +7,7 @@ import '../services/service_locator.dart';
 import '../controls/main_menu.dart';
 import 'main_screen.dart';
 import 'app_loading_page.dart';
-import 'login_page.dart';
+import 'login/login_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 
+import 'helpers/nav_keys.dart';
 import 'models/play_info.dart';
 import 'services/preferences.dart';
 import 'models/music_api_types.dart';
@@ -13,8 +14,6 @@ import 'notifiers/progress_notifier.dart';
 import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
-
-enum LoginState { success, failure, phoneConfirmation }
 
 enum UiState { loading, auth, main }
 
@@ -375,48 +374,23 @@ class AppState {
     landingNotifier.value = [];
   }
 
-  Future<LoginState> login(String login, String password) async {
-    final LoginResult result = await ymLogin(login, password);
-
-    if(result.redirectPath != null) {
-      followRedirect(result.redirectPath);
-      return LoginState.phoneConfirmation;
-    }
-    else if(result.tokenData == null) {
-      return LoginState.failure;
-    }
-    
-    await _afterLoginSuccess(result);
-
-    return LoginState.success;
-  }
-
-  Future<LoginState> loginRetry(String login, String password, bool isFirstAttempt) async {
-    final LoginResult result = await ymLogin(login, password);
-
-    if(result.tokenData == null) {
-      return LoginState.failure;
-    }
-
-    await _afterLoginSuccess(result);
-
-    return LoginState.success;
-  }
-
-  Future<void> _afterLoginSuccess(LoginResult result) async {
-    final tokenData = result.tokenData!;
-    
-    await _prefs.setAuthToken(tokenData.accessToken);
-    final expiresAt = DateTime.now().add(Duration(seconds: tokenData.expiresIn.inSeconds));
+  Future<void> login(YmToken token) async {
+    await _prefs.setAuthToken(token.accessToken);
+    final expiresAt = DateTime.now().add(Duration(seconds: token.expiresIn.inSeconds));
     await _prefs.setExpiresAt(expiresAt.millisecondsSinceEpoch ~/ 1000);
-    
-    _musicApi.authToken = tokenData.accessToken;
+
+    _musicApi.authToken = token.accessToken;
     _requestAppData();
+    mainPageState.value = UiState.main;
+    NavKeys.mainNav.currentState?.pushReplacementNamed('/');
   }
 
   Future<void> logout() async {
     _prefs.clear();
+    _musicApi.authToken = '';
+    accountNotifier.value = null;
     _reset();
+    mainPageState.value = UiState.auth;
   }
 
   Future<void> _requestAccountData() async {

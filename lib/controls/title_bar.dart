@@ -65,10 +65,12 @@ class _NavigationBackState extends State<NavigationBack> {
         if(value) {
           return GestureDetector(
               onTap: (){
-                if(NavKeys.mainNav.currentState == null) return;
+                NavigatorState? navState = NavKeys.mainNav.currentState;
+                navState ??= NavKeys.loginNav.currentState;
+                if(navState == null) return;
 
                 backgroundColor = Colors.transparent;
-                NavKeys.mainNav.currentState!.pop();
+                navState.pop();
               },
               child: MouseRegion(
                 cursor: SystemMouseCursors.click,
