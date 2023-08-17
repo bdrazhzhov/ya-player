@@ -13,6 +13,7 @@ import '../services/service_locator.dart';
 import 'albums_page.dart';
 import 'artists_page.dart';
 import 'playlists_page.dart';
+import 'queue_page.dart';
 import 'search_results_page.dart';
 import 'stations_page.dart';
 import 'tracks_page.dart';
@@ -59,6 +60,9 @@ class _MainScreen extends State<MainScreen> {
                     page = PodcastsBooksPage();
                   case '/home':
                     page = HomePage();
+                  case '/queue':
+                    String? queueName = settings.arguments as String;
+                    page = QueuePage(queueName: queueName);
                   case '/stations':
                   default:
                     page = StationsPage();

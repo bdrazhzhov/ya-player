@@ -137,7 +137,7 @@ class MenuItem extends StatelessWidget {
             ),
             if(!collapsed && text.isNotEmpty)
               SizedBox(
-                width: 204,
+                width: 164,
                 child: Text(text, style: textStyle)
               )
           ],

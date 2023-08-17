@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:ya_player/models/music_api/album.dart';
 
 import 'artist.dart';
 
-class Track {
+class Track extends Equatable {
   final int id;
   final String title;
   final String? version;
@@ -47,6 +48,9 @@ class Track {
       track['coverUri'], track['ogImage'], batchId, pubDate
     );
   }
+
+  @override
+  List<Object?> get props => [id];
 }
 
 class TrackParameters {

@@ -7,6 +7,7 @@ import 'package:ya_player/controls/track_list.dart';
 import '../app_state.dart';
 import '../controls/artist_card.dart';
 import '../controls/podcast_episodes_list.dart';
+import '../helpers/playback_queue.dart';
 import '../services/service_locator.dart';
 
 class SearchResultsPage extends StatelessWidget {
@@ -61,7 +62,7 @@ class SearchResultsPage extends StatelessWidget {
                         if(searchResult.tracks != null && searchResult.tracks!.results.isNotEmpty)
                           ..._buildSection(
                             sectionName: 'Tracks',
-                            child: TrackList(searchResult.tracks!.results.take(6).toList(), showAlbum: true, showHeader: false)
+                            child: TrackList(searchResult.tracks!.results.take(6).toList(), showAlbum: true, showHeader: false, queueName: QueueNames.trackList)
                           ),
                         if(searchResult.podcasts != null && searchResult.podcasts!.results.isNotEmpty)
                           ..._buildSection(

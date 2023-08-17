@@ -5,6 +5,7 @@ import 'package:ya_player/services/service_locator.dart';
 
 import '../controls/track_list.dart';
 import '../controls/page_base_layout.dart';
+import '../helpers/playback_queue.dart';
 
 class TracksPage extends StatefulWidget {
   const TracksPage({super.key});
@@ -23,7 +24,7 @@ class _TracksPageState extends State<TracksPage> {
       body: SingleChildScrollView(
         child: ValueListenableBuilder<List<Track>>(
           valueListenable: appState.likedTracksNotifier,
-          builder: (_, tracks, __) => TrackList(tracks, showAlbum: true)
+          builder: (_, tracks, __) => TrackList(tracks, showAlbum: true, queueName: QueueNames.trackList)
         ),
       ),
     );

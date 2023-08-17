@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ya_player/helpers/playback_queue.dart';
 import 'package:ya_player/music_api.dart';
 
 import '../models/music_api/album.dart';
@@ -76,7 +77,7 @@ class AlbumPage extends StatelessWidget {
 
     return [
       IconButton(
-        onPressed: () => _appState.playAlbum(albumWithTracks, index),
+        onPressed: () => _appState.playTracks(albumWithTracks.tracks, index, QueueNames.album),
         icon: const Icon(Icons.play_arrow)
       ),
       Center(child: Text('${index + 1}')),

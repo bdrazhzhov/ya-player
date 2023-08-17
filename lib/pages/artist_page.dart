@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../controls/album_card.dart';
 import '../controls/artist_card.dart';
 import '../controls/track_list.dart';
+import '../helpers/playback_queue.dart';
 import '../models/music_api/artist.dart';
 import '../models/music_api/artist_info.dart';
 import '../controls/page_base_layout.dart';
@@ -51,7 +52,7 @@ class ArtistPage extends StatelessWidget {
                             child: const Text('Show all')
                           )
                         ]),
-                        TrackList(info.popularTracks, showAlbum: false)
+                        TrackList(info.popularTracks, showAlbum: false, queueName: QueueNames.trackList)
                       ],
 
                       if(info.albums.isNotEmpty) ...[

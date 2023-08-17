@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../app_state.dart';
+import '../helpers/playback_queue.dart';
 import '../models/music_api_types.dart';
 import '../music_api.dart';
 import '../services/service_locator.dart';
@@ -48,7 +49,7 @@ class PodcastPage extends StatelessWidget {
                       children: [
                         if(podcast.isAvailable)
                           IconButton(
-                              onPressed: () => _appState.playAlbum(snapshot.data!, index),
+                              onPressed: () => _appState.playTracks(snapshot.data!.tracks, index, QueueNames.album),
                               icon: const Icon(Icons.play_arrow)
                           ),
                         if(podcast.tracksCount == 0)

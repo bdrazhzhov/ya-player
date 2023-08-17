@@ -1,20 +1,56 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../notifiers/play_button_notifier.dart';
 import '../app_state.dart';
 import '../models/music_api/track.dart';
-import '../music_api.dart';
 import '../services/service_locator.dart';
+import 'track_list/track_cover.dart';
 
-class TrackList extends StatelessWidget {
+
+class TrackList extends StatefulWidget {
   final List<Track> tracks;
+  final String queueName;
   final bool showAlbum;
   final bool showHeader;
-  final _appState = getIt<AppState>();
 
-  TrackList(this.tracks, {super.key, required this.showAlbum, this.showHeader = false});
+  const TrackList(
+      this.tracks, {
+      super.key,
+      this.showAlbum = false,
+      this.showHeader = false,
+      required this.queueName
+  });
+
+  @override
+  State<TrackList> createState() => _TrackListState();
+}
+
+class _TrackListState extends State<TrackList> {
+  final appState = getIt<AppState>();
+  Track? hoveredTrack;
+  late bool isPlaying;
+
+  @override
+  void initState() {
+    super.initState();
+
+    appState.playButtonNotifier.addListener(playingStateListener);
+    isPlaying = appState.playButtonNotifier.value == ButtonState.playing;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    appState.playButtonNotifier.removeListener(playingStateListener);
+  }
+
+  void playingStateListener() {
+    isPlaying = appState.playButtonNotifier.value == ButtonState.playing;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +64,7 @@ class TrackList extends StatelessWidget {
         final columnWidths = isWide ? [
           const FlexColumnWidth(1.5),
           const FlexColumnWidth(1),
-          if(showAlbum) const FlexColumnWidth(1),
+          if(widget.showAlbum) const FlexColumnWidth(1),
           const FixedColumnWidth(50),
         ] : [
           const FlexColumnWidth(),
@@ -39,15 +75,15 @@ class TrackList extends StatelessWidget {
             columnWidths: columnWidths.asMap(),
             defaultVerticalAlignment: TableCellVerticalAlignment.middle,
             children: [
-              if(showHeader && isWide) TableRow(
+              if(widget.showHeader && isWide) TableRow(
                   children: [
                     const Text('TRACK'),
                     const Text('ARTIST'),
-                    if(showAlbum) const Text('ALBUM'),
+                    if(widget.showAlbum) const Text('ALBUM'),
                     const Center(child: Icon(Icons.schedule))
                   ]
               ),
-              ...tracks.mapIndexed((index, track) {
+              ...widget.tracks.mapIndexed((index, track) {
                 String trackDuration = '';
                 if(track.duration != null) {
                   trackDuration = df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true));
@@ -62,55 +98,62 @@ class TrackList extends StatelessWidget {
                       Table(
                         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                         columnWidths: [
-                          const FixedColumnWidth(50),
-                          const FixedColumnWidth(50),
+                          const FixedColumnWidth(52),
                           const FlexColumnWidth(),
                         ].asMap(),
                         children: [
                           TableRow(
-                              children: [
-                                IconButton(
-                                  onPressed: () => _appState.playTrackList(tracks, index),
-                                  icon: const Icon(Icons.play_arrow)
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: track.coverUri == null ?
-                                  const Text('No image') :
-                                  CachedNetworkImage(
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.fitWidth,
-                                    imageUrl: MusicApi.imageUrl(track.coverUri!, '120x120').toString(),
-                                    placeholder: (context, url) => const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: MouseRegion(
+                                  onEnter: (event){ hoveredTrack = track; setState(() {}); },
+                                  onExit: (event){ hoveredTrack = null; setState(() {}); },
+                                  child: ValueListenableBuilder(
+                                      valueListenable: appState.trackNotifier,
+                                      builder: (_, Track? currentTrack, __) {
+                                        return TrackCover(
+                                          track,
+                                          isCurrent: currentTrack != null && currentTrack == track,
+                                          isHovered: track == hoveredTrack,
+                                          isPlaying: isPlaying,
+                                          onPressed: (bool isPlaying) {
+                                            if(isPlaying) {
+                                              appState.pause();
+                                            } else {
+                                              appState.playTracks(widget.tracks, index, widget.queueName);
+                                            }
+                                          },
+                                        );
+                                      }
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                          softWrap: false,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          text: TextSpan(
-                                              text: track.title,
-                                              children: [
-                                                if(track.version != null)
-                                                  TextSpan(
-                                                    text: ' (${track.version!})',
-                                                    style: TextStyle(color: theme.colorScheme.outline),
-                                                  )
-                                              ]
-                                          )
-                                      ),
-                                      if(!isWide) _buildArtistName(track),
-                                    ],
-                                  ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    RichText(
+                                        softWrap: false,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        text: TextSpan(
+                                            text: track.title,
+                                            children: [
+                                              if(track.version != null)
+                                                TextSpan(
+                                                  text: ' (${track.version!})',
+                                                  style: TextStyle(color: theme.colorScheme.outline),
+                                                )
+                                            ]
+                                        )
+                                    ),
+                                    if(!isWide) _buildArtistName(track),
+                                  ],
                                 ),
-                              ]
+                              ),
+                            ]
                           )
                         ],
                       ),
@@ -120,7 +163,7 @@ class TrackList extends StatelessWidget {
                           padding: const EdgeInsets.all(2.0),
                           child: _buildArtistName(track),
                         ),
-                        if(showAlbum) Padding(
+                        if(widget.showAlbum) Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
                             track.albums.isNotEmpty ? track.albums.first.title : '',

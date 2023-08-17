@@ -3,6 +3,7 @@ import 'package:ya_player/controls/mix_link_card.dart';
 import 'package:ya_player/controls/podcast_card.dart';
 import 'package:ya_player/controls/track_list.dart';
 
+import '../helpers/playback_queue.dart';
 import '../models/music_api_types.dart';
 import 'album_card.dart';
 import 'artist_card.dart';
@@ -46,8 +47,8 @@ class PageBlock extends StatelessWidget {
 
     return Row(
       children: [
-        Flexible(child: TrackList(leftTracks, showAlbum: true)),
-        Flexible(child: TrackList(rightTracks, showAlbum: true)),
+        Flexible(child: TrackList(leftTracks, showAlbum: true, queueName: QueueNames.trackList)),
+        Flexible(child: TrackList(rightTracks, showAlbum: true, queueName: QueueNames.trackList)),
       ],
     );
   }

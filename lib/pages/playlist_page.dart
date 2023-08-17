@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ya_player/controls/track_list.dart';
 import 'package:ya_player/music_api.dart';
 
+import '../helpers/playback_queue.dart';
 import '../models/music_api/playlist.dart';
 import '../services/service_locator.dart';
 
@@ -82,7 +83,7 @@ class PlaylistPage extends StatelessWidget {
             future: _playlistData,
             builder: (_, AsyncSnapshot<Playlist> snapshot){
               if(snapshot.hasData) {
-                return TrackList(snapshot.data!.tracks, showAlbum: true, showHeader: true);
+                return TrackList(snapshot.data!.tracks, showAlbum: true, showHeader: true, queueName: QueueNames.trackList);
               }
               else {
                 return const SizedBox(

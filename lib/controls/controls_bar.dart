@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../helpers/nav_keys.dart';
+import '../models/music_api/track.dart';
 import '../notifiers/progress_notifier.dart';
 import '../services/service_locator.dart';
 import 'play_controls.dart';
@@ -54,6 +56,23 @@ class _ControlsBar extends State<ControlsBar> {
                   }
               ),
               const Expanded(child: SizedBox(),),
+              ValueListenableBuilder(
+                valueListenable: appState.queueTracks,
+                builder: (_, List<Track> tracks, Widget? child) {
+                  if(tracks.isNotEmpty && child != null) {
+                    return child;
+                  }
+                  else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                child: IconButton(
+                  icon: const Icon(Icons.queue_music),
+                  onPressed: () {
+                    NavKeys.mainNav.currentState!.pushReplacementNamed('/queue', arguments: appState.queueName);
+                  }
+                ),
+              ),
               if(defaultTargetPlatform == TargetPlatform.windows ||
                   defaultTargetPlatform == TargetPlatform.linux ||
                   defaultTargetPlatform == TargetPlatform.macOS) Slider(
