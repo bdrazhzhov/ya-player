@@ -51,6 +51,14 @@ class Block {
         json['entities'].forEach((entity) => entities.add(Track.fromJson(entity['data']['track'], '')));
       case 'mixes':
         json['entities'].forEach((entity) => entities.add(MixLink.fromJson(entity['data'])));
+      case 'editorial-playlists':
+        json['entities'].forEach((entity) => _createPodcastEntity(entity, entities));
+      case 'album-chart':
+        json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity['data']['album'])));
+      case 'playlist-with-tracks':
+        json['entities'].forEach((entity) => entities.add(Playlist.fromJson(entity['data'])));
+      case 'recently-played':
+        json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity['data'])));
       default:
         debugPrint('Unknown block type: "$type"');
     }
@@ -58,6 +66,14 @@ class Block {
     return Block(id: json['id'], title: json['title'], description: json['description'],
         type: type, typeForFrom: json['typeForFrom'], viewAllUrl: json['viewAllUrl'],
         viewAllUrlScheme: json['viewAllUrlScheme'], entities: entities);
+  }
+
+  static void _createPodcastEntity(Map<String, dynamic> entityJson, List<Object> entities) {
+    if(entityJson['type'] == 'playlist') {
+      entities.add(Playlist.fromJson(entityJson['data']));
+    } else {
+      entities.add(Podcast.fromJson(entityJson['data']));
+    }
   }
 
   static Object? _createPlayContext(entity) {

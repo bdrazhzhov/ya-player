@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 
 import '../models/music_api/album.dart';
 import '../music_api.dart';
@@ -38,12 +39,12 @@ class AlbumCard extends StatelessWidget {
               ),
             ),
             Text(
-                album.title,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.bold)
+              HtmlCharacterEntities.decode(album.title),
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold)
             ),
             Text(
-              album.artists.isNotEmpty ? album.artists.first.name : '',
+              album.artists.isNotEmpty ? HtmlCharacterEntities.decode(album.artists.first.name) : '',
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: theme.colorScheme.outline,

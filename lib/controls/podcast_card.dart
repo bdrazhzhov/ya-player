@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 import 'package:ya_player/models/music_api/podcast.dart';
 import 'package:ya_player/pages/podcast_page.dart';
 
@@ -48,7 +49,7 @@ class PodcastCard extends StatelessWidget {
                 ),
               ),
               Text(
-                  podcast.title,
+                  HtmlCharacterEntities.decode(podcast.title),
                   maxLines: 1,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
@@ -58,7 +59,7 @@ class PodcastCard extends StatelessWidget {
                 ...[
                   if(podcastDescription!= null)
                     Text(
-                      podcastDescription,
+                      HtmlCharacterEntities.decode(podcastDescription),
                       maxLines: 2,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
@@ -73,7 +74,7 @@ class PodcastCard extends StatelessWidget {
                 ]
               else
                 Text(
-                  podcast.artist,
+                  HtmlCharacterEntities.decode(podcast.artist),
                   style: TextStyle(
                     color: theme.colorScheme.outline,
                     fontSize: theme.textTheme.labelMedium?.fontSize

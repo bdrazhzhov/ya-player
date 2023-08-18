@@ -427,11 +427,21 @@ class MusicApi {
     return SearchResult.fromJson(json);
   }
 
-  Future<NonMusicCatalog> nonMusicCatalog() async {
+  static const List<String> skippedBlockIds = ['CONTINUE_LISTEN',
+    'nonmusic-menu-tab', 'bookmate_banner'];
+
+  Future<List<Block>> nonMusicCatalog() async {
     const url = '$_baseUri/non-music/catalogue';
     Map<String, dynamic> json = await _getRequest(uri: url);
+    List<Block> blocks = [];
 
-    return NonMusicCatalog.fromJson(json['result']);
+    json['result']['blocks'].forEach((blockJson) {
+      if(skippedBlockIds.contains(blockJson['id'])) return;
+
+      blocks.add(Block.fromJson(blockJson));
+    });
+
+    return blocks;
   }
 
   Future<List<Block>> landing() async {

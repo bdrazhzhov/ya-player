@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 import 'package:ya_player/pages/playlist_page.dart';
 
 import '../models/music_api/playlist.dart';
@@ -9,7 +10,7 @@ class PlaylistCard extends StatelessWidget {
   final Playlist playlist;
   final double width;
   static const _descriptionHeight = 60;
-  static const _countsHeight = 60;
+  static const _countsHeight = 50;
 
   const PlaylistCard(this.playlist, {super.key, required this.width});
 
@@ -53,13 +54,13 @@ class PlaylistCard extends StatelessWidget {
                   child: const Center(child: Text('No Image')),
                 ),
               ),
-              Text(playlist.title),
+              Text(HtmlCharacterEntities.decode(playlist.title)),
               if(playlist.description != null) Expanded(
                 child: Text(
-                  playlist.description!,
+                  HtmlCharacterEntities.decode(playlist.description!),
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
+                  maxLines: 2,
                   style: TextStyle(color: theme.colorScheme.outline)
                 )
               ),

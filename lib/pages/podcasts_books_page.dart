@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/podcast_card.dart';
-import 'package:ya_player/models/music_api/non_music_catalog.dart';
 
+import '../controls/page_block.dart';
+import '../models/music_api_types.dart';
 import '../app_state.dart';
 import '../services/service_locator.dart';
 
@@ -14,43 +14,16 @@ class PodcastsBooksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ValueListenableBuilder<NonMusicCatalog?>(
+    return ValueListenableBuilder<List<Block>>(
       valueListenable: _appState.nonMusicNotifier,
-      builder: (_, catalog, __) {
-        if(catalog == null) return const SizedBox.shrink();
+      builder: (_, blocks, __) {
 
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                catalog.title,
-                style: theme.textTheme.displayLarge,
-              ),
-              ...catalog.blocks.map((block) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      block.title ?? 'No title: ${block.id}',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    Text(
-                      block.description ?? '',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    SizedBox(
-                      height: 250,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: block.entities.map((e) {
-                          return PodcastCard(e, 160);
-                        }).toList(),
-                      ),
-                    )
-                  ],
-                );
-              }),
+              Text('Podcasts and books', style: theme.textTheme.displayMedium),
+              ...blocks.map((block) => PageBlock(block: block)).toList()
             ],
           ),
         );

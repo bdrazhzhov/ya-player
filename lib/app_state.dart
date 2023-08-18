@@ -36,7 +36,7 @@ class AppState {
   final albumNotifier = ValueNotifier<AlbumWithTracks?>(null);
   final searchSuggestionsNotifier = ValueNotifier<SearchSuggestions?>(null);
   final searchResultNotifier = ValueNotifier<SearchResult?>(null);
-  final nonMusicNotifier = ValueNotifier<NonMusicCatalog?>(null);
+  final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
   final queueTracks = ValueNotifier<List<Track>>([]);
   PlaybackQueue? _playbackQueue;
@@ -359,7 +359,7 @@ class AppState {
     albumsNotifier.value = [];
     artistsNotifier.value = [];
     playlistsNotifier.value = [];
-    nonMusicNotifier.value = null;
+    nonMusicNotifier.value = [];
     landingNotifier.value = [];
   }
 

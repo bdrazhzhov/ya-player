@@ -13,6 +13,18 @@ class TrackDownloadInfo {
     return TrackDownloadInfo(json['codec'], json['gain'], json['preview'],
         Uri.parse(json['downloadInfoUrl']), json['direct'], json['bitrateInKbps']);
   }
+
+  @override
+  String toString() {
+    return 'TrackDownloadInfo ${{
+      'codec': codec,
+      'gain': gain,
+      'preview': preview,
+      'downloadInfoUrl': downloadInfoUrl,
+      'direct': direct,
+      'bitrateInKbps': bitrateInKbps
+    }}';
+  }
 }
 
 class FileDownloadInfo {

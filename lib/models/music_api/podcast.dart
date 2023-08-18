@@ -35,7 +35,7 @@ class Podcast {
     if(data['data'] != null && data['data']['podcast'] != null) data = data['data']['podcast'];
 
     final List<ArtistBase> artists = [];
-    data['artists'].forEach((artistJson) => artists.add(ArtistBase.fromJson(artistJson)));
+    data['artists']?.forEach((artistJson) => artists.add(ArtistBase.fromJson(artistJson)));
     final type = data['type'] == 'audiobook' ? PodcastType.audiobook : PodcastType.podcast;
 
     return Podcast(
