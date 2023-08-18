@@ -33,6 +33,7 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
   static const double size = 50;
   static const double hoverButtonSize = 30;
   static const buttonColor = Color.fromARGB(255, 255, 219, 77);
+  static const double coverCornersRadius = 4.0;
 
   @override
   void initState() {
@@ -69,7 +70,10 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
             Container(
               width: size,
               height: size,
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.75)),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.75),
+                borderRadius: BorderRadius.circular(coverCornersRadius),
+              ),
             ),
           // Animation of playing process
           if(!widget.isHovered && widget.isPlaying)
@@ -91,19 +95,9 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
                 color: buttonColor,
                 borderRadius: BorderRadius.all(Radius.circular(15))
               ),
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    if(widget.onPressed == null) return;
-
-                    widget.onPressed!(widget.isPlaying && widget.isCurrent);
-                  },
-                  child: widget.isPlaying && widget.isCurrent
-                      ? const Icon(Icons.pause, color: Colors.black)
-                      : const Icon(Icons.play_arrow, color: Colors.black),
-                ),
-              )
+              child: widget.isPlaying && widget.isCurrent
+                  ? const Icon(Icons.pause, color: Colors.black)
+                  : const Icon(Icons.play_arrow, color: Colors.black)
             ),
         ]
       )
@@ -111,18 +105,18 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
   }
 
   Widget image() {
-    if(widget.track.coverUri == null) {
-      return SvgPicture.asset(
-        'assets/svg/track_placeholder.svg',
-      );
-    }
-    else {
-      return CachedNetworkImage(
-        fit: BoxFit.fitWidth,
-        imageUrl: MusicApi.imageUrl(widget.track.coverUri!, '50x50').toString(),
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-      );
-    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(coverCornersRadius),
+      child: widget.track.coverUri == null
+        ? SvgPicture.asset(
+            'assets/svg/track_placeholder.svg',
+          )
+        : CachedNetworkImage(
+            fit: BoxFit.fitWidth,
+            imageUrl: MusicApi.imageUrl(widget.track.coverUri!, '50x50').toString(),
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+    );
   }
 }

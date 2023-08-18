@@ -39,7 +39,7 @@ class _MainScreen extends State<MainScreen> {
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 100),
+            padding: const EdgeInsets.only(top: 56),
             child: Navigator(
               key: NavKeys.mainNav,
               observers: [getIt<AppRouteObserver>()],
