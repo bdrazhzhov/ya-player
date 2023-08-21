@@ -5,6 +5,7 @@ import '../models/music_api/track.dart';
 class QueueNames {
   static const String trackList = 'desktop_win-own_tracks-track-default';
   static const String album = 'desktop_win-album-album-default';
+  static const String playlist = 'desktop_win-own_playlists-playlist-default';
 }
 
 class PlaybackQueue {

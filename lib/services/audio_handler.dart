@@ -36,14 +36,14 @@ class MyAudioHandler extends BaseAudioHandler {
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenToPlayingStream();
-    _player.playerStateStream.listen((state) {
-      debugPrint('PlayerStateStream: $state');
-    });
+    // _player.playerStateStream.listen((state) {
+    //   debugPrint('PlayerStateStream: $state');
+    // });
   }
 
   void _listenToPlayingStream() {
     _player.playingStream.listen((playing) {
-      debugPrint('PlayingStream: $playing');
+      // debugPrint('PlayingStream: $playing');
       _isPlaying = playing;
       _mediaControls = [
         MediaControl.skipToPrevious,

@@ -395,6 +395,21 @@ class MusicApi {
     return _createQueue(queue);
   }
 
+  Future<String> createQueueForPlaylist(Playlist playlist, List<QueueTrack> tracks, int currentIndex) {
+    final queue = Queue(
+        context: QueueContext(
+            description: playlist.title,
+            id: '${playlist.uid}:${playlist.kind}',
+            type: 'my_music'
+        ),
+        currentIndex: currentIndex,
+        isInteractive: true,
+        tracks: tracks
+    );
+
+    return _createQueue(queue);
+  }
+
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {
     final url = '$_baseUri/albums/$albumId/with-tracks';
     Map<String, dynamic> json = await _getRequest(uri: url);
@@ -464,5 +479,15 @@ class MusicApi {
     Map<String, dynamic> json = await _getRequest(uri: url);
 
     return Playlist.fromJson(json['result']);
+  }
+
+  Future<List<Queue>> queues() async {
+    const String url = '$_baseUri/queues';
+    Map<String, dynamic> json = await _getRequest(uri: url);
+    List<Queue> queues = [];
+
+    json['result']['queues'].forEach((q) => Queue.fromJson(q));
+
+    return queues;
   }
 }
