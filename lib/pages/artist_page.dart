@@ -11,6 +11,7 @@ import '../models/music_api/artist_info.dart';
 import '../controls/page_base_layout.dart';
 import '../services/service_locator.dart';
 import '../music_api.dart';
+import 'popular_artist_tracks.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo;
@@ -47,8 +48,15 @@ class ArtistPage extends StatelessWidget {
                       if(info.popularTracks.isNotEmpty) ...[
                         Row(children: [
                           const Expanded(child: Text('Popular tracks')),
-                          ElevatedButton(
-                            onPressed: (){},
+                          TextButton(
+                            onPressed: (){
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) => PopularArtistTracks(artist),
+                                  reverseTransitionDuration: Duration.zero,
+                                )
+                              );
+                            },
                             child: const Text('Show all')
                           )
                         ]),

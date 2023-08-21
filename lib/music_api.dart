@@ -222,7 +222,7 @@ class MusicApi {
     return (ids: ids, revision: newRevision);
   }
 
-  Future<List<Track>> likedTracks(List<int> ids) async {
+  Future<List<Track>> tracksByIds(List<int> ids) async {
     const url = '$_baseUri/tracks';
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
     Map<String, dynamic> json = await _postForm(uri: url, formData: data);
@@ -489,5 +489,14 @@ class MusicApi {
     json['result']['queues'].forEach((q) => Queue.fromJson(q));
 
     return queues;
+  }
+
+  Future<List<int>> trackIdsByRating(int artistId) async {
+    final String url = '$_baseUri/artists/$artistId/track-ids-by-rating';
+    Map<String, dynamic> json = await _getRequest(uri: url);
+    final List<int> ids = [];
+    json['result']['tracks'].forEach((t) => ids.add(int.parse(t)));
+
+    return ids;
   }
 }

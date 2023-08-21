@@ -10,14 +10,12 @@ class SliverTrackList extends StatefulWidget {
   final List<Track> tracks;
   final String queueName;
   final bool showAlbum;
-  final bool showHeader;
 
   const SliverTrackList({
     super.key,
     required this.tracks,
     required this.queueName,
     this.showAlbum = true,
-    this.showHeader = true
   });
 
   @override

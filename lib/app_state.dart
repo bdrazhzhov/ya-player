@@ -109,7 +109,7 @@ class AppState {
     }
 
     if(_likedTrackIds.isNotEmpty) {
-      likedTracksNotifier.value = await _musicApi.likedTracks(_likedTrackIds);
+      likedTracksNotifier.value = await _musicApi.tracksByIds(_likedTrackIds);
       _likedTrackIds.sort();
     }
   }
@@ -425,5 +425,10 @@ class AppState {
 
   void searchResult(String text) async {
     searchResultNotifier.value = await _musicApi.searchResult(text: text);
+  }
+
+  Future<List<Track>> popularTracks(int artistId) async {
+    final trackIds = await _musicApi.trackIdsByRating(artistId);
+    return _musicApi.tracksByIds(trackIds);
   }
 }
