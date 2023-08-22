@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
+import 'helpers/paged_data.dart';
 import 'models/music_api_types.dart';
 
 class MusicApi {
@@ -498,5 +499,14 @@ class MusicApi {
     json['result']['tracks'].forEach((t) => ids.add(int.parse(t)));
 
     return ids;
+  }
+
+  Future<PagedData<Album>> artistAlbums(int artistId) async {
+    final String url = '$_baseUri/artists/$artistId/direct-albums?page=0&page-size=50&sort-by=rating&sort-order=desc';
+    Map<String, dynamic> json = await _getRequest(uri: url);
+    List<Album> albums = [];
+    json['result']['albums'].forEach((a) => albums.add(Album.fromJson(a)));
+
+    return PagedData.fromJson(json['pager'], albums);
   }
 }
