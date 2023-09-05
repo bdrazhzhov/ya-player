@@ -76,18 +76,10 @@ packages:
     dependency: "direct main"
     description:
       name: audio_video_progress_bar
-      sha256: "67f3a5ea70d48b48caaf29f5a0606284a6aa3a393736daf9e82bec985d2f9b70"
+      sha256: "0bc8b5758288f90d74b0f3562ccdd9dbef5b01a2591175682fed98dcf630634c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
-  badges:
-    dependency: transitive
-    description:
-      name: badges
-      sha256: a7b6bbd60dce418df0db3058b53f9d083c22cdb5132a052145dc267494df0b84
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.2"
+    version: "2.0.0"
   bitsdojo_window:
     dependency: "direct main"
     description:
@@ -216,14 +208,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.3.2"
-  easy_sidemenu:
-    dependency: "direct main"
-    description:
-      name: easy_sidemenu
-      sha256: "193c40a98f547f16e9c3209f282a9776646f3bec8842cef2ff8cf10cfb52c41e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   equatable:
     dependency: "direct main"
     description:
