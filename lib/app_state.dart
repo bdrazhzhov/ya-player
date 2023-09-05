@@ -15,6 +15,7 @@ import 'notifiers/progress_notifier.dart';
 import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
+import 'services/yandex_api_client.dart';
 
 enum UiState { loading, auth, main }
 
@@ -368,7 +369,7 @@ class AppState {
     final expiresAt = DateTime.now().add(Duration(seconds: token.expiresIn.inSeconds));
     await _prefs.setExpiresAt(expiresAt.millisecondsSinceEpoch ~/ 1000);
 
-    _musicApi.authToken = token.accessToken;
+    getIt<YandexApiClient>().authToken = token.accessToken;
     _requestAppData();
     mainPageState.value = UiState.main;
     NavKeys.mainNav.currentState?.pushReplacementNamed('/');
@@ -376,7 +377,7 @@ class AppState {
 
   Future<void> logout() async {
     _prefs.clear();
-    _musicApi.authToken = '';
+    getIt<YandexApiClient>().authToken = '';
     accountNotifier.value = null;
     _reset();
     mainPageState.value = UiState.auth;

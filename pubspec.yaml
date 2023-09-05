@@ -19,6 +19,7 @@ dependencies:
   audio_service: ^0.18.10
   audio_service_mpris: ^0.1.0
   cached_network_image: ^3.2.3
+  dio: ^5.3.2
   easy_sidemenu: ^0.4.2
   font_awesome_flutter: ^10.5.0
   get_it: ^7.6.0
