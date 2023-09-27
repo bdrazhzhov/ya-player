@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ya_player/pages/page_base.dart';
 
 import '../app_state.dart';
 import '../controls/album_card.dart';
@@ -11,29 +12,23 @@ class AlbumsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
-    final size = MediaQuery.of(context).size;
-    double width = size.width / 3;
-    if(width < 130) {
-      width = 130;
-    } else if(width > 200) {
-      width = 200;
-    }
-    final theme = Theme.of(context);
 
-    return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.background),
-      child: SingleChildScrollView(
-        child: ValueListenableBuilder<List<Album>>(
-          valueListenable: appState.albumsNotifier,
-          builder: (_, albums, __) {
-            return Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: albums.map((album) => AlbumCard(album, width)).toList(),
-            );
-          }
-        ),
-      ),
+    return PageBase(
+      title: 'Albums',
+      slivers: [
+        SliverToBoxAdapter(
+          child: ValueListenableBuilder<List<Album>>(
+              valueListenable: appState.albumsNotifier,
+              builder: (_, albums, __) {
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: albums.map((album) => AlbumCard(album, 200)).toList(),
+                );
+              }
+          ),
+        )
+      ]
     );
   }
 }

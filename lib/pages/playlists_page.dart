@@ -4,6 +4,7 @@ import 'package:ya_player/models/music_api/playlist.dart';
 import '../app_state.dart';
 import '../controls/playlist_card.dart';
 import '../services/service_locator.dart';
+import 'page_base.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
@@ -19,39 +20,42 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: ValueListenableBuilder<List<Playlist>>(
+    return PageBase(
+      title: 'Playlists',
+      slivers: [ValueListenableBuilder<List<Playlist>>(
         valueListenable: appState.playlistsNotifier,
         builder: (_, playlists, __) {
-          return LayoutBuilder(
-            builder: (_, BoxConstraints constraints) {
-              int columnsNumber = 3;
-              double width = constraints.maxWidth / columnsNumber;
+          return SliverToBoxAdapter(
+            child: LayoutBuilder(
+              builder: (_, BoxConstraints constraints) {
+                int columnsNumber = 3;
+                double width = constraints.maxWidth / columnsNumber;
 
-              //TODO: rework for case with width and spacing
-              while(true) {
-                if(width < _minWidth) columnsNumber -= 1;
-                if(columnsNumber == 0) {
-                  columnsNumber = 1;
-                  width = constraints.maxWidth;
-                  break;
+                //TODO: rework for case with width and spacing
+                while(true) {
+                  if(width < _minWidth) columnsNumber -= 1;
+                  if(columnsNumber == 0) {
+                    columnsNumber = 1;
+                    width = constraints.maxWidth;
+                    break;
+                  }
+                  if(width > _maxWidth) columnsNumber += 1;
+
+                  width = constraints.maxWidth / columnsNumber;
+
+                  if(columnsNumber == 1 || width >= _minWidth && width <= _maxWidth) break;
                 }
-                if(width > _maxWidth) columnsNumber += 1;
 
-                width = constraints.maxWidth / columnsNumber;
-
-                if(columnsNumber == 1 || width >= _minWidth && width <= _maxWidth) break;
-              }
-
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: playlists.map((playlist) => PlaylistCard(playlist, width: width)).toList(),
-              );
-            },
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: playlists.map((playlist) => PlaylistCard(playlist, width: width)).toList(),
+                );
+              },
+            ),
           );
         }
-      ),
+      )],
     );
   }
 }

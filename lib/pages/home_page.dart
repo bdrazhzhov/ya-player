@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ya_player/pages/page_base.dart';
 
 import '../models/music_api/block.dart';
 import '../app_state.dart';
@@ -11,21 +12,22 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
-    return ValueListenableBuilder(
-      valueListenable: _appState.landingNotifier,
-      builder: (_, List<Block> blocks, __) {
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Home', style: theme.textTheme.displayMedium),
-              ...blocks.map((block) => PageBlock(block: block)).toList()
-            ],
-          ),
-        );
-      },
+    return PageBase(
+      title: 'Home',
+      slivers: [
+        ValueListenableBuilder(
+          valueListenable: _appState.landingNotifier,
+          builder: (_, List<Block> blocks, __) {
+            return SliverList.builder(
+              itemCount: blocks.length,
+              itemBuilder: (BuildContext context, int index) {
+                return PageBlock(block: blocks[index]);
+              }
+            );
+          },
+        )
+      ]
     );
   }
 }
