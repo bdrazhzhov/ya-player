@@ -58,7 +58,7 @@ class Block {
       case 'playlist-with-tracks':
         json['entities'].forEach((entity) => entities.add(Playlist.fromJson(entity['data'])));
       case 'recently-played':
-        json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity['data'])));
+        json['entities'].forEach((entity) => _createRecentlyPlayed(entity, entities));
       default:
         debugPrint('Unknown block type: "$type"');
     }
@@ -66,6 +66,17 @@ class Block {
     return Block(id: json['id'], title: json['title'], description: json['description'],
         type: type, typeForFrom: json['typeForFrom'], viewAllUrl: json['viewAllUrl'],
         viewAllUrlScheme: json['viewAllUrlScheme'], entities: entities);
+  }
+
+  static void _createRecentlyPlayed(entity, List<Object> entities) {
+    switch(entity['type']) {
+      case 'album':
+        entities.add(Album.fromJson(entity['data']));
+      case 'playlist':
+        entities.add(Playlist.fromJson(entity['data']));
+      default:
+        debugPrint('Unknown recent-played type: "${entity['type']}"');
+    }
   }
 
   static void _createPodcastEntity(Map<String, dynamic> entityJson, List<Object> entities) {
