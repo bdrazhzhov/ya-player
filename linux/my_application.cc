@@ -7,6 +7,7 @@
 #endif
 
 #include "flutter/generated_plugin_registrant.h"
+#include <fstream>
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -52,7 +53,21 @@ static void my_application_activate(GApplication* application) {
   bdw->setCustomFrame(true);
 //  gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
-  gtk_window_set_icon_from_file(GTK_WINDOW(window),"assets/app_icon.png",NULL);
+
+  std::ifstream iconFile;
+  iconFile.open("assets/app_icon.png");
+  if(iconFile)
+  {
+    gtk_window_set_icon_from_file(GTK_WINDOW(window),"assets/app_icon.png",NULL);
+  }
+  else
+  {
+    iconFile.open("data/flutter_assets/assets/app_icon.png");
+    if(iconFile)
+    {
+      gtk_window_set_icon_from_file(GTK_WINDOW(window),"data/flutter_assets/assets/app_icon.png",NULL);
+    }
+  }
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
