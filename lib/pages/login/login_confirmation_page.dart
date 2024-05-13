@@ -16,7 +16,7 @@ class LoginConfirmationPage extends StatefulWidget {
 
 class _LoginConfirmationPageState extends State<LoginConfirmationPage> {
   bool _isLoading = false;
-  bool _isError = false;
+  final bool _isError = false;
 
   @override
   Widget build(BuildContext context) {

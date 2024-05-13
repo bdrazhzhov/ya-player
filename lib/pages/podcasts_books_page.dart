@@ -23,7 +23,7 @@ class PodcastsBooksPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Podcasts and books', style: theme.textTheme.displayMedium),
-              ...blocks.map((block) => PageBlock(block: block)).toList()
+              ...blocks.map((block) => PageBlock(block: block))
             ],
           ),
         );

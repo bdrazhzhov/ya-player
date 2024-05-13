@@ -69,7 +69,7 @@ class PodcastEpisodesList extends StatelessWidget {
               )
             ]);
           }
-        ).toList()
+        )
       ]
     );
   }

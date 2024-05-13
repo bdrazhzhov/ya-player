@@ -8,13 +8,13 @@ class PageBaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PreferredSizeWidget? appBar;
-    if(title != null) {
-      appBar = AppBar(
-        leading: (ModalRoute.of(context)?.canPop ?? false) ? const BackButton() : null,
-        title: Text(title!),
-      );
-    }
+    // PreferredSizeWidget? appBar;
+    // if(title != null) {
+    //   appBar = AppBar(
+    //     leading: (ModalRoute.of(context)?.canPop ?? false) ? const BackButton() : null,
+    //     title: Text(title!),
+    //   );
+    // }
 
     return Scaffold(
       // appBar: appBar,
