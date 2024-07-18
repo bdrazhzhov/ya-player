@@ -69,22 +69,22 @@ class PageBlock extends StatelessWidget {
 
   Widget? _createBlockEntityCard(BuildContext context, entity) {
     switch(entity.runtimeType) {
-      case Playlist _:
+      case const (Playlist):
         final playlist = entity as Playlist;
         return PlaylistCard(playlist, width: 180);
-      case Album _:
+      case const (Album):
         final album = entity as Album;
         return AlbumCard(album, 180);
-      case LikedArtist _:
+      case const (LikedArtist):
         final artist = entity as LikedArtist;
         return ArtistCard(artist, 180);
-      case Promotion _:
+      case const (Promotion):
         final promotion = entity as Promotion;
         return PromotionCard(promotion, width: 300);
-      case Podcast _:
+      case const (Podcast):
         final podcast = entity as Podcast;
         return PodcastCard(podcast, 180);
-      case MixLink _:
+      case const (MixLink):
         final mixLink = entity as MixLink;
         return MixLinkCard(mixLink, width: 180);
       default:
