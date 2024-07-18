@@ -4,8 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audio_player_gst
-  bitsdojo_window_linux
-  tray_manager
   url_launcher_linux
 )
 

@@ -10,7 +10,7 @@ class SliverTracksHeader extends SliverPersistentHeaderDelegate {
     return SizedBox(
       height: _height,
       child: Container(
-        decoration: BoxDecoration(color: theme.colorScheme.background),
+        decoration: BoxDecoration(color: theme.colorScheme.surface),
         child: const Row(
           children: [
             Expanded(

@@ -33,12 +33,17 @@ class MyAudioHandler extends BaseAudioHandler {
   final _skipController = StreamController<TrackSkipType>();
   Stream<TrackSkipType> get skipStream => _skipController.stream;
 
+  Stream<double> get volumeStream => _player.volumeStream;
+
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenToPlayingStream();
     // _player.playerStateStream.listen((state) {
     //   debugPrint('PlayerStateStream: $state');
     // });
+    _player.volumeStream.listen((value){
+      debugPrint("Volume change received in player: $value");
+    });
   }
 
   void _listenToPlayingStream() {

@@ -6,6 +6,7 @@ import '../app_state.dart';
 import '../helpers/nav_keys.dart';
 import '../models/music_api/track.dart';
 import '../notifiers/progress_notifier.dart';
+// import '../services/audio_handler.dart';
 import '../services/service_locator.dart';
 import 'play_controls.dart';
 import 'track_image.dart';
@@ -24,6 +25,17 @@ class _ControlsBar extends State<ControlsBar> {
   final AppState appState = getIt<AppState>();
 
   _ControlsBar();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // getIt<MyAudioHandler>().volumeStream.listen((value){
+    //   debugPrint('setState() volume');
+    //   appState.volume = value;
+    //   setState(() {});
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,5 +107,4 @@ class _ControlsBar extends State<ControlsBar> {
       ],
     );
   }
-
 }

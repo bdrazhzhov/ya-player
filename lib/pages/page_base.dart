@@ -15,7 +15,7 @@ class PageBase extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.background),
+      decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: CustomScrollView(
         slivers: [
           SliverPadding(

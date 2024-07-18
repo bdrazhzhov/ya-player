@@ -37,7 +37,7 @@ class _MainMenu extends State<MainMenu> {
         MenuItem(
           icon: SvgPicture.asset(
             'assets/y_icon.svg',
-            colorFilter: ColorFilter.mode(theme.colorScheme.onBackground, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(theme.colorScheme.onSurface, BlendMode.srcIn),
             width: 20,
             height: 20,
           ),

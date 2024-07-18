@@ -57,7 +57,7 @@ class AlbumPage extends StatelessWidget {
                       return TableRow(
                         decoration: BoxDecoration(
                           color: theme.colorScheme.onInverseSurface,
-                          border: Border.all(width: 1, color: theme.colorScheme.background)
+                          border: Border.all(width: 1, color: theme.colorScheme.surface)
                         ),
                         children: _tableRowWidgets(index, track, albumWithTracks)
                       );
@@ -233,7 +233,7 @@ class _TracksHeader extends SliverPersistentHeaderDelegate {
     return SizedBox(
       height: _height,
       child: Container(
-        decoration: BoxDecoration(color: theme.colorScheme.background),
+        decoration: BoxDecoration(color: theme.colorScheme.surface),
         child: const Padding(
           padding: EdgeInsets.only(left: 40, right: 40),
           child: Row(

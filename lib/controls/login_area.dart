@@ -12,13 +12,13 @@ class LoginArea extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.only(top: 32.0),
-      decoration: BoxDecoration(color: theme.colorScheme.background),
+      decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: Center(
         child: Container(
           width: 360,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.onBackground, width: 2),
+            border: Border.all(color: theme.colorScheme.onSurface, width: 2),
             borderRadius: const BorderRadius.all(Radius.circular(32)),
           ),
           child: Column(
@@ -31,7 +31,7 @@ class LoginArea extends StatelessWidget {
                   height: 44,
                   padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
-                      border: Border.all(color: theme.colorScheme.onBackground, width: 2),
+                      border: Border.all(color: theme.colorScheme.onSurface, width: 2),
                       borderRadius: const BorderRadius.all(Radius.circular(22))
                   ),
                   child: Row(
@@ -45,13 +45,13 @@ class LoginArea extends StatelessWidget {
                       ),
                       SvgPicture.asset(
                         'assets/svg/id_logo.svg',
-                        colorFilter: ColorFilter.mode(theme.colorScheme.onBackground, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(theme.colorScheme.onSurface, BlendMode.srcIn),
                         width: 26,
                         height: 26,
                       ),
                       SvgPicture.asset(
                         'assets/svg/id_logo_name.svg',
-                        colorFilter: ColorFilter.mode(theme.colorScheme.onBackground, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(theme.colorScheme.onSurface, BlendMode.srcIn),
                         width: 26,
                         height: 26,
                       ),

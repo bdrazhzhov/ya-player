@@ -17,7 +17,9 @@ dependencies:
 #  just_audio_mpv:
 #    git: https://github.com/bdrazhzhov/just_audio_mpv.git
   audio_service: ^0.18.10
-  audio_service_mpris: ^0.1.0
+#  audio_service_mpris: ^0.1.0
+  audio_service_mpris:
+    path: ../audio_service_mpris
   cached_network_image: ^3.2.3
   dio: ^5.3.2
   font_awesome_flutter: ^10.5.0
@@ -25,15 +27,15 @@ dependencies:
   http: ^1.1.0
   shared_preferences: ^2.2.0
   crypto: ^3.0.3
-  uuid: ^3.0.7
+  uuid: ^4.0.0
   equatable: ^2.0.5
   collection: ^1.17.1
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.0
+  intl: ^0.19.0
   url_launcher: ^6.1.12
   animations: ^2.0.7
-  bitsdojo_window: ^0.1.5
+#  bitsdojo_window: ^0.1.5
   flutter_svg: ^2.0.7
   mask_text_input_formatter: ^2.5.0
   html_character_entities: ^1.0.0+1
@@ -42,7 +44,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true

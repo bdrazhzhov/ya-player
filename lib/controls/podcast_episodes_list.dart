@@ -34,7 +34,7 @@ class PodcastEpisodesList extends StatelessWidget {
           return TableRow(
             decoration: BoxDecoration(
                 color: theme.colorScheme.onInverseSurface,
-                border: Border.all(width: 1, color: theme.colorScheme.background)
+                border: Border.all(width: 1, color: theme.colorScheme.surface)
             ),
             children: [
               CachedNetworkImage(
