@@ -148,7 +148,10 @@ class MusicApi {
     Map<String, dynamic> json = await _http.postForm('/tracks', data: data);
     List<Track> tracks = [];
     json['result'].forEach((item){
-      tracks.add(Track.fromJson(item, ''));
+      final track = Track.fromJson(item, '');
+      if(track.albums.isEmpty) return;
+
+      tracks.add(track);
     });
 
     return tracks;
