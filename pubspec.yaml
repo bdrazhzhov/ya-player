@@ -12,14 +12,12 @@ dependencies:
   audio_video_progress_bar: ^2.0.0
   just_audio: ^0.9.34
   just_audio_windows: ^0.2.0
-  just_audio_gst:
-    path: ../just_audio_gst
-#  just_audio_mpv:
-#    git: https://github.com/bdrazhzhov/just_audio_mpv.git
+#  just_audio_gst:
+#    path: ../just_audio_gst
   audio_service: ^0.18.10
 #  audio_service_mpris: ^0.1.0
-  audio_service_mpris:
-    path: ../audio_service_mpris
+#  audio_service_mpris:
+#    path: ../audio_service_mpris
   cached_network_image: ^3.2.3
   dio: ^5.3.2
   font_awesome_flutter: ^10.5.0
@@ -35,7 +33,7 @@ dependencies:
   intl: ^0.19.0
   url_launcher: ^6.1.12
   animations: ^2.0.7
-#  bitsdojo_window: ^0.1.5
+  #  bitsdojo_window: ^0.1.5
   flutter_svg: ^2.0.7
   mask_text_input_formatter: ^2.5.0
   html_character_entities: ^1.0.0+1
