@@ -56,12 +56,12 @@ class ArtistPage extends StatelessWidget {
               ],
 
               if(info.similarArtists.isNotEmpty) ...[
-                const SliverToBoxAdapter(child: Text('Similar')),
+                const SectionHeader(title: 'Similar'),
                 createSeparatedList(info.similarArtists, (artist) => ArtistCard(artist, 130)),
               ],
 
               if(info.artist.links.isNotEmpty) ...[
-                const SliverToBoxAdapter(child: Text('Official pages')),
+                const SectionHeader(title: 'Official pages'),
                 SliverToBoxAdapter(
                   child: Wrap(
                       children: info.artist.links.map((link) => _SocialLink(link)).toList()
@@ -86,7 +86,7 @@ class ArtistPage extends StatelessWidget {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemBuilder: (_, int index) => builder(items[index]),
-          separatorBuilder: (_, int index) => const SizedBox(width: 12),
+          separatorBuilder: (_, int index) => const SizedBox(width: 20),
           itemCount: items.length
         ),
       ),
@@ -106,14 +106,19 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Row(children: [
-        Expanded(child: Text(title)),
-        ElevatedButton(
-          onPressed: onPressed,
-          child: const Text('Show all')
-        )
-      ]),
+    return SliverPadding(
+      padding: const EdgeInsets.only(top: 20, bottom: 12),
+      sliver: SliverToBoxAdapter(
+        child: Row(children: [
+          Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge,)),
+          if(onPressed != null) ...[
+            ElevatedButton(
+              onPressed: onPressed,
+              child: const Text('Show all')
+            )
+          ]
+        ]),
+      ),
     );
   }
 }
