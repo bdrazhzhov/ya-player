@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'page_base.dart';
 import '../controls/album_card.dart';
 import '../controls/artist_card.dart';
-import '../controls/track_list.dart';
+import '../controls/sliver_track_list.dart';
 import '../helpers/playback_queue.dart';
 import '../models/music_api/artist.dart';
 import '../models/music_api/artist_info.dart';
-import '../controls/page_base_layout.dart';
 import '../services/service_locator.dart';
 import '../music_api.dart';
-import 'popular_artist_tracks.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo;
@@ -24,107 +23,97 @@ class ArtistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageBaseLayout(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            title: Text(artist.name),
-            leading: const SizedBox.shrink(),
-            pinned: true,
-            collapsedHeight: 60,
-            expandedHeight: 200,
-            // flexibleSpace: _CustomFlexibleSpace(album: album),
-          ),
-          SliverToBoxAdapter(
-            child: FutureBuilder<ArtistInfo>(
-              future: artistInfo,
-              builder: (BuildContext context, AsyncSnapshot<ArtistInfo> snapshot){
-                if(snapshot.hasData) {
-                  final info = snapshot.data!;
+    return FutureBuilder<ArtistInfo>(
+      future: artistInfo,
+      builder: (BuildContext context, AsyncSnapshot<ArtistInfo> snapshot){
+        if(snapshot.hasData)
+        {
+          final info = snapshot.data!;
+          return PageBase(
+            title: artist.name,
+            slivers: [
+              // SliverAppBar(
+              //   title: Text(artist.name),
+              //   leading: const SizedBox.shrink(),
+              //   pinned: true,
+              //   collapsedHeight: 60,
+              //   expandedHeight: 200,
+              // ),
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if(info.popularTracks.isNotEmpty) ...[
-                        Row(children: [
-                          const Expanded(child: Text('Popular tracks')),
-                          TextButton(
-                            onPressed: (){
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => PopularArtistTracks(artist),
-                                  reverseTransitionDuration: Duration.zero,
-                                )
-                              );
-                            },
-                            child: const Text('Show all')
-                          )
-                        ]),
-                        TrackList(info.popularTracks, showAlbum: false, queueName: QueueNames.trackList)
-                      ],
+              if(info.popularTracks.isNotEmpty) ...[
+                const SectionHeader(title: 'Popular tracks'),
+                SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.trackList)
+              ],
 
-                      if(info.albums.isNotEmpty) ...[
-                        Row(children: [
-                          const Expanded(child: Text('Popular albums')),
-                          ElevatedButton(
-                            onPressed: (){},
-                            child: const Text('Show all')
-                          )
-                        ]),
-                        SizedBox(
-                          height: 200,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: info.albums.map((album) => AlbumCard(album, 130)).toList(),
-                          ),
-                        )
-                      ],
+              if(info.albums.isNotEmpty) ...[
+                const SectionHeader(title: 'Popular albums'),
+                createSeparatedList(info.albums, (album) => AlbumCard(album, 130)),
+              ],
 
-                      if(info.alsoAlbums.isNotEmpty) ...[
-                        Row(children: [
-                          const Expanded(child: Text('Compilations')),
-                          ElevatedButton(
-                              onPressed: (){},
-                              child: const Text('Show all')
-                          )
-                        ]),
-                        SizedBox(
-                          height: 200,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: info.alsoAlbums.map((album) => AlbumCard(album, 130)).toList(),
-                          ),
-                        )
-                      ],
+              if(info.alsoAlbums.isNotEmpty) ...[
+                const SectionHeader(title: 'Compilations'),
+                createSeparatedList(info.alsoAlbums, (album) => AlbumCard(album, 130)),
+              ],
 
-                      if(info.similarArtists.isNotEmpty) ...[
-                        const Text('Similar'),
-                        SizedBox(
-                          height: 210,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: info.similarArtists.map((album) => ArtistCard(album, 130)).toList(),
-                          ),
-                        )
-                      ],
+              if(info.similarArtists.isNotEmpty) ...[
+                const SliverToBoxAdapter(child: Text('Similar')),
+                createSeparatedList(info.similarArtists, (artist) => ArtistCard(artist, 130)),
+              ],
 
-                      if(info.artist.links.isNotEmpty) ...[
-                        const Text('Official pages'),
-                        Wrap(
-                          children: info.artist.links.map((link) => _SocialLink(link)).toList()
-                        )
-                      ],
-                    ],
-                  );
-                }
-                else {
-                  return const CircularProgressIndicator();
-                }
-              }
-            ),
-          ),
-        ],
-      )
+              if(info.artist.links.isNotEmpty) ...[
+                const SliverToBoxAdapter(child: Text('Official pages')),
+                SliverToBoxAdapter(
+                  child: Wrap(
+                      children: info.artist.links.map((link) => _SocialLink(link)).toList()
+                  ),
+                )
+              ],
+            ],
+          );
+        }
+        else
+        {
+          return const CircularProgressIndicator();
+        }
+      }
+    );
+  }
+
+  SliverToBoxAdapter createSeparatedList<E>(List<E> items, Widget Function(E) builder) {
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 200,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (_, int index) => builder(items[index]),
+          separatorBuilder: (_, int index) => const SizedBox(width: 12),
+          itemCount: items.length
+        ),
+      ),
+    );
+  }
+}
+
+class SectionHeader extends StatelessWidget {
+  final String title;
+  final void Function()? onPressed;
+
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Row(children: [
+        Expanded(child: Text(title)),
+        ElevatedButton(
+          onPressed: onPressed,
+          child: const Text('Show all')
+        )
+      ]),
     );
   }
 }
