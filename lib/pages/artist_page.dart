@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../controls/custom_separated_hlist.dart';
 import '../controls/page_loading_indicator.dart';
 import 'page_base.dart';
 import '../controls/album_card.dart';
@@ -43,22 +44,22 @@ class ArtistPage extends StatelessWidget {
 
               if(info.popularTracks.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular tracks'),
-                SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.artistPopularTracks)
+                SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.artistPopularTracks),
               ],
 
               if(info.albums.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular albums'),
-                createSeparatedList(info.albums, (album) => AlbumCard(album, 130)),
+                createSeparatedList(info.albums.map((album) => AlbumCard(album, 130))),
               ],
 
               if(info.alsoAlbums.isNotEmpty) ...[
                 const SectionHeader(title: 'Compilations'),
-                createSeparatedList(info.alsoAlbums, (album) => AlbumCard(album, 130)),
+                createSeparatedList(info.alsoAlbums.map((album) => AlbumCard(album, 130))),
               ],
 
               if(info.similarArtists.isNotEmpty) ...[
                 const SectionHeader(title: 'Similar'),
-                createSeparatedList(info.similarArtists, (artist) => ArtistCard(artist, 130)),
+                createSeparatedList(info.similarArtists.map((artist) => ArtistCard(artist, 130))),
               ],
 
               if(info.artist.links.isNotEmpty) ...[
@@ -80,20 +81,16 @@ class ArtistPage extends StatelessWidget {
     );
   }
 
-  SliverToBoxAdapter createSeparatedList<E>(List<E> items, Widget Function(E) builder) {
+  SliverToBoxAdapter createSeparatedList(Iterable<Widget> items) {
     return SliverToBoxAdapter(
-      child: SizedBox(
-        height: 200,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (_, int index) => builder(items[index]),
-          separatorBuilder: (_, int index) => const SizedBox(width: 20),
-          itemCount: items.length
-        ),
+      child: CustomSeparatedHList(
+        children: items,
+        separatorWidget: const SizedBox(width: 20),
       ),
     );
   }
 }
+
 
 class SectionHeader extends StatelessWidget {
   final String title;
