@@ -44,7 +44,7 @@ class ArtistPage extends StatelessWidget {
 
               if(info.popularTracks.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular tracks'),
-                SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.artistPopularTracks),
+                SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.artist),
               ],
 
               if(info.albums.isNotEmpty) ...[
