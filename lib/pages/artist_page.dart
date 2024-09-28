@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../controls/page_loading_indicator.dart';
 import 'page_base.dart';
 import '../controls/album_card.dart';
 import '../controls/artist_card.dart';
@@ -23,6 +24,8 @@ class ArtistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return FutureBuilder<ArtistInfo>(
       future: artistInfo,
       builder: (BuildContext context, AsyncSnapshot<ArtistInfo> snapshot){
@@ -73,7 +76,7 @@ class ArtistPage extends StatelessWidget {
         }
         else
         {
-          return const CircularProgressIndicator();
+          return const PageLoadingIndicator();
         }
       }
     );
