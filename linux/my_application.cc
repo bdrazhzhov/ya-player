@@ -16,6 +16,10 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
+static void on_button_clicked(GtkButton *button, gpointer user_data) {
+  g_print("Button clicked!\n");
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
@@ -41,6 +45,11 @@ static void my_application_activate(GApplication* application) {
 #endif
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
+
+    GtkWidget* button = gtk_button_new_with_label("Back");
+    g_signal_connect(button, "clicked", G_CALLBACK(on_button_clicked), NULL);
+    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), button);
+
     gtk_widget_show(GTK_WIDGET(header_bar));
     gtk_header_bar_set_title(header_bar, "YaPlayer");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
@@ -52,7 +61,8 @@ static void my_application_activate(GApplication* application) {
 //  auto bdw = bitsdojo_window_from(window);
 //  bdw->setCustomFrame(true);
   gtk_window_set_default_size(window, 1080, 720);
-  gtk_widget_show(GTK_WIDGET(window));
+//  gtk_widget_show(GTK_WIDGET(window));
+  gtk_widget_show_all(GTK_WIDGET(window));
 
   std::ifstream iconFile;
   iconFile.open("assets/app_icon.png");
