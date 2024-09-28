@@ -7,6 +7,7 @@ class QueueNames {
   static const String album = 'desktop_win-album-album-default';
   static const String playlist = 'desktop_win-own_playlists-playlist-default';
   static const String artist = 'desktop_win-artist-track-default';
+  static const String artistPopularTracks = 'desktop_win-artist-top_tracks-track-default';
 }
 
 class PlaybackQueue {
