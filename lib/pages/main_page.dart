@@ -53,7 +53,7 @@ class _MainPageState extends State<MainPage> {
               return page;
             },
           ),
-          const TitleBar(),
+          // const TitleBar(),
         ],
       )
     );
