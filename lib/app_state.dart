@@ -232,11 +232,17 @@ class AppState {
     if(_playbackQueue?.name != queueName) {
       final lastTrackIds = _playbackQueue?.lastTrackIds() ?? [];
       final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
-      _playbackQueue = await _createPlayingQueue(
-        tracks: tracks,
-        from: 'desktop_win-radio-radio_$stationId-default',
+
+      trackMapper(track) => QueueTrack(
+        track.id.toString(),
+        track.firstAlbumId.toString(),
+        queueName
       );
-      queueTracks.value = [];
+      final List<QueueTrack> queueTracks = tracks.map(trackMapper).toList();
+
+      final queueId = await _musicApi.createQueueForStation(station, queueTracks);
+      _playbackQueue = PlaybackQueue(tracks: tracks, id: queueId, name: queueName);
+
       _listenToPreloadStream();
     }
 
