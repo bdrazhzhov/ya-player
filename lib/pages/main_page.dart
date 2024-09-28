@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../controls/controls_bar.dart';
-import '../controls/title_bar.dart';
+// import '../controls/title_bar.dart';
 import '../services/service_locator.dart';
 import '../controls/main_menu.dart';
 import 'main_screen.dart';

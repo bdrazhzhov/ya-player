@@ -24,8 +24,6 @@ class ArtistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return FutureBuilder<ArtistInfo>(
       future: artistInfo,
       builder: (BuildContext context, AsyncSnapshot<ArtistInfo> snapshot){
