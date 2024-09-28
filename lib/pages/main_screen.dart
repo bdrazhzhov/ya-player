@@ -34,51 +34,48 @@ class _MainScreen extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 56),
-            child: Navigator(
-              key: NavKeys.mainNav,
-              observers: [getIt<AppRouteObserver>()],
-              initialRoute: '/',
-              onGenerateRoute: (RouteSettings settings){
-                Widget page;
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 56),
+          child: Navigator(
+            key: NavKeys.mainNav,
+            observers: [getIt<AppRouteObserver>()],
+            initialRoute: '/',
+            onGenerateRoute: (RouteSettings settings){
+              Widget page;
 
-                switch(settings.name) {
-                  case '/tracks':
-                    page = const TracksPage();
-                  case '/albums':
-                    page = const AlbumsPage();
-                  case '/artists':
-                    page = const ArtistsPage();
-                  case '/playlists':
-                    page = const PlaylistsPage();
-                  case '/podcasts_books':
-                    page = PodcastsBooksPage();
-                  case '/home':
-                    page = HomePage();
-                  case '/queue':
-                    String? queueName = settings.arguments as String;
-                    page = QueuePage(queueName: queueName);
-                  case '/stations':
-                  default:
-                    page = StationsPage();
+              switch(settings.name) {
+                case '/tracks':
+                  page = const TracksPage();
+                case '/albums':
+                  page = const AlbumsPage();
+                case '/artists':
+                  page = const ArtistsPage();
+                case '/playlists':
+                  page = const PlaylistsPage();
+                case '/podcasts_books':
+                  page = PodcastsBooksPage();
+                case '/home':
+                  page = HomePage();
+                case '/queue':
+                  String? queueName = settings.arguments as String;
+                  page = QueuePage(queueName: queueName);
+                case '/stations':
+                default:
+                  page = StationsPage();
+              }
+
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) {
+                  return page;
                 }
-
-                return PageRouteBuilder(
-                  pageBuilder: (_, __, ___) {
-                    return page;
-                  }
-                );
-              },
-            ),
+              );
+            },
           ),
-          ..._createSearch(context)
-        ],
-      ),
+        ),
+        ..._createSearch(context)
+      ],
     );
   }
 
