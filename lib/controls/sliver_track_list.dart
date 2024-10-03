@@ -46,6 +46,8 @@ class _SliverTrackListState extends State<SliverTrackList> {
                   isPlaying: isPlaying,
                   isCurrent: isCurrent,
                   onTap: (){
+                    if(!track.isAvailable) return;
+
                     if(isPlaying && isCurrent) {
                       appState.pause();
                     } else {

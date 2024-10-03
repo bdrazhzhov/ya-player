@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:ya_player/models/music_api/album.dart';
 
+import 'album.dart';
 import 'artist.dart';
 
 class Track extends Equatable {
@@ -14,10 +14,12 @@ class Track extends Equatable {
   final String? ogImage;
   final String batchId;
   final DateTime? pubDate;
+  final bool isAvailable;
   late final String artist;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
-      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate) {
+      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
+      this.isAvailable) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -45,7 +47,7 @@ class Track extends Equatable {
 
     return Track(id is String ? int.parse(id) : id,
       track['title'], track['version'], duration, artists, albums,
-      track['coverUri'], track['ogImage'], batchId, pubDate
+      track['coverUri'], track['ogImage'], batchId, pubDate, track['available']
     );
   }
 

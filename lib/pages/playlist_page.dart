@@ -1,11 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/track_list.dart';
-import 'package:ya_player/music_api.dart';
 
+import '../controls/yandex_image.dart';
+import '../controls/sliver_track_list.dart';
+import '../music_api.dart';
+import '../controls/page_loading_indicator.dart';
 import '../helpers/playback_queue.dart';
 import '../models/music_api/playlist.dart';
 import '../services/service_locator.dart';
+import 'page_base.dart';
 
 class PlaylistPage extends StatelessWidget {
   final Playlist playlist;
@@ -32,18 +34,14 @@ class PlaylistPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+    return PageBase(
+      title: playlist.title,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Row(
             children: [
               if(playlist.image != null)
-                CachedNetworkImage(
-                  width: 200,
-                  height: 200,
-                  imageUrl: MusicApi.imageUrl(playlist.image!, '200x200').toString()
-                )
+                YandexImage(uriPlaceholder: playlist.image!, size: 200)
               else
                 const SizedBox(
                   width: 200,
@@ -79,23 +77,19 @@ class PlaylistPage extends StatelessWidget {
               )
             ],
           ),
-          FutureBuilder<Playlist>(
-            future: _playlistData,
-            builder: (_, AsyncSnapshot<Playlist> snapshot){
-              if(snapshot.hasData) {
-                return TrackList(snapshot.data!.tracks, showAlbum: true, showHeader: true, queueName: QueueNames.trackList);
-              }
-              else {
-                return const SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: CircularProgressIndicator()
-                );
-              }
+        ),
+        FutureBuilder<Playlist>(
+          future: _playlistData,
+          builder: (_, AsyncSnapshot<Playlist> snapshot){
+            if(snapshot.hasData) {
+              return SliverTrackList(tracks: snapshot.data!.tracks, queueName: QueueNames.trackList);
             }
-          ),
-        ],
-      ),
+            else {
+              return const SliverToBoxAdapter(child: PageLoadingIndicator());
+            }
+          }
+        )
+      ],
     );
   }
 }

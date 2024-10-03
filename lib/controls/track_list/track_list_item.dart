@@ -44,9 +44,9 @@ class _TrackListItemState extends State<TrackListItem> {
     return GestureDetector(
       onTap: widget.onTap,
       child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (event){ isHovered = true; setState(() {}); },
-        onExit: (event){ isHovered = false; setState(() {}); },
+        cursor: track.isAvailable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        onEnter: (event){ if(!track.isAvailable) return; isHovered = true; setState(() {}); },
+        onExit: (event){ if(!track.isAvailable) return; isHovered = false; setState(() {}); },
         child: Container(
           decoration: BoxDecoration(color: isHovered || widget.isCurrent ? theme.colorScheme.inversePrimary : Colors.transparent),
           padding: const EdgeInsets.only(top: 4, bottom: 4),

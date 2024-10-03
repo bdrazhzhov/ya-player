@@ -278,7 +278,8 @@ class AppState {
     int selectedIndex = 0,
     required String from
   }) async {
-    final tracksInQueue = tracks.map((track) => QueueTrack(
+    final validTracks = tracks.where((track) => track.isAvailable).toList();
+    final tracksInQueue = validTracks.map((track) => QueueTrack(
       track.id.toString(),
       track.albums.first.id.toString(),
       from
@@ -286,7 +287,7 @@ class AppState {
     final String queueId = await _musicApi.createQueueForLikedTracks(tracksInQueue, selectedIndex);
     queueTracks.value = tracks;
 
-    return PlaybackQueue(tracks: tracks, id: queueId, name: from);
+    return PlaybackQueue(tracks: validTracks, id: queueId, name: from);
   }
 
   Future<void> _playTrack(Track track) async {
