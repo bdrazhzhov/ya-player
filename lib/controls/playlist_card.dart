@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
-import 'package:ya_player/pages/playlist_page.dart';
 
+import 'yandex_image.dart';
+import '../pages/playlist_page.dart';
 import '../models/music_api/playlist.dart';
-import '../music_api.dart';
 
 class PlaylistCard extends StatelessWidget {
   final Playlist playlist;
@@ -41,19 +40,13 @@ class PlaylistCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: (playlist.image != null) ?
-                CachedNetworkImage(
-                  width: width,
-                  height: width,
-                  imageUrl: MusicApi.imageUrl(playlist.image!, '200x200')
-                ) :  SizedBox(
+              (playlist.image != null) ?
+                YandexImage(uriPlaceholder: playlist.image!, size: 200, borderRadius: 8) :
+                SizedBox(
                   width: width,
                   height: width,
                   child: const Center(child: Text('No Image')),
                 ),
-              ),
               Text(HtmlCharacterEntities.decode(playlist.title)),
               if(playlist.description != null) Expanded(
                 child: Text(

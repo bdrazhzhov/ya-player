@@ -49,17 +49,17 @@ class ArtistPage extends StatelessWidget {
 
               if(info.albums.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular albums'),
-                createSeparatedList(info.albums.map((album) => AlbumCard(album, 130))),
+                createSeparatedList(info.albums.map((album) => AlbumCard(album, 150))),
               ],
 
               if(info.alsoAlbums.isNotEmpty) ...[
                 const SectionHeader(title: 'Compilations'),
-                createSeparatedList(info.alsoAlbums.map((album) => AlbumCard(album, 130))),
+                createSeparatedList(info.alsoAlbums.map((album) => AlbumCard(album, 150))),
               ],
 
               if(info.similarArtists.isNotEmpty) ...[
                 const SectionHeader(title: 'Similar'),
-                createSeparatedList(info.similarArtists.map((artist) => ArtistCard(artist, 130))),
+                createSeparatedList(info.similarArtists.map((artist) => ArtistCard(artist, 150))),
               ],
 
               if(info.artist.links.isNotEmpty) ...[

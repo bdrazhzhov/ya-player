@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
 
 import '../models/music_api/album.dart';
-import '../music_api.dart';
 import '../pages/album_page.dart';
+import 'yandex_image.dart';
 
 class AlbumCard extends StatelessWidget {
   final Album album;
@@ -30,14 +29,7 @@ class AlbumCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                  width: width,
-                  height: width,
-                  imageUrl: MusicApi.imageUrl(album.ogImage, '200x200')
-              ),
-            ),
+            YandexImage(uriPlaceholder: album.ogImage, size: width, borderRadius: 8),
             Text(
               HtmlCharacterEntities.decode(album.title),
               overflow: TextOverflow.ellipsis,

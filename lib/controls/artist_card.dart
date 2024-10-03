@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../models/music_api/artist.dart';
-import '../music_api.dart';
 import '../pages/artist_page.dart';
+import 'yandex_image.dart';
 
 class ArtistCard extends StatelessWidget {
   final LikedArtist artist;
@@ -28,14 +27,12 @@ class ArtistCard extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: width),
         child: Column(
           children: [
-            if(artist.cover != null) ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                  width: width,
-                  height: width,
-                  imageUrl: MusicApi.imageUrl(artist.cover!.uri, '600x600').toString()
+            if(artist.cover != null)
+              YandexImage(
+                uriPlaceholder: artist.cover!.uri,
+                size: width,
+                borderRadius: 8
               ),
-            ),
             Text(
               artist.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
