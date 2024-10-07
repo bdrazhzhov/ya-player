@@ -1,7 +1,7 @@
 class Promotion {
   final String title;
   final String? subtitle;
-  final String heading;
+  final String? heading;
   final String image;
   final String? cover;
   final String url;
@@ -9,7 +9,7 @@ class Promotion {
   Promotion({
     required this.title,
     this.subtitle,
-    required this.heading,
+    this.heading,
     required this.image,
     this.cover,
     required this.url

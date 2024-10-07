@@ -32,7 +32,7 @@ class PromotionCard extends StatelessWidget {
                   imageUrl: MusicApi.imageUrl(promotion.image, 'orig')
                 ),
               ),
-              Text(promotion.heading.toUpperCase(), style: const TextStyle(color: Colors.red)),
+              Text(promotion.heading?.toUpperCase() ?? ' ', style: const TextStyle(color: Colors.red)),
               Text(
                 promotion.title,
                 style: theme.textTheme.bodyLarge,
