@@ -50,6 +50,12 @@ class YandexApiClient {
       }
 
       return handler.next(e);
+    }, onRequest: (requestOptions, handler){
+      debugPrint('URL: ${requestOptions.uri}');
+      debugPrint('Request headers: ${requestOptions.headers}');
+      debugPrint('Request data: ${requestOptions.data}');
+
+      return handler.next(requestOptions);
     }));
   }
 

@@ -41,11 +41,12 @@ class PopularArtistTracks extends StatelessWidget {
           future: _tracks,
           builder: (_, AsyncSnapshot<List<Track>> snapshot) {
             if(snapshot.hasData) {
-              return SliverTrackList(
-                  tracks: snapshot.data!,
-                  showAlbum: true,
-                  queueName: QueueNames.artist
-              );
+              // return SliverTrackList(
+              //     tracks: snapshot.data!,
+              //     showAlbum: true,
+              //     queueName: QueueNames.artist
+              // );
+              return const SliverToBoxAdapter(child: Text('Not implemented'));
             } else {
               return const SliverToBoxAdapter(child: CircularProgressIndicator());
             }

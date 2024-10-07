@@ -5,23 +5,22 @@ import '/models/music_api/album.dart';
 import '/models/music_api/queue.dart';
 
 class QueueFactory {
-  static Queue create(Object queueSource, List<Track> tracks, int currentIndex) {
-    late final QueueContext context;
-    late final List<QueueTrack> queueTracks;
+  static Queue create({Object? queueSource,
+    required List<Track> tracks,
+    required int currentIndex})
+  {
+    final QueueContext context;
+    final List<QueueTrack> queueTracks;
 
     switch (queueSource) {
       case Album album:
         (context, queueTracks) = _forAlbum(tracks, album);
-        break;
       case LikedArtist artist:
         (context, queueTracks) = _forArtist(tracks, artist);
-        break;
       case Playlist playlist:
         (context, queueTracks) = _forPlaylist(playlist);
-        break;
       default:
         (context, queueTracks) = _forLikedTracks(tracks);
-        break;
     }
 
     return Queue(

@@ -4,17 +4,18 @@ import 'package:ya_player/controls/track_list/track_list_item.dart';
 import '../app_state.dart';
 import '../models/music_api/track.dart';
 import '../notifiers/play_button_notifier.dart';
+import '../player/player_base.dart';
 import '../services/service_locator.dart';
 
 class SliverTrackList extends StatefulWidget {
   final List<Track> tracks;
-  final String queueName;
+  final PlayerBase player;
   final bool showAlbum;
 
   const SliverTrackList({
     super.key,
     required this.tracks,
-    required this.queueName,
+    required this.player,
     this.showAlbum = true,
   });
 
@@ -51,7 +52,8 @@ class _SliverTrackListState extends State<SliverTrackList> {
                     if(isPlaying && isCurrent) {
                       appState.pause();
                     } else {
-                      appState.playTracks(widget.tracks, index, widget.queueName);
+                      // appState.playTracks(widget.tracks, index, widget.queueName);
+                      widget.player.play(index);
                     }
                   },
                 );

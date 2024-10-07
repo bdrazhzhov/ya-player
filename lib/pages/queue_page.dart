@@ -42,9 +42,10 @@ class QueuePage extends StatelessWidget {
         ValueListenableBuilder(
           valueListenable: _appState.queueTracks,
           builder: (_, List<Track> tracks, __) {
-            return SliverPadding(
-              padding: const EdgeInsets.only(left: 32, right: 32),
-              sliver: SliverTrackList(tracks: tracks, queueName: queueName)
+            return const SliverPadding(
+              padding: EdgeInsets.only(left: 32, right: 32),
+              // sliver: SliverTrackList(tracks: tracks, queueName: queueName)
+              sliver: SliverToBoxAdapter(child: Text('Not implemented'))
             );
           },
         ),

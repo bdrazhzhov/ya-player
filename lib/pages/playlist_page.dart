@@ -82,7 +82,8 @@ class PlaylistPage extends StatelessWidget {
           future: _playlistData,
           builder: (_, AsyncSnapshot<Playlist> snapshot){
             if(snapshot.hasData) {
-              return SliverTrackList(tracks: snapshot.data!.tracks, queueName: QueueNames.trackList);
+              // return SliverTrackList(tracks: snapshot.data!.tracks, queueName: QueueNames.trackList);
+              return const SliverToBoxAdapter(child: Text('Not implemented'));
             }
             else {
               return const SliverToBoxAdapter(child: PageLoadingIndicator());

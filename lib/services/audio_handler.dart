@@ -41,9 +41,9 @@ class MyAudioHandler extends BaseAudioHandler {
     // _player.playerStateStream.listen((state) {
     //   debugPrint('PlayerStateStream: $state');
     // });
-    _player.volumeStream.listen((value){
-      debugPrint("Volume change received in player: $value");
-    });
+    // _player.volumeStream.listen((value){
+    //   debugPrint("Volume change received in player: $value");
+    // });
   }
 
   void _listenToPlayingStream() {

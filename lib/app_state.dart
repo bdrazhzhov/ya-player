@@ -18,6 +18,7 @@ import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
 
 enum UiState { loading, auth, main }
+enum PlayerEvent { play, next, previous }
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -49,6 +50,9 @@ class AppState {
   final List<int> _likedTrackIds = [];
 
   String? get queueName => _playbackQueue?.name;
+
+  final _playerEventsStreamController = StreamController<PlayerEvent>();
+  Stream<PlayerEvent> get playerEventsStream => _playerEventsStreamController.stream;
 
   // Events: Calls coming from the UI
   void init() async {
@@ -83,14 +87,18 @@ class AppState {
 
   Future<void> _requestAppData() async {
     await _requestAccountData();
-    _requestStationsDashboard();
-    _requestStations();
-    _requestLikedTracks();
-    _requestLikedAlbums();
-    _requestArtists();
-    _requestPlaylists();
-    _requestNonMusicCatalog();
-    _requestLanding();
+
+    final List<Future> futures = [];
+    futures.add(_requestStationsDashboard());
+    futures.add(_requestStations());
+    futures.add(_requestLikedTracks());
+    futures.add(_requestLikedAlbums());
+    futures.add(_requestArtists());
+    futures.add(_requestPlaylists());
+    futures.add(_requestNonMusicCatalog());
+    futures.add(_requestLanding());
+
+    await Future.wait(futures);
   }
 
   Future<void> _requestLikedTracks() async {
@@ -128,8 +136,6 @@ class AppState {
       } else if (processingState != AudioProcessingState.completed) {
         playButtonNotifier.value = ButtonState.playing;
       } else {
-        // _audioHandler.seek(Duration.zero);
-        // _audioHandler.pause();
         await _audioHandler.stop();
         next();
       }
@@ -209,18 +215,25 @@ class AppState {
   void stop() => _audioHandler.stop();
   void seek(Duration position) => _audioHandler.seek(position);
 
-  Future<void> previous() async {
-    Track? track = _playbackQueue?.previous();
-    if(track == null) return;
-
-    _playTrack(track);
+  // Future<void> previous() async {
+  //   Track? track = _playbackQueue?.previous();
+  //   if(track == null) return;
+  //
+  //   _playTrack(track);
+  // }
+  void previous() {
+    _playerEventsStreamController.add(PlayerEvent.previous);
   }
 
-  Future<void> next() async {
-    Track? track = _playbackQueue?.next();
-    if(track == null) return;
+  // Future<void> next() async {
+  //   Track? track = _playbackQueue?.next();
+  //   if(track == null) return;
+  //
+  //   _playTrack(track);
+  // }
 
-    _playTrack(track);
+  void next() {
+    _playerEventsStreamController.add(PlayerEvent.next);
   }
 
   Future<void> playStationTracks(Station station) async {
@@ -322,7 +335,7 @@ class AppState {
 
     _audioHandler.playTrack(mediaItem);
     trackNotifier.value = track;
-    trackLikeNotifier.value = binarySearch(_likedTrackIds, track.id) != -1;
+    trackLikeNotifier.value = isLikedTrack(track);
     _currentPlayInfo = PlayInfo(track, _playbackQueue!.name);
 
     if(currentStationNotifier.value != null) {
@@ -332,6 +345,8 @@ class AppState {
     _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     _musicApi.updateQueuePosition(_playbackQueue!.id, _playbackQueue!.currentIndex);
   }
+
+  bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeCurrentTrack() async {
     if(_currentPlayInfo == null) return;

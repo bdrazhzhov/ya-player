@@ -1,4 +1,6 @@
-class Queue {
+import 'package:equatable/equatable.dart';
+
+class Queue extends Equatable {
   final String? id;
   final QueueContext context;
   final int? currentIndex;
@@ -6,8 +8,12 @@ class Queue {
   final bool? isInteractive;
   final List<QueueTrack> tracks;
 
-  Queue({this.id, required this.context, this.currentIndex,this.from,
-    this.isInteractive, required this.tracks});
+  const Queue({this.id, required this.context,
+    this.currentIndex,this.from, this.isInteractive,
+    required this.tracks});
+
+  @override
+  List<Object?> get props => [id];
 
   factory Queue.fromJson(Map<String, dynamic> json) {
     List<QueueTrack> tracks = [];

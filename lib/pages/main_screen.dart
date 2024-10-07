@@ -47,7 +47,7 @@ class _MainScreen extends State<MainScreen> {
 
               switch(settings.name) {
                 case '/tracks':
-                  page = const TracksPage();
+                  page = TracksPage();
                 case '/albums':
                   page = const AlbumsPage();
                 case '/artists':

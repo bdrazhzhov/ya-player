@@ -255,7 +255,7 @@ class MusicApi {
     return AccountStatus(account);
   }
 
-  Future<String> _createQueue(Queue queue) async {
+  Future<String> createQueue(Queue queue) async {
     final result = await _http.postJson('/queues', data: queue.toMap());
 
     return result['result']['id'].toString();
@@ -280,7 +280,7 @@ class MusicApi {
       tracks: tracks
     );
 
-    return _createQueue(queue);
+    return createQueue(queue);
   }
 
   Future<String> createQueueForLikedTracks(List<QueueTrack> tracks, int currentIndex) {
@@ -295,7 +295,7 @@ class MusicApi {
         tracks: tracks
     );
 
-    return _createQueue(queue);
+    return createQueue(queue);
   }
 
   Future<String> createQueueForAlbum(Album album, List<QueueTrack> tracks, int currentIndex) {
@@ -310,7 +310,7 @@ class MusicApi {
         tracks: tracks
     );
 
-    return _createQueue(queue);
+    return createQueue(queue);
   }
 
   Future<String> createQueueForPlaylist(Playlist playlist, List<QueueTrack> tracks, int currentIndex) {
@@ -325,7 +325,7 @@ class MusicApi {
         tracks: tracks
     );
 
-    return _createQueue(queue);
+    return createQueue(queue);
   }
 
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {

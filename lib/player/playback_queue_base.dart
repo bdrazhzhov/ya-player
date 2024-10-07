@@ -1,4 +1,4 @@
-import '../../models/music_api/track.dart';
+import '/models/music_api/track.dart';
 
 class PlaybackQueueBase
 {
@@ -19,11 +19,6 @@ class PlaybackQueueBase
   void add(Track track) {
     _tracks.add(track);
   }
-
-  // void clear() {
-  //   _currentIndex = -1;
-  //   _tracks.clear();
-  // }
 
   Future<Track?> next() async {
     if(_tracks.isEmpty || _currentIndex >= _tracks.length - 1) return null;
