@@ -1,8 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../app_state.dart';
-import '../helpers/app_route_observer.dart';
-import '../music_api.dart';
+import '/player/players_manager.dart';
+import '/app_state.dart';
+import '/helpers/app_route_observer.dart';
+import '/music_api.dart';
 import 'preferences.dart';
 import 'audio_handler.dart';
 import 'yandex_api_client.dart';
@@ -16,6 +17,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<MusicApi>(_initMusicApi());
   getIt.registerSingleton<AppState>(AppState());
   getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
+  getIt.registerSingleton<PlayersManager>(PlayersManager());
 }
 
 MusicApi _initMusicApi() {

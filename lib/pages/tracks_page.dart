@@ -1,38 +1,23 @@
 import 'package:flutter/material.dart';
 
+import '/player/tracks_source.dart';
+import '/player/players_manager.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
-import '/player/liked_tracks_player.dart';
 import '/services/service_locator.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/track_list/sliver_tracks_header.dart';
 import 'page_base.dart';
 
-class TracksPage extends StatefulWidget {
-
-  const TracksPage({super.key});
-
-  @override
-  State<TracksPage> createState() => _TracksPageState();
-}
-
-class _TracksPageState extends State<TracksPage> {
-  final player = LikedTracksPlayer();
+class TracksPage extends StatelessWidget {
   final _appState = getIt<AppState>();
+  final _player = getIt<PlayersManager>();
 
-  @override
-  void initState() {
-    super.initState();
-    _appState.playerEventsStream.listen((PlayerEvent event){
-      switch(event) {
-        case PlayerEvent.play:
-          // TODO: Handle this case.
-        case PlayerEvent.next:
-          player.next();
-        case PlayerEvent.previous:
-          player.previous();
-      }
-    });
+  TracksPage({super.key}) {
+    _player.currentPageTracksSourceData = TracksSource(
+      sourceType: TracksSourceType.likedTracks,
+      source: _appState.likedTracksNotifier.value,
+    );
   }
 
   @override
@@ -48,7 +33,7 @@ class _TracksPageState extends State<TracksPage> {
         ),
         ValueListenableBuilder<List<Track>>(
           valueListenable: appState.likedTracksNotifier,
-          builder: (_, tracks, __) => SliverTrackList(tracks: tracks, player: player)
+          builder: (_, tracks, __) => SliverTrackList(tracks: tracks)
         )
       ]
     );

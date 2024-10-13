@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:ya_player/controls/track_list/track_list_item.dart';
 
-import '../app_state.dart';
-import '../models/music_api/track.dart';
-import '../notifiers/play_button_notifier.dart';
-import '../player/player_base.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/models/music_api/track.dart';
+import '/notifiers/play_button_notifier.dart';
+import '/player/players_manager.dart';
+import '/services/service_locator.dart';
 
 class SliverTrackList extends StatefulWidget {
   final List<Track> tracks;
-  final PlayerBase player;
   final bool showAlbum;
 
   const SliverTrackList({
     super.key,
     required this.tracks,
-    required this.player,
     this.showAlbum = true,
   });
 
@@ -25,6 +23,7 @@ class SliverTrackList extends StatefulWidget {
 
 class _SliverTrackListState extends State<SliverTrackList> {
   final appState = getIt<AppState>();
+  final player = getIt<PlayersManager>();
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,7 @@ class _SliverTrackListState extends State<SliverTrackList> {
                       appState.pause();
                     } else {
                       // appState.playTracks(widget.tracks, index, widget.queueName);
-                      widget.player.play(index);
+                      player.play(index);
                     }
                   },
                 );

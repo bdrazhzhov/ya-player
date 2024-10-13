@@ -1,7 +1,9 @@
+import 'package:equatable/equatable.dart';
+
 import 'artist.dart';
 import 'track.dart';
 
-class Album {
+class Album extends Equatable {
   final int id;
   final String title;
   final int? year;
@@ -20,6 +22,9 @@ class Album {
       this.description, this.version) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
+
+  @override
+  List<Object?> get props => [id];
   
   factory Album.fromJson(Map<String, dynamic> json) {
     List<ArtistBase> artists = [];
@@ -38,12 +43,14 @@ class Album {
   }
 }
 
-class AlbumWithTracks {
+class AlbumWithTracks extends Equatable {
   final Album album;
   final List<Track> tracks;
 
-  AlbumWithTracks(this.album, this.tracks);
+  const AlbumWithTracks(this.album, this.tracks);
 
+  @override
+  List<Object?> get props => [album];
 
   factory AlbumWithTracks.fromJson(Map<String, dynamic> json) {
     List<Track> tracks = [];

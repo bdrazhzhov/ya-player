@@ -38,6 +38,7 @@ dependencies:
   mask_text_input_formatter: ^2.5.0
   html_character_entities: ^1.0.0+1
 #  tray_manager: ^0.2.2
+  meta: ^1.15.0
 
 dev_dependencies:
   flutter_test:

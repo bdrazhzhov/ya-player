@@ -81,7 +81,7 @@ class _ControlsBar extends State<ControlsBar> {
                 child: IconButton(
                   icon: const Icon(Icons.queue_music),
                   onPressed: () {
-                    NavKeys.mainNav.currentState!.pushReplacementNamed('/queue', arguments: appState.queueName);
+                    NavKeys.mainNav.currentState!.pushReplacementNamed('/queue');
                   }
                 ),
               ),

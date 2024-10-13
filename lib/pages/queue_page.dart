@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import '../app_state.dart';
-import '../controls/sliver_track_list.dart';
 import '../controls/track_list/sliver_tracks_header.dart';
 import '../models/music_api/track.dart';
 import '../services/service_locator.dart';
 
 class QueuePage extends StatelessWidget {
-  final String queueName;
   final _appState = getIt<AppState>();
 
-  QueuePage({super.key, required this.queueName});
+  QueuePage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class PageBase extends StatelessWidget {
-  final String title;
+  final String? title;
   final List<Widget> slivers;
 
   const PageBase({
     super.key,
-    required this.title,
+    this.title,
     required this.slivers
   });
 
@@ -18,12 +18,13 @@ class PageBase extends StatelessWidget {
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: CustomScrollView(
         slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
-            sliver: SliverToBoxAdapter(
-              child: Text(title, style: theme.textTheme.displayMedium)
+          if(title != null)
+            SliverPadding(
+              padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
+              sliver: SliverToBoxAdapter(
+                child: Text(title!, style: theme.textTheme.displayMedium)
+              ),
             ),
-          ),
           ...slivers.map((sliver) => SliverPadding(
               padding: const EdgeInsets.only(left: 32, right: 32),
               sliver: sliver

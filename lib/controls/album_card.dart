@@ -19,7 +19,7 @@ class AlbumCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
             PageRouteBuilder(
-              pageBuilder: (_, __, ___) => AlbumPage(album),
+              pageBuilder: (_, __, ___) => AlbumPage(album.id),
               reverseTransitionDuration: Duration.zero,
             )
         );

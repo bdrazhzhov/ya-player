@@ -18,10 +18,10 @@ class StationQueue extends PlaybackQueueBase
   StationQueue({
     required this.station,
     required super.tracks
-  }) {
+  }) : super(from: '') {
     String stationId = station.id.type != 'user' ? '${station.id.type}_' : '';
     stationId += station.id.tag;
-    _queueName = 'desktop_win-radio-radio_$stationId-default';
+    from = 'desktop_win-radio-radio_$stationId-default';
   }
 
   @override
@@ -63,7 +63,7 @@ class StationQueue extends PlaybackQueueBase
     await _createQueue(tracks);
   }
 
-  Future<void> _createQueue(List<Track> tracks) async {
+  Future<void> _createQueue(Iterable<Track> tracks) async {
     trackMapper(track) => QueueTrack(
         track.id.toString(),
         track.firstAlbumId.toString(),
@@ -80,5 +80,5 @@ class StationQueue extends PlaybackQueueBase
     debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
   }
 
-  List<int> _lastTrackIds() => tracks.reversed.take(3).map((track) => track.id).toList();
+  List<int> _lastTrackIds() => tracks.toList().reversed.take(3).map((track) => track.id).toList();
 }

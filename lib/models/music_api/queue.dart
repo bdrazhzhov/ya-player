@@ -6,10 +6,10 @@ class Queue extends Equatable {
   final int? currentIndex;
   final String? from;
   final bool? isInteractive;
-  final List<QueueTrack> tracks;
+  final Iterable<QueueTrack> tracks;
 
   const Queue({this.id, required this.context,
-    this.currentIndex,this.from, this.isInteractive,
+    this.currentIndex, this.from, this.isInteractive,
     required this.tracks});
 
   @override

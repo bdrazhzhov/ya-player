@@ -1,74 +1,91 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ya_player/helpers/playback_queue.dart';
-import 'package:ya_player/music_api.dart';
 
-import '../models/music_api/album.dart';
-import '../app_state.dart';
-import '../models/music_api/track.dart';
-import '../services/service_locator.dart';
-import '../controls/page_base_layout.dart';
+import '/player/tracks_source.dart';
+import '/player/players_manager.dart';
+import '/music_api.dart';
+import '/controls/page_loading_indicator.dart';
+import '/models/music_api/album.dart';
+import '/models/music_api/track.dart';
+import '/services/service_locator.dart';
+import 'page_base.dart';
 
 class AlbumPage extends StatelessWidget {
-  final Album album;
-  final _appState = getIt<AppState>();
+  final _musicApi = getIt<MusicApi>();
+  final _player = getIt<PlayersManager>();
+  late final Future<AlbumWithTracks> _albumInfo;
 
-  AlbumPage(this.album, {super.key}) {
-    _appState.requestAlbumData(album.id);
+  AlbumPage(albumId, {super.key}) {
+    _albumInfo = _musicApi.albumWithTracks(albumId);
+    _albumInfo.then((AlbumWithTracks albumWithTracks){
+      _player.currentPageTracksSourceData = TracksSource(
+          sourceType: TracksSourceType.album,
+          source: albumWithTracks,
+          id: albumId
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return PageBaseLayout(
-      body: ValueListenableBuilder<AlbumWithTracks?>(
-        valueListenable: _appState.albumNotifier,
-        builder: (_, albumWithTracks, __) {
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                leading: const SizedBox.shrink(),
-                pinned: true,
-                collapsedHeight: 60,
-                expandedHeight: 200,
-                // flexibleSpace: buildFlexibleSpaceBar(),
-                flexibleSpace: _CustomFlexibleSpace(album: album),
-              ),
-              SliverPersistentHeader(
-                delegate: _TracksHeader(),
-                pinned: true,
-              ),
-
-              if(albumWithTracks != null) SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 40, right: 40),
-                  child: Table(
-                    columnWidths: [
-                      const FixedColumnWidth(50),
-                      const FixedColumnWidth(50),
-                      const FlexColumnWidth(),
-                      const FixedColumnWidth(40),
-                      const FixedColumnWidth(50),
-                    ].asMap(),
-                    children: albumWithTracks.tracks.mapIndexed((int index, Track track) {
-                      return TableRow(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.onInverseSurface,
-                          border: Border.all(width: 1, color: theme.colorScheme.surface)
-                        ),
-                        children: _tableRowWidgets(index, track, albumWithTracks)
-                      );
-                    }).toList(),
-                  ),
+    return FutureBuilder<AlbumWithTracks>(
+        future: _albumInfo,
+        builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot){
+          if(snapshot.hasData)
+          {
+            final albumWithTracks = snapshot.data!;
+            return PageBase(
+              slivers: [
+                SliverAppBar(
+                  leading: const SizedBox.shrink(),
+                  pinned: true,
+                  collapsedHeight: 60,
+                  expandedHeight: 200,
+                  // flexibleSpace: buildFlexibleSpaceBar(),
+                  flexibleSpace: _CustomFlexibleSpace(album: albumWithTracks.album),
                 ),
-              )
-            ],
-          );
+                SliverPersistentHeader(
+                  delegate: _TracksHeader(),
+                  pinned: true,
+                ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 40, right: 40),
+                    child: Table(
+                      columnWidths: [
+                        const FixedColumnWidth(50),
+                        const FixedColumnWidth(50),
+                        const FlexColumnWidth(),
+                        const FixedColumnWidth(40),
+                        const FixedColumnWidth(50),
+                      ].asMap(),
+                      children: albumWithTracks.tracks.mapIndexed((int index, Track track) {
+                        return TableRow(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.onInverseSurface,
+                            border: Border.all(width: 1, color: theme.colorScheme.surface)
+                          ),
+                          children: _tableRowWidgets(index, track, albumWithTracks)
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                )
+              ],
+            );
+          }
+          else
+          {
+            return const PageLoadingIndicator();
+          }
         }
-      ),
     );
   }
 
@@ -77,7 +94,7 @@ class AlbumPage extends StatelessWidget {
 
     return [
       IconButton(
-        onPressed: () => _appState.playTracks(albumWithTracks.tracks, index, QueueNames.album),
+        onPressed: () => _player.play(index),
         icon: const Icon(Icons.play_arrow)
       ),
       Center(child: Text('${index + 1}')),

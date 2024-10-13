@@ -18,7 +18,6 @@ import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
 
 enum UiState { loading, auth, main }
-enum PlayerEvent { play, next, previous }
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -49,10 +48,8 @@ class AppState {
   final _prefs = getIt<Preferences>();
   final List<int> _likedTrackIds = [];
 
-  String? get queueName => _playbackQueue?.name;
-
-  final _playerEventsStreamController = StreamController<PlayerEvent>();
-  Stream<PlayerEvent> get playerEventsStream => _playerEventsStreamController.stream;
+  final _trackSkipStreamController = StreamController<TrackSkipType>();
+  Stream<TrackSkipType> get trackSkipStream => _trackSkipStreamController.stream;
 
   // Events: Calls coming from the UI
   void init() async {
@@ -137,7 +134,7 @@ class AppState {
         playButtonNotifier.value = ButtonState.playing;
       } else {
         await _audioHandler.stop();
-        next();
+        _trackSkipStreamController.add(TrackSkipType.next);
       }
     });
   }
@@ -177,10 +174,7 @@ class AppState {
 
   void _listenToSkipEvents() {
     _audioHandler.skipStream.listen((TrackSkipType event) {
-      switch(event) {
-        case TrackSkipType.next: next();
-        case TrackSkipType.previous: previous();
-      }
+      _trackSkipStreamController.add(event);
     });
   }
 
@@ -221,9 +215,9 @@ class AppState {
   //
   //   _playTrack(track);
   // }
-  void previous() {
-    _playerEventsStreamController.add(PlayerEvent.previous);
-  }
+  // void previous() {
+  //   _playerEventsStreamController.add(PlayerEvent.previous);
+  // }
 
   // Future<void> next() async {
   //   Track? track = _playbackQueue?.next();
@@ -232,9 +226,9 @@ class AppState {
   //   _playTrack(track);
   // }
 
-  void next() {
-    _playerEventsStreamController.add(PlayerEvent.next);
-  }
+  // void next() {
+  //   _playerEventsStreamController.add(PlayerEvent.next);
+  // }
 
   Future<void> playStationTracks(Station station) async {
     currentStationNotifier.value = station;
@@ -435,11 +429,6 @@ class AppState {
     genres.removeWhere((station) => station.parentId != null);
 
     stationsNotifier.value = groups;
-  }
-
-  Future<void> requestAlbumData(int albumId) async {
-    albumNotifier.value = null;
-    albumNotifier.value = await _musicApi.albumWithTracks(albumId);
   }
 
   void searchSuggestions(String text) async {

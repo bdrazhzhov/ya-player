@@ -2,25 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../controls/custom_separated_hlist.dart';
-import '../controls/page_loading_indicator.dart';
+import '../player/tracks_source.dart';
+import '/player/players_manager.dart';
+import '/controls/custom_separated_hlist.dart';
+import '/controls/page_loading_indicator.dart';
+import '/controls/sliver_track_list.dart';
 import 'page_base.dart';
-import '../controls/album_card.dart';
-import '../controls/artist_card.dart';
-import '../controls/sliver_track_list.dart';
-import '../helpers/playback_queue.dart';
-import '../models/music_api/artist.dart';
-import '../models/music_api/artist_info.dart';
-import '../services/service_locator.dart';
-import '../music_api.dart';
+import '/controls/album_card.dart';
+import '/controls/artist_card.dart';
+import '/models/music_api/artist.dart';
+import '/models/music_api/artist_info.dart';
+import '/services/service_locator.dart';
+import '/music_api.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo;
   final _musicApi = getIt<MusicApi>();
+  final _player = getIt<PlayersManager>();
   final LikedArtist artist;
 
   ArtistPage(this.artist, {super.key}) {
     artistInfo = _musicApi.artistInfo(artist.id);
+    artistInfo.then((ArtistInfo artistInfo){
+      _player.currentPageTracksSourceData = TracksSource(
+        sourceType: TracksSourceType.artist,
+        source: artistInfo,
+        id: artistInfo.artist.id
+      );
+    });
   }
 
   @override
@@ -44,7 +53,7 @@ class ArtistPage extends StatelessWidget {
 
               if(info.popularTracks.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular tracks'),
-                // SliverTrackList(tracks: info.popularTracks, showAlbum: false, queueName: QueueNames.artist),
+                SliverTrackList(tracks: info.popularTracks, showAlbum: false),
               ],
 
               if(info.albums.isNotEmpty) ...[

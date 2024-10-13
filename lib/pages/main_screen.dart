@@ -29,8 +29,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreen extends State<MainScreen> {
   bool isSearching = false;
-  final _appState = getIt<AppState>();
-  final _searchTextController = TextEditingController();
+  final appState = getIt<AppState>();
+  final searchTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +59,7 @@ class _MainScreen extends State<MainScreen> {
                 case '/home':
                   page = HomePage();
                 case '/queue':
-                  String? queueName = settings.arguments as String;
-                  page = QueuePage(queueName: queueName);
+                  page = QueuePage();
                 case '/stations':
                 default:
                   page = StationsPage();
@@ -95,7 +94,7 @@ class _MainScreen extends State<MainScreen> {
       if(isSearching) Container(
         padding: const EdgeInsets.only(top: 136, left: 16),
         child: ValueListenableBuilder(
-          valueListenable: _appState.searchSuggestionsNotifier,
+          valueListenable: appState.searchSuggestionsNotifier,
           builder: (_, suggestions, __) {
             if(!isSearching || suggestions == null) return Container();
 
@@ -111,9 +110,9 @@ class _MainScreen extends State<MainScreen> {
                   onTap: () {
                     setState(() {
                       isSearching = false;
-                      _searchTextController.text = entry;
+                      searchTextController.text = entry;
                     });
-                    _appState.searchResult(entry);
+                    appState.searchResult(entry);
                     NavKeys.mainNav.currentState!.push(
                       PageRouteBuilder(
                         pageBuilder: (_, __, ___) => SearchResultsPage(),
@@ -131,7 +130,7 @@ class _MainScreen extends State<MainScreen> {
         height: 116,
         padding: const EdgeInsets.only(top: 66, left: 32, right: 32),
         child: ValueListenableBuilder(
-          valueListenable: _appState.searchSuggestionsNotifier,
+          valueListenable: appState.searchSuggestionsNotifier,
           builder: (_, suggestions, __) {
             if(!isSearching || suggestions?.best == null) return Container();
 
@@ -172,30 +171,30 @@ class _MainScreen extends State<MainScreen> {
       Padding(
         padding: const EdgeInsets.only(left: 34, right: 34),
         child: TextField(
-          controller: _searchTextController,
+          controller: searchTextController,
           decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.clear),
                 onPressed: () {
-                  _searchTextController.clear();
+                  searchTextController.clear();
                   isSearching = false;
                   setState(() {});
-                  _appState.searchSuggestionsNotifier.value = null;
+                  appState.searchSuggestionsNotifier.value = null;
                 },
               )
           ),
           onChanged: (String value) {
             if(value.isEmpty) {
               setState(() { isSearching = false; });
-              _appState.searchSuggestionsNotifier.value = null;
+              appState.searchSuggestionsNotifier.value = null;
             }
             else if(!isSearching && value.isNotEmpty) {
               setState(() { isSearching = true; });
             }
 
             if(isSearching && value.length >= 3) {
-              _appState.searchSuggestions(value);
+              appState.searchSuggestions(value);
             }
           },
         ),

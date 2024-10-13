@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
-import '../controls/sliver_track_list.dart';
 import '../controls/slivers_container.dart';
 import '../controls/track_list/sliver_tracks_header.dart';
-import '../helpers/playback_queue.dart';
 import '../models/music_api_types.dart';
 import '../services/service_locator.dart';
 
