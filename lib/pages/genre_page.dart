@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../models/music_api/station.dart';
 import '../controls/station_genre.dart';
+import '../player/players_manager.dart';
+import '../player/tracks_source.dart';
 import '../services/service_locator.dart';
 
 
 class GenrePage extends StatelessWidget {
   final Station genre;
   final appState = getIt<AppState>();
+  final _player = getIt<PlayersManager>();
 
   static const double _minWidth = 250;
   static const double _maxWidth = 412;
@@ -44,7 +47,13 @@ class GenrePage extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: width),
                 padding: const EdgeInsets.all(4.0),
                 child: GestureDetector(
-                    onTap: (){ appState.playStationTracks(station); },
+                    onTap: (){
+                      _player.currentPageTracksSourceData = TracksSource(
+                          sourceType: TracksSourceType.radio,
+                          source: station
+                      );
+                      _player.play(0);
+                    },
                     child: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: StationGenre(station)

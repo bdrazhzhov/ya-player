@@ -6,8 +6,13 @@ class Station extends Equatable {
   final String name;
   final StationIcon icon;
   final List<Station> subStations = [];
+  late final String _from;
 
-  Station(this.id, this.name, this.icon, this.parentId);
+  Station(this.id, this.name, this.icon, this.parentId) {
+    String stationId = id.type != 'user' ? '${id.type}_' : '';
+    stationId += id.tag;
+    _from = 'desktop_win-radio-radio_$stationId-default';
+  }
 
   factory Station.fromJson(Map<String, dynamic> json) {
     StationId? parent = json['parentId'] != null
@@ -19,6 +24,8 @@ class Station extends Equatable {
 
   @override
   List<Object> get props => [id];
+
+  String get from => _from;
 }
 
 class StationId extends Equatable {

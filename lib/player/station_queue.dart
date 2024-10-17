@@ -1,46 +1,56 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/music_api/queue.dart';
-import '../models/music_api/station.dart';
-import '../models/music_api/track.dart';
+import '/models/music_api/queue.dart';
+import '/models/music_api/station.dart';
+import '/models/music_api/track.dart';
 import 'playback_queue_base.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/music_api.dart';
+import '/services/service_locator.dart';
+import 'tracks_source.dart';
 
 class StationQueue extends PlaybackQueueBase
 {
   final Station station;
-  late final String _queueName;
+
   String? _id;
+  @override
+  String? get id => _id;
 
   final _musicApi = getIt<MusicApi>();
 
-  StationQueue({
-    required this.station,
-    required super.tracks
-  }) : super(from: '') {
-    String stationId = station.id.type != 'user' ? '${station.id.type}_' : '';
-    stationId += station.id.tag;
-    from = 'desktop_win-radio-radio_$stationId-default';
-  }
+  StationQueue({ required this.station }) : super(TracksSource(
+      sourceType: TracksSourceType.radio,
+      source: station
+  ));
 
   @override
   Future<Track?> next() async {
-    Track? track = await super.next();
-    
-    if(currentIndex == 0) {
-      await _createQueueTracks();
+    if(currentIndex == -1 && tracks.isEmpty) {
+      await _preloadNewTracks();
+      await _createQueue(tracks);
     }
     else if(tracks.length - currentIndex <= 3) {
       await _preloadNewTracks();
     }
-    else if(currentIndex == tracks.length - 1) {
-      await _preloadNewTracks();
+    else if(tracks.isNotEmpty && currentIndex == tracks.length - 1) {
       await _createQueue(tracks);
     }
 
+    Track? track = await super.next();
+
     if(_id != null && currentIndex >= 0) {
-      await _musicApi.updateQueuePosition(_id!, currentIndex);
+      await _musicApi.updateQueuePosition(id!, currentIndex);
+    }
+
+    return track;
+  }
+
+  @override
+  Future<Track?> previous() async {
+    Track? track = await super.previous();
+
+    if(track != null) {
+      await _musicApi.updateQueuePosition(id!, currentIndex);
     }
 
     return track;
@@ -48,26 +58,18 @@ class StationQueue extends PlaybackQueueBase
 
   @override
   Future<Track?> moveTo(int index) async {
-    Track? track = await super.moveTo(index);
-
-    if(track != null) {
-      await _musicApi.updateQueuePosition(_id!, currentIndex);
+    if(currentIndex == -1) {
+      return next();
     }
 
-    return track;
-  }
-
-  Future<void> _createQueueTracks() async {
-    final List<Track> tracks = await _musicApi.stationTacks(station.id, _lastTrackIds());
-    
-    await _createQueue(tracks);
+    return null;
   }
 
   Future<void> _createQueue(Iterable<Track> tracks) async {
     trackMapper(track) => QueueTrack(
         track.id.toString(),
         track.firstAlbumId.toString(),
-        _queueName
+        station.from
     );
     final List<QueueTrack> queueTracks = tracks.map(trackMapper).toList();
 

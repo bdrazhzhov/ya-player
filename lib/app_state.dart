@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 
-import 'helpers/playback_queue.dart';
 import 'helpers/nav_keys.dart';
 import 'models/play_info.dart';
 import 'services/preferences.dart';
@@ -40,7 +39,6 @@ class AppState {
   final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
   final queueTracks = ValueNotifier<List<Track>>([]);
-  PlaybackQueue? _playbackQueue;
 
   final _audioHandler = getIt<MyAudioHandler>();
   final _musicApi = getIt<MusicApi>();
@@ -68,18 +66,6 @@ class AppState {
 
     await _requestAppData();
     mainPageState.value = UiState.main;
-  }
-
-  void _listenToPreloadStream() {
-    _playbackQueue?.preloadStream.listen((lastTrackIds) async {
-      // When the playlist almost reached its end loading
-      // new tracks and adding to the end of the playlist
-      if(currentStationNotifier.value == null) return;
-
-      final List<Track> tracks = await _musicApi.stationTacks(currentStationNotifier.value!.id, lastTrackIds);
-      _playbackQueue!.addAll(tracks);
-      debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
-    });
   }
 
   Future<void> _requestAppData() async {
@@ -209,137 +195,6 @@ class AppState {
   void stop() => _audioHandler.stop();
   void seek(Duration position) => _audioHandler.seek(position);
 
-  // Future<void> previous() async {
-  //   Track? track = _playbackQueue?.previous();
-  //   if(track == null) return;
-  //
-  //   _playTrack(track);
-  // }
-  // void previous() {
-  //   _playerEventsStreamController.add(PlayerEvent.previous);
-  // }
-
-  // Future<void> next() async {
-  //   Track? track = _playbackQueue?.next();
-  //   if(track == null) return;
-  //
-  //   _playTrack(track);
-  // }
-
-  // void next() {
-  //   _playerEventsStreamController.add(PlayerEvent.next);
-  // }
-
-  Future<void> playStationTracks(Station station) async {
-    currentStationNotifier.value = station;
-    String stationId = station.id.type != 'user' ? '${station.id.type}_' : '';
-    stationId += station.id.tag;
-    final String queueName = 'desktop_win-radio-radio_$stationId-default';
-
-    if(_playbackQueue?.name != queueName) {
-      final lastTrackIds = _playbackQueue?.lastTrackIds() ?? [];
-      final List<Track> tracks = await _musicApi.stationTacks(station.id, lastTrackIds);
-
-      trackMapper(track) => QueueTrack(
-        track.id.toString(),
-        track.firstAlbumId.toString(),
-        queueName
-      );
-      final List<QueueTrack> queueTracks = tracks.map(trackMapper).toList();
-
-      final queueId = await _musicApi.createQueueForStation(station, queueTracks);
-      _playbackQueue = PlaybackQueue(tracks: tracks, id: queueId, name: queueName);
-
-      _listenToPreloadStream();
-    }
-
-    Track? track = _playbackQueue!.moveTo(0);
-
-    if(track != null) return _playTrack(track);
-  }
-
-  Future<void> playTracks(List<Track> tracks, int selectedIndex, String queueName) async {
-    if(_playbackQueue?.name != queueName) {
-      currentStationNotifier.value = null;
-      _playbackQueue = await _createPlayingQueue(
-        tracks: tracks,
-        selectedIndex: selectedIndex,
-        from: queueName,
-      );
-    }
-
-    Track? track = _playbackQueue!.moveTo(selectedIndex);
-
-    if(track == null) return;
-
-    if(track == trackNotifier.value) {
-      play();
-    }
-    else {
-      return _playTrack(track);
-    }
-  }
-
-  Future<PlaybackQueue> _createPlayingQueue({
-    required List<Track> tracks,
-    int selectedIndex = 0,
-    required String from
-  }) async {
-    final validTracks = tracks.where((track) => track.isAvailable).toList();
-    final tracksInQueue = validTracks.map((track) => QueueTrack(
-      track.id.toString(),
-      track.albums.first.id.toString(),
-      from
-    )).toList();
-    final String queueId = await _musicApi.createQueueForLikedTracks(tracksInQueue, selectedIndex);
-    queueTracks.value = tracks;
-
-    return PlaybackQueue(tracks: validTracks, id: queueId, name: from);
-  }
-
-  Future<void> _playTrack(Track track) async {
-    if(_currentPlayInfo != null) {
-      _currentPlayInfo!.totalPlayed = progressNotifier.value.current;
-      if(currentStationNotifier.value != null) {
-        final bool isSkipped = progressNotifier.value.current.inMilliseconds / track.duration!.inMilliseconds < 0.9;
-        final String feedback = isSkipped ? 'skip' : 'trackFinished';
-        _musicApi.sendStationTrackFeedback(currentStationNotifier.value!.id,
-            _currentPlayInfo!.track, feedback, _currentPlayInfo!.totalPlayed);
-      }
-      _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
-    }
-    String? url = await _musicApi.trackDownloadUrl(track.id);
-
-    if(url == null) return;
-
-    Uri? artUri;
-    if(track.coverUri != null) {
-      artUri = Uri.parse(MusicApi.imageUrl(track.coverUri!, '260x260'));
-    }
-
-    final mediaItem = MediaItem(
-      id: track.id.toString(),
-      title: track.title,
-      artist: track.artist,
-      album: track.albums.first.title,
-      duration: track.duration,
-      artUri: artUri,
-      extras: {'url': url}
-    );
-
-    _audioHandler.playTrack(mediaItem);
-    trackNotifier.value = track;
-    trackLikeNotifier.value = isLikedTrack(track);
-    _currentPlayInfo = PlayInfo(track, _playbackQueue!.name);
-
-    if(currentStationNotifier.value != null) {
-      _musicApi.sendStationTrackFeedback(currentStationNotifier.value!.id,
-          _currentPlayInfo!.track, 'trackStarted', _currentPlayInfo!.totalPlayed);
-    }
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
-    _musicApi.updateQueuePosition(_playbackQueue!.id, _playbackQueue!.currentIndex);
-  }
-
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeCurrentTrack() async {
@@ -364,7 +219,6 @@ class AppState {
 
   void _reset() {
     stop();
-    _playbackQueue = null;
     _currentPlayInfo = null;
     playButtonNotifier.value = ButtonState.paused;
     trackNotifier.value = null;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_state.dart';
+import '../controls/sliver_track_list.dart';
 import '../controls/track_list/sliver_tracks_header.dart';
 import '../models/music_api/track.dart';
 import '../services/service_locator.dart';
@@ -40,10 +41,10 @@ class QueuePage extends StatelessWidget {
         ValueListenableBuilder(
           valueListenable: _appState.queueTracks,
           builder: (_, List<Track> tracks, __) {
-            return const SliverPadding(
-              padding: EdgeInsets.only(left: 32, right: 32),
-              // sliver: SliverTrackList(tracks: tracks, queueName: queueName)
-              sliver: SliverToBoxAdapter(child: Text('Not implemented'))
+            return SliverPadding(
+              padding: const EdgeInsets.only(left: 32, right: 32),
+              sliver: SliverTrackList(tracks: tracks)
+              // sliver: SliverToBoxAdapter(child: Text('Not implemented'))
             );
           },
         ),

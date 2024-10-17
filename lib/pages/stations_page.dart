@@ -6,6 +6,8 @@ import '../controls/page_base_layout.dart';
 import '../app_state.dart';
 import '../helpers/nav_keys.dart';
 import '../music_api.dart';
+import '../player/players_manager.dart';
+import '../player/tracks_source.dart';
 import '../services/service_locator.dart';
 import '../helpers/color_extension.dart';
 import '../models/music_api/dashboard.dart';
@@ -137,7 +139,7 @@ class _StationsWidgetState extends State<_StationsWidget> {
 
 class StationsList extends StatelessWidget {
   final List<Station> stations;
-  final appState = getIt<AppState>();
+  final _player = getIt<PlayersManager>();
 
   static const double _minWidth = 250;
   static const double _maxWidth = 412;
@@ -180,7 +182,11 @@ class StationsList extends StatelessWidget {
                     );
                   }
                   else {
-                    appState.playStationTracks(station);
+                    _player.currentPageTracksSourceData = TracksSource(
+                        sourceType: TracksSourceType.radio,
+                        source: station
+                    );
+                    _player.play(0);
                   }
                 },
                 child: MouseRegion(
@@ -199,6 +205,7 @@ class _StationCard extends StatelessWidget {
   final Station station;
   final bool isCurrent;
   final double width;
+  final player = getIt<PlayersManager>();
 
   _StationCard({
     required this.station,
@@ -214,7 +221,13 @@ class _StationCard extends StatelessWidget {
     final outlineColor = isCurrent ? theme.colorScheme.outline : Colors.transparent;
 
     return InkResponse(
-      onTap: () { appState.playStationTracks(station); },
+      onTap: () {
+        player.currentPageTracksSourceData = TracksSource(
+            sourceType: TracksSourceType.radio,
+            source: station
+        );
+        player.play(0);
+      },
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(width: 3, color: outlineColor),

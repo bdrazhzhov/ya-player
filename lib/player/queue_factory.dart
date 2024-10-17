@@ -24,6 +24,9 @@ class QueueFactory {
         (context, queueTracks) = _forArtist(tracksSource.source as ArtistInfo);
       case TracksSourceType.playlist:
         (context, queueTracks) = _forPlaylist(tracksSource.source as Playlist);
+      case TracksSourceType.radio:
+        context = QueueContext(description: '', id: '', type: '');
+        queueTracks = [];
     }
 
     return Queue(

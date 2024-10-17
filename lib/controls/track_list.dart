@@ -118,11 +118,13 @@ class _TrackListState extends State<TrackList> {
                                           isHovered: track == hoveredTrack,
                                           isPlaying: isPlaying,
                                           onPressed: (bool isPlaying) {
-                                            if(isPlaying) {
-                                              appState.pause();
-                                            } else {
-                                              appState.playTracks(widget.tracks, index, widget.queueName);
-                                            }
+                                            debugPrint('TrackList widget is deprecated. Playing is disabled.');
+
+                                            // if(isPlaying) {
+                                            //   appState.pause();
+                                            // } else {
+                                            //   appState.playTracks(widget.tracks, index, widget.queueName);
+                                            // }
                                           },
                                         );
                                       }

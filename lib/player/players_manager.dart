@@ -1,12 +1,17 @@
+import 'package:ya_player/models/music_api/station.dart';
+import 'package:ya_player/player/station_queue.dart';
+
 import '/services/audio_handler.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
 import '/player/player_base.dart';
 import 'playback_queue_base.dart';
+import 'station_player.dart';
+import 'tracks_player.dart';
 import 'tracks_source.dart';
 
 class PlayersManager {
-  PlayerBase? player;
+  PlayerBase? _player;
   TracksSource? currentPageTracksSourceData;
   TracksSource? _tracksSourceData;
   final _appState = getIt<AppState>();
@@ -14,8 +19,8 @@ class PlayersManager {
   PlayersManager() {
     _appState.trackSkipStream.listen((TrackSkipType skipType){
       switch(skipType) {
-        case TrackSkipType.next: player?.next();
-        case TrackSkipType.previous: player?.previous();
+        case TrackSkipType.next: _player?.next();
+        case TrackSkipType.previous: _player?.previous();
       }
     });
   }
@@ -25,22 +30,28 @@ class PlayersManager {
 
     if(_tracksSourceData != currentPageTracksSourceData) {
       _tracksSourceData = currentPageTracksSourceData;
-      final queue = PlaybackQueueBase(currentPageTracksSourceData!);
-      player = PlayerBase(queue: queue);
+      if(_tracksSourceData!.sourceType == TracksSourceType.radio) {
+        final queue = StationQueue(station: _tracksSourceData!.source as Station);
+        _player = StationPlayer(queue: queue);
+      }
+      else {
+        final queue = PlaybackQueueBase(_tracksSourceData!);
+        _player = TracksPlayer(queue: queue);
+      }
     }
 
-    player!.play(index);
+    _player!.play(index);
   }
 
   void next(){
-    if(player == null) return;
+    if(_player == null) return;
 
-    player!.next();
+    _player!.next();
   }
 
   void previous() {
-    if(player == null) return;
+    if(_player == null) return;
 
-    player!.previous();
+    _player!.previous();
   }
 }

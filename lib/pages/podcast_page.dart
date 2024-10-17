@@ -2,21 +2,28 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../app_state.dart';
-import '../helpers/playback_queue.dart';
-import '../models/music_api_types.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/models/music_api_types.dart';
+import '/music_api.dart';
+import '/player/players_manager.dart';
+import '/player/tracks_source.dart';
+import '/services/service_locator.dart';
 
 class PodcastPage extends StatelessWidget {
   final Podcast podcast;
   late final Future<AlbumWithTracks> _albumWidthTracks;
-  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
   final _durationFormat = DateFormat('mm:ss');
+  final _player = getIt<PlayersManager>();
 
   PodcastPage(this.podcast, {super.key}) {
     _albumWidthTracks = _musicApi.albumWithTracks(podcast.id);
+    _albumWidthTracks.then((AlbumWithTracks albumWithTracks){
+      _player.currentPageTracksSourceData = TracksSource(
+          sourceType: TracksSourceType.album,
+          source: albumWithTracks,
+          id: albumWithTracks.album.id
+      );
+    });
   }
 
   @override
@@ -49,7 +56,7 @@ class PodcastPage extends StatelessWidget {
                       children: [
                         if(podcast.isAvailable)
                           IconButton(
-                              onPressed: () => _appState.playTracks(snapshot.data!.tracks, index, QueueNames.album),
+                              onPressed: () => _player.play(index),
                               icon: const Icon(Icons.play_arrow)
                           ),
                         if(podcast.tracksCount == 0)

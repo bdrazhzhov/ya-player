@@ -1,66 +1,43 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:meta/meta.dart';
 
-import '/services/audio_handler.dart';
-import '/models/play_info.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
+import '/models/play_info.dart';
 import '/music_api.dart';
+import '/services/audio_handler.dart';
 import '/services/service_locator.dart';
-import 'playback_queue_base.dart';
 
 class PlayerBase {
-  PlayInfo? _currentPlayInfo;
-  final _musicApi = getIt<MusicApi>();
-  final _appState = getIt<AppState>();
+  @protected
+  final musicApi = getIt<MusicApi>();
+  @protected
+  final appState = getIt<AppState>();
   final _audioHandler = getIt<MyAudioHandler>();
+  @protected
+  PlayInfo? currentPlayInfo;
 
-  final PlaybackQueueBase queue;
+  @mustBeOverridden
+  void play(int index){}
 
-  PlayerBase({required this.queue});
+  @mustBeOverridden
+  void next() {}
 
-  void play(int index) async {
-    Track? track = await queue.moveTo(index);
-    if(track == null) return;
-
-    if(track == _appState.trackNotifier.value) {
-      _appState.play();
-    }
-    else {
-      await _stop();
-      return playTrack(track);
-    }
-  }
-
-  Future<void> _stop() async {
-    if(_currentPlayInfo == null) return;
-
-    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;
-    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
-    _currentPlayInfo = null;
-  }
-
-  void next() async {
-    play(queue.currentIndex + 1);
-  }
-
-  void previous() async {
-    play(queue.currentIndex - 1);
-  }
+  @mustBeOverridden
+  void previous() {}
 
   @protected
-  Future<void> playTrack(Track track) async {
+  Future<void> playTrack(Track track, String from) async {
     await _addTrackToHandler(track);
 
-    _appState.trackNotifier.value = track;
-    _appState.trackLikeNotifier.value = _appState.isLikedTrack(track);
-    _currentPlayInfo = PlayInfo(track, queue.from);
-
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    appState.trackNotifier.value = track;
+    appState.trackLikeNotifier.value = appState.isLikedTrack(track);
+    currentPlayInfo = PlayInfo(track, from);
+    musicApi.sendPlayingStatistics(currentPlayInfo!.toYmPlayAudio());
   }
 
   Future<void> _addTrackToHandler(Track track) async {
-    String? url = await _musicApi.trackDownloadUrl(track.id);
+    String? url = await musicApi.trackDownloadUrl(track.id);
 
     if(url == null) return;
 

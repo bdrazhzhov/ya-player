@@ -24,7 +24,7 @@ class PlaybackQueueBase
   String? _id;
   String? get id => _id;
 
-  final String from;
+  late final String from;
   
   PlaybackQueueBase(this.tracksSource) :
         from = tracksSourceStrings[tracksSource.sourceType],
@@ -46,7 +46,7 @@ class PlaybackQueueBase
     return _tracks[_currentIndex];
   }
 
-  Track? previous() {
+  Future<Track?> previous() async {
     if(_tracks.isEmpty || _currentIndex == 0) return null;
 
     _currentIndex -= 1;
