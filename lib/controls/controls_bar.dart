@@ -2,12 +2,12 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../helpers/nav_keys.dart';
-import '../models/music_api/track.dart';
-import '../notifiers/progress_notifier.dart';
-// import '../services/audio_handler.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/helpers/nav_keys.dart';
+import '/models/music_api/track.dart';
+import '/notifiers/progress_notifier.dart';
+import '/services/service_locator.dart';
+import 'like_button.dart';
 import 'play_controls.dart';
 import 'track_image.dart';
 import 'track_name.dart';
@@ -57,15 +57,13 @@ class _ControlsBar extends State<ControlsBar> {
               PlayControls(),
               TrackImage(isExpandable: widget.isExpandable),
               TrackName(),
-              ValueListenableBuilder<bool>(
-                  valueListenable: appState.trackLikeNotifier,
-                  builder: (_, value, __) {
-                    var iconData = value ? Icons.favorite : Icons.favorite_border;
-                    return IconButton(
-                      icon: Icon(iconData),
-                      onPressed: appState.likeCurrentTrack
-                    );
-                  }
+              ValueListenableBuilder<Track?>(
+                valueListenable: appState.trackNotifier,
+                builder: (_, track, __) {
+                  if(track == null) return const SizedBox.shrink();
+
+                  return LikeButton(track: track);
+                }
               ),
               const Expanded(child: SizedBox(),),
               ValueListenableBuilder(

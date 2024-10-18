@@ -31,7 +31,6 @@ class PlayerBase {
     await _addTrackToHandler(track);
 
     appState.trackNotifier.value = track;
-    appState.trackLikeNotifier.value = appState.isLikedTrack(track);
     currentPlayInfo = PlayInfo(track, from);
     musicApi.sendPlayingStatistics(currentPlayInfo!.toYmPlayAudio());
   }

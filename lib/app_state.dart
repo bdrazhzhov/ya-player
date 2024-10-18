@@ -5,7 +5,6 @@ import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 
 import 'helpers/nav_keys.dart';
-import 'models/play_info.dart';
 import 'services/preferences.dart';
 import 'models/music_api_types.dart';
 import 'music_api.dart';
@@ -24,7 +23,6 @@ class AppState {
   final progressNotifier = ProgressNotifier();
   final playButtonNotifier = PlayButtonNotifier();
   final trackNotifier = ValueNotifier<Track?>(null);
-  final trackLikeNotifier = ValueNotifier<bool>(false);
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<Map<String,List<Station>>>({});
@@ -42,7 +40,6 @@ class AppState {
 
   final _audioHandler = getIt<MyAudioHandler>();
   final _musicApi = getIt<MusicApi>();
-  PlayInfo? _currentPlayInfo;
   final _prefs = getIt<Preferences>();
   final List<int> _likedTrackIds = [];
 
@@ -197,10 +194,7 @@ class AppState {
 
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
-  Future<void> likeCurrentTrack() async {
-    if(_currentPlayInfo == null) return;
-
-    final Track track = _currentPlayInfo!.track;
+  Future<void> likeTrack(Track track) async {
     int likedIndex = binarySearch(_likedTrackIds, track.id);
     final isLiked = likedIndex != -1;
 
@@ -214,18 +208,17 @@ class AppState {
     }
 
     _likedTrackIds.sort();
-    trackLikeNotifier.value = !isLiked;
+
+    return _requestLikedTracks();
   }
 
   void _reset() {
     stop();
-    _currentPlayInfo = null;
     playButtonNotifier.value = ButtonState.paused;
     trackNotifier.value = null;
     currentStationNotifier.value = null;
     stationsDashboardNotifier.value = [];
     accountNotifier.value = null;
-    trackLikeNotifier.value = false;
     likedTracksNotifier.value = [];
     albumsNotifier.value = [];
     artistsNotifier.value = [];
