@@ -51,7 +51,6 @@ class _SliverTrackListState extends State<SliverTrackList> {
                     if(isPlaying && isCurrent) {
                       appState.pause();
                     } else {
-                      // appState.playTracks(widget.tracks, index, widget.queueName);
                       player.play(index);
                     }
                   },

@@ -22,7 +22,12 @@ class HomePage extends StatelessWidget {
             return SliverList.builder(
               itemCount: blocks.length,
               itemBuilder: (BuildContext context, int index) {
-                return PageBlock(block: blocks[index]);
+                return Column(
+                  children: [
+                    PageBlock(block: blocks[index]),
+                    const SizedBox(height: 50)
+                  ],
+                );
               }
             );
           },

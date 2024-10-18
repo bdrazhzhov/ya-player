@@ -8,19 +8,12 @@ import '../models/music_api/playlist.dart';
 class PlaylistCard extends StatelessWidget {
   final Playlist playlist;
   final double width;
-  static const _descriptionHeight = 60;
-  static const _countsHeight = 50;
 
   const PlaylistCard(this.playlist, {super.key, required this.width});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double height = (
-        playlist.description != null
-            ? _descriptionHeight + _countsHeight
-            : _countsHeight
-    ) + width;
 
     return GestureDetector(
       onTap: (){
@@ -35,7 +28,6 @@ class PlaylistCard extends StatelessWidget {
         cursor: SystemMouseCursors.click,
         child: SizedBox(
           width: width,
-          height: height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -48,15 +40,19 @@ class PlaylistCard extends StatelessWidget {
                   child: const Center(child: Text('No Image')),
                 ),
               Text(HtmlCharacterEntities.decode(playlist.title)),
-              if(playlist.description != null) Expanded(
-                child: Text(
-                  HtmlCharacterEntities.decode(playlist.description!),
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: TextStyle(color: theme.colorScheme.outline)
-                )
-              ),
+              if(playlist.description != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 40
+                  ),
+                  child: Text(
+                    HtmlCharacterEntities.decode(playlist.description!),
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(color: theme.colorScheme.outline)
+                  ),
+                ),
               Text(
                 '${playlist.tracksCount} tracks',
                 style: TextStyle(color: theme.colorScheme.outline)
