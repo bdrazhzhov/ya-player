@@ -7,15 +7,17 @@ import '/models/play_info.dart';
 import '/music_api.dart';
 import '/services/audio_handler.dart';
 import '/services/service_locator.dart';
+import 'playback_queue_base.dart';
+import 'station_queue.dart';
 
-class PlayerBase {
-  @protected
-  final musicApi = getIt<MusicApi>();
-  @protected
-  final appState = getIt<AppState>();
+part 'station_player.dart';
+part 'tracks_player.dart';
+
+base class PlayerBase {
+  final _musicApi = getIt<MusicApi>();
+  final _appState = getIt<AppState>();
   final _audioHandler = getIt<MyAudioHandler>();
-  @protected
-  PlayInfo? currentPlayInfo;
+  PlayInfo? _currentPlayInfo;
 
   @mustBeOverridden
   void play(int index){}
@@ -30,13 +32,13 @@ class PlayerBase {
   Future<void> playTrack(Track track, String from) async {
     await _addTrackToHandler(track);
 
-    appState.trackNotifier.value = track;
-    currentPlayInfo = PlayInfo(track, from);
-    musicApi.sendPlayingStatistics(currentPlayInfo!.toYmPlayAudio());
+    _appState.trackNotifier.value = track;
+    _currentPlayInfo = PlayInfo(track, from);
+    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
   }
 
   Future<void> _addTrackToHandler(Track track) async {
-    String? url = await musicApi.trackDownloadUrl(track.id);
+    String? url = await _musicApi.trackDownloadUrl(track.id);
 
     if(url == null) return;
 
