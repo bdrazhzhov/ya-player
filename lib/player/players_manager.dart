@@ -1,6 +1,4 @@
-import 'package:ya_player/models/music_api/station.dart';
-import 'package:ya_player/player/station_queue.dart';
-
+import '/models/music_api/station.dart';
 import '/services/audio_handler.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';

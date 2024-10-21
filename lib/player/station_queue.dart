@@ -1,23 +1,8 @@
-import 'package:flutter/foundation.dart';
+part of 'playback_queue_base.dart';
 
-import '/models/music_api/queue.dart';
-import '/models/music_api/station.dart';
-import '/models/music_api/track.dart';
-import 'playback_queue_base.dart';
-import '/music_api.dart';
-import '/services/service_locator.dart';
-import 'tracks_source.dart';
-
-class StationQueue extends PlaybackQueueBase
+final class StationQueue extends PlaybackQueueBase
 {
   final Station station;
-
-  String? _id;
-  @override
-  String? get id => _id;
-
-  final _musicApi = getIt<MusicApi>();
-
   StationQueue({ required this.station }) : super(TracksSource(
       sourceType: TracksSourceType.radio,
       source: station
