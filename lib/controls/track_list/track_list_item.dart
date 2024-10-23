@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../app_state.dart';
-import '../../models/music_api/track.dart';
-import '../../services/service_locator.dart';
+import '/app_state.dart';
+import '/models/music_api/track.dart';
+import '/services/service_locator.dart';
 import 'track_cover.dart';
 
 class TrackListItem extends StatefulWidget {

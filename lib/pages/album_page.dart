@@ -69,11 +69,10 @@ class AlbumPage extends StatelessWidget {
                       ].asMap(),
                       children: albumWithTracks.tracks.mapIndexed((int index, Track track) {
                         return TableRow(
-                            decoration: BoxDecoration(
-                                color: theme.colorScheme.onInverseSurface,
-                                border: Border.all(width: 1, color: theme.colorScheme.surface)
-                            ),
-                            children: _tableRowWidgets(index, track, albumWithTracks)
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.onInverseSurface
+                          ),
+                          children: _tableRowWidgets(index, track, albumWithTracks)
                         );
                       }).toList(),
                     ),
