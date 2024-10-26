@@ -2,6 +2,8 @@ part of 'playback_queue_base.dart';
 
 final class StationQueue extends PlaybackQueueBase
 {
+  int _maxIndex = 0;
+
   final Station station;
   StationQueue({ required this.station }) : super(TracksSource(
       sourceType: TracksSourceType.radio,
@@ -17,8 +19,9 @@ final class StationQueue extends PlaybackQueueBase
     else if(tracks.length - currentIndex <= 3) {
       await _preloadNewTracks();
     }
-    else if(tracks.isNotEmpty && currentIndex == tracks.length - 1) {
+    else if(tracks.isNotEmpty && currentIndex == _maxIndex) {
       await _createQueue(tracks);
+      _maxIndex = tracks.length - 1;
     }
 
     Track? track = await super.next();
