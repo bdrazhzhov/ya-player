@@ -35,6 +35,8 @@ class SliverTracksHeader extends SliverPersistentHeaderDelegate {
                 child: Text('ALBUM'),
               )
             ),
+            // Space for the Like button
+            SizedBox(width: 50),
             SizedBox(
               width: 50,
               child: Center(child: Icon(Icons.schedule))

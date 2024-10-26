@@ -1,17 +1,14 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '/controls/like_button.dart';
+import '/controls/sliver_track_list.dart';
 import '/player/tracks_source.dart';
 import '/player/players_manager.dart';
 import '/music_api.dart';
 import '/controls/page_loading_indicator.dart';
 import '/models/music_api/album.dart';
-import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 
@@ -33,8 +30,6 @@ class AlbumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return FutureBuilder<AlbumWithTracks>(
         future: _albumInfo,
         builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot){
@@ -56,28 +51,7 @@ class AlbumPage extends StatelessWidget {
                   pinned: true,
                 ),
 
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 40, right: 40),
-                    child: Table(
-                      columnWidths: [
-                        const FixedColumnWidth(50),
-                        const FixedColumnWidth(50),
-                        const FlexColumnWidth(),
-                        const FixedColumnWidth(40),
-                        const FixedColumnWidth(50),
-                      ].asMap(),
-                      children: albumWithTracks.tracks.mapIndexed((int index, Track track) {
-                        return TableRow(
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.onInverseSurface
-                          ),
-                          children: _tableRowWidgets(index, track, albumWithTracks)
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                SliverTrackList(tracks: albumWithTracks.tracks, albumMode: true),
               ],
             );
           }
@@ -87,36 +61,6 @@ class AlbumPage extends StatelessWidget {
           }
         }
     );
-  }
-
-  List<Widget> _tableRowWidgets(index, track, AlbumWithTracks albumWithTracks) {
-    final df = DateFormat('mm:ss');
-
-    return [
-      IconButton(
-        onPressed: () => _player.play(index),
-        icon: const Icon(Icons.play_arrow)
-      ),
-      Center(child: Text('${index + 1}')),
-      Padding(
-        padding: const EdgeInsets.only(left: 12.0),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            track.title,
-            softWrap: false,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
-      Center(child: LikeButton(track: track)),
-      Center(
-        child: Text(df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true))),
-      ),
-    ].map((widget) {
-      return SizedBox(height: 40, child: widget,);
-    }).toList();
   }
 }
 
@@ -251,26 +195,23 @@ class _TracksHeader extends SliverPersistentHeaderDelegate {
       height: _height,
       child: Container(
         decoration: BoxDecoration(color: theme.colorScheme.surface),
-        child: const Padding(
-          padding: EdgeInsets.only(left: 40, right: 40),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 50,
-                child: Center(child: Text('#'))
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 12.0),
-                  child: Text('TRACK'),
-                )
-              ),
-              SizedBox(
-                width: 50,
-                child: Center(child: Icon(Icons.schedule))
+        child: const Row(
+          children: [
+            SizedBox(
+              width: 50,
+              child: Center(child: Text('#'))
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 6.0),
+                child: Text('TRACK'),
               )
-            ],
-          ),
+            ),
+            SizedBox(
+              width: 50,
+              child: Center(child: Icon(Icons.schedule))
+            )
+          ],
         ),
       )
     );

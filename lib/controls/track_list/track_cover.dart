@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../models/music_api/track.dart';
 import '../../music_api.dart';
+import 'track_animation_cover.dart';
 
 class TrackCover extends StatefulWidget {
   final Track track;
@@ -11,6 +12,7 @@ class TrackCover extends StatefulWidget {
   final bool isPlaying;
   final bool isHovered;
   final void Function(bool isPlaying)? onPressed;
+  final int? trackNumber;
 
   const TrackCover(
     this.track, {
@@ -18,7 +20,8 @@ class TrackCover extends StatefulWidget {
       required this.isCurrent,
       this.isPlaying = false,
       this.isHovered = false,
-      this.onPressed
+      this.trackNumber,
+      this.onPressed,
     }
   );
 
@@ -27,34 +30,10 @@ class TrackCover extends StatefulWidget {
 }
 
 class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late Animation animation;
-
   static const double size = 50;
   static const double hoverButtonSize = 30;
   static const buttonColor = Color.fromARGB(255, 255, 219, 77);
   static const double coverCornersRadius = 4.0;
-
-  @override
-  void initState() {
-    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
-    animationController.repeat(reverse: true);
-    animation =  Tween(begin: 10.0, end: hoverButtonSize / 2)
-        .animate(animationController)
-          ..addListener(() => setState(() {}));
-
-    if(widget.isCurrent && !widget.isPlaying) animationController.stop();
-
-    super.initState();
-  }
-
-
-  @override
-  void dispose() {
-    animationController.dispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,26 +43,27 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
       child: Stack(
         alignment: Alignment.center,
         children: [
-          image(),
+          if(widget.trackNumber != null)
+            Text(widget.isCurrent ? '' : widget.trackNumber.toString())
+          else
+            image(),
           if(widget.isCurrent)
             ...[
-            Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.75),
-                borderRadius: BorderRadius.circular(coverCornersRadius),
+            if(widget.trackNumber == null)
+              Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.75),
+                  borderRadius: BorderRadius.circular(coverCornersRadius),
+                ),
               ),
-            ),
           // Animation of playing process
           if(!widget.isHovered && widget.isPlaying)
-            Container(
-              width: animation.value,
-              height: animation.value,
-              decoration: const BoxDecoration(
-                color: buttonColor,
-                borderRadius: BorderRadius.all(Radius.circular(15))
-              ),
+            TrackAnimationCover(
+              bgColor: buttonColor,
+              radius: hoverButtonSize / 2,
+              playAnimation: !widget.isCurrent || widget.isPlaying,
             )
           ],
           // Play/Pause button
@@ -93,7 +73,7 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
               height: hoverButtonSize,
               decoration: const BoxDecoration(
                 color: buttonColor,
-                borderRadius: BorderRadius.all(Radius.circular(15))
+                borderRadius: BorderRadius.all(Radius.circular(hoverButtonSize / 2))
               ),
               child: widget.isPlaying && widget.isCurrent
                   ? const Icon(Icons.pause, color: Colors.black)

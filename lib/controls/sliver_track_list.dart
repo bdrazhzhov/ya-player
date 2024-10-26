@@ -9,12 +9,12 @@ import '/services/service_locator.dart';
 
 class SliverTrackList extends StatefulWidget {
   final List<Track> tracks;
-  final bool showAlbum;
+  final bool albumMode;
 
   const SliverTrackList({
     super.key,
     required this.tracks,
-    this.showAlbum = true,
+    this.albumMode = false,
   });
 
   @override
@@ -45,6 +45,10 @@ class _SliverTrackListState extends State<SliverTrackList> {
                   track: track,
                   isPlaying: isPlaying,
                   isCurrent: isCurrent,
+                  trackIndex: index,
+                  showTrackNumber: widget.albumMode,
+                  showAlbum: !widget.albumMode,
+                  showArtistName: !widget.albumMode,
                   onTap: (){
                     if(!track.isAvailable) return;
 
