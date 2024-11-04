@@ -38,6 +38,13 @@ class StationId extends Equatable {
     return StationId(json['type'], json['tag']);
   }
 
+  /// Creates StationId object from string in the following format `type:tag`
+  factory StationId.fromString(String idString) {
+    List<String> items = idString.split(':');
+
+    return StationId(items[0], items[1]);
+  }
+
   @override
   List<Object> get props => [type, tag];
 
@@ -45,6 +52,9 @@ class StationId extends Equatable {
     'type': type,
     'tag': tag
   };
+
+  @override
+  String toString() => '$type:$tag';
 }
 
 class StationIcon {
