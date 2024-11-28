@@ -11,7 +11,7 @@ final class TracksPlayer extends PlayerBase {
     if(track == null) return;
 
     if(track == _appState.trackNotifier.value) {
-      _appState.play();
+      _audioPlayer.play();
     }
     else {
       await _stop();

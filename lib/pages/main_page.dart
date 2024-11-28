@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../controls/controls_bar.dart';
+import '/app_state.dart';
+import '/audio_player.dart';
+import '/controls/controls_bar.dart';
 // import '../controls/title_bar.dart';
-import '../services/service_locator.dart';
-import '../controls/main_menu.dart';
+import '/services/service_locator.dart';
+import '/controls/main_menu.dart';
 import 'main_screen.dart';
 import 'app_loading_page.dart';
 import 'login/login_page.dart';
@@ -17,15 +18,16 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final _appState = getIt<AppState>();
+  final appState = getIt<AppState>();
+  final audioPlayer = getIt<AudioPlayer>();
 
   _MainPageState() {
-    _appState.init();
+    appState.init();
   }
 
   @override
   void dispose() {
-    _appState.stop();
+    audioPlayer.pause();
     super.dispose();
   }
 
@@ -35,7 +37,7 @@ class _MainPageState extends State<MainPage> {
       child: Stack(
         children: [
           ValueListenableBuilder(
-            valueListenable: _appState.mainPageState,
+            valueListenable: appState.mainPageState,
             builder: (_, UiState value, __) {
               Widget page;
 

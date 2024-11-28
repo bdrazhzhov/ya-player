@@ -2,6 +2,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../audio_player.dart';
 import '/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/models/music_api/track.dart';
@@ -23,6 +24,8 @@ class ControlsBar extends StatefulWidget {
 
 class _ControlsBar extends State<ControlsBar> {
   final AppState appState = getIt<AppState>();
+  final audioPlayer = getIt<AudioPlayer>();
+  bool isVolumeChangedInternally = false;
 
   _ControlsBar();
 
@@ -30,11 +33,12 @@ class _ControlsBar extends State<ControlsBar> {
   void initState() {
     super.initState();
 
-    // getIt<MyAudioHandler>().volumeStream.listen((value){
-    //   debugPrint('setState() volume');
-    //   appState.volume = value;
-    //   setState(() {});
-    // });
+    audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
+      if(isVolumeChangedInternally) return;
+
+      isVolumeChangedInternally = false;
+      setState(() {});
+    });
   }
 
   @override
@@ -48,7 +52,7 @@ class _ControlsBar extends State<ControlsBar> {
               progress: value.current,
               buffered: value.buffered,
               total: value.total,
-              onSeek: appState.seek,
+              onSeek: audioPlayer.seek,
             );
           },
         ),
@@ -86,11 +90,11 @@ class _ControlsBar extends State<ControlsBar> {
               if(defaultTargetPlatform == TargetPlatform.windows ||
                   defaultTargetPlatform == TargetPlatform.linux ||
                   defaultTargetPlatform == TargetPlatform.macOS) Slider(
-                value: appState.volume,
-                onChanged: (double value) {
-                  setState((){
-                    appState.volume = value;
-                  });
+                value: audioPlayer.volume,
+                onChanged: (double value) async {
+                  isVolumeChangedInternally = true;
+                  await audioPlayer.setVolume(value);
+                  setState((){});
                 },
               )
               else

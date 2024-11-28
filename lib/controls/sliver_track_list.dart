@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ya_player/controls/track_list/track_list_item.dart';
 
+import '/audio_player.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/notifiers/play_button_notifier.dart';
@@ -24,6 +25,7 @@ class SliverTrackList extends StatefulWidget {
 class _SliverTrackListState extends State<SliverTrackList> {
   final appState = getIt<AppState>();
   final player = getIt<PlayersManager>();
+  final audioPlayer = getIt<AudioPlayer>();
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,7 @@ class _SliverTrackListState extends State<SliverTrackList> {
                     if(!track.isAvailable) return;
 
                     if(isPlaying && isCurrent) {
-                      appState.pause();
+                      audioPlayer.pause();
                     } else {
                       player.play(index);
                     }

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:audio_service/audio_service.dart';
+import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
+import 'package:ya_player/audio_player.dart';
 
 import 'helpers/nav_keys.dart';
 import 'services/preferences.dart';
@@ -10,7 +11,6 @@ import 'models/music_api_types.dart';
 import 'music_api.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
-import 'services/audio_handler.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
@@ -38,23 +38,16 @@ class AppState {
   final landingNotifier = ValueNotifier<List<Block>>([]);
   final queueTracks = ValueNotifier<List<Track>>([]);
 
-  final _audioHandler = getIt<MyAudioHandler>();
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
+  final _audioPlayer = getIt<AudioPlayer>();
   final List<int> _likedTrackIds = [];
-
-  final _trackSkipStreamController = StreamController<TrackSkipType>();
-  Stream<TrackSkipType> get trackSkipStream => _trackSkipStreamController.stream;
 
   // Events: Calls coming from the UI
   void init() async {
     _listenToPlaybackState();
-    _listenToCurrentPosition();
-    _listenToBufferedPosition();
-    _listenToTotalDuration();
-    _listenToSkipEvents();
 
-    volume = _prefs.volume;
+    await _audioPlayer.setVolume(_prefs.volume);
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
 
@@ -104,60 +97,19 @@ class AppState {
   }
 
   void _listenToPlaybackState() {
-    _audioHandler.playbackState.listen((playbackState) async {
-      // debugPrint('PlaybackState: $playbackState');
-      final isPlaying = playbackState.playing;
-      final processingState = playbackState.processingState;
-      if (processingState == AudioProcessingState.loading ||
-          processingState == AudioProcessingState.buffering) {
-        playButtonNotifier.value = ButtonState.loading;
-      } else if (!isPlaying) {
+    _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
+      progressNotifier.value = ProgressBarState(
+        current: msg.position,
+        buffered: msg.bufferedPosition,
+        total: msg.duration ?? Duration.zero,
+      );
+
+      final playingState = msg.playingState;
+      if(playingState == PlayingState.paused) {
         playButtonNotifier.value = ButtonState.paused;
-      } else if (processingState != AudioProcessingState.completed) {
+      } else if(playingState == PlayingState.playing) {
         playButtonNotifier.value = ButtonState.playing;
-      } else {
-        await _audioHandler.stop();
-        _trackSkipStreamController.add(TrackSkipType.next);
       }
-    });
-  }
-
-  void _listenToCurrentPosition() {
-    AudioService.position.listen((position) {
-      final oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: position,
-        buffered: oldState.buffered,
-        total: oldState.total,
-      );
-    });
-  }
-
-  void _listenToBufferedPosition() {
-    _audioHandler.playbackState.listen((playbackState) {
-      final oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: oldState.current,
-        buffered: playbackState.bufferedPosition,
-        total: oldState.total,
-      );
-    });
-  }
-
-  void _listenToTotalDuration() {
-    _audioHandler.mediaItem.listen((mediaItem) {
-      final oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: oldState.current,
-        buffered: oldState.buffered,
-        total: mediaItem?.duration ?? Duration.zero,
-      );
-    });
-  }
-
-  void _listenToSkipEvents() {
-    _audioHandler.skipStream.listen((TrackSkipType event) {
-      _trackSkipStreamController.add(event);
     });
   }
 
@@ -181,17 +133,6 @@ class AppState {
     landingNotifier.value = await _musicApi.landing();
   }
 
-  double get volume => _audioHandler.volume;
-  set volume(double value) {
-    _audioHandler.setVolume(value);
-    _prefs.setVolume(value);
-  }
-
-  void play() => _audioHandler.play();
-  void pause() => _audioHandler.pause();
-  void stop() => _audioHandler.stop();
-  void seek(Duration position) => _audioHandler.seek(position);
-
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeTrack(Track track) async {
@@ -213,7 +154,7 @@ class AppState {
   }
 
   void _reset() {
-    stop();
+    _audioPlayer.stop();
     playButtonNotifier.value = ButtonState.paused;
     trackNotifier.value = null;
     currentStationNotifier.value = null;

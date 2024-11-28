@@ -1,11 +1,15 @@
-import 'package:audio_service/audio_service.dart';
+import 'dart:async';
+
+import 'package:audio_player_gst/events.dart';
 import 'package:meta/meta.dart';
 
+import '/mpris/metadata.dart';
+import '/mpris/mpris_player.dart';
+import '/audio_player.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/models/play_info.dart';
 import '/music_api.dart';
-import '/services/audio_handler.dart';
 import '/services/service_locator.dart';
 import 'playback_queue_base.dart';
 
@@ -15,8 +19,21 @@ part 'tracks_player.dart';
 base class PlayerBase {
   final _musicApi = getIt<MusicApi>();
   final _appState = getIt<AppState>();
-  final _audioHandler = getIt<MyAudioHandler>();
+  final _audioPlayer = getIt<AudioPlayer>();
   PlayInfo? _currentPlayInfo;
+  final _mpris = getIt<OrgMprisMediaPlayer2>();
+  late StreamSubscription<PlaybackEventMessage> _nextTrackSubscription;
+  late StreamSubscription<String> _controlSubscription;
+
+  PlayerBase() {
+    _listenToControlStream();
+    _listenToPlaybackState();
+  }
+
+  void cleanUp() {
+    _nextTrackSubscription.cancel();
+    _controlSubscription.cancel();
+  }
 
   @mustBeOverridden
   void play(int index){}
@@ -29,33 +46,54 @@ base class PlayerBase {
 
   @protected
   Future<void> playTrack(Track track, String from) async {
-    await _addTrackToHandler(track);
+    await _addTrackToPlayer(track);
 
     _appState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, from);
     _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
   }
 
-  Future<void> _addTrackToHandler(Track track) async {
+  Future<void> _addTrackToPlayer(Track track) async {
     String? url = await _musicApi.trackDownloadUrl(track.id);
 
     if(url == null) return;
+    _audioPlayer.setUrl(url);
 
-    Uri? artUri;
+    List<String> artist = track.artists.map((artist) => artist.name).toList();
+
+    String? artUrl;
     if(track.coverUri != null) {
-      artUri = Uri.parse(MusicApi.imageUrl(track.coverUri!, '260x260'));
+      artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
     }
 
-    final mediaItem = MediaItem(
-        id: track.id.toString(),
+    _mpris.metadata = Metadata(
         title: track.title,
-        artist: track.artist,
+        length: track.duration,
+        artist: artist,
+        artUrl: artUrl,
         album: track.albums.first.title,
-        duration: track.duration,
-        artUri: artUri,
-        extras: {'url': url}
+        genre: null
     );
 
-    _audioHandler.playTrack(mediaItem);
+    await _audioPlayer.play();
+  }
+
+  void _listenToControlStream() {
+    _controlSubscription = _mpris.controlStream.listen((event) {
+      switch (event) {
+        case 'next':
+          next();
+        case 'previous':
+          previous();
+      }
+    });
+  }
+
+  void _listenToPlaybackState() {
+    _nextTrackSubscription = _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
+      if(msg.playingState == PlayingState.completed) {
+        next();
+      }
+    });
   }
 }
