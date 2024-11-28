@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'helpers/paged_data.dart';
 import 'models/music_api_types.dart';
 import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
+
+final class QueueIndexInvalid implements Exception {}
 
 class MusicApi {
   static const String _magicSalt = "XGRlBW9FXlekgbPrRHuSiA";
@@ -30,10 +33,10 @@ class MusicApi {
     return stations;
   }
 
-  Future<List<Track>> stationTacks(StationId stationId, List<int> queueTracks) async {
+  Future<Iterable<Track>> stationTacks(StationId stationId, Iterable<int> queueTracks) async {
     String url = '/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
     if(queueTracks.isNotEmpty) {
-      url += '&${queueTracks.join('%2C')}';
+      url += '&queue=${queueTracks.join('%2C')}';
     }
     Map<String, dynamic> json = await _http.get(url);
     List<Track> tracks = [];
@@ -43,6 +46,13 @@ class MusicApi {
     });
 
     return tracks;
+  }
+
+  Future<Station> station(StationId stationId) async {
+    final url = '/rotor/station/${stationId.type}:${stationId.tag}/info';
+    Map<String, dynamic> json = await _http.get(url);
+
+    return Station.fromJson(json['result'].first['station']);
   }
 
   Future<TrackDownloadInfo?> _trackDownloadInfo(int trackId) async {
@@ -94,19 +104,23 @@ class MusicApi {
     return 'https://${placeholder.replaceAll('%%', dimensions)}';
   }
 
-  Future<void> sendStationTrackFeedback(StationId stationId, Track track,
+  Future<void> sendStationTrackFeedback(StationId stationId, Track? track,
       String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
-      'type': feedbackType, // известны следующие значения: trackStarted, trackFinished, skip
+      'type': feedbackType, // известны следующие значения: radioStarted, trackStarted, trackFinished, skip
       'timestamp': DateTime.now().toIso8601String(),
-      'trackId': '${track.id}:${track.albums.first.id}'
     };
+
+    String url = '/rotor/station/${stationId.type}:${stationId.tag}/feedback';
+
+    if(track != null) {
+      data['trackId'] = '${track.id}:${track.albums.first.id}';
+      url += '?batch-id=${track.batchId}';
+    }
+
     if(totalPlayedSeconds != null && totalPlayedSeconds.inSeconds > 0) {
       data['totalPlayedSeconds'] = (totalPlayedSeconds.inMilliseconds / 1000.0).toString();
     }
-
-    final url = '/rotor/station/${stationId.type}:'
-        '${stationId.tag}/feedback?batch-id=${track.batchId}';
 
     await _http.postJson(url, data: data);
   }
@@ -157,7 +171,7 @@ class MusicApi {
     return tracks;
   }
 
-  Future<List<Track>> tracks(List<TrackOfList> ids) async {
+  Future<List<Track>> tracks(Iterable<TrackOfList> ids) async {
     final String trackIds = ids.map((e) => '${e.id}:${e.albumId}').join(',');
     final data = {
       'track-ids': trackIds,
@@ -235,6 +249,34 @@ class MusicApi {
     return playlists;
   }
 
+  // Future<String> createQueue(Queue queue) async {
+  Future<Queue> createQueue({
+    required QueueContext context,
+    required Iterable<QueueTrack> tracks,
+    required bool isInteractive,
+    String? from,
+    int? currentIndex,
+  }) async {
+    Map<String, dynamic> data = {
+      'context': context.toMap(),
+      'currentIndex': currentIndex,
+      'from': from,
+      'tracks': tracks,
+      'isInteractive': isInteractive
+    };
+    final result = await _http.postJson('/queues', data: data);
+    final String queueId = result['result']['id'].toString();
+
+    return Queue(
+      id: queueId,
+      context: context,
+      tracks: tracks,
+      currentIndex: currentIndex,
+      isInteractive: isInteractive,
+      from: from
+    );
+  }
+
   Future<List<int>> _playlistKinds() async {
     Map<String, dynamic> json = await _http.get('/users/$uid/playlists/list');
 
@@ -255,77 +297,79 @@ class MusicApi {
     return AccountStatus(account);
   }
 
-  Future<String> createQueue(Queue queue) async {
-    final result = await _http.postJson('/queues', data: queue.toMap());
-
-    return result['result']['id'].toString();
-  }
-
   Future<void> updateQueuePosition(String queueId, int position) async {
     final url = '/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
-    await _http.postForm(url);
+    try {
+      await _http.postForm(url);
+    } on DioException catch (e) {
+      if(e.response == null) rethrow;
+
+      final resp = e.response!;
+      if(resp.statusCode == 400 && resp.data['result']['message'] == 'currentIndex is invalid') {
+        throw QueueIndexInvalid();
+      }
+      else {
+        rethrow;
+      }
+    }
   }
 
-  Future<String> createQueueForStation(Station station, List<QueueTrack> tracks) {
+  Future<Queue> createQueueForStation(Station station, List<QueueTrack> tracks) {
     final from = station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
-    final queue = Queue(
-      context: QueueContext(
-        description: station.name,
-        id: '${station.id.type}:${station.id.tag}',
-        type: 'radio'
-      ),
+    final context = QueueContext(
+      description: station.name,
+      id: '${station.id.type}:${station.id.tag}',
+      type: 'radio'
+    );
+
+    // return createQueue(queue);
+    return createQueue(context: context,
       currentIndex: null,
       from: 'desktop_win-radio-radio_$from-default',
       isInteractive: false,
       tracks: tracks
     );
-
-    return createQueue(queue);
   }
 
-  Future<String> createQueueForLikedTracks(List<QueueTrack> tracks, int currentIndex) {
-    final queue = Queue(
+  Future<Queue> createQueueForLikedTracks(List<QueueTrack> tracks, int currentIndex) {
+    const context = QueueContext(
+        description: '',
+        id: 'fonoteca',
+        type: 'my_music'
+    );
+
+    return createQueue(
+      context: context,
+      currentIndex: currentIndex,
+      isInteractive: true,
+      tracks: tracks
+    );
+  }
+
+  Future<Queue> createQueueForAlbum(Album album, List<QueueTrack> tracks, int currentIndex) {
+    return createQueue(
         context: QueueContext(
-          description: '',
-          id: 'fonoteca',
+            description: album.title,
+            id: album.id.toString(),
+            type: 'album'
+        ),
+        currentIndex: currentIndex,
+        isInteractive: true,
+        tracks: tracks
+    );
+  }
+
+  Future<Queue> createQueueForPlaylist(Playlist playlist, List<QueueTrack> tracks, int currentIndex) {
+    return createQueue(
+      context: QueueContext(
+          description: playlist.title,
+          id: '${playlist.uid}:${playlist.kind}',
           type: 'my_music'
-        ),
-        currentIndex: currentIndex,
-        isInteractive: true,
-        tracks: tracks
+      ),
+      currentIndex: currentIndex,
+      isInteractive: true,
+      tracks: tracks
     );
-
-    return createQueue(queue);
-  }
-
-  Future<String> createQueueForAlbum(Album album, List<QueueTrack> tracks, int currentIndex) {
-    final queue = Queue(
-        context: QueueContext(
-          description: album.title,
-          id: album.id.toString(),
-          type: 'album'
-        ),
-        currentIndex: currentIndex,
-        isInteractive: true,
-        tracks: tracks
-    );
-
-    return createQueue(queue);
-  }
-
-  Future<String> createQueueForPlaylist(Playlist playlist, List<QueueTrack> tracks, int currentIndex) {
-    final queue = Queue(
-        context: QueueContext(
-            description: playlist.title,
-            id: '${playlist.uid}:${playlist.kind}',
-            type: 'my_music'
-        ),
-        currentIndex: currentIndex,
-        isInteractive: true,
-        tracks: tracks
-    );
-
-    return createQueue(queue);
   }
 
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {
@@ -394,13 +438,19 @@ class MusicApi {
     return Playlist.fromJson(json['result']);
   }
 
-  Future<List<Queue>> queues() async {
+  Future<List<String>> queueIds() async {
     Map<String, dynamic> json = await _http.get('/queues');
-    List<Queue> queues = [];
+    List<String> queues = [];
 
-    json['result']['queues'].forEach((q) => Queue.fromJson(q));
+    json['result']['queues'].forEach((q) => queues.add(q['id']));
 
     return queues;
+  }
+
+  Future<Queue> queue(String id) async {
+    Map<String, dynamic> json = await _http.get('/queues/$id');
+
+    return Queue.fromJson(json['result']);
   }
 
   Future<List<int>> trackIdsByRating(int artistId) async {

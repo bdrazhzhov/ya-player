@@ -18,12 +18,14 @@ class Queue extends Equatable {
   factory Queue.fromJson(Map<String, dynamic> json) {
     List<QueueTrack> tracks = [];
 
-    json['tracks'].forEach((t) => QueueTrack.fromJson(t));
+    json['tracks'].forEach((t) => tracks.add(QueueTrack.fromJson(t)));
 
     return Queue(
       id: json['id'],
       context: QueueContext.fromJson(json['context']),
-      tracks: tracks
+      tracks: tracks,
+      currentIndex: json['currentIndex'],
+      from: json['from'] ?? tracks.firstOrNull?.from
     );
   }
 
@@ -41,12 +43,12 @@ class Queue extends Equatable {
   }
 }
 
-class QueueContext {
+class QueueContext extends Equatable {
   final String? description;
   final String? id;
   final String type;
 
-  QueueContext({required this.description, required this.id, required this.type});
+  const QueueContext({required this.description, required this.id, required this.type});
 
   factory QueueContext.fromJson(Map<String, dynamic> json) {
     return QueueContext(description: json['description'], id: json['id'], type: json['type']);
@@ -57,6 +59,9 @@ class QueueContext {
     'id': id ?? '',
     'type': type
   };
+
+  @override
+  List<Object?> get props => [type, id];
 }
 
 class QueueTrack {

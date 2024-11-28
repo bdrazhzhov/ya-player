@@ -30,7 +30,7 @@ base class PlaybackQueueBase
         from = tracksSourceStrings[tracksSource.sourceType],
         _tracks = tracksSource.getTracks().toList();
 
-  void addAll(List<Track> tracks) {
+  void addAll(Iterable<Track> tracks) {
     _tracks.addAll(tracks);
   }
 
@@ -65,19 +65,14 @@ base class PlaybackQueueBase
     if(track == null) return null;
 
     if(id == null) {
-      final Queue queue = QueueFactory.create(
-          tracksSource: tracksSource, currentIndex: currentIndex);
-      await createQueue(queue);
+      final Queue queue = await QueueFactory.create(
+          tracksSource: tracksSource.source!, currentIndex: currentIndex);
+      _id = queue.id;
     }
     else {
       _musicApi.updateQueuePosition(id!, currentIndex);
     }
 
     return track;
-  }
-
-  @protected
-  Future<void> createQueue(Queue queue) async {
-    _id = await _musicApi.createQueue(queue);
   }
 }

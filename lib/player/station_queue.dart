@@ -61,11 +61,11 @@ final class StationQueue extends PlaybackQueueBase
     );
     final List<QueueTrack> queueTracks = tracks.map(trackMapper).toList();
 
-    _id = await _musicApi.createQueueForStation(station, queueTracks);
+    _id = (await _musicApi.createQueueForStation(station, queueTracks)).id;
   }
 
   Future<void> _preloadNewTracks() async {
-    final List<Track> tracks = await _musicApi.stationTacks(station.id, _lastTrackIds());
+    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, _lastTrackIds());
     addAll(tracks);
     debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
   }

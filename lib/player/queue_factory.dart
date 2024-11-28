@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:ya_player/models/music_api/artist_info.dart';
+import 'package:ya_player/models/music_api/station.dart';
 
+import '/music_api.dart';
+import '/services/service_locator.dart';
 import '/player/tracks_source.dart';
 import '/models/music_api/playlist.dart';
 import '/models/music_api/track.dart';
@@ -8,37 +10,43 @@ import '/models/music_api/album.dart';
 import '/models/music_api/queue.dart';
 
 class QueueFactory {
-  @factory
-  static Queue create({required TracksSource tracksSource,
-    required int currentIndex})
+  static final _musicApi = getIt<MusicApi>();
+
+  static Future<Queue> create({required Object tracksSource,
+    int? currentIndex}) async
   {
     final QueueContext context;
     final Iterable<QueueTrack> queueTracks;
-    
-    switch(tracksSource.sourceType) {
-      case TracksSourceType.likedTracks:
-        (context, queueTracks) = _forLikedTracks(tracksSource.source as Iterable<Track>);
-      case TracksSourceType.album:
-        (context, queueTracks) = _forAlbum(tracksSource.source as AlbumWithTracks);
-      case TracksSourceType.artist:
-        (context, queueTracks) = _forArtist(tracksSource.source as ArtistInfo);
-      case TracksSourceType.playlist:
-        (context, queueTracks) = _forPlaylist(tracksSource.source as Playlist);
-      case TracksSourceType.radio:
-        context = QueueContext(description: '', id: '', type: '');
+    String? from;
+
+    switch(tracksSource) {
+      case List<Track> tracks:
+        (context, queueTracks) = _forLikedTracks(tracks);
+      case AlbumWithTracks albumWithTracks:
+        (context, queueTracks) = _forAlbum(albumWithTracks);
+      case ArtistInfo artist:
+        (context, queueTracks) = _forArtist(artist);
+      case Playlist playlist:
+        (context, queueTracks) = _forPlaylist(playlist);
+      case (Station station, Iterable<Track> tracks):
+        (context, queueTracks) = _forStation(station, tracks);
+        from = station.from;
+      default:
+        context = const QueueContext(description: '', id: '', type: '');
         queueTracks = [];
     }
 
-    return Queue(
-      context: context,
-      tracks: queueTracks,
-      currentIndex: currentIndex,
-      isInteractive: true
+    return _musicApi.createQueue(
+        context: context,
+        tracks: queueTracks,
+        currentIndex: currentIndex,
+        isInteractive: true,
+        from: from
     );
   }
 
   static (QueueContext, Iterable<QueueTrack>) _forLikedTracks(Iterable<Track> tracks) {
-    final context = QueueContext(description: '', id: 'fonoteca', type: 'my_music');
+    const context = QueueContext(description: '', id: 'fonoteca', type: 'my_music');
     final List<QueueTrack> queueTracks = _createQueueTracks(
         tracks, tracksSourceStrings[TracksSourceType.likedTracks]);
 
@@ -68,6 +76,17 @@ class QueueFactory {
     final List<QueueTrack> queueTracks = _createQueueTracks(
         artistWithTracks.popularTracks,
         tracksSourceStrings[TracksSourceType.artist]);
+
+    return (context, queueTracks);
+  }
+
+  static (QueueContext, Iterable<QueueTrack>) _forStation(Station station, Iterable<Track> tracks) {
+    final context = QueueContext(
+        description: station.name,
+        id: station.id.toString(),
+        type: 'radio'
+    );
+    final List<QueueTrack> queueTracks = _createQueueTracks(tracks, station.from);
 
     return (context, queueTracks);
   }
