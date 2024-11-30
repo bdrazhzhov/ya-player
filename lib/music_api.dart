@@ -108,7 +108,7 @@ class MusicApi {
       String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
       'type': feedbackType, // известны следующие значения: radioStarted, trackStarted, trackFinished, skip
-      'timestamp': DateTime.now().toIso8601String(),
+      'timestamp': DateTime.now().toUtc().toIso8601String(),
     };
 
     String url = '/rotor/station/${stationId.type}:${stationId.tag}/feedback';
@@ -297,8 +297,10 @@ class MusicApi {
     return AccountStatus(account);
   }
 
-  Future<void> updateQueuePosition(String queueId, int position) async {
-    final url = '/queues/$queueId/update-position?currentIndex=$position&isInteractive=False';
+  Future<void> updateQueuePosition(String queueId, int position, bool isInteractive) async {
+    final isInteractiveString = isInteractive ? 'True' : 'False';
+    final url = '/queues/$queueId/update-position?currentIndex=$position'
+        '&isInteractive=$isInteractiveString';
     try {
       await _http.postForm(url);
     } on DioException catch (e) {

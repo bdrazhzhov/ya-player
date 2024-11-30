@@ -16,7 +16,7 @@ final class TracksPlayer extends PlayerBase {
     else {
       await _stop();
       _appState.queueTracks.value = queue.tracks.toList();
-      playTrack(track, queue.from);
+      _playTrack(track, queue.from);
     }
   }
 

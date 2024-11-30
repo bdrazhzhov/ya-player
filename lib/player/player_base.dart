@@ -12,6 +12,7 @@ import '/models/play_info.dart';
 import '/music_api.dart';
 import '/services/service_locator.dart';
 import 'playback_queue_base.dart';
+import 'station_queue.dart';
 
 part 'station_player.dart';
 part 'tracks_player.dart';
@@ -45,12 +46,17 @@ base class PlayerBase {
   void previous() {}
 
   @protected
-  Future<void> playTrack(Track track, String from) async {
+  Future<void> _playTrack(Track track, String from) async {
+    if(_currentPlayInfo != null) {
+      _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;
+      await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    }
+
     await _addTrackToPlayer(track);
 
     _appState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, from);
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
   }
 
   Future<void> _addTrackToPlayer(Track track) async {

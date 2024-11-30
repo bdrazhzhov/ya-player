@@ -13,7 +13,7 @@ class PlayInfo {
       : _uuid = const Uuid().v4();
 
   Map<String, String> toYmPlayAudio() {
-    final String dateTime = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(DateTime.now())}Z';
+    final String dateTime = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(DateTime.now().toUtc())}Z';
     final totalPlayedSeconds = (totalPlayed.inMilliseconds / 1000.0).toString();
 
     return {

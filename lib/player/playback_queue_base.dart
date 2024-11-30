@@ -1,14 +1,9 @@
-import 'package:flutter/cupertino.dart';
-
 import '/player/queue_factory.dart';
 import '/models/music_api/queue.dart';
-import '/models/music_api/station.dart';
 import '/music_api.dart';
 import '/services/service_locator.dart';
 import '/models/music_api/track.dart';
 import 'tracks_source.dart';
-
-part 'station_queue.dart';
 
 base class PlaybackQueueBase
 {
@@ -29,14 +24,6 @@ base class PlaybackQueueBase
   PlaybackQueueBase(this.tracksSource) :
         from = tracksSourceStrings[tracksSource.sourceType],
         _tracks = tracksSource.getTracks().toList();
-
-  void addAll(Iterable<Track> tracks) {
-    _tracks.addAll(tracks);
-  }
-
-  void add(Track track) {
-    _tracks.add(track);
-  }
 
   Future<Track?> next() async {
     if(_tracks.isEmpty || _currentIndex >= _tracks.length - 1) return null;
@@ -70,7 +57,7 @@ base class PlaybackQueueBase
       _id = queue.id;
     }
     else {
-      _musicApi.updateQueuePosition(id!, currentIndex);
+      _musicApi.updateQueuePosition(id!, currentIndex, true);
     }
 
     return track;

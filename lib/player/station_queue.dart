@@ -1,74 +1,81 @@
-part of 'playback_queue_base.dart';
+import 'package:flutter/foundation.dart';
 
-final class StationQueue extends PlaybackQueueBase
+import '/player/queue_factory.dart';
+import '/models/music_api/queue.dart';
+import '/models/music_api/station.dart';
+import '/models/music_api/track.dart';
+import '/music_api.dart';
+import '/services/service_locator.dart';
+
+final class StationQueue
 {
-  int _maxIndex = 0;
+  final List<Track> _tracks = [];
+  final _musicApi = getIt<MusicApi>();
+  late Queue _queue;
+  int _currentIndex = -1;
+  int _realIndex = -1;
+  Iterable<int> _lastTracksIds = [];
 
   final Station station;
-  StationQueue({ required this.station }) : super(TracksSource(
-      sourceType: TracksSourceType.radio,
-      source: station
-  ));
+  StationQueue({ required this.station });
 
-  @override
   Future<Track?> next() async {
-    if(currentIndex == -1 && tracks.isEmpty) {
-      await _preloadNewTracks();
-      await _createQueue(tracks);
+    if(_tracks.isEmpty && _realIndex == -1) {
+      _lastTracksIds = [];
+      await preloadNewTracks();
+      _queue = await QueueFactory.create(tracksSource: (station, _tracks));
     }
-    else if(tracks.length - currentIndex <= 3) {
-      await _preloadNewTracks();
+    else if(_tracks.length - _realIndex <= 3) {
+      _lastTracksIds = _tracks.skip(_tracks.length - 2).map((t) => t.id);
+      await preloadNewTracks();
     }
-    else if(tracks.isNotEmpty && currentIndex == _maxIndex) {
-      await _createQueue(tracks);
-      _maxIndex = tracks.length - 1;
-    }
-
-    Track? track = await super.next();
-
-    if(_id != null && currentIndex >= 0) {
-      await _musicApi.updateQueuePosition(id!, currentIndex);
+    else if(_tracks.isNotEmpty && _realIndex == _tracks.length - 1) {
+      _lastTracksIds = [];
+      await preloadNewTracks();
     }
 
-    return track;
-  }
+    Track? track;
+    if(_tracks.isEmpty || _realIndex >= _tracks.length - 1) {
+      track = null;
+    }
+    else {
+      _currentIndex += 1;
+      _realIndex += 1;
 
-  @override
-  Future<Track?> previous() async {
-    Track? track = await super.previous();
-
-    if(track != null) {
-      await _musicApi.updateQueuePosition(id!, currentIndex);
+      track = _tracks[_realIndex];
+      // await updatePosition();
     }
 
     return track;
   }
 
-  @override
-  Future<Track?> moveTo(int index) async {
-    if(currentIndex == -1) {
-      return next();
+  Future<Track> skip() async {
+    _currentIndex += 1;
+    _realIndex += 1;
+
+    Track track = _tracks[_realIndex];
+    _lastTracksIds = _tracks.skip(_realIndex).map((t) => t.id).toList();
+    _tracks.removeRange(_realIndex, _tracks.length);
+    _realIndex -= 1;
+
+    // await updatePosition();
+    // await preloadNewTracks();
+
+    return track;
+  }
+
+  Future<void> updatePosition({bool isInteractive = false}) async {
+    try {
+      await _musicApi.updateQueuePosition(_queue.id!, _currentIndex, isInteractive);
+    } on QueueIndexInvalid {
+      _queue = await QueueFactory.create(tracksSource: (station, _tracks));
     }
-
-    return null;
   }
 
-  Future<void> _createQueue(Iterable<Track> tracks) async {
-    trackMapper(track) => QueueTrack(
-        track.id.toString(),
-        track.firstAlbumId.toString(),
-        station.from
-    );
-    final List<QueueTrack> queueTracks = tracks.map(trackMapper).toList();
+  Future<void> preloadNewTracks() async {
+    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, _lastTracksIds);
+    _tracks.addAll(tracks);
 
-    _id = (await _musicApi.createQueueForStation(station, queueTracks)).id;
+    debugPrint('Tracks in queue:\n${_tracks.map((e) => '${e.id} - ${e.title}').join('\n')}');
   }
-
-  Future<void> _preloadNewTracks() async {
-    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, _lastTrackIds());
-    addAll(tracks);
-    debugPrint('Added tracks: ${tracks.map((e) => e.title)}');
-  }
-
-  List<int> _lastTrackIds() => tracks.toList().reversed.take(3).map((track) => track.id).toList();
 }
