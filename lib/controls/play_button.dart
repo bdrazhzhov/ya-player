@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../audio_player.dart';
-import '../notifiers/play_button_notifier.dart';
-import '../services/service_locator.dart';
+import '/player/players_manager.dart';
+import '/app_state.dart';
+import '/notifiers/play_button_notifier.dart';
+import '/services/service_locator.dart';
 
 class PlayButton extends StatelessWidget {
   PlayButton({super.key,});
 
   final AppState _appState = getIt<AppState>();
-  final _audioPlayer = getIt<AudioPlayer>();
+  final _player = getIt<PlayersManager>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,13 @@ class PlayButton extends StatelessWidget {
             return IconButton(
               icon: const Icon(Icons.play_arrow),
               iconSize: 40.0,
-              onPressed: _audioPlayer.play,
+              onPressed: () => _player.play(),
             );
           case ButtonState.playing:
             return IconButton(
               icon: const Icon(Icons.pause),
               iconSize: 40.0,
-              onPressed: _audioPlayer.pause,
+              onPressed: _player.pause,
             );
         }
       },

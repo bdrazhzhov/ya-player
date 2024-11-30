@@ -3,7 +3,6 @@ import 'package:ya_player/models/music_api/station.dart';
 
 import '/music_api.dart';
 import '/services/service_locator.dart';
-import '/player/tracks_source.dart';
 import '/models/music_api/playlist.dart';
 import '/models/music_api/track.dart';
 import '/models/music_api/album.dart';
@@ -48,7 +47,7 @@ class QueueFactory {
   static (QueueContext, Iterable<QueueTrack>) _forLikedTracks(Iterable<Track> tracks) {
     const context = QueueContext(description: '', id: 'fonoteca', type: 'my_music');
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        tracks, tracksSourceStrings[TracksSourceType.likedTracks]);
+        tracks, 'desktop_win-own_tracks-track-default');
 
     return (context, queueTracks);
   }
@@ -61,7 +60,7 @@ class QueueFactory {
     );
 
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        albumWithTracks.tracks, tracksSourceStrings[TracksSourceType.album]);
+        albumWithTracks.tracks, 'desktop_win-album-track-default');
 
     return (context, queueTracks);
   }
@@ -75,7 +74,7 @@ class QueueFactory {
 
     final List<QueueTrack> queueTracks = _createQueueTracks(
         artistWithTracks.popularTracks,
-        tracksSourceStrings[TracksSourceType.artist]);
+        'desktop_win-artist-track-default');
 
     return (context, queueTracks);
   }
@@ -99,7 +98,7 @@ class QueueFactory {
     );
 
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        playlist.tracks, tracksSourceStrings[TracksSourceType.playlist]);
+        playlist.tracks, 'desktop_win-own_playlist-track-default');
 
     return (context, queueTracks);
   }

@@ -4,9 +4,7 @@ import '../app_state.dart';
 import '../models/music_api/station.dart';
 import '../controls/station_genre.dart';
 import '../player/players_manager.dart';
-import '../player/tracks_source.dart';
 import '../services/service_locator.dart';
-
 
 class GenrePage extends StatelessWidget {
   final Station genre;
@@ -48,10 +46,10 @@ class GenrePage extends StatelessWidget {
                 padding: const EdgeInsets.all(4.0),
                 child: GestureDetector(
                     onTap: (){
-                      _player.currentPageTracksSourceData = TracksSource(
-                          sourceType: TracksSourceType.radio,
-                          source: station
-                      );
+                      // _player.currentPageTracksSourceData = TracksSource(
+                      //     sourceType: TracksSourceType.radio,
+                      //     source: station
+                      // );
                       _player.play(0);
                     },
                     child: MouseRegion(

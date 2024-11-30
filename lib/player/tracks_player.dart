@@ -1,16 +1,23 @@
 part of 'player_base.dart';
 
 final class TracksPlayer extends PlayerBase {
-  final PlaybackQueueBase queue;
+  final TracksQueue queue;
 
   TracksPlayer({required this.queue});
 
   @override
-  void play(int index) async {
-    Track? track = await queue.moveTo(index);
+  Future<void> playByIndex(int? index) async {
+    Track? track;
+    if(index == null) {
+      track = queue.currentTrack;
+    }
+    else {
+      track = await queue.moveTo(index);
+    }
+
     if(track == null) return;
 
-    if(track == _appState.trackNotifier.value) {
+    if(track == _currentPlayInfo?.track) {
       _audioPlayer.play();
     }
     else {
@@ -30,11 +37,11 @@ final class TracksPlayer extends PlayerBase {
 
   @override
   void next() async {
-    play(queue.currentIndex + 1);
+    playByIndex(queue.currentIndex + 1);
   }
 
   @override
   void previous() async {
-    play(queue.currentIndex - 1);
+    playByIndex(queue.currentIndex - 1);
   }
 }

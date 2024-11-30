@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
-import 'package:ya_player/audio_player.dart';
 
 import 'helpers/nav_keys.dart';
+import 'player/playback_queue.dart';
+import 'player/player_base.dart';
+import 'player/players_manager.dart';
+import 'player/queue_factory.dart';
 import 'services/preferences.dart';
 import 'models/music_api_types.dart';
 import 'music_api.dart';
@@ -14,6 +17,7 @@ import 'notifiers/progress_notifier.dart';
 import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
+import 'audio_player.dart';
 
 enum UiState { loading, auth, main }
 
@@ -41,6 +45,7 @@ class AppState {
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
+  final _playersManager = getIt<PlayersManager>();
   final List<int> _likedTrackIds = [];
 
   // Events: Calls coming from the UI
@@ -70,6 +75,7 @@ class AppState {
     futures.add(_requestPlaylists());
     futures.add(_requestNonMusicCatalog());
     futures.add(_requestLanding());
+    futures.add(_requestInitialQueueData());
 
     await Future.wait(futures);
   }
@@ -132,6 +138,67 @@ class AppState {
   Future<void> _requestLanding() async {
     landingNotifier.value = await _musicApi.landing();
   }
+
+  Future<void> _requestInitialQueueData() async {
+    final List<String> queueIds = await _musicApi.queueIds();
+    if(queueIds.isEmpty) return;
+
+    final Queue queue = await _musicApi.queue(queueIds.first);
+    if((queue.tracks.isEmpty || queue.currentIndex == null) && queue.context.type != 'radio') return;
+
+
+    if(queue.context.type == 'radio') {
+      final Station station = await _musicApi.station(StationId.fromString(queue.context.id!));
+      final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
+      final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
+      final player = StationPlayer(queue: stationsQueue);
+      _playersManager.setPlayer(player);
+      currentStationNotifier.value = station;
+      trackNotifier.value = tracks.first;
+      await _musicApi.sendStationTrackFeedback(station.id, null, 'radioStarted', null);
+    }
+    else {
+      Iterable<TrackOfList> trackIds = queue.tracks.map(
+              (t) => TrackOfList(int.parse(t.trackId), int.parse(t.albumId), DateTime.now()));
+      queueTracks.value = await _musicApi.tracks(trackIds);
+      final playbackQueue = TracksQueue(queue: queue, tracks: queueTracks.value);
+      final player = TracksPlayer(queue: playbackQueue);
+      _playersManager.setPlayer(player);
+      trackNotifier.value = playbackQueue.currentTrack;
+    }
+  }
+
+
+  Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
+    index ??= 0;
+
+    final Queue queue = await QueueFactory.create(
+      tracksSource: source,
+      currentIndex: index
+    );
+
+    queueTracks.value = tracks.toList();
+    final playbackQueue = TracksQueue(queue: queue, tracks: tracks);
+    final player = TracksPlayer(queue: playbackQueue);
+    _playersManager.setPlayer(player);
+  }
+
+  Future<void> playAlbum(AlbumWithTracks albumWithTracks, int? index) async {
+    return playContent(albumWithTracks, albumWithTracks.tracks, index);
+  }
+
+  Future<void> playArtistPopularTracks(ArtistInfo info, int? index) async {
+    return playContent(info, info.popularTracks, index);
+  }
+
+  Future<void> playLikedTracks(Iterable<Track> tracks, int? index) async {
+    return playContent(tracks, tracks, index);
+  }
+
+  Future<void> playPlaylist(Playlist playlist, int? index) async {
+    return playContent(playlist, playlist.tracks, index);
+  }
+
 
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 

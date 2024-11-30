@@ -1,44 +1,29 @@
-import '/models/music_api/station.dart';
+import 'playback_queue.dart';
 import '/player/player_base.dart';
-import 'playback_queue_base.dart';
-import 'station_queue.dart';
-import 'tracks_source.dart';
 
 class PlayersManager {
   PlayerBase? _player;
-  TracksSource? currentPageTracksSourceData;
-  TracksSource? _tracksSourceData;
 
-  void play(int index) {
-    if(currentPageTracksSourceData == null) return;
+  PlayersManager();
 
-    if(_tracksSourceData != currentPageTracksSourceData) {
-      _tracksSourceData = currentPageTracksSourceData;
+  void setPlayer(PlayerBase player) {
+    _player?.cleanUp();
+    _player = player;
+  }
 
-      if(_player != null) _player!.cleanUp();
+  void setPlaybackQueue(PlaybackQueue playbackQueue) {
+    _player?.cleanUp();
 
-      if(_tracksSourceData!.sourceType == TracksSourceType.radio) {
-        final queue = StationQueue(station: _tracksSourceData!.source as Station);
-        _player = StationPlayer(queue: queue);
-      }
-      else {
-        final queue = PlaybackQueueBase(_tracksSourceData!);
-        _player = TracksPlayer(queue: queue);
-      }
+    if(playbackQueue is StationQueue) {
+      _player = StationPlayer(queue: playbackQueue);
     }
-
-    _player!.play(index);
+    else {
+      _player = TracksPlayer(queue: playbackQueue as TracksQueue);
+    }
   }
 
-  void next(){
-    if(_player == null) return;
-
-    _player!.next();
-  }
-
-  void previous() {
-    if(_player == null) return;
-
-    _player!.previous();
-  }
+  void play([int? index]) => _player?.playByIndex(index);
+  void next() => _player?.next();
+  void previous() => _player?.previous();
+  void pause() => _player?.pause();
 }

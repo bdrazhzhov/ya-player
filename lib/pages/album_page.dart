@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '/app_state.dart';
 import '/controls/sliver_track_list.dart';
-import '/player/tracks_source.dart';
-import '/player/players_manager.dart';
 import '/music_api.dart';
 import '/controls/page_loading_indicator.dart';
 import '/models/music_api/album.dart';
@@ -13,19 +12,12 @@ import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class AlbumPage extends StatelessWidget {
+  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  final _player = getIt<PlayersManager>();
   late final Future<AlbumWithTracks> _albumInfo;
 
   AlbumPage(albumId, {super.key}) {
     _albumInfo = _musicApi.albumWithTracks(albumId);
-    _albumInfo.then((AlbumWithTracks albumWithTracks){
-      _player.currentPageTracksSourceData = TracksSource(
-          sourceType: TracksSourceType.album,
-          source: albumWithTracks,
-          id: albumId
-      );
-    });
   }
 
   @override
@@ -51,7 +43,13 @@ class AlbumPage extends StatelessWidget {
                   pinned: true,
                 ),
 
-                SliverTrackList(tracks: albumWithTracks.tracks, albumMode: true),
+                SliverTrackList(
+                  tracks: albumWithTracks.tracks,
+                  albumMode: true,
+                  onBeforeStartPlaying: (int? index) =>
+                      _appState.playContent(albumWithTracks,
+                          albumWithTracks.tracks, index),
+                ),
               ],
             );
           }

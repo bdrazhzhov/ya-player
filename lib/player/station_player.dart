@@ -6,7 +6,7 @@ final class StationPlayer extends PlayerBase {
   StationPlayer({required this.queue});
 
   @override
-  void play(int index) async {
+  Future<void> playByIndex(int? index) async {
     Track? track = await queue.next();
     if(track == null) return;
 

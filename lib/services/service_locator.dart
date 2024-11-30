@@ -20,9 +20,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<MusicApi>(_initMusicApi());
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
+  getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<AppState>(AppState());
   getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
-  getIt.registerSingleton<PlayersManager>(PlayersManager());
 }
 
 MusicApi _initMusicApi() {

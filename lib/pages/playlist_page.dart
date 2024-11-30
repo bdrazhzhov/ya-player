@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '/app_state.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/yandex_image.dart';
 import '/music_api.dart';
 import '/controls/page_loading_indicator.dart';
 import '/models/music_api/playlist.dart';
-import '/player/players_manager.dart';
-import '/player/tracks_source.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class PlaylistPage extends StatelessWidget {
   final Playlist playlist;
   late final Future<Playlist> _playlistData;
+  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  final _player = getIt<PlayersManager>();
   late final String _duration;
 
   PlaylistPage(this.playlist, {super.key}) {
     _playlistData = _musicApi.playlist(playlist.uid, playlist.kind);
     _duration = _calculateDuration();
-    _playlistData.then((Playlist playlist){
-      _player.currentPageTracksSourceData = TracksSource(
-          sourceType: TracksSourceType.playlist,
-          source: playlist,
-          id: playlist.kind
-      );
-    });
   }
 
   String _calculateDuration() {
@@ -91,7 +83,11 @@ class PlaylistPage extends StatelessWidget {
           future: _playlistData,
           builder: (_, AsyncSnapshot<Playlist> snapshot){
             if(snapshot.hasData) {
-              return SliverTrackList(tracks: snapshot.data!.tracks);
+              return SliverTrackList(
+                tracks: snapshot.data!.tracks,
+                onBeforeStartPlaying: (int? index) =>
+                    _appState.playContent(snapshot.data!, snapshot.data!.tracks, index)
+              );
             }
             else {
               return const SliverToBoxAdapter(child: PageLoadingIndicator());

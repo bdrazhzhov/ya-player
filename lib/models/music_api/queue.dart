@@ -51,7 +51,11 @@ class QueueContext extends Equatable {
   const QueueContext({required this.description, required this.id, required this.type});
 
   factory QueueContext.fromJson(Map<String, dynamic> json) {
-    return QueueContext(description: json['description'], id: json['id'], type: json['type']);
+    return QueueContext(
+      description: json['description'],
+      id: json['id'].toString(),
+      type: json['type']
+    );
   }
 
   Map<String, String> toMap() => {

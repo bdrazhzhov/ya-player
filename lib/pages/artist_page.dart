@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../player/tracks_source.dart';
-import '/player/players_manager.dart';
+import '/app_state.dart';
 import '/controls/custom_separated_hlist.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
@@ -17,18 +16,18 @@ import '/music_api.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo;
+  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  final _player = getIt<PlayersManager>();
   final LikedArtist artist;
 
   ArtistPage(this.artist, {super.key}) {
     artistInfo = _musicApi.artistInfo(artist.id);
     artistInfo.then((ArtistInfo artistInfo){
-      _player.currentPageTracksSourceData = TracksSource(
-        sourceType: TracksSourceType.artist,
-        source: artistInfo,
-        id: artistInfo.artist.id
-      );
+      // _player.currentPageTracksSourceData = TracksSource(
+      //   sourceType: TracksSourceType.artist,
+      //   source: artistInfo,
+      //   id: artistInfo.artist.id
+      // );
     });
   }
 
@@ -53,7 +52,11 @@ class ArtistPage extends StatelessWidget {
 
               if(info.popularTracks.isNotEmpty) ...[
                 const SectionHeader(title: 'Popular tracks'),
-                SliverTrackList(tracks: info.popularTracks),
+                SliverTrackList(
+                  tracks: info.popularTracks,
+                  onBeforeStartPlaying: (int? index) =>
+                      _appState.playContent(info, info.popularTracks, index)
+                ),
               ],
 
               if(info.albums.isNotEmpty) ...[

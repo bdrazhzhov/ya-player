@@ -11,13 +11,12 @@ import '/models/music_api/track.dart';
 import '/models/play_info.dart';
 import '/music_api.dart';
 import '/services/service_locator.dart';
-import 'playback_queue_base.dart';
-import 'station_queue.dart';
+import 'playback_queue.dart';
 
 part 'station_player.dart';
 part 'tracks_player.dart';
 
-base class PlayerBase {
+abstract base class PlayerBase {
   final _musicApi = getIt<MusicApi>();
   final _appState = getIt<AppState>();
   final _audioPlayer = getIt<AudioPlayer>();
@@ -36,14 +35,12 @@ base class PlayerBase {
     _controlSubscription.cancel();
   }
 
-  @mustBeOverridden
-  void play(int index){}
-
-  @mustBeOverridden
-  void next() {}
+  void next();
 
   @mustBeOverridden
   void previous() {}
+
+  Future<void> playByIndex(int? index) async {}
 
   @protected
   Future<void> _playTrack(Track track, String from) async {
@@ -83,6 +80,8 @@ base class PlayerBase {
 
     await _audioPlayer.play();
   }
+
+  Future<void> pause() => _audioPlayer.pause();
 
   void _listenToControlStream() {
     _controlSubscription = _mpris.controlStream.listen((event) {

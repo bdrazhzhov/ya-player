@@ -1,31 +1,25 @@
-import 'package:flutter/foundation.dart';
+part of 'playback_queue.dart';
 
-import '/player/queue_factory.dart';
-import '/models/music_api/queue.dart';
-import '/models/music_api/station.dart';
-import '/models/music_api/track.dart';
-import '/music_api.dart';
-import '/services/service_locator.dart';
-
-final class StationQueue
+final class StationQueue extends PlaybackQueue
 {
   final List<Track> _tracks = [];
   final _musicApi = getIt<MusicApi>();
   late Queue _queue;
-  int _currentIndex = -1;
   int _realIndex = -1;
   Iterable<int> _lastTracksIds = [];
 
   final Station station;
-  StationQueue({ required this.station });
-
-  Future<Track?> next() async {
-    if(_tracks.isEmpty && _realIndex == -1) {
-      _lastTracksIds = [];
-      await preloadNewTracks();
-      _queue = await QueueFactory.create(tracksSource: (station, _tracks));
+  StationQueue({ required this.station, (Queue, Iterable<Track>)? initialData }) {
+    if(initialData != null) {
+      _queue = initialData.$1;
+      _tracks.addAll(initialData.$2);
+      _currentIndex = initialData.$1.currentIndex ?? 0;
     }
-    else if(_tracks.length - _realIndex <= 3) {
+  }
+
+  @override
+  Future<Track?> next() async {
+    if(_tracks.length - _realIndex <= 3) {
       _lastTracksIds = _tracks.skip(_tracks.length - 2).map((t) => t.id);
       await preloadNewTracks();
     }

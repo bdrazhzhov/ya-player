@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '/models/music_api_types.dart';
 import '/music_api.dart';
 import '/player/players_manager.dart';
-import '/player/tracks_source.dart';
 import '/services/service_locator.dart';
 
 class PodcastPage extends StatelessWidget {
@@ -17,13 +16,13 @@ class PodcastPage extends StatelessWidget {
 
   PodcastPage(this.podcast, {super.key}) {
     _albumWidthTracks = _musicApi.albumWithTracks(podcast.id);
-    _albumWidthTracks.then((AlbumWithTracks albumWithTracks){
-      _player.currentPageTracksSourceData = TracksSource(
-          sourceType: TracksSourceType.album,
-          source: albumWithTracks,
-          id: albumWithTracks.album.id
-      );
-    });
+    // _albumWidthTracks.then((AlbumWithTracks albumWithTracks){
+    //   _player.currentPageTracksSourceData = TracksSource(
+    //       sourceType: TracksSourceType.album,
+    //       source: albumWithTracks,
+    //       id: albumWithTracks.album.id
+    //   );
+    // });
   }
 
   @override

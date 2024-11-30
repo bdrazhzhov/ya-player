@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '/player/tracks_source.dart';
-import '/player/players_manager.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
@@ -11,14 +9,8 @@ import 'page_base.dart';
 
 class TracksPage extends StatelessWidget {
   final _appState = getIt<AppState>();
-  final _player = getIt<PlayersManager>();
 
-  TracksPage({super.key}) {
-    _player.currentPageTracksSourceData = TracksSource(
-      sourceType: TracksSourceType.likedTracks,
-      source: _appState.likedTracksNotifier.value,
-    );
-  }
+  TracksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +25,11 @@ class TracksPage extends StatelessWidget {
         ),
         ValueListenableBuilder<List<Track>>(
           valueListenable: appState.likedTracksNotifier,
-          builder: (_, tracks, __) => SliverTrackList(tracks: tracks)
+          builder: (_, tracks, __) => SliverTrackList(
+            tracks: tracks,
+            onBeforeStartPlaying: (int? index) =>
+                _appState.playContent(tracks, tracks, index)
+          )
         )
       ]
     );

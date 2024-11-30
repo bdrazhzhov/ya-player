@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../controls/page_base_layout.dart';
-import '../app_state.dart';
-import '../helpers/nav_keys.dart';
-import '../music_api.dart';
-import '../player/players_manager.dart';
-import '../player/tracks_source.dart';
-import '../services/service_locator.dart';
-import '../helpers/color_extension.dart';
-import '../models/music_api/dashboard.dart';
-import '../models/music_api/station.dart';
+import '/models/music_api_types.dart';
+import '/player/queue_factory.dart';
+import '/controls/page_base_layout.dart';
+import '/app_state.dart';
+import '/helpers/nav_keys.dart';
+import '/music_api.dart';
+import '/player/playback_queue.dart';
+import '/player/player_base.dart';
+import '/player/players_manager.dart';
+import '/services/service_locator.dart';
+import '/helpers/color_extension.dart';
 import 'genre_page.dart';
-import '../controls/station_genre.dart';
+import '/controls/station_genre.dart';
 
 class StationsPage extends StatelessWidget {
   final GlobalKey<NavigatorState> _navKey = GlobalKey();
@@ -139,7 +140,8 @@ class _StationsWidgetState extends State<_StationsWidget> {
 
 class StationsList extends StatelessWidget {
   final List<Station> stations;
-  final _player = getIt<PlayersManager>();
+  final _musicApi = getIt<MusicApi>();
+  final _playersManager = getIt<PlayersManager>();
 
   static const double _minWidth = 250;
   static const double _maxWidth = 412;
@@ -182,11 +184,12 @@ class StationsList extends StatelessWidget {
                     );
                   }
                   else {
-                    _player.currentPageTracksSourceData = TracksSource(
-                        sourceType: TracksSourceType.radio,
-                        source: station
-                    );
-                    _player.play(0);
+                    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
+                    Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
+                    final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
+                    final player = StationPlayer(queue: stationsQueue);
+                    _playersManager.setPlayer(player);
+                    _playersManager.play();
                   }
                 },
                 child: MouseRegion(
@@ -205,7 +208,10 @@ class _StationCard extends StatelessWidget {
   final Station station;
   final bool isCurrent;
   final double width;
-  final player = getIt<PlayersManager>();
+
+  final appState = getIt<AppState>();
+  final musicApi = getIt<MusicApi>();
+  final playersManager = getIt<PlayersManager>();
 
   _StationCard({
     required this.station,
@@ -213,20 +219,19 @@ class _StationCard extends StatelessWidget {
     required this.width,
   });
 
-  final appState = getIt<AppState>();
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final outlineColor = isCurrent ? theme.colorScheme.outline : Colors.transparent;
 
     return InkResponse(
-      onTap: () {
-        player.currentPageTracksSourceData = TracksSource(
-            sourceType: TracksSourceType.radio,
-            source: station
-        );
-        player.play(0);
+      onTap: () async {
+        final Iterable<Track> tracks = await musicApi.stationTacks(station.id, []);
+        Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
+        final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
+        final player = StationPlayer(queue: stationsQueue);
+        playersManager.setPlayer(player);
+        playersManager.play();
       },
       child: Container(
         decoration: BoxDecoration(
