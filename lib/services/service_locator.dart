@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:dbus/dbus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '/mpris/mpris_player.dart';
+
+import '/dbus/sleep_inhibitor.dart';
+import '/dbus/mpris/mpris_player.dart';
 import '/audio_player.dart';
 import '/player/players_manager.dart';
 import '/app_state.dart';
@@ -18,7 +20,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<Preferences>(await _initPreferences());
   getIt.registerSingleton<YandexApiClient>(_initHttpClient());
   getIt.registerSingleton<MusicApi>(_initMusicApi());
+  getIt.registerSingleton<DBusClient>(DBusClient.session());
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
+  getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<AppState>(AppState());
@@ -47,7 +51,7 @@ YandexApiClient _initHttpClient() {
 }
 
 Future<OrgMprisMediaPlayer2> _initMpris() async {
-  final dBusClient = DBusClient.session();
+  final dBusClient = getIt<DBusClient>();
   final mpris = OrgMprisMediaPlayer2(
       path: DBusObjectPath('/org/mpris/MediaPlayer2'),
       identity: 'YaPlayer'

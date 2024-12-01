@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:audio_player_gst/audio_player_gst.dart';
 import 'package:audio_player_gst/events.dart';
 
-import 'mpris/mpris_player.dart';
 import 'services/service_locator.dart';
+import 'dbus/mpris/mpris_player.dart';
 
 final class AudioPlayer {
   final _platformPlayer = AudioPlayerGst();

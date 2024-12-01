@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:audio_player_gst/events.dart';
 import 'package:meta/meta.dart';
 
-import '/mpris/metadata.dart';
-import '/mpris/mpris_player.dart';
+import '/dbus/mpris/metadata.dart';
+import '/dbus/mpris/mpris_player.dart';
 import '/audio_player.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';

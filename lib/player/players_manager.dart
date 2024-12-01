@@ -1,8 +1,11 @@
+import '/dbus/sleep_inhibitor.dart';
+import '/services/service_locator.dart';
 import 'playback_queue.dart';
 import '/player/player_base.dart';
 
 class PlayersManager {
   PlayerBase? _player;
+  final sleepInhibitor = getIt<SleepInhibitor>();
 
   PlayersManager();
 
@@ -22,8 +25,14 @@ class PlayersManager {
     }
   }
 
-  void play([int? index]) => _player?.playByIndex(index);
+  Future<void> play([int? index]) async {
+    await _player?.playByIndex(index);
+    await sleepInhibitor.blockSleep();
+  }
   void next() => _player?.next();
   void previous() => _player?.previous();
-  void pause() => _player?.pause();
+  Future<void> pause() async {
+    await _player?.pause();
+    await sleepInhibitor.unblockSleep();
+  }
 }
