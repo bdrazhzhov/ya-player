@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../state_enums.dart';
+
 class Preferences {
   final SharedPreferences _prefs;
 
@@ -52,6 +54,28 @@ class Preferences {
     }
 
     return value;
+  }
+
+  bool get shuffle => _prefs.getBool('shuffle') ?? false;
+  Future<void> setShuffle(bool value) async {
+    await _prefs.setBool('shuffle', value);
+  }
+
+  static final _repeatModes = {
+    RepeatMode.off.toString() : RepeatMode.off,
+    RepeatMode.on.toString() : RepeatMode.on,
+    RepeatMode.one.toString() : RepeatMode.one,
+  };
+  RepeatMode get repeat {
+    String? value = _prefs.getString('repeat');
+
+    if(value == null) return RepeatMode.off;
+
+    return _repeatModes[value] ?? RepeatMode.off;
+  }
+
+  Future<void> setRepeat(RepeatMode value) async {
+    await _prefs.setString('repeat', value.toString());
   }
 
   Future<void> clear() async {

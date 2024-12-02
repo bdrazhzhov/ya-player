@@ -21,7 +21,7 @@ final class TracksPlayer extends PlayerBase {
       _audioPlayer.play();
     }
     else {
-      await _stop();
+      _stop();
       _appState.queueTracks.value = queue.tracks.toList();
       _playTrack(track, queue.from);
     }
@@ -37,11 +37,47 @@ final class TracksPlayer extends PlayerBase {
 
   @override
   void next() async {
-    playByIndex(queue.currentIndex + 1);
+    int index = queue.currentIndex + 1;
+
+    if(_appState.shuffleNotifier.value) {
+      index = Random().nextInt(queue.length);
+    }
+    else {
+      switch(_appState.repeatNotifier.value) {
+        case RepeatMode.on:
+          if(index == queue.length) {
+            index = 0;
+          }
+        case RepeatMode.one:
+          index = queue.currentIndex;
+        case RepeatMode.off:
+          //
+      }
+    }
+
+    playByIndex(index);
   }
 
   @override
   void previous() async {
-    playByIndex(queue.currentIndex - 1);
+    int index = queue.currentIndex - 1;
+
+    if(_appState.shuffleNotifier.value) {
+      index = Random().nextInt(queue.length);
+    }
+    else {
+      switch(_appState.repeatNotifier.value) {
+        case RepeatMode.on:
+          if(index == -1) {
+            index = queue.length - 1;
+          }
+        case RepeatMode.one:
+          index = queue.currentIndex;
+        case RepeatMode.off:
+          //
+      }
+    }
+
+    playByIndex(index);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/state_enums.dart';
 import '/app_state.dart';
 import '/audio_player.dart';
 import '/controls/controls_bar.dart';

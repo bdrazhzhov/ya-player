@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 class YandexApiClient {
   final String deviceId;
@@ -34,10 +35,10 @@ class YandexApiClient {
     );
     _dio = Dio(options);
 
-    _addErrorsInterceptor();
+    _addInterceptors();
   }
 
-  void _addErrorsInterceptor() {
+  void _addInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(onError: (e, handler){
       debugPrint('Request error: ${e.requestOptions.path}');
       debugPrint('Request headers: ${e.requestOptions.headers}');
@@ -50,6 +51,10 @@ class YandexApiClient {
       }
 
       return handler.next(e);
+    }, onRequest: (RequestOptions options, RequestInterceptorHandler handler){
+      options.headers['X-Yandex-Music-Client-Now'] = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(DateTime.now().toUtc())}Z';
+
+      return handler.next(options);
     }));
   }
 

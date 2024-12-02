@@ -7,6 +7,8 @@ base class TracksQueue extends PlaybackQueue
   final _musicApi = getIt<MusicApi>();
   late String _id;
   late final String from;
+  bool isShuffleEnabled = false;
+  bool isRepeatEnabled = false;
 
   TracksQueue({required Queue queue, required Iterable<Track> tracks})
       : _tracks = tracks.toList() {
@@ -16,6 +18,7 @@ base class TracksQueue extends PlaybackQueue
   }
 
   Track get currentTrack => _tracks[currentIndex];
+  int get length => _tracks.length;
 
   @override
   Future<Track?> next() async {

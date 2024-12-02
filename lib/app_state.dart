@@ -4,6 +4,8 @@ import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 
+import 'dbus/mpris/metadata.dart';
+import 'dbus/mpris/mpris_player.dart';
 import 'helpers/nav_keys.dart';
 import 'player/playback_queue.dart';
 import 'player/player_base.dart';
@@ -18,8 +20,7 @@ import 'services/service_locator.dart';
 import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
 import 'audio_player.dart';
-
-enum UiState { loading, auth, main }
+import 'state_enums.dart';
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -41,16 +42,21 @@ class AppState {
   final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
   final queueTracks = ValueNotifier<List<Track>>([]);
+  final shuffleNotifier = ValueNotifier<bool>(false);
+  final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
   final _playersManager = getIt<PlayersManager>();
+  final _mpris = getIt<OrgMprisMediaPlayer2>();
   final List<int> _likedTrackIds = [];
 
   // Events: Calls coming from the UI
   void init() async {
     _listenToPlaybackState();
+    _listenToShuffleState();
+    _listenToRepeatState();
 
     await _audioPlayer.setVolume(_prefs.volume);
     if(_prefs.authToken == null) {
@@ -58,6 +64,9 @@ class AppState {
 
       return;
     }
+
+    shuffleNotifier.value = _prefs.shuffle;
+    repeatNotifier.value = _prefs.repeat;
 
     await _requestAppData();
     mainPageState.value = UiState.main;
@@ -119,6 +128,26 @@ class AppState {
     });
   }
 
+  void _listenToShuffleState() {
+    _mpris.shuffleStream.listen((bool value){
+      shuffleNotifier.value = value;
+    });
+
+    shuffleNotifier.addListener((){
+      _prefs.setShuffle(shuffleNotifier.value);
+    });
+  }
+
+  void _listenToRepeatState() {
+    _mpris.repeatStream.listen((RepeatMode value){
+      repeatNotifier.value = value;
+    });
+
+    repeatNotifier.addListener((){
+      _prefs.setRepeat(repeatNotifier.value);
+    });
+  }
+
   Future<void> _requestLikedAlbums() async {
     albumsNotifier.value = await _musicApi.likedAlbums();
   }
@@ -147,6 +176,7 @@ class AppState {
     if((queue.tracks.isEmpty || queue.currentIndex == null) && queue.context.type != 'radio') return;
 
 
+    late final Track track;
     if(queue.context.type == 'radio') {
       final Station station = await _musicApi.station(StationId.fromString(queue.context.id!));
       final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
@@ -154,7 +184,7 @@ class AppState {
       final player = StationPlayer(queue: stationsQueue);
       _playersManager.setPlayer(player);
       currentStationNotifier.value = station;
-      trackNotifier.value = tracks.first;
+      track = tracks.first;
       await _musicApi.sendStationTrackFeedback(station.id, null, 'radioStarted', null);
     }
     else {
@@ -164,8 +194,25 @@ class AppState {
       final playbackQueue = TracksQueue(queue: queue, tracks: queueTracks.value);
       final player = TracksPlayer(queue: playbackQueue);
       _playersManager.setPlayer(player);
-      trackNotifier.value = playbackQueue.currentTrack;
+      track = playbackQueue.currentTrack;
     }
+
+    trackNotifier.value = track;
+
+    List<String> artist = track.artists.map((artist) => artist.name).toList();
+    String? artUrl;
+    if(track.coverUri != null) {
+      artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
+    }
+
+    _mpris.metadata = Metadata(
+        title: track.title,
+        length: track.duration,
+        artist: artist,
+        artUrl: artUrl,
+        album: track.albums.first.title,
+        genre: null
+    );
   }
 
 
@@ -181,24 +228,8 @@ class AppState {
     final playbackQueue = TracksQueue(queue: queue, tracks: tracks);
     final player = TracksPlayer(queue: playbackQueue);
     _playersManager.setPlayer(player);
+    currentStationNotifier.value = null;
   }
-
-  Future<void> playAlbum(AlbumWithTracks albumWithTracks, int? index) async {
-    return playContent(albumWithTracks, albumWithTracks.tracks, index);
-  }
-
-  Future<void> playArtistPopularTracks(ArtistInfo info, int? index) async {
-    return playContent(info, info.popularTracks, index);
-  }
-
-  Future<void> playLikedTracks(Iterable<Track> tracks, int? index) async {
-    return playContent(tracks, tracks, index);
-  }
-
-  Future<void> playPlaylist(Playlist playlist, int? index) async {
-    return playContent(playlist, playlist.tracks, index);
-  }
-
 
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 

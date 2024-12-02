@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:audio_player_gst/events.dart';
-import 'package:meta/meta.dart';
+import 'package:ya_player/state_enums.dart';
 
 import '/dbus/mpris/metadata.dart';
 import '/dbus/mpris/mpris_player.dart';
@@ -37,12 +38,10 @@ abstract base class PlayerBase {
 
   void next();
 
-  @mustBeOverridden
   void previous() {}
 
   Future<void> playByIndex(int? index) async {}
 
-  @protected
   Future<void> _playTrack(Track track, String from) async {
     if(_currentPlayInfo != null) {
       _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;

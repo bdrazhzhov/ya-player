@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dbus/dbus.dart';
 
+import '/state_enums.dart';
 import 'metadata.dart';
 
 class OrgMprisMediaPlayer2 extends DBusObject {
@@ -20,6 +21,14 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   Stream<double> get volumeStream => _volumeStreamController.stream;
 
   var position = const Duration(seconds: 0);
+
+  bool _shuffle = false;
+  final _shuffleStreamController = StreamController<bool>();
+  Stream<bool> get shuffleStream => _shuffleStreamController.stream;
+
+  RepeatMode _repeat = RepeatMode.off;
+  final _repeatStreamController = StreamController<RepeatMode>();
+  Stream<RepeatMode> get repeatStream => _repeatStreamController.stream;
 
   /// Creates a new object to expose on [path].
   OrgMprisMediaPlayer2(
@@ -106,16 +115,61 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     return DBusString(_playbackState);
   }
 
+  final _loopStatuses = {
+    RepeatMode.off: 'None',
+    RepeatMode.on: 'Playlist',
+    RepeatMode.one: 'Track'
+  };
+
+  RepeatMode get repeat => _repeat;
+  set repeat(RepeatMode value) {
+    if (value == _repeat) return;
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"LoopStatus": DBusString(_loopStatuses[value] ?? 'None')},
+    );
+    _repeat = value;
+  }
+  
   /// Gets value of property org.mpris.MediaPlayer2.Player.LoopStatus
-  DBusString getLoopStatus() {
-    return const DBusString('None');
+  DBusString _getLoopStatus() {
+    final String value = _loopStatuses[_repeat] ?? 'None';
+
+    return DBusString(value);
   }
 
   /// Sets property org.mpris.MediaPlayer2.Player.LoopStatus
-  Future<DBusMethodResponse> setLoopStatus(String value) async {
-    log('Set org.mpris.MediaPlayer2.Player.LoopStatus'
-        ' not implemented. Requested value: "$value"',
-        name: 'mpris');
+  Future<DBusMethodResponse> _setLoopStatus(String value) async {
+    _loopStatuses.forEach((repeatState, repeatStateString){
+      if(repeatStateString == value) {
+        _repeatStreamController.add(repeatState);
+        repeat = repeatState;
+      }
+    });
+
+    return DBusMethodSuccessResponse([]);
+  }
+
+  bool get shuffle => _shuffle;
+  set shuffle(bool value) {
+    if (value == _shuffle) return;
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"Shuffle": DBusBoolean(value)},
+    );
+    _shuffle = value;
+  }
+
+  /// Gets value of property org.mpris.MediaPlayer2.Player.Shuffle
+  DBusBoolean _getShuffle() {
+    return DBusBoolean(_shuffle);
+  }
+
+  /// Sets property org.mpris.MediaPlayer2.Player.Shuffle
+  Future<DBusMethodResponse> _setShuffle(bool value) async {
+    _shuffleStreamController.add(value);
+    shuffle = value;
+
     return DBusMethodSuccessResponse([]);
   }
 
@@ -329,6 +383,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
             access: DBusPropertyAccess.readwrite),
         DBusIntrospectProperty('Rate', DBusSignature('d'),
             access: DBusPropertyAccess.readwrite),
+        DBusIntrospectProperty('Shuffle', DBusSignature('b'),
+            access: DBusPropertyAccess.readwrite),
         DBusIntrospectProperty('Metadata', DBusSignature('a{sv}'),
             access: DBusPropertyAccess.read),
         DBusIntrospectProperty('Volume', DBusSignature('d'),
@@ -463,9 +519,11 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       if (name == 'PlaybackStatus') {
         value = _getPlaybackStatus();
       } else if (name == 'LoopStatus') {
-        value = getLoopStatus();
+        value = _getLoopStatus();
       } else if (name == 'Rate') {
         value = getRate();
+      } else if (name == 'Shuffle') {
+        value = _getShuffle();
       } else if (name == 'Metadata') {
         value = getMetadata();
       } else if (name == 'Volume') {
@@ -533,12 +591,17 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         if (value.signature != DBusSignature('s')) {
           return DBusMethodErrorResponse.invalidArgs();
         }
-        return setLoopStatus(value.asString());
+        return _setLoopStatus(value.asString());
       } else if (name == 'Rate') {
         if (value.signature != DBusSignature('d')) {
           return DBusMethodErrorResponse.invalidArgs();
         }
         return setRate(value.asDouble());
+      } else if (name == 'Shuffle') {
+        if (value.signature != DBusSignature('b')) {
+          return DBusMethodErrorResponse.invalidArgs();
+        }
+        return _setShuffle(value.asBoolean());
       } else if (name == 'Metadata') {
         return DBusMethodErrorResponse.propertyReadOnly();
       } else if (name == 'Volume') {
@@ -590,8 +653,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     } else if (interface == 'org.mpris.MediaPlayer2.Player') {
       properties = {
         'PlaybackStatus': _getPlaybackStatus(),
-        'LoopStatus': getLoopStatus(),
+        'LoopStatus': _getLoopStatus(),
         'Rate': getRate(),
+        'Shuffle': _getShuffle(),
         'Metadata': getMetadata(),
         'Volume': getVolume(),
         'Position': getPosition(),
