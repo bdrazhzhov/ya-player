@@ -3,7 +3,9 @@ part of 'player_base.dart';
 final class StationPlayer extends PlayerBase {
   final StationQueue queue;
 
-  StationPlayer({required this.queue});
+  StationPlayer({required this.queue}) {
+    _appState.stationSettingsNotifier.addListener(_updateStationSettings);
+  }
 
   @override
   Future<void> playByIndex(int? index) async {
@@ -49,7 +51,7 @@ final class StationPlayer extends PlayerBase {
     await queue.updatePosition(isInteractive: isSkipped);
 
     if(isSkipped) {
-      await queue.preloadNewTracks();
+      await queue.loadTracks();
     }
   }
 
@@ -66,5 +68,11 @@ final class StationPlayer extends PlayerBase {
     ];
 
     await Future.wait(futures);
+  }
+
+  void _updateStationSettings() async {
+    await _musicApi.updateStationSettings2(
+        queue.station.id, _appState.stationSettingsNotifier.value);
+    await queue.reloadLastTracks();
   }
 }

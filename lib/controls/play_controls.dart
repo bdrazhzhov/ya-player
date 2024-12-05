@@ -7,6 +7,7 @@ import '/player/players_manager.dart';
 import 'play_button.dart';
 import 'repeat_button.dart';
 import 'shuffle_button.dart';
+import 'station_settings_button.dart';
 
 class PlayControls extends StatelessWidget {
   PlayControls({super.key,});
@@ -43,18 +44,16 @@ class _RepeatShuffle extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: _appState.currentStationNotifier,
-      builder: (_, value, Widget? child) {
+      builder: (_, value, __) {
         if(value == null) {
-          return child!;
-
+          return Row(children: [
+            RepeatButton(),
+            ShuffleButton()
+          ]);
         }
 
-        return SizedBox.shrink();
+        return StationSettingsButton(station: _appState.currentStationNotifier.value!);
       },
-      child: Row(children: [
-        RepeatButton(),
-        ShuffleButton()
-      ]),
     );
   }
 }

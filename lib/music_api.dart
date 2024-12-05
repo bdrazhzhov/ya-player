@@ -28,7 +28,7 @@ class MusicApi {
   Future<List<Station>> stationsList() async {
     Map<String, dynamic> json = await _http.get('/rotor/stations/list');
     List<Station> stations = [];
-    json['result'].forEach((item) => stations.add(Station.fromJson(item['station'])));
+    json['result'].forEach((item) => stations.add(Station.fromJson(item['station'], item['settings2'])));
 
     return stations;
   }
@@ -52,7 +52,15 @@ class MusicApi {
     final url = '/rotor/station/${stationId.type}:${stationId.tag}/info';
     Map<String, dynamic> json = await _http.get(url);
 
-    return Station.fromJson(json['result'].first['station']);
+    return Station.fromJson(
+      json['result'].first['station'],
+      json['result'].first['settings2']
+    );
+  }
+
+  Future<void> updateStationSettings2(StationId stationId, Map<String,String> settings2) async {
+    final url = '/rotor/station/${stationId.type}:${stationId.tag}/settings2';
+    await _http.postJson(url, data: settings2);
   }
 
   Future<TrackDownloadInfo?> _trackDownloadInfo(int trackId) async {

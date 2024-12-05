@@ -44,6 +44,7 @@ class AppState {
   final queueTracks = ValueNotifier<List<Track>>([]);
   final shuffleNotifier = ValueNotifier<bool>(false);
   final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
+  final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();

@@ -9,7 +9,7 @@ class StationsDashboard {
   factory StationsDashboard.fromJson(Map<String, dynamic> json) {
     List<Station> stations = [];
     json['stations'].forEach((item) {
-      stations.add(Station.fromJson(item['station']));
+      stations.add(Station.fromJson(item['station'], item['settings2']));
     });
 
     return StationsDashboard(json['dashboardId'], stations);
