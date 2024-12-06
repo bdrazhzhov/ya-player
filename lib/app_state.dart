@@ -45,6 +45,7 @@ class AppState {
   final shuffleNotifier = ValueNotifier<bool>(false);
   final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
+  final playbackSpeedNotifier = ValueNotifier<double>(1);
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -58,6 +59,7 @@ class AppState {
     _listenToPlaybackState();
     _listenToShuffleState();
     _listenToRepeatState();
+    _listenToRate();
 
     await _audioPlayer.setVolume(_prefs.volume);
     if(_prefs.authToken == null) {
@@ -148,6 +150,16 @@ class AppState {
       _prefs.setRepeat(repeatNotifier.value);
     });
   }
+  
+  void _listenToRate() {
+    _mpris.rateStream.listen((double value){
+      playbackSpeedNotifier.value = value;
+    });
+
+    playbackSpeedNotifier.addListener((){
+      _mpris.rate = playbackSpeedNotifier.value;
+    });
+  }
 
   Future<void> _requestLikedAlbums() async {
     albumsNotifier.value = await _musicApi.likedAlbums();
@@ -218,6 +230,7 @@ class AppState {
 
 
   Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
+    playbackSpeedNotifier.value = 1.0;
     index ??= 0;
 
     final Queue queue = await QueueFactory.create(

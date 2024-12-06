@@ -5,6 +5,7 @@ final class StationPlayer extends PlayerBase {
 
   StationPlayer({required this.queue}) {
     _appState.stationSettingsNotifier.addListener(_updateStationSettings);
+    _appState.playbackSpeedNotifier.value = 1.0;
   }
 
   @override

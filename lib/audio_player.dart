@@ -88,6 +88,8 @@ final class AudioPlayer {
     return _platformPlayer.setVolume(value);
   }
 
+  Future<void> setRate(double rate) async => _platformPlayer.setRate(rate);
+
   void _listenToControlStream() {
     _mpris.controlStream.listen((event) {
       switch (event) {

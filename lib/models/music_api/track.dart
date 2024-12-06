@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'album.dart';
 import 'artist.dart';
 
+enum TrackType { music, podcast, audiobook }
+
 class Track extends Equatable {
   final int id;
   final String title;
@@ -15,15 +17,22 @@ class Track extends Equatable {
   final String batchId;
   final DateTime? pubDate;
   final bool isAvailable;
+  final TrackType type;
   late final String artist;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
-      this.isAvailable) {
+      this.isAvailable, this.type) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
   int get firstAlbumId => albums.first.id;
+
+  static final _trackTypes = {
+    'music': TrackType.music,
+    'podcast-episode': TrackType.podcast,
+    'audiobook': TrackType.podcast
+  };
 
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
     final track = json['track'] ?? json;
@@ -47,7 +56,8 @@ class Track extends Equatable {
 
     return Track(id is String ? int.parse(id) : id,
       track['title'], track['version'], duration, artists, albums,
-      track['coverUri'], track['ogImage'], batchId, pubDate, track['available']
+      track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
+      _trackTypes[track['type'].toString()] ?? TrackType.music
     );
   }
 

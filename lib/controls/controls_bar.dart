@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../audio_player.dart';
@@ -10,6 +9,7 @@ import '/notifiers/progress_notifier.dart';
 import '/services/service_locator.dart';
 import 'like_button.dart';
 import 'play_controls.dart';
+import 'playing_speed_button.dart';
 import 'track_image.dart';
 import 'track_name.dart';
 
@@ -74,7 +74,9 @@ class _ControlsBar extends State<ControlsBar> {
                 valueListenable: appState.queueTracks,
                 builder: (_, List<Track> tracks, Widget? child) {
                   if(tracks.isNotEmpty && child != null) {
-                    return child;
+                    // queue page is broken; removed till fix
+                    return const SizedBox.shrink();
+                    // return child;
                   }
                   else {
                     return const SizedBox.shrink();
@@ -87,9 +89,19 @@ class _ControlsBar extends State<ControlsBar> {
                   }
                 ),
               ),
-              if(defaultTargetPlatform == TargetPlatform.windows ||
-                  defaultTargetPlatform == TargetPlatform.linux ||
-                  defaultTargetPlatform == TargetPlatform.macOS) Slider(
+              ValueListenableBuilder(
+                valueListenable: appState.trackNotifier,
+                builder: (_, Track? track, __) {
+                  if(track?.type == TrackType.podcast
+                      || track?.type == TrackType.audiobook) {
+                    return PlayingSpeedButton();
+                  }
+                  else {
+                    return SizedBox.shrink();
+                  }
+                },
+              ),
+              Slider(
                 value: audioPlayer.volume,
                 onChanged: (double value) async {
                   isVolumeChangedInternally = true;
@@ -97,13 +109,6 @@ class _ControlsBar extends State<ControlsBar> {
                   setState((){});
                 },
               )
-              else
-                IconButton(
-                  onPressed: (){
-                    // pageController.jumpToPage(5);
-                  },
-                  icon: const Icon(Icons.account_box)
-                )
             ]
         )
       ],

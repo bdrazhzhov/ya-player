@@ -230,6 +230,7 @@ class _StationCard extends StatelessWidget {
         Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
         final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
         final player = StationPlayer(queue: stationsQueue);
+
         playersManager.setPlayer(player);
         playersManager.play();
       },

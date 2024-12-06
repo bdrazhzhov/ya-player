@@ -3,7 +3,11 @@ part of 'player_base.dart';
 final class TracksPlayer extends PlayerBase {
   final TracksQueue queue;
 
-  TracksPlayer({required this.queue});
+  TracksPlayer({required this.queue}) {
+    _appState.playbackSpeedNotifier.addListener((){
+      _audioPlayer.setRate(_appState.playbackSpeedNotifier.value);
+    });
+  }
 
   @override
   Future<void> playByIndex(int? index) async {
