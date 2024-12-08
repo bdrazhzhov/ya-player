@@ -22,7 +22,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<MusicApi>(_initMusicApi());
   getIt.registerSingleton<DBusClient>(DBusClient.session());
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
-  getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
+   getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<AppState>(AppState());

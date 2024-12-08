@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
+import 'package:ya_player/tray_integration.dart';
 
 import 'dbus/mpris/metadata.dart';
 import 'dbus/mpris/mpris_player.dart';
@@ -52,10 +53,13 @@ class AppState {
   final _audioPlayer = getIt<AudioPlayer>();
   final _playersManager = getIt<PlayersManager>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
+  final _trayIntegration = TrayIntegration();
+
   final List<int> _likedTrackIds = [];
 
   // Events: Calls coming from the UI
   void init() async {
+    _trayIntegration.init();
     _listenToPlaybackState();
     _listenToShuffleState();
     _listenToRepeatState();
