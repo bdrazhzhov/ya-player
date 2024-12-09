@@ -19,10 +19,11 @@ void _initWindow() {
   windowManager.setPreventClose(true);
   
   WindowOptions windowOptions = WindowOptions(
-    size: Size(1080, 720),
+    size: Size(1080, 800),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

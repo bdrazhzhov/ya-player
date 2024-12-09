@@ -4,7 +4,7 @@ import '/state_enums.dart';
 import '/app_state.dart';
 import '/audio_player.dart';
 import '/controls/controls_bar.dart';
-// import '../controls/title_bar.dart';
+import '/controls/title_bar.dart';
 import '/services/service_locator.dart';
 import '/controls/main_menu.dart';
 import 'main_screen.dart';
@@ -53,10 +53,13 @@ class _MainPageState extends State<MainPage> {
                 page = _buildAppUi();
               }
 
-              return page;
+              return Padding(
+                padding: const EdgeInsets.only(top: 32),
+                child: page,
+              );
             },
           ),
-          // const TitleBar(),
+          const TitleBar(),
         ],
       )
     );
