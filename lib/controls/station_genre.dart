@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../helpers/color_extension.dart';
-import '../models/music_api/station.dart';
-import '../music_api.dart';
+import '/helpers/color_extension.dart';
+import '/models/music_api/station.dart';
+import '/music_api.dart';
 
 class StationGenre extends StatelessWidget {
   final Station station;
@@ -20,15 +20,15 @@ class StationGenre extends StatelessWidget {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-              color: station.icon.backgroundColor.toColor(),
-              shape: BoxShape.circle
+            color: station.icon.backgroundColor.toColor(),
+            shape: BoxShape.circle
           ),
           child: Center(
             child: CachedNetworkImage(
               width: 30,
               height: 30,
               fit: BoxFit.fitWidth,
-              imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '50x50').toString(),
+              imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '30x30').toString(),
               placeholder: (context, url) => const CircularProgressIndicator(),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
