@@ -58,8 +58,6 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "YaPlayer");
   }
 
-//  auto bdw = bitsdojo_window_from(window);
-//  bdw->setCustomFrame(true);
   gtk_window_set_default_size(window, 1080, 720);
 //  gtk_widget_show(GTK_WIDGET(window));
   gtk_widget_show_all(GTK_WIDGET(window));

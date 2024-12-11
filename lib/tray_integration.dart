@@ -7,7 +7,7 @@ import 'services/service_locator.dart';
 final class TrayIntegration with WindowListener {
   late final StatusNotifierItemClient _trayIcon = StatusNotifierItemClient(
     id: 'YaPlayer',
-    iconName: 'media-playback-start',
+    iconName: 'YaPlayer',
     bus: getIt<DBusClient>(),
     menu: DBusMenuItem(children: [
       DBusMenuItem(label: 'Show', onClicked: () => windowManager.show()),
