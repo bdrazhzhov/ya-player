@@ -1,15 +1,14 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../helpers/app_route_observer.dart';
+import '/controls/yandex_image.dart';
+import '/helpers/app_route_observer.dart';
 
 import 'home_page.dart';
 import 'podcasts_books_page.dart';
-import '../app_state.dart';
-import '../models/music_api/search.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/models/music_api/search.dart';
+import '/services/service_locator.dart';
 import 'albums_page.dart';
 import 'artists_page.dart';
 import 'playlists_page.dart';
@@ -17,7 +16,7 @@ import 'queue_page.dart';
 import 'search_results_page.dart';
 import 'stations_page.dart';
 import 'tracks_page.dart';
-import '../helpers/nav_keys.dart';
+import '/helpers/nav_keys.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -137,13 +136,10 @@ class _MainScreen extends State<MainScreen> {
             final BestSuggestion best = suggestions!.best!;
             return Row(
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
-                  child: CachedNetworkImage(
-                    width: 50,
-                    height: 50,
-                    imageUrl: MusicApi.imageUrl(best.imageUrl, '50x50').toString()
-                  ),
+                YandexImage(
+                  uriPlaceholder: best.imageUrl,
+                  size: 50,
+                  borderRadius: 8
                 ),
                 Expanded(
                   child: Padding(

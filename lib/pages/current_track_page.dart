@@ -1,11 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-import '../app_state.dart';
-import '../controls/controls_bar.dart';
-import '../controls/page_base_layout.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/controls/controls_bar.dart';
+import '/controls/page_base_layout.dart';
+import '/controls/yandex_image.dart';
+import '/services/service_locator.dart';
 
 class CurrentTrackPage extends StatelessWidget {
   final AppState _appState = getIt<AppState>();
@@ -40,13 +40,11 @@ class CurrentTrackPage extends StatelessWidget {
                           maxWidth: 460,
                           maxHeight: 460,
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: CachedNetworkImage(
-                            imageUrl: MusicApi.imageUrl(track.coverUri!, '460x460').toString(),
-                            placeholder: (context, url) => const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
-                          ),
+                        child: YandexImage(
+                          uriPlaceholder: track.coverUri!,
+                          size: 460,
+                          placeholder: SvgPicture.asset('assets/svg/track_placeholder.svg'),
+                          borderRadius: 8,
                         ),
                       ),
                     ),

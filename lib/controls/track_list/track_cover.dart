@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../models/music_api/track.dart';
-import '../../music_api.dart';
+import '/models/music_api/track.dart';
+import '/controls/yandex_image.dart';
 import 'track_animation_cover.dart';
 
 class TrackCover extends StatefulWidget {
@@ -46,7 +45,12 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
           if(widget.trackNumber != null)
             Text(widget.isCurrent ? '' : widget.trackNumber.toString())
           else
-            image(),
+            YandexImage(
+              uriPlaceholder: widget.track.coverUri!,
+              size: 50,
+              placeholder: SvgPicture.asset('assets/svg/track_placeholder.svg'),
+              borderRadius: coverCornersRadius,
+            ),
           if(widget.isCurrent)
             ...[
             if(widget.trackNumber == null)
@@ -81,22 +85,6 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
             ),
         ]
       )
-    );
-  }
-
-  Widget image() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(coverCornersRadius),
-      child: widget.track.coverUri == null
-        ? SvgPicture.asset(
-            'assets/svg/track_placeholder.svg',
-          )
-        : CachedNetworkImage(
-            fit: BoxFit.fitWidth,
-            imageUrl: MusicApi.imageUrl(widget.track.coverUri!, '50x50').toString(),
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
     );
   }
 }

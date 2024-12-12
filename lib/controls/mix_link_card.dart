@@ -1,8 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../music_api.dart';
-import '../models/music_api_types.dart';
+import '/models/music_api_types.dart';
+import 'yandex_image.dart';
 
 class MixLinkCard extends StatelessWidget {
   final MixLink mixLink;
@@ -18,9 +17,10 @@ class MixLinkCard extends StatelessWidget {
       constraints: BoxConstraints(maxWidth: width, maxHeight: width),
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(imageUrl: MusicApi.imageUrl(mixLink.image, '200x200'))
+          YandexImage(
+            uriPlaceholder: mixLink.image,
+            size: 200,
+            borderRadius: 8
           ),
           Positioned(
             top: width / 2,

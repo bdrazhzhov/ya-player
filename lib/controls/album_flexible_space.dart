@@ -1,8 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '/models/music_api/album.dart';
-import '/music_api.dart';
+import 'yandex_image.dart';
 
 class AlbumFlexibleSpace extends StatelessWidget {
   final Album album;
@@ -21,13 +20,11 @@ class AlbumFlexibleSpace extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(2.0),
-              child: CachedNetworkImage(
-                  imageUrl: MusicApi.imageUrl(album.ogImage, '300x300')
-                      .toString()
+            child: YandexImage(
+                uriPlaceholder: album.ogImage,
+                size: 300,
+                borderRadius: 8
               ),
-            ),
           ),
           Expanded(child: Text(album.title)),
           ElevatedButton(
@@ -57,12 +54,10 @@ class AlbumFlexibleSpace extends StatelessWidget {
 
       widget = Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
-                imageUrl: MusicApi.imageUrl(album.ogImage, '300x300')
-                    .toString()
-            ),
+          YandexImage(
+              uriPlaceholder: album.ogImage,
+              size: 300,
+              borderRadius: 8
           ),
           const SizedBox(width: 20),
           Flexible(

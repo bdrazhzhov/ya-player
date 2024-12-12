@@ -1,11 +1,10 @@
 import 'package:animations/animations.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../music_api.dart';
-import '../pages/current_track_page.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/pages/current_track_page.dart';
+import '/services/service_locator.dart';
+import 'yandex_image.dart';
 
 class TrackImage extends StatelessWidget {
   final bool isExpandable;
@@ -19,21 +18,15 @@ class TrackImage extends StatelessWidget {
     return ValueListenableBuilder(
         valueListenable: _appState.trackNotifier,
         builder: (_, track, __) {
-          if(track != null) {
-            Widget image = const Text('No image');
+          Widget image = Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: YandexImage(
+                uriPlaceholder: track?.coverUri ?? '',
+                size: 50
+            ),
+          );
 
-            if(track.coverUri != null) {
-              image = Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: CachedNetworkImage(
-                  width: 50,
-                  height: 50,
-                  imageUrl: MusicApi.imageUrl(track.coverUri!, '50x50').toString(),
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                )
-              );
-            }
+          if(track != null) {
             if(isExpandable) {
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -53,7 +46,7 @@ class TrackImage extends StatelessWidget {
             }
           }
           else {
-            return const Text('No image');
+            return image;
           }
         }
     );

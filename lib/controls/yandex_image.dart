@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class YandexImage extends StatelessWidget {
   final String uriPlaceholder;
   final double size;
   final double? borderRadius;
+  final Widget placeholder;
   late final String _url;
   
   static final _sizes = [30, 40, 50, 60, 70, 80, 100, 120, 150, 160, 200, 260,
@@ -14,7 +16,8 @@ class YandexImage extends StatelessWidget {
     super.key,
     required this.uriPlaceholder,
     required this.size,
-    this.borderRadius
+    this.borderRadius,
+    this.placeholder = const DefaultImagePlaceholder()
   }) {
     int realSize = size.round();
 
@@ -33,7 +36,12 @@ class YandexImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget image = CachedNetworkImage(
+      width: size,
+      height: size,
       memCacheWidth: size.toInt(),
+      fit: BoxFit.fitWidth,
+      placeholder: (context, url) => placeholder,
+      errorWidget: (context, url, error) => const Icon(Icons.error),
       imageUrl: _url
     );
 
@@ -47,3 +55,13 @@ class YandexImage extends StatelessWidget {
     return image;
   }
 }
+
+class DefaultImagePlaceholder extends StatelessWidget {
+  const DefaultImagePlaceholder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset('assets/svg/track_placeholder.svg');
+  }
+}
+

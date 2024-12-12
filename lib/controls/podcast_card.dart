@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
-import 'package:ya_player/models/music_api/podcast.dart';
-import 'package:ya_player/pages/podcast_page.dart';
 
-import '../music_api.dart';
+import '/models/music_api/podcast.dart';
+import '/pages/podcast_page.dart';
+import 'yandex_image.dart';
 
 class PodcastCard extends StatelessWidget {
   final Podcast podcast;
@@ -40,13 +39,10 @@ class PodcastCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: CachedNetworkImage(
-                    width: width,
-                    height: width,
-                    imageUrl: MusicApi.imageUrl(podcast.image, '200x200')
-                ),
+              YandexImage(
+                uriPlaceholder: podcast.image,
+                size: 200,
+                borderRadius: 8
               ),
               Text(
                   HtmlCharacterEntities.decode(podcast.title),

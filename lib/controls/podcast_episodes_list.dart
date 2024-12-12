@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../models/music_api/podcast_episode.dart';
-import '../music_api.dart';
+import '/models/music_api/podcast_episode.dart';
+import 'yandex_image.dart';
 
 class PodcastEpisodesList extends StatelessWidget {
   final List<PodcastEpisode> episodes;
@@ -37,13 +36,10 @@ class PodcastEpisodesList extends StatelessWidget {
                 border: Border.all(width: 1, color: theme.colorScheme.surface)
             ),
             children: [
-              CachedNetworkImage(
-                width: 60,
-                height: 60,
-                fit: BoxFit.fitWidth,
-                imageUrl: MusicApi.imageUrl(episode.albums.first.image, '60x60').toString(),
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              YandexImage(
+                uriPlaceholder: episode.albums.first.image,
+                size: 60,
+                borderRadius: 8
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
