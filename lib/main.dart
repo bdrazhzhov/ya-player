@@ -23,7 +23,6 @@ void _initWindow() {
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
-    titleBarStyle: TitleBarStyle.hidden
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

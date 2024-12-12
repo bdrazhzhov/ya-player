@@ -54,13 +54,14 @@ static void my_application_activate(GApplication* application) {
     gtk_header_bar_set_title(header_bar, "YaPlayer");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
+    gtk_widget_set_visible(GTK_WIDGET(header_bar), FALSE);
   } else {
     gtk_window_set_title(window, "YaPlayer");
   }
 
   gtk_window_set_default_size(window, 1080, 720);
-//  gtk_widget_show(GTK_WIDGET(window));
-  gtk_widget_show_all(GTK_WIDGET(window));
+  gtk_widget_show(GTK_WIDGET(window));
+//  gtk_widget_show_all(GTK_WIDGET(window));
 
   std::ifstream iconFile;
   iconFile.open("assets/app_icon.png");
