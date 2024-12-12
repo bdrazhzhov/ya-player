@@ -93,7 +93,7 @@ include(flutter/generated_plugins.cmake)
 pkg_check_modules(GTK4 REQUIRED gtk4)
 pkg_check_modules(WEBKIT REQUIRED webkitgtk-6.0)
 
-SET(AUTH_NAME yandex-auth)
+SET(AUTH_NAME YaPlayerAuth)
 
 add_executable(${AUTH_NAME} yandex_auth.cpp)
 

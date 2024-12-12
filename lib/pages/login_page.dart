@@ -32,7 +32,10 @@ class _LoginPageState extends State<LoginPage> {
     isAuthOpened = true;
     setState(() {});
 
-    final result = await Process.run(join(dirname(Platform.resolvedExecutable), 'yandex-auth'), []);
+    final result = await Process.run(
+      join(dirname(Platform.resolvedExecutable), 'YaPlayerAuth'), [],
+      environment: {'WEBKIT_DISABLE_DMABUF_RENDERER': '1'}
+    );
     isAuthOpened = false;
     setState(() {});
 
