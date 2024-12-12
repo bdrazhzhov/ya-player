@@ -22,7 +22,6 @@ final class AudioPlayer {
   AudioPlayer() {
     _listenToEventsStream();
     _mpris.positionStream.listen(seek);
-    _mpris.volumeStream.listen(setVolume);
     _listenToControlStream();
   }
 
@@ -45,7 +44,7 @@ final class AudioPlayer {
           _buffered = Duration(microseconds: (_duration.inMicroseconds * bufferingEvent.percent).round());
           _broadcastPlaybackEvent();
         case VolumeEvent volumeEvent:
-          _linearVolume = sqrt(volumeEvent.value).toDouble();
+          _linearVolume = pow(volumeEvent.value, 1.0/3).toDouble();
           _broadcastPlaybackEvent();
         case UnknownEvent():
           // TODO: Handle this case.
@@ -83,7 +82,7 @@ final class AudioPlayer {
 
   Future<void> setVolume(double value){
     _linearVolume = value;
-    value = pow(value, 2).toDouble();
+    value = pow(value, 3).toDouble();
 
     return _platformPlayer.setVolume(value);
   }

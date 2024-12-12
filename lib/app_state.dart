@@ -46,6 +46,7 @@ class AppState {
   final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
   final playbackSpeedNotifier = ValueNotifier<double>(1);
+  final volumeNotifier = ValueNotifier<double>(1);
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -63,6 +64,7 @@ class AppState {
     _listenToShuffleState();
     _listenToRepeatState();
     _listenToRate();
+    _listenToVolume();
 
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
@@ -74,7 +76,7 @@ class AppState {
     mainPageState.value = UiState.main;
     shuffleNotifier.value = _prefs.shuffle;
     repeatNotifier.value = _prefs.repeat;
-    await _audioPlayer.setVolume(_prefs.volume);
+    volumeNotifier.value = _prefs.volume;
   }
 
   Future<void> _requestAppData() async {
@@ -160,6 +162,22 @@ class AppState {
 
     playbackSpeedNotifier.addListener((){
       _mpris.rate = playbackSpeedNotifier.value;
+    });
+  }
+
+  void _listenToVolume() {
+    volumeNotifier.addListener((){
+      _prefs.setVolume(volumeNotifier.value);
+      _audioPlayer.setVolume(volumeNotifier.value);
+      _mpris.volume = volumeNotifier.value;
+    });
+
+    _mpris.volumeStream.listen((volume){
+      volumeNotifier.value = volume;
+    });
+
+    _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
+      volumeNotifier.value = msg.volume;
     });
   }
 
