@@ -66,9 +66,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   Column _buildAppUi() {
-    return const Column(
+    return Column(
       children: [
-        Expanded(
+        const Expanded(
           child: Row(
             children: [
               MainMenu(),

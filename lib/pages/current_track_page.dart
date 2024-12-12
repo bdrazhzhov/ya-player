@@ -75,8 +75,8 @@ class CurrentTrackPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 50, right: 50, bottom: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 50, right: 50, bottom: 20),
                 child: ControlsBar(isExpandable: false),
               )
             ]
