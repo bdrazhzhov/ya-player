@@ -18,7 +18,6 @@ import 'music_api.dart';
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'services/service_locator.dart';
-import 'helpers/ym_login.dart';
 import 'services/yandex_api_client.dart';
 import 'audio_player.dart';
 import 'state_enums.dart';
@@ -65,18 +64,17 @@ class AppState {
     _listenToRepeatState();
     _listenToRate();
 
-    await _audioPlayer.setVolume(_prefs.volume);
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
 
       return;
     }
 
-    shuffleNotifier.value = _prefs.shuffle;
-    repeatNotifier.value = _prefs.repeat;
-
     await _requestAppData();
     mainPageState.value = UiState.main;
+    shuffleNotifier.value = _prefs.shuffle;
+    repeatNotifier.value = _prefs.repeat;
+    await _audioPlayer.setVolume(_prefs.volume);
   }
 
   Future<void> _requestAppData() async {
@@ -284,13 +282,13 @@ class AppState {
     landingNotifier.value = [];
   }
 
-  Future<void> login(YmToken token) async {
-    await _prefs.setAuthToken(token.accessToken);
-    final expiresAt = DateTime.now().add(Duration(seconds: token.expiresIn.inSeconds));
-    await _prefs.setExpiresAt(expiresAt.millisecondsSinceEpoch ~/ 1000);
+  Future<void> login(String authToken) async {
+    await _prefs.setAuthToken(authToken);
+    getIt<YandexApiClient>().authToken = authToken;
+    mainPageState.value = UiState.loading;
 
-    getIt<YandexApiClient>().authToken = token.accessToken;
-    _requestAppData();
+    await _requestAppData();
+
     mainPageState.value = UiState.main;
     NavKeys.mainNav.currentState?.pushReplacementNamed('/');
   }

@@ -7,7 +7,7 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "YaPlayer")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.example.ya_player")
+set(APPLICATION_ID "com.drazhzhov.YaPlayer")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -86,11 +86,20 @@ set_target_properties(${BINARY_NAME}
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/intermediates_do_not_run"
 )
 
-
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+pkg_check_modules(GTK4 REQUIRED gtk4)
+pkg_check_modules(WEBKIT REQUIRED webkitgtk-6.0)
+
+SET(AUTH_NAME yandex-auth)
+
+add_executable(${AUTH_NAME} yandex_auth.cpp)
+
+target_include_directories(${AUTH_NAME} PRIVATE ${GTK4_INCLUDE_DIRS} ${WEBKIT_INCLUDE_DIRS})
+target_link_libraries(${AUTH_NAME} PRIVATE ${GTK4_LIBRARIES} ${WEBKIT_LIBRARIES})
+target_compile_options(${AUTH_NAME} PRIVATE ${GTK4_CFLAGS_OTHER} ${WEBKIT_CFLAGS_OTHER})
 
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build
@@ -110,6 +119,9 @@ set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
+
+install(TARGETS ${AUTH_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+        COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   COMPONENT Runtime)

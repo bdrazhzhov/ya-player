@@ -7,9 +7,9 @@ import '/controls/controls_bar.dart';
 import '/controls/title_bar.dart';
 import '/services/service_locator.dart';
 import '/controls/main_menu.dart';
+import 'login_page.dart';
 import 'main_screen.dart';
 import 'app_loading_page.dart';
-import 'login/login_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -46,8 +46,7 @@ class _MainPageState extends State<MainPage> {
                 page = const AppLoadingPage();
               }
               else if(value == UiState.auth) {
-                page = const LoginPage();
-
+                page = LoginPage();
               }
               else {
                 page = _buildAppUi();

@@ -37,9 +37,9 @@ class Playlist {
       json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
 
-    return Playlist(kind: json['kind'], title: json['title'], uid: json['uid'],
-        description: json['description'], ownerName: json['owner']['name'],
+    return Playlist(kind: json['kind'] ?? 0, title: json['title'], uid: json['uid'] ?? 0,
+        description: json['description'], ownerName: json['owner']?['name'] ?? '',
         duration: Duration(milliseconds: json['durationMs'] ?? 0),
-        tracksCount: json['trackCount'], image: image, tracks: tracks);
+        tracksCount: json['trackCount'] ?? 0, image: image, tracks: tracks);
   }
 }

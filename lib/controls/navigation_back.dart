@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../helpers/app_route_observer.dart';
-import '../helpers/nav_keys.dart';
-import '../services/service_locator.dart';
+import '/helpers/app_route_observer.dart';
+import '/helpers/nav_keys.dart';
+import '/services/service_locator.dart';
 
 class NavigationBack extends StatefulWidget {
   const NavigationBack({super.key});
@@ -24,7 +24,6 @@ class _NavigationBackState extends State<NavigationBack> {
           return GestureDetector(
               onTap: (){
                 NavigatorState? navState = NavKeys.mainNav.currentState;
-                navState ??= NavKeys.loginNav.currentState;
                 if(navState == null) return;
 
                 backgroundColor = Colors.transparent;
