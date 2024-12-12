@@ -17,6 +17,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   final _openUriStreamController = StreamController<Uri>();
   Stream<Uri> get openUriStream => _openUriStreamController.stream;
 
+  double _volume = 1.0;
   final _volumeStreamController = StreamController<double>();
   Stream<double> get volumeStream => _volumeStreamController.stream;
 
@@ -219,16 +220,26 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     return _metadata.toValue();
   }
 
-  /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
-  DBusDouble getVolume() {
-    log('Get org.mpris.MediaPlayer2.Player.Volume not implemented',
-        name: 'mpris');
-    return const DBusDouble(1.0);
+  double get volume => _volume;
+  set volume(double value) {
+    if(value == _volume) return;
+
+    _volume = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"Volume": DBusDouble(value)},
+    );
   }
 
+  /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
+  DBusDouble _getVolume() => DBusDouble(_volume);
+
   /// Sets property org.mpris.MediaPlayer2.Player.Volume
-  Future<DBusMethodResponse> setVolume(double value) async {
+  Future<DBusMethodResponse> _setVolume(double value) async {
     _volumeStreamController.add(value);
+    _volume = value;
+
     return DBusMethodSuccessResponse([]);
   }
 
@@ -542,7 +553,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       } else if (name == 'Metadata') {
         value = getMetadata();
       } else if (name == 'Volume') {
-        value = getVolume();
+        value = _getVolume();
       } else if (name == 'Position') {
         value = getPosition();
       } else if (name == 'MinimumRate') {
@@ -623,7 +634,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         if (value.signature != DBusSignature('d')) {
           return DBusMethodErrorResponse.invalidArgs();
         }
-        return setVolume(value.asDouble());
+        return _setVolume(value.asDouble());
       } else if (name == 'Position') {
         return DBusMethodErrorResponse.propertyReadOnly();
       } else if (name == 'MinimumRate') {
@@ -672,7 +683,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         'Rate': _getRate(),
         'Shuffle': _getShuffle(),
         'Metadata': getMetadata(),
-        'Volume': getVolume(),
+        'Volume': _getVolume(),
         'Position': getPosition(),
         'MinimumRate': getMinimumRate(),
         'MaximumRate': getMaximumRate(),
