@@ -10,6 +10,11 @@ final class StationPlayer extends PlayerBase {
 
   @override
   Future<void> playByIndex(int? index) async {
+    if(_currentPlayInfo != null) {
+      _audioPlayer.play();
+      return;
+    }
+
     Track? track = await queue.next();
     if(track == null) return;
 

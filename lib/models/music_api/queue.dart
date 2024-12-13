@@ -24,7 +24,7 @@ class Queue extends Equatable {
       id: json['id'],
       context: QueueContext.fromJson(json['context']),
       tracks: tracks,
-      currentIndex: json['currentIndex'],
+      // currentIndex: json['currentIndex'],
       from: json['from'] ?? tracks.firstOrNull?.from
     );
   }

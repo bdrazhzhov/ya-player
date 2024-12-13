@@ -5,7 +5,8 @@ final class StationQueue extends PlaybackQueue
   final List<Track> _tracks = [];
   final _musicApi = getIt<MusicApi>();
   late Queue _queue;
-  int _realIndex = -1;
+  int _realIndex = -1; // необходим для правильной работы очереди
+                       // в случаях, когда пропускаются треки
   Iterable<int> _lastTracksIds = [];
 
   final Station station;
@@ -13,7 +14,6 @@ final class StationQueue extends PlaybackQueue
     if(initialData != null) {
       _queue = initialData.$1;
       _tracks.addAll(initialData.$2);
-      _currentIndex = initialData.$1.currentIndex ?? 0;
     }
   }
 
@@ -37,7 +37,6 @@ final class StationQueue extends PlaybackQueue
       _realIndex += 1;
 
       track = _tracks[_realIndex];
-      // await updatePosition();
     }
 
     return track;
@@ -51,9 +50,6 @@ final class StationQueue extends PlaybackQueue
     _lastTracksIds = _tracks.skip(_realIndex).map((t) => t.id).toList();
     _tracks.removeRange(_realIndex, _tracks.length);
     _realIndex -= 1;
-
-    // await updatePosition();
-    // await preloadNewTracks();
 
     return track;
   }
