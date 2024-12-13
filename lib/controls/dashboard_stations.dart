@@ -32,22 +32,16 @@ class DashboardStations extends StatelessWidget {
                 height: _maxSize,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: listPadding),
-                  child: ValueListenableBuilder<Station?>(
-                    valueListenable: _appState.currentStationNotifier,
-                    builder: (_, currentStation, __) {
-                      return ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: stations.length,
-                        separatorBuilder: (_, __) => SizedBox(width: _separatorWidth),
-                        itemBuilder: (BuildContext context, int index) {
-                          final station = stations[index];
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: stations.length,
+                    separatorBuilder: (_, __) => SizedBox(width: _separatorWidth),
+                    itemBuilder: (BuildContext context, int index) {
+                      final station = stations[index];
 
-                          return StationCard(
-                            station: station,
-                            isCurrent: currentStation == station,
-                            width: _cardWidth,
-                          );
-                        }
+                      return StationCard(
+                        station: station,
+                        width: _cardWidth,
                       );
                     }
                   ),

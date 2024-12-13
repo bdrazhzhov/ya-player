@@ -18,11 +18,12 @@ class Track extends Equatable {
   final DateTime? pubDate;
   final bool isAvailable;
   final TrackType type;
+  final TrackParameters? trackParameters;
   late final String artist;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
-      this.isAvailable, this.type) {
+      this.isAvailable, this.type, this.trackParameters) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -54,10 +55,15 @@ class Track extends Equatable {
     DateTime? pubDate;
     if(track['pubDate'] != null) pubDate = DateTime.tryParse(track['pubDate']);
 
+    TrackParameters? trackParameters;
+    if(json['trackParameters'] != null) {
+      trackParameters = TrackParameters.fromJson(json['trackParameters']);
+    }
+
     return Track(id is String ? int.parse(id) : id,
       track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
-      _trackTypes[track['type'].toString()] ?? TrackType.music
+      _trackTypes[track['type'].toString()] ?? TrackType.music, trackParameters
     );
   }
 
