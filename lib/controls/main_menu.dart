@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ya_player/app_state.dart';
 
-import '../helpers/nav_keys.dart';
-import '../models/music_api_types.dart';
-import '../services/service_locator.dart';
-import 'navigation_back.dart';
+import '/helpers/nav_keys.dart';
+import '/models/music_api_types.dart';
+import '/services/service_locator.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -25,7 +24,6 @@ class _MainMenu extends State<MainMenu> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 34, child: NavigationBack()),
         MenuItem(
           icon: const Icon(Icons.menu),
           text: '',
