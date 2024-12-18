@@ -65,6 +65,7 @@ class AppState {
     _listenToRepeatState();
     _listenToRate();
     _listenToVolume();
+    _listenToTrayEvents();
 
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
@@ -76,7 +77,7 @@ class AppState {
     mainPageState.value = UiState.main;
     shuffleNotifier.value = _prefs.shuffle;
     repeatNotifier.value = _prefs.repeat;
-    volumeNotifier.value = _prefs.volume;
+    volumeNotifier.value = _prefs.volume.clamp(0, 1);
   }
 
   Future<void> _requestAppData() async {
@@ -178,6 +179,30 @@ class AppState {
 
     _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
       volumeNotifier.value = msg.volume;
+    });
+  }
+
+  void _listenToTrayEvents() {
+    _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type){
+      switch(type) {
+        case PlayBackChangeType.playPause:
+          // @TODO: нужно реализовать метод playPause() в PlayersManager
+          if(playButtonNotifier.value == ButtonState.playing) {
+            _playersManager.pause();
+          }
+          else if(playButtonNotifier.value == ButtonState.paused) {
+            _playersManager.play();
+          }
+        case PlayBackChangeType.next:
+          _playersManager.next();
+        case PlayBackChangeType.prev:
+          _playersManager.previous();
+      }
+    });
+
+    _trayIntegration.scrollStream.listen((int delta){
+      double volume = (volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
+      volumeNotifier.value = volume;
     });
   }
 

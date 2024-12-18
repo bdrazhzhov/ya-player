@@ -19,7 +19,7 @@ void _initWindow() {
   windowManager.setPreventClose(true);
   
   WindowOptions windowOptions = WindowOptions(
-    size: Size(1080, 800),
+    // size: Size(1080, 800),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,

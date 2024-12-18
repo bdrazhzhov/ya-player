@@ -513,9 +513,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     // log('Requested property $name from $interface',
     //     name: 'mpris');
 
-    if (interface == 'org.mpris.MediaPlayer2') {
-      DBusValue value;
+    DBusValue? value;
 
+    if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         value = getCanQuit();
       } else if (name == 'Fullscreen') {
@@ -534,14 +534,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         value = getSupportedUriSchemes();
       } else if (name == 'SupportedMimeTypes') {
         value = getSupportedMimeTypes();
-      } else {
-        return DBusMethodErrorResponse.unknownProperty();
       }
-
-      return DBusMethodSuccessResponse([DBusVariant(value)]);
     } else if (interface == 'org.mpris.MediaPlayer2.Player') {
-      DBusValue value;
-
       if (name == 'PlaybackStatus') {
         value = _getPlaybackStatus();
       } else if (name == 'LoopStatus') {
@@ -572,14 +566,12 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         value = getCanSeek();
       } else if (name == 'CanControl') {
         value = getCanControl();
-      } else {
-        return DBusMethodErrorResponse.unknownProperty();
       }
-
-      return DBusMethodSuccessResponse([DBusVariant(value)]);
-    } else {
-      return DBusMethodErrorResponse.unknownProperty();
     }
+
+    if(value == null) return DBusMethodErrorResponse.unknownProperty();
+
+    return DBusGetPropertyResponse(value);
   }
 
   @override
