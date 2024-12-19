@@ -334,6 +334,17 @@ class AppState {
     currentStationNotifier.value = null;
   }
 
+  Future<void> playStation(Station station) async {
+    playbackSpeedNotifier.value = 1.0;
+    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
+    Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
+    final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
+    final player = StationPlayer(queue: stationsQueue);
+
+    _playersManager.setPlayer(player);
+    _playersManager.play();
+  }
+
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeTrack(Track track) async {
