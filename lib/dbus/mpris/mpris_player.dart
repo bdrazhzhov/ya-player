@@ -35,6 +35,14 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   final _repeatStreamController = StreamController<RepeatMode>();
   Stream<RepeatMode> get repeatStream => _repeatStreamController.stream;
 
+  bool _canGoNext = false;
+  bool _canGoPrevious = false;
+  bool _canPlay = false;
+  bool _canPause = false;
+  bool _canSeek = false;
+  bool canShuffle = false;
+  bool canRepeat = false;
+
   /// Creates a new object to expose on [path].
   OrgMprisMediaPlayer2(
       {DBusObjectPath path = const DBusObjectPath.unchecked('/'),
@@ -128,7 +136,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   RepeatMode get repeat => _repeat;
   set repeat(RepeatMode value) {
-    if (value == _repeat) return;
+    if (!canRepeat || value == _repeat) return;
     emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
       changedProperties: {"LoopStatus": DBusString(_loopStatuses[value] ?? 'None')},
@@ -157,7 +165,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get shuffle => _shuffle;
   set shuffle(bool value) {
-    if (value == _shuffle) return;
+    if (!canShuffle || value == _shuffle) return;
     emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
       changedProperties: {"Shuffle": DBusBoolean(value)},
@@ -259,33 +267,93 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     return const DBusDouble(1.0);
   }
 
+  bool get canGoNext => _canGoNext;
+  set canGoNext(bool value) {
+    if(value == _canGoNext) return;
+
+    _canGoNext = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"CanGoNext": DBusBoolean(value)},
+    );
+  }
+
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanGoNext
-  DBusBoolean getCanGoNext() {
-    return const DBusBoolean(true);
+  DBusBoolean _getCanGoNext() {
+    return DBusBoolean(_canGoNext);
+  }
+
+  bool get canGoPrevious => _canGoPrevious;
+  set canGoPrevious(bool value) {
+    if(value == _canGoPrevious) return;
+
+    _canGoPrevious = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"CanGoPrevious": DBusBoolean(value)},
+    );
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanGoPrevious
-  DBusBoolean getCanGoPrevious() {
+  DBusBoolean _getCanGoPrevious() {
+    return DBusBoolean(_canGoPrevious);
+  }
+
+  bool get canPlay => _canPlay;
+  set canPlay(bool value) {
+    if(value == _canPlay) return;
+
+    _canPlay = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"CanPlay": DBusBoolean(value)},
+    );
+  }
+  
+  /// Gets value of property org.mpris.MediaPlayer2.Player.CanPlay
+  DBusBoolean _getCanPlay() {
     return const DBusBoolean(true);
   }
 
-  /// Gets value of property org.mpris.MediaPlayer2.Player.CanPlay
-  DBusBoolean getCanPlay() {
-    return const DBusBoolean(true);
+  bool get canPause => _canPause;
+  set canPause(bool value) {
+    if(value == _canPause) return;
+
+    _canPause = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"CanPause": DBusBoolean(value)},
+    );
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanPause
-  DBusBoolean getCanPause() {
+  DBusBoolean _getCanPause() {
     return const DBusBoolean(true);
   }
 
+  bool get canSeek => _canSeek;
+  set canSeek(bool value) {
+    if(value == _canSeek) return;
+
+    _canSeek = value;
+
+    emitPropertiesChanged(
+      "org.mpris.MediaPlayer2.Player",
+      changedProperties: {"CanSeek": DBusBoolean(value)},
+    );
+  }
+
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanSeek
-  DBusBoolean getCanSeek() {
+  DBusBoolean _getCanSeek() {
     return const DBusBoolean(true);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanControl
-  DBusBoolean getCanControl() {
+  DBusBoolean _getCanControl() {
     return const DBusBoolean(true);
   }
 
@@ -555,17 +623,17 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       } else if (name == 'MaximumRate') {
         value = getMaximumRate();
       } else if (name == 'CanGoNext') {
-        value = getCanGoNext();
+        value = _getCanGoNext();
       } else if (name == 'CanGoPrevious') {
-        value = getCanGoPrevious();
+        value = _getCanGoPrevious();
       } else if (name == 'CanPlay') {
-        value = getCanPlay();
+        value = _getCanPlay();
       } else if (name == 'CanPause') {
-        value = getCanPause();
+        value = _getCanPause();
       } else if (name == 'CanSeek') {
-        value = getCanSeek();
+        value = _getCanSeek();
       } else if (name == 'CanControl') {
-        value = getCanControl();
+        value = _getCanControl();
       }
     }
 
@@ -679,12 +747,12 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         'Position': getPosition(),
         'MinimumRate': getMinimumRate(),
         'MaximumRate': getMaximumRate(),
-        'CanGoNext': getCanGoNext(),
-        'CanGoPrevious': getCanGoPrevious(),
-        'CanPlay': getCanPlay(),
-        'CanPause': getCanPause(),
-        'CanSeek': getCanSeek(),
-        'CanControl': getCanControl(),
+        'CanGoNext': _getCanGoNext(),
+        'CanGoPrevious': _getCanGoPrevious(),
+        'CanPlay': _getCanPlay(),
+        'CanPause': _getCanPause(),
+        'CanSeek': _getCanSeek(),
+        'CanControl': _getCanControl(),
       };
     }
     return DBusMethodSuccessResponse([DBusDict.stringVariant(properties)]);

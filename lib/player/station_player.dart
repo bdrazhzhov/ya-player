@@ -6,6 +6,12 @@ final class StationPlayer extends PlayerBase {
   StationPlayer({required this.queue}) {
     _appState.stationSettingsNotifier.addListener(_updateStationSettings);
     _appState.playbackSpeedNotifier.value = 1.0;
+    _appState.canGoNextNotifier.value = true;
+    _appState.canGoPreviousNotifier.value = false;
+    _appState.canShuffleNotifier.value = false;
+    _appState.canRepeatNotifier.value = false;
+    _appState.shuffleNotifier.value = false;
+    _appState.repeatNotifier.value = RepeatMode.off;
   }
 
   @override

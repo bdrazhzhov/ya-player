@@ -47,6 +47,14 @@ class AppState {
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
   final playbackSpeedNotifier = ValueNotifier<double>(1);
   final volumeNotifier = ValueNotifier<double>(1);
+  // abilities
+  final canGoNextNotifier = ValueNotifier<bool>(false);
+  final canGoPreviousNotifier = ValueNotifier<bool>(false);
+  final canPlayNotifier = ValueNotifier<bool>(false);
+  final canPauseNotifier = ValueNotifier<bool>(false);
+  final canSeekNotifier = ValueNotifier<bool>(false);
+  final canShuffleNotifier = ValueNotifier<bool>(false);
+  final canRepeatNotifier = ValueNotifier<bool>(false);
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -66,6 +74,7 @@ class AppState {
     _listenToRate();
     _listenToVolume();
     _listenToTrayEvents();
+    _listenToPlayerAbilities();
 
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
@@ -75,7 +84,9 @@ class AppState {
 
     await _requestAppData();
     mainPageState.value = UiState.main;
+    _mpris.canShuffle = true;
     shuffleNotifier.value = _prefs.shuffle;
+    _mpris.canRepeat = true;
     repeatNotifier.value = _prefs.repeat;
     volumeNotifier.value = _prefs.volume.clamp(0, 1);
   }
@@ -143,6 +154,7 @@ class AppState {
 
     shuffleNotifier.addListener((){
       _prefs.setShuffle(shuffleNotifier.value);
+      _mpris.shuffle = shuffleNotifier.value;
     });
   }
 
@@ -153,6 +165,7 @@ class AppState {
 
     repeatNotifier.addListener((){
       _prefs.setRepeat(repeatNotifier.value);
+      _mpris.repeat = repeatNotifier.value;
     });
   }
   
@@ -206,6 +219,36 @@ class AppState {
     });
   }
 
+  _listenToPlayerAbilities() {
+    canGoNextNotifier.addListener((){
+      _mpris.canGoNext = canGoNextNotifier.value;
+    });
+
+    canGoPreviousNotifier.addListener((){
+      _mpris.canGoPrevious = canGoPreviousNotifier.value;
+    });
+
+    canPlayNotifier.addListener((){
+      _mpris.canPlay = canPlayNotifier.value;
+    });
+
+    canPauseNotifier.addListener((){
+      _mpris.canPause = canPauseNotifier.value;
+    });
+
+    canSeekNotifier.addListener((){
+      _mpris.canSeek = canSeekNotifier.value;
+    });
+
+    canShuffleNotifier.addListener((){
+      _mpris.canShuffle = canShuffleNotifier.value;
+    });
+
+    canRepeatNotifier.addListener((){
+      _mpris.canRepeat = canRepeatNotifier.value;
+    });
+  }
+
   Future<void> _requestLikedAlbums() async {
     albumsNotifier.value = await _musicApi.likedAlbums();
   }
@@ -233,7 +276,6 @@ class AppState {
     final Queue queue = await _musicApi.queue(queueIds.first);
     if((queue.tracks.isEmpty || queue.currentIndex == null) && queue.context.type != 'radio') return;
 
-
     late final Track track;
     if(queue.context.type == 'radio') {
       final Station station = await _musicApi.station(StationId.fromString(queue.context.id!));
@@ -256,6 +298,8 @@ class AppState {
     }
 
     trackNotifier.value = track;
+    canPlayNotifier.value = true;
+    canPauseNotifier.value = true;
 
     List<String> artist = track.artists.map((artist) => artist.name).toList();
     String? artUrl;

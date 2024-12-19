@@ -1,34 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'playback/next_button.dart';
+import 'playback/previous_button.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
-import '/player/players_manager.dart';
 import 'play_button.dart';
-import 'repeat_button.dart';
-import 'shuffle_button.dart';
+import 'playback/repeat_button.dart';
+import 'playback/shuffle_button.dart';
 import 'station_settings_button.dart';
 
 class PlayControls extends StatelessWidget {
-  PlayControls({super.key,});
-
-  final _playersManager = getIt<PlayersManager>();
+  const PlayControls({super.key,});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () { _playersManager.previous(); },
-          icon: const FaIcon(FontAwesomeIcons.backwardStep),
-          iconSize: 20,
-        ),
+        PreviousButton(),
         PlayButton(),
-        IconButton(
-          onPressed: () { _playersManager.next(); },
-          icon: const FaIcon(FontAwesomeIcons.forwardStep),
-          iconSize: 20,
-        ),
+        NextButton(),
         _RepeatShuffle()
       ],
     );

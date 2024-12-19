@@ -7,6 +7,10 @@ final class TracksPlayer extends PlayerBase {
     _appState.playbackSpeedNotifier.addListener((){
       _audioPlayer.setRate(_appState.playbackSpeedNotifier.value);
     });
+    _appState.canGoNextNotifier.value = true;
+    _appState.canGoPreviousNotifier.value = false;
+    _appState.canShuffleNotifier.value = true;
+    _appState.canRepeatNotifier.value = true;
   }
 
   @override
@@ -29,6 +33,9 @@ final class TracksPlayer extends PlayerBase {
       _appState.queueTracks.value = queue.tracks.toList();
       _playTrack(track, queue.from);
     }
+
+    _appState.canGoNextNotifier.value = queue.canGoNext;
+    _appState.canGoPreviousNotifier.value = queue.canGoPrevious;
   }
 
   Future<void> _stop() async {

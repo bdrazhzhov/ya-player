@@ -10,6 +10,9 @@ base class TracksQueue extends PlaybackQueue
   bool isShuffleEnabled = false;
   bool isRepeatEnabled = false;
 
+  bool get canGoNext => _tracks.isNotEmpty && _currentIndex < _tracks.length;
+  bool get canGoPrevious => _tracks.isNotEmpty && _currentIndex > 0;
+
   TracksQueue({required Queue queue, required Iterable<Track> tracks})
       : _tracks = tracks.toList() {
     _id = queue.id!;
@@ -22,7 +25,7 @@ base class TracksQueue extends PlaybackQueue
 
   @override
   Future<Track?> next() async {
-    if(_tracks.isEmpty || _currentIndex >= _tracks.length - 1) return null;
+    if(!canGoNext) return null;
 
     _currentIndex += 1;
 
@@ -30,7 +33,7 @@ base class TracksQueue extends PlaybackQueue
   }
 
   Future<Track?> previous() async {
-    if(_tracks.isEmpty || _currentIndex == 0) return null;
+    if(!canGoPrevious) return null;
 
     _currentIndex -= 1;
 

@@ -65,8 +65,6 @@ final class StationQueue extends PlaybackQueue
   Future<void> loadTracks() async {
     final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, _lastTracksIds);
     _tracks.addAll(tracks);
-
-    debugPrint('Tracks in queue:\n${_tracks.map((e) => '${e.id} - ${e.title}').join('\n')}');
   }
   
   Future<void> reloadLastTracks() async {
