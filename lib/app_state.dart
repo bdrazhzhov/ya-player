@@ -319,6 +319,7 @@ class AppState {
 
 
   Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
+    playButtonNotifier.value = ButtonState.loading;
     playbackSpeedNotifier.value = 1.0;
     index ??= 0;
 
@@ -335,6 +336,7 @@ class AppState {
   }
 
   Future<void> playStation(Station station) async {
+    playButtonNotifier.value = ButtonState.loading;
     playbackSpeedNotifier.value = 1.0;
     final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
     Queue queue = await QueueFactory.create(tracksSource: (station, tracks));

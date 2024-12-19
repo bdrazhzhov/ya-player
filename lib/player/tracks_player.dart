@@ -15,6 +15,8 @@ final class TracksPlayer extends PlayerBase {
 
   @override
   Future<void> playByIndex(int? index) async {
+    _appState.playButtonNotifier.value = ButtonState.loading;
+
     Track? track;
     if(index == null) {
       track = queue.currentTrack;
@@ -23,7 +25,10 @@ final class TracksPlayer extends PlayerBase {
       track = await queue.moveTo(index);
     }
 
-    if(track == null) return;
+    if(track == null) {
+      _appState.playButtonNotifier.value = ButtonState.paused;
+      return;
+    }
 
     if(track == _currentPlayInfo?.track) {
       _audioPlayer.play();

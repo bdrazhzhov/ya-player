@@ -33,6 +33,8 @@ final class StationPlayer extends PlayerBase {
 
   @override
   void next() async {
+    _appState.playButtonNotifier.value = ButtonState.loading;
+
     Track? track;
 
     _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;

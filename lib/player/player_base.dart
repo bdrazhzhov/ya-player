@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:audio_player_gst/events.dart';
 import 'package:ya_player/state_enums.dart';
 
+import '/notifiers/play_button_notifier.dart';
 import '/dbus/mpris/metadata.dart';
 import '/dbus/mpris/mpris_player.dart';
 import '/audio_player.dart';
