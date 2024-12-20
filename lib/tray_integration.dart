@@ -1,23 +1,30 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:window_manager/window_manager.dart';
 
 import 'dbus/status_notifier_item/dbus_menu_object.dart';
 import 'dbus/status_notifier_item/status_notifier_item_client.dart';
 import 'services/service_locator.dart';
+import 'window_manager.dart';
 
 enum PlayBackChangeType {playPause, next, prev}
 
-final class TrayIntegration with WindowListener {
+final class TrayIntegration //with WindowListener
+{
+  final _windowManager = getIt<WindowManager>();
+
   late final StatusNotifierItemClient _trayIcon = StatusNotifierItemClient(
     id: 'YaPlayer',
     iconName: 'YaPlayer',
     title: 'YaPlayer',
     bus: getIt<DBusClient>(),
     menu: DBusMenuItem(children: [
-      DBusMenuItem(label: 'Show', onClicked: () => windowManager.show()),
+      DBusMenuItem(
+          label: 'Show',
+          onClicked: () => _windowManager.showWindow()
+      ),
       DBusMenuItem.separator(),
       DBusMenuItem(label: 'Play/Pause', onClicked: () async => _playBackChangeController.add(PlayBackChangeType.playPause)),
       DBusMenuItem(label: 'Next', iconName: 'media-skip-forward', onClicked: () async => _playBackChangeController.add(PlayBackChangeType.next)),
@@ -25,7 +32,7 @@ final class TrayIntegration with WindowListener {
       DBusMenuItem.separator(),
       DBusMenuItem(
         label: 'Quit',
-        onClicked: () async => windowManager.destroy()
+        onClicked: () => exit(0)
       ),
     ]),
     onActivate: (x, y) async => _playBackChangeController.add(PlayBackChangeType.playPause),
@@ -41,11 +48,5 @@ final class TrayIntegration with WindowListener {
 
   void init() async {
     await _trayIcon.connect();
-    windowManager.addListener(this);
-  }
-
-  @override
-  void onWindowClose() async {
-    windowManager.hide();
   }
 }

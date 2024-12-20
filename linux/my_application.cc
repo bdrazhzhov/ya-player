@@ -8,6 +8,9 @@
 
 #include "flutter/generated_plugin_registrant.h"
 #include <fstream>
+#include "window-manager.h"
+
+static WindowManager* windowManager = nullptr;
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -17,14 +20,33 @@ struct _MyApplication {
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
 static void on_button_clicked(GtkButton *button, gpointer user_data) {
-  g_print("Button clicked!\n");
+  if(windowManager == nullptr) return;
+  windowManager->pushBackButton();
+}
+
+gboolean on_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
+  gtk_widget_hide(widget);
+  return TRUE;
+}
+
+static void get_theme_colors(GtkWidget* widget) {
+  GtkStyleContext *context = gtk_widget_get_style_context(widget);
+  GdkRGBA* c = nullptr;
+  gtk_style_context_get(context, gtk_style_context_get_state(context),
+                        GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &c,
+                        nullptr);
+
+  if (c != nullptr)
+  {
+    g_print("Цвет фона: RGBA(%f; %f; %f; %f)\n", c->red, c->green, c->blue, c->alpha);
+    gdk_rgba_free(c);
+  }
 }
 
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
-  GtkWindow* window =
-      GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
+  GtkWindow* window = GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
   // Use a header bar when running in GNOME as this is the common style used
   // by applications and is the setup most users will be using (e.g. Ubuntu
@@ -43,38 +65,52 @@ static void my_application_activate(GApplication* application) {
     }
   }
 #endif
+  GtkHeaderBar* header_bar = nullptr;
+  GtkWidget* backButton = nullptr;
+  GtkWidget* icon = nullptr;
+
   if (use_header_bar) {
-    GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
+    header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
 
-    GtkWidget* button = gtk_button_new_with_label("Back");
-    g_signal_connect(button, "clicked", G_CALLBACK(on_button_clicked), NULL);
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), button);
+    icon = gtk_image_new_from_icon_name("YaPlayer", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_set_margin_start(icon, 6);
+    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), icon);
+    gtk_widget_show(GTK_WIDGET(icon));
 
-    gtk_widget_show(GTK_WIDGET(header_bar));
+    backButton = gtk_button_new_with_label(" 🡨 "); // back button
+    gtk_container_set_border_width(GTK_CONTAINER(backButton), 0);
+    g_signal_connect(backButton, "clicked", G_CALLBACK(on_button_clicked), NULL);
+    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), backButton);
+    // gtk_widget_show(GTK_WIDGET(button));
+
     gtk_header_bar_set_title(header_bar, "YaPlayer");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
-    gtk_widget_set_visible(GTK_WIDGET(header_bar), FALSE);
+    gtk_widget_show(GTK_WIDGET(header_bar));
+
+    get_theme_colors(GTK_WIDGET(header_bar));
+//    gtk_widget_set_visible(GTK_WIDGET(header_bar), FALSE);
   } else {
     gtk_window_set_title(window, "YaPlayer");
   }
 
   gtk_window_set_default_size(window, 1080, 720);
   gtk_widget_show(GTK_WIDGET(window));
-//  gtk_widget_show_all(GTK_WIDGET(window));
+  // gtk_widget_show_all(GTK_WIDGET(window));
+  g_signal_connect(window, "delete-event", G_CALLBACK(on_delete_event), NULL);
 
   std::ifstream iconFile;
   iconFile.open("assets/app_icon.png");
   if(iconFile)
   {
-    gtk_window_set_icon_from_file(GTK_WINDOW(window),"assets/app_icon.png",NULL);
+    gtk_window_set_icon_from_file(GTK_WINDOW(window),"assets/app_icon.png", nullptr);
   }
   else
   {
     iconFile.open("data/flutter_assets/assets/app_icon.png");
     if(iconFile)
     {
-      gtk_window_set_icon_from_file(GTK_WINDOW(window),"data/flutter_assets/assets/app_icon.png",NULL);
+      gtk_window_set_icon_from_file(GTK_WINDOW(window),"data/flutter_assets/assets/app_icon.png", nullptr);
     }
   }
 
@@ -84,6 +120,9 @@ static void my_application_activate(GApplication* application) {
   FlView* view = fl_view_new(project);
   gtk_widget_show(GTK_WIDGET(view));
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+
+  windowManager = new WindowManager(FL_PLUGIN_REGISTRY(view),
+    window, header_bar, backButton, icon);
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 

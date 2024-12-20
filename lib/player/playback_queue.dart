@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import '/player/queue_factory.dart';
 import '/models/music_api/queue.dart';
 import '/music_api.dart';

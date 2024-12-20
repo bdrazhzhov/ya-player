@@ -4,7 +4,6 @@ import '/state_enums.dart';
 import '/app_state.dart';
 import '/audio_player.dart';
 import '/controls/controls_bar.dart';
-import '/controls/title_bar.dart';
 import '/services/service_locator.dart';
 import '/controls/main_menu.dart';
 import 'login_page.dart';
@@ -21,10 +20,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final appState = getIt<AppState>();
   final audioPlayer = getIt<AudioPlayer>();
-
-  _MainPageState() {
-    appState.init();
-  }
 
   @override
   void dispose() {
@@ -52,13 +47,10 @@ class _MainPageState extends State<MainPage> {
                 page = _buildAppUi();
               }
 
-              return Padding(
-                padding: const EdgeInsets.only(top: 32),
-                child: page,
-              );
+              return page;
             },
           ),
-          const TitleBar(),
+          // const TitleBar(),
         ],
       )
     );

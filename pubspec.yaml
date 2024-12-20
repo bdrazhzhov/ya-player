@@ -34,7 +34,6 @@ dependencies:
   html_character_entities: ^1.0.0+1
   meta: ^1.15.0
   dbus: ^0.7.10
-  window_manager: ^0.4.3
   path: ^1.9.0
 
 dev_dependencies:

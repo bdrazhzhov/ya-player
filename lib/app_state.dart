@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:ya_player/tray_integration.dart';
 
 import 'dbus/mpris/metadata.dart';
 import 'dbus/mpris/mpris_player.dart';
+import 'helpers/app_route_observer.dart';
 import 'helpers/nav_keys.dart';
 import 'player/playback_queue.dart';
 import 'player/player_base.dart';
@@ -21,9 +23,11 @@ import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
 import 'audio_player.dart';
 import 'state_enums.dart';
+import 'window_manager.dart';
 
 class AppState {
   // Listeners: Updates going to the UI
+  late final ValueNotifier<ThemeData> themeNotifier;
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
   final progressNotifier = ProgressNotifier();
   final playButtonNotifier = PlayButtonNotifier();
@@ -62,8 +66,14 @@ class AppState {
   final _playersManager = getIt<PlayersManager>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
   final _trayIntegration = TrayIntegration();
+  final _windowManager = getIt<WindowManager>();
 
   final List<int> _likedTrackIds = [];
+
+  Future<void> initTheme() async {
+    final ThemeData theme = await getTheme();
+    themeNotifier = ValueNotifier<ThemeData>(theme);
+  }
 
   // Events: Calls coming from the UI
   void init() async {
@@ -75,6 +85,8 @@ class AppState {
     _listenToVolume();
     _listenToTrayEvents();
     _listenToPlayerAbilities();
+    _listenToTrackChange();
+    _listenToRouteChanges();
 
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
@@ -89,6 +101,33 @@ class AppState {
     _mpris.canRepeat = true;
     repeatNotifier.value = _prefs.repeat;
     volumeNotifier.value = _prefs.volume.clamp(0, 1);
+
+    _windowManager.backButtonStream.listen((_) => _onBackButtonClicked());
+  }
+
+  static const yaColor = Color.fromARGB(255, 254, 218, 76);
+  Future<ThemeData> getTheme() async {
+    final Map<String,Color> themeColors = await _windowManager.getThemeColors();
+
+    final double luminance = themeColors['surface']!.computeLuminance();
+
+    return ThemeData(
+      primaryColor: yaColor,
+      scaffoldBackgroundColor: themeColors['surface']!,
+      colorScheme: ColorScheme.fromSeed(
+        surface: themeColors['surface']!,
+        seedColor: themeColors['textColor']!,
+        brightness: luminance < 0.5 ? Brightness.dark : Brightness.light,
+        primary: yaColor,
+        onSurface: themeColors['textColor']!,
+      ),
+      sliderTheme: SliderThemeData(
+        inactiveTrackColor: themeColors['textColor']!.withAlpha(127),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(),
+      )
+    );
   }
 
   Future<void> _requestAppData() async {
@@ -219,7 +258,7 @@ class AppState {
     });
   }
 
-  _listenToPlayerAbilities() {
+  void _listenToPlayerAbilities() {
     canGoNextNotifier.addListener((){
       _mpris.canGoNext = canGoNextNotifier.value;
     });
@@ -247,6 +286,27 @@ class AppState {
     canRepeatNotifier.addListener((){
       _mpris.canRepeat = canRepeatNotifier.value;
     });
+  }
+
+  void _listenToTrackChange() {
+    trackNotifier.addListener((){
+      Track track = trackNotifier.value!;
+      _windowManager.setWindowTitle(track.title, track.artist);
+    });
+  }
+
+  void _listenToRouteChanges() {
+    getIt<AppRouteObserver>().popNotifier.addListener((){
+      final bool isBackButtonVisible = NavKeys.mainNav.currentState?.canPop() == true;
+      _windowManager.showBackButton(isBackButtonVisible);
+    });
+  }
+
+  void _onBackButtonClicked() {
+    NavigatorState? navState = NavKeys.mainNav.currentState;
+    if(navState == null) return;
+
+    navState.pop();
   }
 
   Future<void> _requestLikedAlbums() async {

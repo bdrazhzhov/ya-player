@@ -4,6 +4,7 @@ import 'package:dbus/dbus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/window_manager.dart';
 import '/dbus/sleep_inhibitor.dart';
 import '/dbus/mpris/mpris_player.dart';
 import '/audio_player.dart';
@@ -17,12 +18,13 @@ import 'yandex_api_client.dart';
 GetIt getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
+  getIt.registerSingleton<WindowManager>(WindowManager());
   getIt.registerSingleton<Preferences>(await _initPreferences());
   getIt.registerSingleton<YandexApiClient>(_initHttpClient());
   getIt.registerSingleton<MusicApi>(_initMusicApi());
   getIt.registerSingleton<DBusClient>(DBusClient.session());
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
-   getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
+  getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<AppState>(AppState());
