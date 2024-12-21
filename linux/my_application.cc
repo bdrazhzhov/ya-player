@@ -1,4 +1,6 @@
-//#include <bitsdojo_window_linux/bitsdojo_window_plugin.h>
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
 #include "my_application.h"
 
 #include <flutter_linux/flutter_linux.h>
@@ -12,6 +14,17 @@
 
 static WindowManager* windowManager = nullptr;
 
+static gboolean onWindowDeleteCallback(GtkWidget* widget, GdkEvent* /*event*/, gpointer /*data*/)
+{
+  if (windowManager->getHideOnClose())
+  {
+    gtk_widget_hide(widget);
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
 struct _MyApplication {
   GtkApplication parent_instance;
   char** dart_entrypoint_arguments;
@@ -24,29 +37,11 @@ static void on_button_clicked(GtkButton *button, gpointer user_data) {
   windowManager->pushBackButton();
 }
 
-gboolean on_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
-  gtk_widget_hide(widget);
-  return TRUE;
-}
-
-static void get_theme_colors(GtkWidget* widget) {
-  GtkStyleContext *context = gtk_widget_get_style_context(widget);
-  GdkRGBA* c = nullptr;
-  gtk_style_context_get(context, gtk_style_context_get_state(context),
-                        GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &c,
-                        nullptr);
-
-  if (c != nullptr)
-  {
-    g_print("Цвет фона: RGBA(%f; %f; %f; %f)\n", c->red, c->green, c->blue, c->alpha);
-    gdk_rgba_free(c);
-  }
-}
-
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
   GtkWindow* window = GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
+  g_signal_connect(window, "delete-event", G_CALLBACK(onWindowDeleteCallback), nullptr);
 
   // Use a header bar when running in GNOME as this is the common style used
   // by applications and is the setup most users will be using (e.g. Ubuntu
@@ -88,7 +83,6 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
     gtk_widget_show(GTK_WIDGET(header_bar));
 
-    get_theme_colors(GTK_WIDGET(header_bar));
 //    gtk_widget_set_visible(GTK_WIDGET(header_bar), FALSE);
   } else {
     gtk_window_set_title(window, "YaPlayer");
@@ -97,7 +91,6 @@ static void my_application_activate(GApplication* application) {
   gtk_window_set_default_size(window, 1080, 720);
   gtk_widget_show(GTK_WIDGET(window));
   // gtk_widget_show_all(GTK_WIDGET(window));
-  g_signal_connect(window, "delete-event", G_CALLBACK(on_delete_event), NULL);
 
   std::ifstream iconFile;
   iconFile.open("assets/app_icon.png");

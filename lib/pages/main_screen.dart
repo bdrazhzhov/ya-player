@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
+import '/app_state.dart';
 import '/controls/yandex_image.dart';
 import '/helpers/app_route_observer.dart';
-
 import 'home_page.dart';
 import 'podcasts_books_page.dart';
-import '/app_state.dart';
 import '/models/music_api/search.dart';
 import '/services/service_locator.dart';
 import 'albums_page.dart';
@@ -16,6 +16,7 @@ import 'queue_page.dart';
 import 'search_results_page.dart';
 import 'stations_page.dart';
 import 'tracks_page.dart';
+import 'settings_page.dart';
 import '/helpers/nav_keys.dart';
 
 class MainScreen extends StatefulWidget {
@@ -59,6 +60,8 @@ class _MainScreen extends State<MainScreen> {
                   page = HomePage();
                 case '/queue':
                   page = QueuePage();
+                case '/settings':
+                  page = const SettingsPage();
                 case '/stations':
                 default:
                   page = StationsPage();
@@ -87,7 +90,7 @@ class _MainScreen extends State<MainScreen> {
             sigmaX: 16.0,
             sigmaY: 16.0,
           ),
-          child: Container(color: Colors.black.withOpacity(.3)),
+          child: Container(color: Colors.black.withValues(alpha: 76)),
         ),
       ),
       if(isSearching) Container(

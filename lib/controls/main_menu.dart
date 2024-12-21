@@ -83,7 +83,12 @@ class _MainMenu extends State<MainMenu> {
           onTap: () => _goToRoute('/playlists'),
         ),
         const Spacer(),
-        MenuItem(icon: const Icon(Icons.settings),text: 'Settings', collapsed: _collapsed, disabled: true),
+        MenuItem(
+          icon: const Icon(Icons.settings),
+          text: 'Settings',
+          collapsed: _collapsed,
+          onTap: () => _goToRoute('/settings'),
+        ),
         ValueListenableBuilder(
           valueListenable: _appState.accountNotifier,
           builder: (_, Account? account, __){

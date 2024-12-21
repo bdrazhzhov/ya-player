@@ -59,6 +59,8 @@ class AppState {
   final canSeekNotifier = ValueNotifier<bool>(false);
   final canShuffleNotifier = ValueNotifier<bool>(false);
   final canRepeatNotifier = ValueNotifier<bool>(false);
+  // settings
+  final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -87,6 +89,7 @@ class AppState {
     _listenToPlayerAbilities();
     _listenToTrackChange();
     _listenToRouteChanges();
+    _listenToSettingsChanges();
 
     if(_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
@@ -290,6 +293,8 @@ class AppState {
 
   void _listenToTrackChange() {
     trackNotifier.addListener((){
+      if(trackNotifier.value == null) return;
+
       Track track = trackNotifier.value!;
       _windowManager.setWindowTitle(track.title, track.artist);
     });
@@ -299,6 +304,12 @@ class AppState {
     getIt<AppRouteObserver>().popNotifier.addListener((){
       final bool isBackButtonVisible = NavKeys.mainNav.currentState?.canPop() == true;
       _windowManager.showBackButton(isBackButtonVisible);
+    });
+  }
+
+  void _listenToSettingsChanges() {
+    closeToTrayEnabledNotifier.addListener((){
+      _windowManager.setHideOnClose(closeToTrayEnabledNotifier.value);
     });
   }
 

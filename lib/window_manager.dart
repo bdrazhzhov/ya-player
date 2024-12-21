@@ -50,4 +50,8 @@ final class WindowManager {
   Future<void> showWindow() async {
     await _platform.invokeMethod('showWindow');
   }
+
+  Future<void> setHideOnClose(bool hideOnClose) async {
+    await _platform.invokeMethod('setHideOnClose', hideOnClose);
+  }
 }

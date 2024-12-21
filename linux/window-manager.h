@@ -1,5 +1,8 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #pragma once
 #include <cmath>
+#include <iostream>
 #include <flutter_linux/flutter_linux.h>
 
 class WindowManager
@@ -12,6 +15,8 @@ class WindowManager
   GtkWidget* _icon = nullptr;
   GtkStyleContext* _styleContext = nullptr;
 
+  bool _hideOnClose = false;
+
   static void _handleMethodCall(FlMethodChannel* /*channel*/, FlMethodCall* method_call, gpointer user_data) {
     const auto windowManager = static_cast<WindowManager*>(user_data);
     g_autoptr(FlMethodResponse) response;
@@ -19,8 +24,8 @@ class WindowManager
     const gchar* method = fl_method_call_get_name(method_call);
     FlValue* args = fl_method_call_get_args(method_call);
 
-    printf("[YaPlayerWindow]: Method name: %s, arguments type: %d\n",
-      method, fl_value_get_type(args));
+    std::cout << "[YaPlayerWindow]: Method name: " << method <<
+      ", arguments type: " << fl_value_get_type(args) << std::endl;
 
     try {
       if(strcmp(method, "setWindowTitle") == 0)
@@ -39,19 +44,22 @@ class WindowManager
       }
       else if(strcmp(method, "getBgColor") == 0)
       {
-        FlValue* color = windowManager->_getBgColor();
+        g_autoptr(FlValue) color = windowManager->_getBgColor();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(color));
-        fl_value_unref(color);
       }
       else if(strcmp(method, "getThemeColors") == 0)
       {
-        FlValue* colors = windowManager->_getThemeColors();
+        g_autoptr(FlValue) colors = windowManager->_getThemeColors();
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(colors));
-        fl_value_unref(colors);
       }
       else if(strcmp(method, "showWindow") == 0)
       {
         windowManager->_showWindow();
+        response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+      }
+      else if(strcmp(method, "setHideOnClose") == 0)
+      {
+        windowManager->_hideOnClose = fl_value_get_bool(args);
         response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
       }
       else
@@ -116,10 +124,6 @@ class WindowManager
     fl_value_set_string_take(result, "textColor", fl_value_new_int(rgbToInt(color)));
     gdk_rgba_free(color);
 
-    // fl_value_set_string_take(result, "green", fl_value_new_float(color->green));
-    // fl_value_set_string_take(result, "blue", fl_value_new_float(color->blue));
-    // fl_value_set_string_take(result, "alpha", fl_value_new_float(color->alpha));
-
     return result;
   }
 
@@ -135,6 +139,20 @@ class WindowManager
   void _showWindow() const
   {
     gtk_widget_show(GTK_WIDGET(_window));
+  }
+
+  static gboolean _onWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data)
+  {
+    std::cout << "on delete-event handler" << std::endl;
+    const auto windowManager = static_cast<WindowManager*>(data);
+
+    if (windowManager->_hideOnClose)
+    {
+      gtk_widget_hide(widget);
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
 public:
@@ -161,4 +179,6 @@ public:
     FlValue* args = nullptr;
     fl_method_channel_invoke_method(_channel, "onBackButtonClicked", args, nullptr, nullptr, nullptr);
   }
+
+  [[nodiscard]] bool getHideOnClose() const { return _hideOnClose; }
 };
