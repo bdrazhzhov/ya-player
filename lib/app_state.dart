@@ -104,6 +104,7 @@ class AppState {
     _mpris.canRepeat = true;
     repeatNotifier.value = _prefs.repeat;
     volumeNotifier.value = _prefs.volume.clamp(0, 1);
+    closeToTrayEnabledNotifier.value = _prefs.hideOnClose;
 
     _windowManager.backButtonStream.listen((_) => _onBackButtonClicked());
   }
@@ -309,7 +310,10 @@ class AppState {
 
   void _listenToSettingsChanges() {
     closeToTrayEnabledNotifier.addListener((){
-      _windowManager.setHideOnClose(closeToTrayEnabledNotifier.value);
+      final bool value = closeToTrayEnabledNotifier.value;
+
+      _windowManager.setHideOnClose(value);
+      _prefs.setHideOnClose(value);
     });
   }
 

@@ -78,6 +78,11 @@ class Preferences {
     await _prefs.setString('repeat', value.toString());
   }
 
+  bool get hideOnClose => _prefs.getBool('hideOnClose') ?? false;
+  Future<void> setHideOnClose(bool value) async {
+    await _prefs.setBool('hideOnClose', value);
+  }
+
   Future<void> clear() async {
     await _prefs.clear();
   }
