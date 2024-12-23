@@ -42,7 +42,7 @@ class _StatusNotifierItemObject extends DBusObject {
   String overlayIconName;
   String attentionIconName;
   String attentionMovieName;
-  final DBusObjectPath menu;
+  DBusObjectPath? menu;
   Future<void> Function(int x, int y)? onContextMenu;
   Future<void> Function(int x, int y)? onActivate;
   Future<void> Function(int x, int y)? onSecondaryActivate;
@@ -58,12 +58,14 @@ class _StatusNotifierItemObject extends DBusObject {
       this.overlayIconName = '',
       this.attentionIconName = '',
       this.attentionMovieName = '',
-      this.menu = DBusObjectPath.root,
+      this.menu,
       this.onContextMenu,
       this.onActivate,
       this.onSecondaryActivate,
       this.onScroll})
-      : super(DBusObjectPath('/StatusNotifierItem'));
+      : super(DBusObjectPath('/StatusNotifierItem')) {
+    menu ??= DBusObjectPath('/NO_DBUSMENU');
+  }
 
   /// Emits signal org.kde.StatusNotifierItem.NewTitle
   Future<void> emitNewTitle() async {
@@ -276,7 +278,7 @@ class _StatusNotifierItemObject extends DBusObject {
       case 'ItemIsMenu':
         return DBusGetPropertyResponse(DBusBoolean(false));
       case 'Menu':
-        return DBusGetPropertyResponse(menu);
+        return DBusGetPropertyResponse(menu!);
       default:
         return DBusMethodErrorResponse.unknownProperty();
     }
@@ -304,7 +306,7 @@ class _StatusNotifierItemObject extends DBusObject {
         DBusString('')
       ]),
       'ItemIsMenu': DBusBoolean(false),
-      'Menu': menu
+      'Menu': menu!
     });
   }
 }
@@ -315,7 +317,7 @@ class StatusNotifierItemClient {
   final DBusClient _bus;
   final bool _closeBus;
 
-  late final DBusMenuObject _menuObject;
+  DBusMenuObject? _menuObject;
   late final _StatusNotifierItemObject _notifierItemObject;
 
   // FIXME: status enum
@@ -331,7 +333,7 @@ class StatusNotifierItemClient {
       String overlayIconName = '',
       String attentionIconName = '',
       String attentionMovieName = '',
-      required DBusMenuItem menu,
+      DBusMenuItem? menu,
       Future<void> Function(int x, int y)? onContextMenu,
       Future<void> Function(int x, int y)? onActivate,
       Future<void> Function(int x, int y)? onSecondaryActivate,
@@ -339,7 +341,7 @@ class StatusNotifierItemClient {
       DBusClient? bus})
       : _bus = bus ?? DBusClient.session(),
         _closeBus = bus == null {
-    _menuObject = DBusMenuObject(DBusObjectPath('/Menu'), menu);
+    if(menu != null) _menuObject = DBusMenuObject(DBusObjectPath('/Menu'), menu);
     _notifierItemObject = _StatusNotifierItemObject(
         id: id,
         category: category,
@@ -350,7 +352,7 @@ class StatusNotifierItemClient {
         overlayIconName: overlayIconName,
         attentionIconName: attentionIconName,
         attentionMovieName: attentionMovieName,
-        menu: _menuObject.path,
+        menu: _menuObject?.path,
         onContextMenu: onContextMenu,
         onActivate: onActivate,
         onSecondaryActivate: onSecondaryActivate,
@@ -364,7 +366,7 @@ class StatusNotifierItemClient {
     assert(requestResult == DBusRequestNameReply.primaryOwner);
 
     // Register the menu.
-    await _bus.registerObject(_menuObject);
+    if(_menuObject != null) await _bus.registerObject(_menuObject!);
 
     // Put the item on the bus.
     await _bus.registerObject(_notifierItemObject);
@@ -381,7 +383,7 @@ class StatusNotifierItemClient {
 
   /// Updates the menu shown.
   Future<void> updateMenu(DBusMenuItem menu) async {
-    await _menuObject.update(menu);
+    await _menuObject?.update(menu);
   }
 
   /// Terminates all active connections. If a client remains unclosed, the Dart process may not terminate.
