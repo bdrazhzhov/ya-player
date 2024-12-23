@@ -30,7 +30,7 @@ final class TracksPlayer extends PlayerBase {
       return;
     }
 
-    if(track == _currentPlayInfo?.track) {
+    if(track == _currentPlayInfo?.track && _appState.repeatNotifier.value != RepeatMode.one) {
       _audioPlayer.play();
     }
     else {
