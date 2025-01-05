@@ -60,7 +60,7 @@ abstract base class PlayerBase {
     String? url = await _musicApi.trackDownloadUrl(track.id);
 
     if(url == null) return;
-    _audioPlayer.setUrl(url);
+    await _audioPlayer.setUrl(url);
 
     List<String> artist = track.artists.map((artist) => artist.name).toList();
 
