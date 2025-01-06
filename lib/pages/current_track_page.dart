@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '/app_state.dart';
 import '/controls/controls_bar.dart';
@@ -25,9 +24,17 @@ class CurrentTrackPage extends StatelessWidget {
 
           return Column(
             children: [
-              const Align(
-                alignment: Alignment.topLeft,
-                child: BackButton(),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12, right: 12),
+                  child: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: (){
+                      Navigator.maybePop(context);
+                    }
+                  ),
+                )
               ),
               Expanded(
                 child: Column(
@@ -43,7 +50,6 @@ class CurrentTrackPage extends StatelessWidget {
                         child: YandexImage(
                           uriPlaceholder: track.coverUri!,
                           size: 460,
-                          placeholder: SvgPicture.asset('assets/svg/track_placeholder.svg'),
                           borderRadius: 8,
                         ),
                       ),

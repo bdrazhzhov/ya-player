@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
 
-import '../models/music_api/album.dart';
-import '../pages/album_page.dart';
+import '/models/music_api/album.dart';
+import '/pages/album_page.dart';
 import 'yandex_image.dart';
 
 class AlbumCard extends StatelessWidget {
@@ -18,10 +18,10 @@ class AlbumCard extends StatelessWidget {
     return InkResponse(
       onTap: () {
         Navigator.of(context).push(
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => AlbumPage(album.id),
-              reverseTransitionDuration: Duration.zero,
-            )
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => AlbumPage(album.id),
+            reverseTransitionDuration: Duration.zero,
+          )
         );
       },
       child: Container(
@@ -39,13 +39,19 @@ class AlbumCard extends StatelessWidget {
               album.artists.isNotEmpty ? HtmlCharacterEntities.decode(album.artists.first.name) : '',
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                  color: theme.colorScheme.outline,
-                  fontSize: theme.textTheme.labelMedium?.fontSize
+                color: theme.colorScheme.outline,
+                fontSize: theme.textTheme.labelMedium?.fontSize
               ),
             ),
             Text(
-              <String>[album.year.toString(), if(album.version != null )...[' · ', album.version!]].join(),
-              style: TextStyle(color: theme.colorScheme.outline, fontSize: theme.textTheme.labelMedium?.fontSize),
+              [
+                album.year.toString(),
+                if(album.version != null )...[' · ', album.version!]
+              ].join(),
+              style: TextStyle(
+                color: theme.colorScheme.outline,
+                fontSize: theme.textTheme.labelMedium?.fontSize
+              ),
             )
           ],
         ),
