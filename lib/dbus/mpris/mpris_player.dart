@@ -14,9 +14,6 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   final _positionStreamController = StreamController<Duration>();
   Stream<Duration> get positionStream => _positionStreamController.stream;
 
-  final _openUriStreamController = StreamController<Uri>();
-  Stream<Uri> get openUriStream => _openUriStreamController.stream;
-
   double _volume = 1.0;
   final _volumeStreamController = StreamController<double>();
   Stream<double> get volumeStream => _volumeStreamController.stream;
@@ -406,12 +403,6 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     return DBusMethodSuccessResponse([]);
   }
 
-  /// Implementation of org.mpris.MediaPlayer2.Player.OpenUri()
-  Future<DBusMethodResponse> doOpenUri(String uri) async {
-    _openUriStreamController.add(Uri.parse(uri));
-    return DBusMethodSuccessResponse([]);
-  }
-
   /// Emits signal org.mpris.MediaPlayer2.Player.Seeked
   Future<void> emitSeeked(Duration position) async {
     await emitSignal('org.mpris.MediaPlayer2.Player', 'Seeked',
@@ -461,10 +452,6 @@ class OrgMprisMediaPlayer2 extends DBusObject {
           DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.in_,
               name: 'Position')
         ]),
-        DBusIntrospectMethod('OpenUri', args: [
-          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_,
-              name: 'Uri')
-        ])
       ], signals: [
         DBusIntrospectSignal('Seeked', args: [
           DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.out,
@@ -563,11 +550,6 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         }
         return doSetPosition(methodCall.values[0].asObjectPath().toString(),
             methodCall.values[1].asInt64());
-      } else if (methodCall.name == 'OpenUri') {
-        if (methodCall.signature != DBusSignature('s')) {
-          return DBusMethodErrorResponse.invalidArgs();
-        }
-        return doOpenUri(methodCall.values[0].asString());
       } else {
         return DBusMethodErrorResponse.unknownMethod();
       }
@@ -643,8 +625,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   }
 
   @override
-  Future<DBusMethodResponse> setProperty(
-      String interface, String name, DBusValue value) async {
+  Future<DBusMethodResponse> setProperty(String interface, String name, DBusValue value) async {
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         return DBusMethodErrorResponse.propertyReadOnly();
