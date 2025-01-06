@@ -39,11 +39,11 @@ final class StationPlayer extends PlayerBase {
 
     Track? track;
 
-    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;
+    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
     _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
 
     Track? currentTrack = _currentPlayInfo!.track;
-    final bool isSkipped = _appState.progressNotifier.value.current.inSeconds < currentTrack.duration!.inSeconds;
+    final bool isSkipped = _appState.progressNotifier.value.position.inSeconds < currentTrack.duration!.inSeconds;
     final String feedback = isSkipped ? 'skip' : 'trackFinished';
     _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
         currentTrack, feedback, _currentPlayInfo!.totalPlayed);

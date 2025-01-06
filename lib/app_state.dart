@@ -10,6 +10,7 @@ import 'dbus/mpris/metadata.dart';
 import 'dbus/mpris/mpris_player.dart';
 import 'helpers/app_route_observer.dart';
 import 'helpers/nav_keys.dart';
+import 'notifiers/track_duration_notifier.dart';
 import 'player/playback_queue.dart';
 import 'player/player_base.dart';
 import 'player/players_manager.dart';
@@ -18,7 +19,6 @@ import 'services/preferences.dart';
 import 'models/music_api_types.dart';
 import 'music_api.dart';
 import 'notifiers/play_button_notifier.dart';
-import 'notifiers/progress_notifier.dart';
 import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
 import 'audio_player.dart';
@@ -29,7 +29,7 @@ class AppState {
   // Listeners: Updates going to the UI
   late final ValueNotifier<ThemeData> themeNotifier;
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
-  final progressNotifier = ProgressNotifier();
+  late final progressNotifier = _audioPlayer.trackDurationNotifier;
   final playButtonNotifier = PlayButtonNotifier();
   final trackNotifier = ValueNotifier<Track?>(null);
   final currentStationNotifier = ValueNotifier<Station?>(null);
@@ -50,7 +50,7 @@ class AppState {
   final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
   final playbackSpeedNotifier = ValueNotifier<double>(1);
-  final volumeNotifier = ValueNotifier<double>(1);
+  late final volumeNotifier = _audioPlayer.volumeNotifier;
   // abilities
   final canGoNextNotifier = ValueNotifier<bool>(false);
   final canGoPreviousNotifier = ValueNotifier<bool>(false);
@@ -81,6 +81,8 @@ class AppState {
   void init() async {
     _trayIntegration.init();
     _listenToPlaybackState();
+    _listenToMprisControlStream();
+    _listenToTrackDurationNotifier();
     _listenToShuffleState();
     _listenToRepeatState();
     _listenToRate();
@@ -105,6 +107,7 @@ class AppState {
     repeatNotifier.value = _prefs.repeat;
     volumeNotifier.value = _prefs.volume.clamp(0, 1);
     closeToTrayEnabledNotifier.value = _prefs.hideOnClose;
+    _mpris.positionStream.listen(_audioPlayer.seek);
 
     _windowManager.backButtonStream.listen((_) => _onBackButtonClicked());
   }
@@ -174,19 +177,45 @@ class AppState {
   }
 
   void _listenToPlaybackState() {
-    _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
-      progressNotifier.value = ProgressBarState(
-        current: msg.position,
-        buffered: msg.bufferedPosition,
-        total: msg.duration ?? Duration.zero,
-      );
-
-      final playingState = msg.playingState;
+    _audioPlayer.playingStateNotifier.addListener((){
+      final playingState = _audioPlayer.playingStateNotifier.value;
       if(playingState == PlayingState.paused) {
         playButtonNotifier.value = ButtonState.paused;
-      } else if(playingState == PlayingState.playing) {
-        playButtonNotifier.value = ButtonState.playing;
+        _mpris.playbackState = 'Paused';
       }
+      else if(playingState == PlayingState.playing) {
+        playButtonNotifier.value = ButtonState.playing;
+        _mpris.playbackState = 'Playing';
+      }
+      else if(playingState == PlayingState.completed) {
+        _mpris.playbackState = 'Stopped';
+      }
+    });
+  }
+
+  void _listenToMprisControlStream() {
+    _mpris.controlStream.listen((event) {
+      switch (event) {
+        case 'play':
+          _audioPlayer.play();
+        case 'pause':
+          _audioPlayer.pause();
+        case 'playPause':
+          if (_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
+            _audioPlayer.pause();
+          }
+          else {
+            _audioPlayer.play();
+          }
+      }
+    });
+  }
+
+  void _listenToTrackDurationNotifier() {
+    _audioPlayer.trackDurationNotifier.addListener(() {
+      final TrackDurationState state = _audioPlayer.trackDurationNotifier.value;
+      _mpris.position = state.position;
+
     });
   }
 
@@ -231,10 +260,6 @@ class AppState {
 
     _mpris.volumeStream.listen((volume){
       volumeNotifier.value = volume;
-    });
-
-    _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
-      volumeNotifier.value = msg.volume;
     });
   }
 

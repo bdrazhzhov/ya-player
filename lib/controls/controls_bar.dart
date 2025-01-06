@@ -2,11 +2,11 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 
+import '/notifiers/track_duration_notifier.dart';
 import '/audio_player.dart';
 import '/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/models/music_api/track.dart';
-import '/notifiers/progress_notifier.dart';
 import '/services/service_locator.dart';
 import 'like_button.dart';
 import 'play_controls.dart';
@@ -27,13 +27,13 @@ class ControlsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ValueListenableBuilder<ProgressBarState>(
+        ValueListenableBuilder<TrackDurationState>(
           valueListenable: _appState.progressNotifier,
           builder: (_, value, __) {
             return ProgressBar(
-              progress: value.current,
+              progress: value.position,
               buffered: value.buffered,
-              total: value.total,
+              total: value.duration,
               onSeek: _audioPlayer.seek,
             );
           },
@@ -90,5 +90,3 @@ class ControlsBar extends StatelessWidget {
     );
   }
 }
-
-

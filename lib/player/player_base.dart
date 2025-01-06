@@ -24,16 +24,15 @@ abstract base class PlayerBase {
   final _audioPlayer = getIt<AudioPlayer>();
   PlayInfo? _currentPlayInfo;
   final _mpris = getIt<OrgMprisMediaPlayer2>();
-  late StreamSubscription<PlaybackEventMessage> _nextTrackSubscription;
   late StreamSubscription<String> _controlSubscription;
 
   PlayerBase() {
     _listenToControlStream();
-    _listenToPlaybackState();
+    _audioPlayer.playingStateNotifier.addListener(_onPlayingStateChange);
   }
 
   void cleanUp() {
-    _nextTrackSubscription.cancel();
+    _audioPlayer.playingStateNotifier.removeListener(_onPlayingStateChange);
     _controlSubscription.cancel();
   }
 
@@ -45,15 +44,15 @@ abstract base class PlayerBase {
 
   Future<void> _playTrack(Track track, String from) async {
     if(_currentPlayInfo != null) {
-      _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;
-      await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+      _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
+      _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     }
 
     await _addTrackToPlayer(track);
 
     _appState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, from);
-    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
   }
 
   Future<void> _addTrackToPlayer(Track track) async {
@@ -70,12 +69,12 @@ abstract base class PlayerBase {
     }
 
     _mpris.metadata = Metadata(
-        title: track.title,
-        length: track.duration,
-        artist: artist,
-        artUrl: artUrl,
-        album: track.albums.first.title,
-        genre: null
+      title: track.title,
+      length: track.duration,
+      artist: artist,
+      artUrl: artUrl,
+      album: track.albums.first.title,
+      genre: null
     );
 
     await _audioPlayer.play();
@@ -94,11 +93,9 @@ abstract base class PlayerBase {
     });
   }
 
-  void _listenToPlaybackState() {
-    _nextTrackSubscription = _audioPlayer.playbackEventMessageStream.listen((PlaybackEventMessage msg){
-      if(msg.playingState == PlayingState.completed) {
-        next();
-      }
-    });
+  void _onPlayingStateChange() {
+    if(_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;
+
+    next();
   }
 }

@@ -3,66 +3,54 @@ import 'dart:math';
 
 import 'package:audio_player_gst/audio_player_gst.dart';
 import 'package:audio_player_gst/events.dart';
+import 'package:flutter/foundation.dart';
 
-import 'services/service_locator.dart';
-import 'dbus/mpris/mpris_player.dart';
+import 'notifiers/track_duration_notifier.dart';
 
 final class AudioPlayer {
   final _platformPlayer = AudioPlayerGst();
-  final _mpris = getIt<OrgMprisMediaPlayer2>();
   var _duration = const Duration(milliseconds: 0);
   var _position = const Duration(milliseconds: 0);
   var _buffered = const Duration(milliseconds: 0);
-  var _playingState = PlayingState.unknown;
-  bool _isPlaying = false;
 
-  final _eventController = StreamController<PlaybackEventMessage>.broadcast();
-  Stream<PlaybackEventMessage> get playbackEventMessageStream => _eventController.stream;
+  final trackDurationNotifier = TrackDurationNotifier();
+  late final volumeNotifier = ValueNotifier<double>(_linearVolume);
+  late final playingStateNotifier = ValueNotifier<PlayingState>(PlayingState.unknown);
 
   AudioPlayer() {
     _listenToEventsStream();
-    _mpris.positionStream.listen(seek);
-    _listenToControlStream();
   }
 
   void _listenToEventsStream() {
-    AudioPlayerGst.eventsStream().listen((EventBase event) {
+    _platformPlayer.eventsStream().listen((EventBase event) {
       switch(event) {
         case DurationEvent durationEvent:
           _duration = durationEvent.duration;
-          _broadcastPlaybackEvent();
+          _notifyPositionUpdate();
         case PlayingStateEvent playingStateEvent:
-          _playingState = playingStateEvent.state;
-          _broadcastPlaybackEvent();
-          _updateMprisPlayingState(_playingState);
+          playingStateNotifier.value = playingStateEvent.state;
         case PositionEvent positionEvent:
           _position = positionEvent.position;
-          _broadcastPlaybackEvent();
-          _mpris.position = _position;
+          _notifyPositionUpdate();
         case BufferingEvent bufferingEvent:
           if(_duration.inMilliseconds == 0) break;
           _buffered = Duration(microseconds: (_duration.inMicroseconds * bufferingEvent.percent).round());
-          _broadcastPlaybackEvent();
+          _notifyPositionUpdate();
         case VolumeEvent volumeEvent:
           _linearVolume = pow(volumeEvent.value, 1.0/3).toDouble();
-          _broadcastPlaybackEvent();
+          volumeNotifier.value = _linearVolume;
         case UnknownEvent():
           // TODO: Handle this case.
       }
     });
   }
-  void _broadcastPlaybackEvent() {
-    _eventController.add(PlaybackEventMessage(
-      position: _position,
-      bufferedPosition: _buffered,
-      duration: _duration,
-      playingState: _playingState,
-      volume: _linearVolume
-    ));
 
-    if(_playingState == PlayingState.completed) {
-      _playingState = PlayingState.idle;
-    }
+  void _notifyPositionUpdate() {
+    trackDurationNotifier.value = TrackDurationState(
+      position: _position,
+      buffered: _buffered,
+      duration: _duration
+    );
   }
 
   Future<void> play() => _platformPlayer.play();
@@ -70,8 +58,7 @@ final class AudioPlayer {
   Future<void> stop() async {
     await _platformPlayer.pause();
     _position = Duration.zero;
-    _playingState = PlayingState.idle;
-    _broadcastPlaybackEvent();
+    playingStateNotifier.value = PlayingState.idle;
   }
   Future<void> seek(Duration position) => _platformPlayer.seek(position);
 
@@ -88,52 +75,4 @@ final class AudioPlayer {
   }
 
   Future<void> setRate(double rate) async => _platformPlayer.setRate(rate);
-
-  void _listenToControlStream() {
-    _mpris.controlStream.listen((event) {
-      switch (event) {
-        case 'play':
-          play();
-        case 'pause':
-          pause();
-        case 'playPause':
-          _isPlaying ? play() : pause();
-      }
-    });
-  }
-
-  void _updateMprisPlayingState(PlayingState playingState) {
-    if(playingState == PlayingState.paused) {
-      _isPlaying = false;
-      _mpris.playbackState = 'Paused';
-    } else if(playingState == PlayingState.playing) {
-      _isPlaying = true;
-      _mpris.playbackState = 'Playing';
-    } else if(playingState == PlayingState.completed) {
-      _isPlaying = false;
-      _mpris.playbackState = 'Stopped';
-    }
-  }
-}
-
-class PlaybackEventMessage {
-  final Duration position;
-  final Duration bufferedPosition;
-  final Duration? duration;
-  final PlayingState playingState;
-  final double volume;
-
-  PlaybackEventMessage({
-    required this.position,
-    required this.bufferedPosition,
-    required this.duration,
-    required this.playingState,
-    required this.volume
-  });
-
-  @override
-  String toString() {
-    return 'position: $position, bufferedPosition: $bufferedPosition'
-        'duration: $duration, playingState: $playingState, volume: $volume';
-  }
 }

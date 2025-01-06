@@ -58,7 +58,7 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
                 width: size,
                 height: size,
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.75),
+                  color: Colors.black.withAlpha((255 * 0.75).toInt()),
                   borderRadius: BorderRadius.circular(coverCornersRadius),
                 ),
               ),

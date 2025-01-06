@@ -34,7 +34,7 @@ final class TracksPlayer extends PlayerBase {
       _audioPlayer.play();
     }
     else {
-      _stop();
+      await _stop();
       _appState.queueTracks.value = queue.tracks.toList();
       _playTrack(track, queue.from);
     }
@@ -46,7 +46,7 @@ final class TracksPlayer extends PlayerBase {
   Future<void> _stop() async {
     if(_currentPlayInfo == null) return;
 
-    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.current;
+    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
     await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     _currentPlayInfo = null;
   }
