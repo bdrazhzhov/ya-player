@@ -5,8 +5,6 @@ import 'package:audio_player_gst/events.dart';
 import 'package:ya_player/state_enums.dart';
 
 import '/notifiers/play_button_notifier.dart';
-import '/dbus/mpris/metadata.dart';
-import '/dbus/mpris/mpris_player.dart';
 import '/audio_player.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
@@ -23,17 +21,13 @@ abstract base class PlayerBase {
   final _appState = getIt<AppState>();
   final _audioPlayer = getIt<AudioPlayer>();
   PlayInfo? _currentPlayInfo;
-  final _mpris = getIt<OrgMprisMediaPlayer2>();
-  late StreamSubscription<String> _controlSubscription;
 
   PlayerBase() {
-    _listenToControlStream();
     _audioPlayer.playingStateNotifier.addListener(_onPlayingStateChange);
   }
 
   void cleanUp() {
     _audioPlayer.playingStateNotifier.removeListener(_onPlayingStateChange);
-    _controlSubscription.cancel();
   }
 
   void next();
@@ -58,38 +52,10 @@ abstract base class PlayerBase {
   Future<void> _addTrackToPlayer(Track track) async {
     final String url = await _musicApi.trackDownloadUrl(track.id);
     await _audioPlayer.setUrl(url);
-
-    List<String> artist = track.artists.map((artist) => artist.name).toList();
-
-    String? artUrl;
-    if(track.coverUri != null) {
-      artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
-    }
-
-    _mpris.metadata = Metadata(
-      title: track.title,
-      length: track.duration,
-      artist: artist,
-      artUrl: artUrl,
-      album: track.albums.first.title,
-      genre: null
-    );
-
     await _audioPlayer.play();
   }
 
   Future<void> pause() => _audioPlayer.pause();
-
-  void _listenToControlStream() {
-    _controlSubscription = _mpris.controlStream.listen((event) {
-      switch (event) {
-        case 'next':
-          next();
-        case 'previous':
-          previous();
-      }
-    });
-  }
 
   void _onPlayingStateChange() {
     if(_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;

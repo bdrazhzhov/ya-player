@@ -207,6 +207,10 @@ class AppState {
           else {
             _audioPlayer.play();
           }
+        case 'next':
+          _playersManager.next();
+        case 'previous':
+          _playersManager.previous();
       }
     });
   }
@@ -323,7 +327,27 @@ class AppState {
 
       Track track = trackNotifier.value!;
       _windowManager.setWindowTitle(track.title, track.artist);
+
+      _setMprisMetagata(track);
     });
+  }
+
+  void _setMprisMetagata(Track track) {
+    List<String> artist = track.artists.map((artist) => artist.name).toList();
+    
+    String? artUrl;
+    if(track.coverUri != null) {
+      artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
+    }
+    
+    _mpris.metadata = Metadata(
+        title: track.title,
+        length: track.duration,
+        artist: artist,
+        artUrl: artUrl,
+        album: track.albums.first.title,
+        genre: null
+    );
   }
 
   void _listenToRouteChanges() {
@@ -401,20 +425,7 @@ class AppState {
     canPlayNotifier.value = true;
     canPauseNotifier.value = true;
 
-    List<String> artist = track.artists.map((artist) => artist.name).toList();
-    String? artUrl;
-    if(track.coverUri != null) {
-      artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
-    }
-
-    _mpris.metadata = Metadata(
-        title: track.title,
-        length: track.duration,
-        artist: artist,
-        artUrl: artUrl,
-        album: track.albums.first.title,
-        genre: null
-    );
+    _setMprisMetagata(track);
   }
 
   Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
