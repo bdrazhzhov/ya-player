@@ -56,9 +56,7 @@ abstract base class PlayerBase {
   }
 
   Future<void> _addTrackToPlayer(Track track) async {
-    String? url = await _musicApi.trackDownloadUrl(track.id);
-
-    if(url == null) return;
+    final String url = await _musicApi.trackDownloadUrl(track.id);
     await _audioPlayer.setUrl(url);
 
     List<String> artist = track.artists.map((artist) => artist.name).toList();

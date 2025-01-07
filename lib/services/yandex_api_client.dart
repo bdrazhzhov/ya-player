@@ -75,8 +75,15 @@ class YandexApiClient {
     return headers;
   }
 
-  Future<Map<String, dynamic>> get(String path, { Map<String, String>? headers }) async {
-    Response resp = await _dio.get(path, options: Options(headers: headers));
+  Future<Map<String, dynamic>> get(String path, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? queryParameters
+  }) async {
+
+    Response resp = await _dio.get(path,
+      options: Options(headers: headers),
+      queryParameters: queryParameters
+    );
 
     return resp.data;
   }

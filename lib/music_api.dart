@@ -11,7 +11,7 @@ import 'services/yandex_api_client.dart';
 final class QueueIndexInvalid implements Exception {}
 
 class MusicApi {
-  static const String _magicSalt = "XGRlBW9FXlekgbPrRHuSiA";
+  static const String _newMagicSalt = 'kzqU4XhfCaY6B6JTHODeq5';
   int uid;
   late final YandexApiClient _http;
 
@@ -63,49 +63,27 @@ class MusicApi {
     await _http.postJson(url, data: settings2);
   }
 
-  Future<TrackDownloadInfo?> _trackDownloadInfo(int trackId) async {
-    Map<String, dynamic> json = await _http.get('/tracks/$trackId/download-info');
-    TrackDownloadInfo? selectedInfo;
+  Future<String> trackDownloadUrl(int trackId) async {
+    final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
+    final Uint8List key = utf8.encode(_newMagicSalt);
+    final Uint8List data = utf8.encode('$ts${trackId}losslessflacaache-aacmp3raw');
+    final Digest digest = Hmac(sha256, key).convert(data);
+    final String sign = base64.encode(digest.bytes);
+    final query = {
+      'ts': ts,
+      'trackId': trackId,
+      'quality': 'lossless',
+      'codecs': 'flac,aac,he-aac,mp3',
+      'transports': 'raw',
+      'sign': sign.substring(0, sign.length - 1)
+    };
 
-    json['result'].forEach((item){
-      final info = TrackDownloadInfo.fromJson(item);
-      if(info.codec != 'mp3') return;
-
-      if(selectedInfo == null || info.bitrateInKbps > selectedInfo!.bitrateInKbps)
-      {
-        selectedInfo = info;
-      }
-    });
-
-    return selectedInfo;
-  }
-
-  Future<FileDownloadInfo?> _fileDownloadInfo(int trackId) async {
-    FileDownloadInfo? fileInfo;
-
-    TrackDownloadInfo? info = await _trackDownloadInfo(trackId);
-    if(info != null) {
-      Map<String, dynamic> json = await _http.get('${info.downloadInfoUrl}&format=json');
-      fileInfo = FileDownloadInfo.fromJson(json);
-    }
-
-    return fileInfo;
-  }
-
-  Future<String?> trackDownloadUrl(int trackId) async {
-    String? downloadUrl;
-    FileDownloadInfo? fileInfo = await _fileDownloadInfo(trackId);
-
-    if(fileInfo != null) {
-      final String token = _magicSalt + fileInfo.path.substring(1) + fileInfo.s;
-      final String sign = md5.convert(utf8.encode(token)).toString();
-      downloadUrl = 'https://${fileInfo.host}/get-mp3/$sign/${fileInfo.ts}${fileInfo.path}';
-    }
-    else {
-      debugPrint('No download info for track $trackId');
-    }
-
-    return downloadUrl;
+    Map<String, dynamic> json = await _http.get(
+      '/get-file-info',
+      headers: {'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'},
+      queryParameters: query
+    );
+    return json['result']['downloadInfo']['url'].toString();
   }
 
   static String imageUrl(String placeholder, String dimensions) {
