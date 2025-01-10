@@ -23,6 +23,8 @@ final class TracksPlayer extends PlayerBase {
     }
     else {
       track = await queue.moveTo(index);
+      _appState.canGoNextNotifier.value = queue.canGoNext;
+      _appState.canGoPreviousNotifier.value = queue.canGoPrevious;
     }
 
     if(track == null) {
@@ -31,16 +33,13 @@ final class TracksPlayer extends PlayerBase {
     }
 
     if(track == _currentPlayInfo?.track && _appState.repeatNotifier.value != RepeatMode.one) {
-      _audioPlayer.play();
+      await _audioPlayer.play();
     }
     else {
       await _stop();
       _appState.queueTracks.value = queue.tracks.toList();
-      _playTrack(track, queue.from);
+      await _playTrack(track, queue.from);
     }
-
-    _appState.canGoNextNotifier.value = queue.canGoNext;
-    _appState.canGoPreviousNotifier.value = queue.canGoPrevious;
   }
 
   Future<void> _stop() async {

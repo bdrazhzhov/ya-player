@@ -40,16 +40,16 @@ final class StationPlayer extends PlayerBase {
     Track? track;
 
     _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
 
     Track? currentTrack = _currentPlayInfo!.track;
     final bool isSkipped = _appState.progressNotifier.value.position.inSeconds < currentTrack.duration!.inSeconds;
     final String feedback = isSkipped ? 'skip' : 'trackFinished';
-    _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
+    await _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
         currentTrack, feedback, _currentPlayInfo!.totalPlayed);
 
     if(isSkipped) {
-      track = await queue.skip();
+      track = queue.skip();
     }
     else {
       track = await queue.next();
@@ -57,14 +57,14 @@ final class StationPlayer extends PlayerBase {
 
     if(track == null) return;
 
-    await _addTrackToPlayer(track);
-
     _appState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, queue.station.from);
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
-    _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
+    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    await _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
           _currentPlayInfo!.track, 'trackStarted', _currentPlayInfo!.totalPlayed);
     queue.updatePosition(isInteractive: isSkipped);
+
+    await _addTrackToPlayer(track);
 
     if(isSkipped) {
       await queue.loadTracks();

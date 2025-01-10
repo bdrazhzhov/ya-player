@@ -24,8 +24,8 @@ class WindowManager
     const gchar* method = fl_method_call_get_name(method_call);
     FlValue* args = fl_method_call_get_args(method_call);
 
-    std::cout << "[YaPlayerWindow]: Method name: " << method <<
-      ", arguments type: " << fl_value_get_type(args) << std::endl;
+//    std::cout << "[YaPlayerWindow]: Method name: " << method <<
+//      ", arguments type: " << fl_value_get_type(args) << std::endl;
 
     try {
       if(strcmp(method, "setWindowTitle") == 0)
@@ -143,7 +143,7 @@ class WindowManager
 
   static gboolean _onWindowDeleteEvent(GtkWidget *widget, GdkEvent *event, gpointer data)
   {
-    std::cout << "on delete-event handler" << std::endl;
+//    std::cout << "on delete-event handler" << std::endl;
     const auto windowManager = static_cast<WindowManager*>(data);
 
     if (windowManager->_hideOnClose)

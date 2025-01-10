@@ -42,7 +42,7 @@ final class StationQueue extends PlaybackQueue
     return track;
   }
 
-  Future<Track> skip() async {
+  Track skip() {
     _currentIndex += 1;
     _realIndex += 1;
 

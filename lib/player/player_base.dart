@@ -39,14 +39,14 @@ abstract base class PlayerBase {
   Future<void> _playTrack(Track track, String from) async {
     if(_currentPlayInfo != null) {
       _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
-      _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+      await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     }
-
-    await _addTrackToPlayer(track);
 
     _appState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, from);
-    _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+    await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
+
+    return _addTrackToPlayer(track);
   }
 
   Future<void> _addTrackToPlayer(Track track) async {

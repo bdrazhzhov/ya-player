@@ -28,11 +28,9 @@ packages:
   audio_player_gst:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: "274434dd77fd73721cc34cd26e1eff5ee3dda532"
-      url: "https://github.com/bdrazhzhov/audio-player-gst.git"
-    source: git
+      path: "../audio_player_gst"
+      relative: true
+    source: path
     version: "0.0.1"
   audio_video_progress_bar:
     dependency: "direct main"
@@ -298,10 +296,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: "4a16b3f03741e1252fda5de3ce712666d010ba2122f8e912c94f9f7b90e1a4c3"
+      sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.1"
   mask_text_input_formatter:
     dependency: "direct main"
     description:
@@ -442,10 +440,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: "95f9997ca1fb9799d494d0cb2a780fd7be075818d59f00c43832ed112b158a82"
+      sha256: "3c7e73920c694a436afaf65ab60ce3453d91f84208d761fbd83fc21182134d93"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.3"
+    version: "2.3.4"
   shared_preferences_android:
     dependency: transitive
     description:
@@ -748,5 +746,5 @@ packages:
     source: hosted
     version: "6.5.0"
 sdks:
-  dart: ">=3.6.0-0 <4.0.0"
+  dart: ">=3.6.0 <4.0.0"
   flutter: ">=3.24.0"

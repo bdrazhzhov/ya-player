@@ -10,9 +10,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   audio_player_gst:
-    git:
-      url: https://github.com/bdrazhzhov/audio-player-gst.git
-      ref: master
+    path: ../audio_player_gst
+#    git:
+#      url: https://github.com/bdrazhzhov/audio-player-gst.git
+#      ref: master
   audio_video_progress_bar: ^2.0.0
   cached_network_image: ^3.2.3
   dio: ^5.3.2
