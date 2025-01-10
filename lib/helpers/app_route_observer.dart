@@ -7,7 +7,7 @@ class AppRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPush(route, previousRoute);
 
-    debugPrint('Route pushed: ${route.navigator!.canPop()}');
+    // debugPrint('Route pushed: ${route.navigator!.canPop()}');
 
     if(previousRoute != null) {
       debugPrint('Route nested');
@@ -20,6 +20,6 @@ class AppRouteObserver extends RouteObserver<PageRoute<dynamic>> {
     super.didPop(route, previousRoute);
 
     popNotifier.value = route.navigator!.canPop();
-    debugPrint('Can pop: ${popNotifier.value}');
+    // debugPrint('Can pop: ${popNotifier.value}');
   }
 }
