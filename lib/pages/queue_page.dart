@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import '../app_state.dart';
-import '../controls/sliver_track_list.dart';
-import '../controls/track_list/sliver_tracks_header.dart';
-import '../models/music_api/track.dart';
-import '../services/service_locator.dart';
+
+import 'page_base.dart';
+import '/app_state.dart';
+import '/controls/playback/repeat_button.dart';
+import '/controls/playback/shuffle_button.dart';
+import '/controls/sliver_track_list.dart';
+import '/controls/track_list/sliver_tracks_header.dart';
+import '/models/music_api/track.dart';
+import '/services/service_locator.dart';
 
 class QueuePage extends StatelessWidget {
   final _appState = getIt<AppState>();
@@ -14,41 +18,34 @@ class QueuePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.only(left: 32, right: 32),
-          sliver: SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50, top: 65),
-              child: Row(
-                children: [
-                  Expanded(child: Text('Playback queue', style: theme.textTheme.displayMedium)),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.repeat)),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.shuffle))
-                ],
+    return PageBase(slivers: [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 24, top: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Playback queue',
+                  style: theme.textTheme.displayMedium
+                )
               ),
-            ),
+              RepeatButton(),
+              ShuffleButton()
+            ],
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.only(left: 32, right: 32),
-          sliver: SliverPersistentHeader(
-            delegate: SliverTracksHeader(),
-            pinned: true,
-          ),
-        ),
-        ValueListenableBuilder(
-          valueListenable: _appState.queueTracks,
-          builder: (_, List<Track> tracks, __) {
-            return SliverPadding(
-              padding: const EdgeInsets.only(left: 32, right: 32),
-              sliver: SliverTrackList(tracks: tracks)
-              // sliver: SliverToBoxAdapter(child: Text('Not implemented'))
-            );
-          },
-        ),
-      ],
-    );
+      ),
+      SliverPersistentHeader(
+        delegate: SliverTracksHeader(),
+        pinned: true,
+      ),
+      ValueListenableBuilder(
+        valueListenable: _appState.queueTracks,
+        builder: (_, List<Track> tracks, __) {
+          return SliverTrackList(tracks: tracks);
+        },
+      ),
+    ]);
   }
 }

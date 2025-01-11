@@ -18,7 +18,7 @@ import 'volume_control.dart';
 class ControlsBar extends StatelessWidget {
   final AppState _appState = getIt<AppState>();
   final _audioPlayer = getIt<AudioPlayer>();
-  
+
   final bool isExpandable;
 
   ControlsBar({super.key, required this.isExpandable});
@@ -56,9 +56,7 @@ class ControlsBar extends StatelessWidget {
                 valueListenable: _appState.queueTracks,
                 builder: (_, List<Track> tracks, Widget? child) {
                   if(tracks.isNotEmpty && child != null) {
-                    // queue page is broken; removed till fix
-                    return const SizedBox.shrink();
-                    // return child;
+                    return child;
                   }
                   else {
                     return const SizedBox.shrink();
@@ -67,7 +65,14 @@ class ControlsBar extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.queue_music),
                   onPressed: () {
-                    NavKeys.mainNav.currentState!.pushReplacementNamed('/queue');
+                    if(_appState.isQueueShown) {
+                      NavKeys.mainNav.currentState!.pop();
+                      _appState.isQueueShown = false;
+                      return;
+                    }
+
+                    NavKeys.mainNav.currentState!.pushNamed('/queue');
+                    _appState.isQueueShown = true;
                   }
                 ),
               ),

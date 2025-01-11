@@ -61,6 +61,7 @@ class AppState {
   final canRepeatNotifier = ValueNotifier<bool>(false);
   // settings
   final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
+  bool isQueueShown = false;
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -371,6 +372,9 @@ class AppState {
     if(navState == null) return;
 
     navState.pop();
+    if(isQueueShown) {
+      isQueueShown = false;
+    }
   }
 
   Future<void> _requestLikedAlbums() async {
