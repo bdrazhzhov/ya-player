@@ -11,7 +11,7 @@ import 'window_manager.dart';
 
 enum PlayBackChangeType {playPause, next, prev}
 
-final class TrayIntegration //with WindowListener
+final class TrayIntegration
 {
   final _windowManager = getIt<WindowManager>();
 
@@ -22,13 +22,24 @@ final class TrayIntegration //with WindowListener
     bus: getIt<DBusClient>(),
     menu: DBusMenuItem(children: [
       DBusMenuItem(
-          label: 'Show',
-          onClicked: () => _windowManager.showWindow()
+        label: 'Show',
+        onClicked: () => _windowManager.showWindow()
       ),
       DBusMenuItem.separator(),
-      DBusMenuItem(label: 'Play/Pause', onClicked: () async => _playBackChangeController.add(PlayBackChangeType.playPause)),
-      DBusMenuItem(label: 'Next', iconName: 'media-skip-forward', onClicked: () async => _playBackChangeController.add(PlayBackChangeType.next)),
-      DBusMenuItem(label: 'Previous', iconName: 'media-skip-backward', onClicked: () async => _playBackChangeController.add(PlayBackChangeType.prev)),
+      DBusMenuItem(
+        label: 'Play/Pause',
+        onClicked: () async => _playBackChangeController.add(PlayBackChangeType.playPause)
+      ),
+      DBusMenuItem(
+        label: 'Next',
+        iconName: 'media-skip-forward',
+        onClicked: () async => _playBackChangeController.add(PlayBackChangeType.next)
+      ),
+      DBusMenuItem(
+        label: 'Previous',
+        iconName: 'media-skip-backward',
+        onClicked: () async => _playBackChangeController.add(PlayBackChangeType.prev)
+      ),
       DBusMenuItem.separator(),
       DBusMenuItem(
         label: 'Quit',
