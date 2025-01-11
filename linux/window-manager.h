@@ -5,6 +5,8 @@
 #include <iostream>
 #include <flutter_linux/flutter_linux.h>
 
+#define BUTTON_BACK 8
+
 class WindowManager
 {
   FlBinaryMessenger* _binaryMessenger = nullptr;
@@ -16,6 +18,7 @@ class WindowManager
   GtkStyleContext* _styleContext = nullptr;
 
   bool _hideOnClose = false;
+  bool _canGoBack = false;
 
   static void _handleMethodCall(FlMethodChannel* /*channel*/, FlMethodCall* method_call, gpointer user_data) {
     const auto windowManager = static_cast<WindowManager*>(user_data);
@@ -75,6 +78,18 @@ class WindowManager
     fl_method_call_respond(method_call, response, nullptr);
   }
 
+  static gboolean onMouseButtonPressEvent(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+  {
+    const auto windowManager = static_cast<WindowManager*>(user_data);
+
+    if (event->type == GDK_BUTTON_PRESS && event->button == BUTTON_BACK && windowManager->_canGoBack)
+    {
+      windowManager->pushBackButton();
+      return TRUE;
+    }
+    return FALSE; // Возврат FALSE позволяет событию распространяться дальше
+  }
+
   void _setWindowTitle(const char* title, const char* sunTitle) const
   {
     if(_headerBar != nullptr)
@@ -101,12 +116,13 @@ class WindowManager
     return fl_value_new_int(colorInt);
   }
 
-  void showBackButton(const bool show) const
+  void showBackButton(const bool show)
   {
     if(_backButton == nullptr || _icon == nullptr) return;
 
     gtk_widget_set_visible(GTK_WIDGET(_backButton), show);
     gtk_widget_set_visible(GTK_WIDGET(_icon), !show);
+    _canGoBack = show;
   }
 
   [[nodiscard]] FlValue* _getThemeColors() const
@@ -172,6 +188,8 @@ public:
     g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
     _channel = fl_method_channel_new(_binaryMessenger, "YaPlayerWindowManager/events", FL_METHOD_CODEC(codec));
     fl_method_channel_set_method_call_handler(_channel, _handleMethodCall, this, nullptr);
+
+    g_signal_connect(window, "button-press-event", G_CALLBACK(WindowManager::onMouseButtonPressEvent), this);
   }
 
   void pushBackButton() const
