@@ -32,13 +32,57 @@ struct _MyApplication {
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
-static void on_button_clicked(GtkButton *button, gpointer user_data) {
+static void on_button_clicked(GtkButton *button, gpointer user_data)
+{
   if(windowManager == nullptr) return;
   windowManager->pushBackButton();
 }
 
+void set_cursor(GtkWidget* widget, GdkCursorType cursor_type)
+{
+  GdkWindow *window = gtk_widget_get_window(widget);
+  if (!window) return;
+
+  GdkCursor* cursor = gdk_cursor_new_for_display(gdk_window_get_display(window), cursor_type);
+  gdk_window_set_cursor(window, cursor);
+  g_object_unref(cursor);
+}
+
+gboolean on_button_enter(GtkWidget* widget, GdkEventCrossing* event, gpointer data)
+{
+  set_cursor(widget, GDK_HAND2);
+  return FALSE;
+}
+
+gboolean on_button_leave(GtkWidget* widget, GdkEventCrossing* event, gpointer data)
+{
+  set_cursor(widget, GDK_ARROW);
+  return FALSE;
+}
+
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
+  GtkCssProvider *css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_data(css_provider,
+                                  ".back-button {"
+                                  "   margin: 0;"
+                                  "   padding: 0 8px 0 8px;"
+                                  "   border: none;"
+                                  "   background: none;"
+                                  "   font-size: 20px;"
+                                  "}",
+                                  -1, NULL);
+
+  GdkScreen *screen = gdk_screen_get_default();
+  gtk_style_context_add_provider_for_screen(
+      screen,
+      GTK_STYLE_PROVIDER(css_provider),
+      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+  );
+
+  g_object_unref(css_provider);
+
+
   MyApplication* self = MY_APPLICATION(application);
   GtkWindow* window = GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
   g_signal_connect(window, "delete-event", G_CALLBACK(onWindowDeleteCallback), nullptr);
@@ -52,7 +96,7 @@ static void my_application_activate(GApplication* application) {
   // if future cases occur).
   gboolean use_header_bar = TRUE;
 #ifdef GDK_WINDOWING_X11
-  GdkScreen* screen = gtk_window_get_screen(window);
+//  GdkScreen* screen = gtk_window_get_screen(window);
   if (GDK_IS_X11_SCREEN(screen)) {
     const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
     if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
@@ -72,9 +116,14 @@ static void my_application_activate(GApplication* application) {
     gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), icon);
     gtk_widget_show(GTK_WIDGET(icon));
 
-    backButton = gtk_button_new_with_label(" 🡨 "); // back button
-    gtk_container_set_border_width(GTK_CONTAINER(backButton), 0);
+    backButton = gtk_button_new_with_label("🡨"); // back button
+    GtkStyleContext* context = gtk_widget_get_style_context(backButton);
+    gtk_style_context_add_class(context, "back-button");
+
     g_signal_connect(backButton, "clicked", G_CALLBACK(on_button_clicked), NULL);
+    g_signal_connect(backButton, "enter-notify-event", G_CALLBACK(on_button_enter), NULL);
+    g_signal_connect(backButton, "leave-notify-event", G_CALLBACK(on_button_leave), NULL);
+
     gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), backButton);
     // gtk_widget_show(GTK_WIDGET(button));
 
