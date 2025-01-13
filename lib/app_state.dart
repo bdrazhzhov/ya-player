@@ -134,7 +134,23 @@ class AppState {
       ),
       iconButtonTheme: IconButtonThemeData(
         style: ButtonStyle(),
-      )
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states){
+            if(states.contains(WidgetState.selected)) {
+              return yaColor;
+            }
+            return themeColors['surface']!;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states){
+            if(states.contains(WidgetState.selected)) {
+              return themeColors['surface']!;
+            }
+            return themeColors['textColor']!;
+          }),
+        ),
+      ),
     );
   }
 
