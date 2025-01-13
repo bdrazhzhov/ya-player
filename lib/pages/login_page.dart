@@ -1,7 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 
 import '/app_state.dart';
 import '/services/service_locator.dart';
@@ -16,7 +14,12 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final appState = getIt<AppState>();
+  final _platform = MethodChannel('YaPlayerAuthManager/events');
   bool isAuthOpened = false;
+
+  _LoginPageState() {
+    _platform.setMethodCallHandler(_methodCallHandler);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,21 +34,27 @@ class _LoginPageState extends State<LoginPage> {
   void startLogin() async {
     isAuthOpened = true;
     setState(() {});
+    _platform.invokeMethod('openAuthWindow');
+  }
 
-    final result = await Process.run(
-      join(dirname(Platform.resolvedExecutable), 'YaPlayerAuth'), [],
-      environment: {'WEBKIT_DISABLE_DMABUF_RENDERER': '1'}
-    );
-    isAuthOpened = false;
-    setState(() {});
+  Future<dynamic> _methodCallHandler(MethodCall methodCall) async {
+    switch(methodCall.method) {
+      case 'onAuthCompleted':
+        isAuthOpened = false;
+        setState(() {});
 
-    final String authToken = result.stdout.toString().split('\n').firstOrNull ?? '';
 
-    if(authToken.isEmpty) {
-      debugPrint('Empty auth token');
-      return;
+        final Map<String,String> data = methodCall.arguments.cast<String,String>();
+
+        if(!data.keys.contains('accessToken')) {
+          debugPrint('Empty auth token');
+          return;
+        }
+
+        appState.login(data['accessToken']!);
+        break;
+      default:
+        debugPrint('Unknown method: ${methodCall.method}');
     }
-
-    appState.login(authToken);
   }
 }

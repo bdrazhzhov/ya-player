@@ -11,8 +11,10 @@
 #include "flutter/generated_plugin_registrant.h"
 #include <fstream>
 #include "window-manager.h"
+#include "auth-manager.h"
 
 static WindowManager* windowManager = nullptr;
+static AuthManager* authManager = nullptr;
 
 static gboolean onWindowDeleteCallback(GtkWidget* widget, GdkEvent* /*event*/, gpointer /*data*/)
 {
@@ -165,6 +167,7 @@ static void my_application_activate(GApplication* application) {
 
   windowManager = new WindowManager(FL_PLUGIN_REGISTRY(view),
     window, header_bar, backButton, icon);
+  authManager = new AuthManager(FL_PLUGIN_REGISTRY(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 

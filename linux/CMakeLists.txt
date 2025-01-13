@@ -53,6 +53,7 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # System-level dependencies.
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+pkg_check_modules(WEBKIT2 REQUIRED IMPORTED_TARGET webkit2gtk-4.1)
 
 add_definitions(-DAPPLICATION_ID="${APPLICATION_ID}")
 
@@ -61,8 +62,9 @@ add_definitions(-DAPPLICATION_ID="${APPLICATION_ID}")
 #
 # Any new source files that you add to the application should be added here.
 add_executable(${BINARY_NAME}
-  "main.cc"
-  "my_application.cc"
+  main.cc
+  my_application.cc
+  auth-manager.cpp
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
 
@@ -70,9 +72,12 @@ add_executable(${BINARY_NAME}
 # that need different build settings.
 apply_standard_settings(${BINARY_NAME})
 
+target_include_directories(${BINARY_NAME} PRIVATE ${WEBKIT2_INCLUDE_DIRS})
+
 # Add dependency libraries. Add any application-specific dependencies here.
 target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
+target_link_libraries(${BINARY_NAME} PRIVATE ${WEBKIT2_LIBRARIES})
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
@@ -89,17 +94,6 @@ set_target_properties(${BINARY_NAME}
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
-
-pkg_check_modules(GTK4 REQUIRED gtk4)
-pkg_check_modules(WEBKIT REQUIRED webkitgtk-6.0)
-
-SET(AUTH_NAME YaPlayerAuth)
-
-add_executable(${AUTH_NAME} yandex_auth.cpp)
-
-target_include_directories(${AUTH_NAME} PRIVATE ${GTK4_INCLUDE_DIRS} ${WEBKIT_INCLUDE_DIRS})
-target_link_libraries(${AUTH_NAME} PRIVATE ${GTK4_LIBRARIES} ${WEBKIT_LIBRARIES})
-target_compile_options(${AUTH_NAME} PRIVATE ${GTK4_CFLAGS_OTHER} ${WEBKIT_CFLAGS_OTHER})
 
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build
@@ -119,9 +113,6 @@ set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
-
-install(TARGETS ${AUTH_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
-        COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   COMPONENT Runtime)
