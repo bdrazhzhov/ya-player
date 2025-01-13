@@ -27,7 +27,7 @@ class StationSettingsButton extends StatelessWidget {
               height: 300,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: theme.primaryColor,
+                  color: theme.colorScheme.surface,
                   border: Border.all(color: theme.focusColor),
                   borderRadius: BorderRadius.all(Radius.circular(12))
                 ),
