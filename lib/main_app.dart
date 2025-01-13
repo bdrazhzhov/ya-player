@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           theme: theme,
-          home: const SafeArea(child: MainPage())
+          home: MainPage()
         );
       },
     );

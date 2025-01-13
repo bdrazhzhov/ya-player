@@ -161,13 +161,16 @@ class AppState {
     futures.add(_requestStationsDashboard());
     futures.add(_requestStations());
     futures.add(_requestLikedTracks());
+    await Future.wait(futures);
+
     futures.add(_requestLikedAlbums());
     futures.add(_requestArtists());
     futures.add(_requestPlaylists());
+    await Future.wait(futures);
+
     futures.add(_requestNonMusicCatalog());
     futures.add(_requestLanding());
     futures.add(_requestInitialQueueData());
-
     await Future.wait(futures);
   }
 
