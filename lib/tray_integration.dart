@@ -60,4 +60,8 @@ final class TrayIntegration
   void init() async {
     await _trayIcon.connect();
   }
+
+  void setTitle(String title) {
+    _trayIcon.setTitle(title);
+  }
 }

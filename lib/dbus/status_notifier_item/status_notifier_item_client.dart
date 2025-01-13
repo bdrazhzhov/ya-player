@@ -35,7 +35,7 @@ String _encodeStatus(StatusNotifierItemStatus value) =>
 class _StatusNotifierItemObject extends DBusObject {
   final StatusNotifierItemCategory category;
   final String id;
-  String title;
+  String _title;
   StatusNotifierItemStatus status;
   final int windowId;
   String iconName;
@@ -51,7 +51,7 @@ class _StatusNotifierItemObject extends DBusObject {
   _StatusNotifierItemObject(
       {this.category = StatusNotifierItemCategory.applicationStatus,
       required this.id,
-      this.title = '',
+      title = '',
       this.status = StatusNotifierItemStatus.active,
       this.windowId = 0,
       this.iconName = '',
@@ -63,13 +63,20 @@ class _StatusNotifierItemObject extends DBusObject {
       this.onActivate,
       this.onSecondaryActivate,
       this.onScroll})
-      : super(DBusObjectPath('/StatusNotifierItem')) {
+      : _title = title, super(DBusObjectPath('/StatusNotifierItem')) {
     menu ??= DBusObjectPath('/NO_DBUSMENU');
   }
 
-  /// Emits signal org.kde.StatusNotifierItem.NewTitle
-  Future<void> emitNewTitle() async {
-    await emitSignal('org.kde.StatusNotifierItem', 'NewTitle', []);
+  String get title => _title;
+  set title(String value) {
+    if(value == _title) return;
+
+    _title = value;
+    emitSignal('org.kde.StatusNotifierItem', 'NewTitle', []);
+    emitPropertiesChanged(
+      "org.kde.StatusNotifierItem",
+      changedProperties: {"Title": DBusString(value)},
+    );
   }
 
   /// Emits signal org.kde.StatusNotifierItem.NewIcon
@@ -384,6 +391,10 @@ class StatusNotifierItemClient {
   /// Updates the menu shown.
   Future<void> updateMenu(DBusMenuItem menu) async {
     await _menuObject?.update(menu);
+  }
+
+  void setTitle(String title) {
+    _notifierItemObject.title = title;
   }
 
   /// Terminates all active connections. If a client remains unclosed, the Dart process may not terminate.
