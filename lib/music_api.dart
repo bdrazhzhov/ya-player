@@ -93,7 +93,7 @@ class MusicApi {
   Future<void> sendStationTrackFeedback(StationId stationId, Track? track,
       String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
-      'type': feedbackType, // известны следующие значения: radioStarted, trackStarted, trackFinished, skip
+      'type': feedbackType, // известны следующие значения: radioStarted, trackStarted, trackFinished, skip, like, unlike
       'timestamp': DateTime.now().toUtc().toIso8601String(),
     };
 

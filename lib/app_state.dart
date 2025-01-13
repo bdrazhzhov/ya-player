@@ -488,13 +488,20 @@ class AppState {
   Future<void> likeTrack(Track track) async {
     int likedIndex = binarySearch(_likedTrackIds, track.id);
     final isLiked = likedIndex != -1;
+    final Station? station = currentStationNotifier.value;
 
     if(isLiked) {
       await _musicApi.unlikeTrack(track);
+      if(station != null) {
+        await _musicApi.sendStationTrackFeedback(station.id, track, 'unlike', null);
+      }
       _likedTrackIds.removeAt(likedIndex);
     }
     else {
       await _musicApi.likeTrack(track);
+      if(station != null) {
+        await _musicApi.sendStationTrackFeedback(station.id, track, 'like', null);
+      }
       _likedTrackIds.add(track.id);
     }
 
