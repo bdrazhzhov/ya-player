@@ -41,5 +41,27 @@
   },
 
   "date_hoursShort": "ч.",
-  "date_minutesShort": "мин."
+  "date_minutesShort": "мин.",
+
+  "tracks_headerTrack": "ТРЕК",
+  "tracks_headerArtist": "ИСПОЛНИТЕЛЬ",
+  "tracks_headerAlbum": "АЛЬБОМ",
+
+  "album_album": "АЛЬБОМ",
+  "album_artist": "Исполнитель",
+  "album_play": "Воспроизвести",
+  "album_like": "Нравится",
+
+  "artist_artist": "ИСПОЛНИТЕЛЬ",
+  "artist_play": "Воспроизвести",
+  "artist_like": "Нравится",
+  "artist_station": "Поток по исполнителю",
+  "artist_popularTracks": "Популярные треки",
+  "artist_popularAlbums": "Популярные альбомы",
+  "artist_compilations": "Сборники",
+  "artist_similar": "Похожие",
+  "artist_official": "Официальные страницы",
+  "artist_showAll": "Показать все"
+
+
 }

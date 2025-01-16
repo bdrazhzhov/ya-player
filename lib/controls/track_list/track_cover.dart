@@ -46,7 +46,7 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
             Text(widget.isCurrent ? '' : widget.trackNumber.toString())
           else
             YandexImage(
-              uriPlaceholder: widget.track.coverUri!,
+              uriTemplate: widget.track.coverUri!,
               size: 50,
               placeholder: SvgPicture.asset('assets/svg/track_placeholder.svg'),
               borderRadius: coverCornersRadius,

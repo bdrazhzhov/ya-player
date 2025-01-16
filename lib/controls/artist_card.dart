@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../models/music_api/artist.dart';
-import '../pages/artist_page.dart';
+import '/models/music_api/artist.dart';
+import '/pages/artist_page.dart';
 import 'yandex_image.dart';
 
 class ArtistCard extends StatelessWidget {
@@ -29,7 +30,7 @@ class ArtistCard extends StatelessWidget {
           children: [
             if(artist.cover != null)
               YandexImage(
-                uriPlaceholder: artist.cover!.uri,
+                uriTemplate: artist.cover!.uri,
                 size: width,
                 borderRadius: 8
               ),
@@ -39,7 +40,7 @@ class ArtistCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              "${artist.counts.tracks} tracks",
+              AppLocalizations.of(context)!.tracks_count(artist.counts.tracks),
               style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
             ),
             Text(

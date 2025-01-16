@@ -29,7 +29,7 @@ class AlbumCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            YandexImage(uriPlaceholder: album.ogImage, size: width, borderRadius: 8),
+            YandexImage(uriTemplate: album.ogImage, size: width, borderRadius: 8),
             Text(
               HtmlCharacterEntities.decode(album.title),
               overflow: TextOverflow.ellipsis,

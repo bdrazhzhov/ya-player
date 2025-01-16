@@ -14,8 +14,9 @@ class LikedArtist extends ArtistBase {
   final List<String> genres;
   final ArtistCounts counts;
   final List<ArtistLink> links;
+  final List<ArtistExtraAction> extraActions;
 
-  LikedArtist(super.id, super.name, this.cover, this.genres, this.counts, this.links);
+  LikedArtist(super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
 
   factory LikedArtist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];
@@ -29,10 +30,15 @@ class LikedArtist extends ArtistBase {
     ArtistCover? cover;
     if(json['cover'] != null) cover = ArtistCover.fromJson(json['cover']);
 
+    List<ArtistExtraAction> extraActions = [];
+    if(json['extraActions'] != null) {
+      json['extraActions'].forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
+    }
+
     return LikedArtist(
       json['id'] is String ? int.parse(json['id']) : json['id'],
       json['name'], cover, genres,
-      ArtistCounts.fromJson(json['counts']), links
+      ArtistCounts.fromJson(json['counts']), links, extraActions
     );
   }
 }
@@ -74,5 +80,28 @@ class ArtistLink {
   factory ArtistLink.fromJson(Map<String, dynamic> json) {
     return ArtistLink(json['title'], json['href'],
         json['type'], json['socialNetwork']);
+  }
+}
+
+class ArtistExtraAction {
+  final String type;
+  final String title;
+  final String color;
+  final String url;
+
+  ArtistExtraAction({
+    required this.type,
+    required this.title,
+    required this.color,
+    required this.url,
+  });
+
+  factory ArtistExtraAction.fromJson(Map<String, dynamic> json) {
+    return ArtistExtraAction(
+      type: json['type'],
+      title: json['title'],
+      color: json['color'],
+      url: json['url'],
+    );
   }
 }

@@ -41,7 +41,7 @@ class PlaylistPage extends StatelessWidget {
           child: Row(
             children: [
               if(playlist.image != null)
-                YandexImage(uriPlaceholder: playlist.image!, size: 200)
+                YandexImage(uriTemplate: playlist.image!, size: 200)
               else
                 const SizedBox(
                   width: 200,

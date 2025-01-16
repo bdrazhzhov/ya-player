@@ -48,7 +48,7 @@ class CurrentTrackPage extends StatelessWidget {
                           maxHeight: 460,
                         ),
                         child: YandexImage(
-                          uriPlaceholder: track.coverUri!,
+                          uriTemplate: track.coverUri!,
                           size: 460,
                           borderRadius: 8,
                         ),

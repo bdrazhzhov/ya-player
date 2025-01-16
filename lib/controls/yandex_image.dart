@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class YandexImage extends StatelessWidget {
-  final String uriPlaceholder;
+  final String uriTemplate;
   final double size;
   final double? borderRadius;
   final Widget placeholder;
@@ -14,7 +14,7 @@ class YandexImage extends StatelessWidget {
 
   YandexImage({
     super.key,
-    required this.uriPlaceholder,
+    required this.uriTemplate,
     required this.size,
     this.borderRadius,
     this.placeholder = const DefaultImagePlaceholder()
@@ -30,7 +30,7 @@ class YandexImage extends StatelessWidget {
 
     final sizeString = realSize.toString();
     final dimensions = '${sizeString}x$sizeString';
-    _url = 'https://${uriPlaceholder.replaceAll('%%', dimensions)}';
+    _url = 'https://${uriTemplate.replaceAll('%%', dimensions)}';
   }
 
   @override

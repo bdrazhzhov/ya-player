@@ -140,7 +140,7 @@ class _MainScreen extends State<MainScreen> {
             return Row(
               children: [
                 YandexImage(
-                  uriPlaceholder: best.imageUrl,
+                  uriTemplate: best.imageUrl,
                   size: 50,
                   borderRadius: 8
                 ),

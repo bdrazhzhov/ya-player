@@ -41,5 +41,27 @@
   },
 
   "date_hoursShort": "hr",
-  "date_minutesShort": "min"
+  "date_minutesShort": "min",
+
+  "tracks_headerTrack": "TRACK",
+  "tracks_headerArtist": "ARTIST",
+  "tracks_headerAlbum": "ALBUM",
+
+  "album_album": "ALBUM",
+  "album_artist": "Artist",
+  "album_play": "Play",
+  "album_like": "Like",
+
+  "artist_artist": "ARTIST",
+  "artist_play": "Play",
+  "artist_like": "Like",
+  "artist_station": "Station by artist",
+  "artist_popularTracks": "Popular Tracks",
+  "artist_popularAlbums": "Popular Albums",
+  "artist_compilations": "Compilations",
+  "artist_similar": "Similar",
+  "artist_official": "Official pages",
+  "artist_showAll": "Show all"
+
+
 }

@@ -34,7 +34,7 @@ class PlaylistCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               (playlist.image != null) ?
-                YandexImage(uriPlaceholder: playlist.image!, size: 200, borderRadius: 8) :
+                YandexImage(uriTemplate: playlist.image!, size: 200, borderRadius: 8) :
                 SizedBox(
                   width: width,
                   height: width,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TracksHeader extends SliverPersistentHeaderDelegate {
   static const double _height = 40;
@@ -11,19 +12,19 @@ class TracksHeader extends SliverPersistentHeaderDelegate {
         height: _height,
         child: Container(
           decoration: BoxDecoration(color: theme.colorScheme.surface),
-          child: const Row(
+          child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                   width: 50,
                   child: Center(child: Text('#'))
               ),
               Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(left: 6.0),
-                    child: Text('TRACK'),
+                    child: Text(AppLocalizations.of(context)!.tracks_headerTrack),
                   )
               ),
-              SizedBox(
+              const SizedBox(
                   width: 50,
                   child: Center(child: Icon(Icons.schedule))
               )

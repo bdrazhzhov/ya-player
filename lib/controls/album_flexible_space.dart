@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '/models/music_api/album.dart';
 import 'yandex_image.dart';
@@ -12,38 +13,38 @@ class AlbumFlexibleSpace extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context
         .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
-    Widget widget;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     if (settings!.currentExtent == settings.minExtent) {
-      widget = Row(
+      return Row(
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: YandexImage(
-                uriPlaceholder: album.ogImage,
-                size: 300,
-                borderRadius: 8
-              ),
+              uriTemplate: album.ogImage,
+              size: 300,
+              borderRadius: 8
+            ),
           ),
           Expanded(child: Text(album.title)),
           ElevatedButton(
-              onPressed: () {},
-              child: const Row(
-                  children: [
-                    Icon(Icons.play_arrow),
-                    Text('Play')
-                  ]
-              )
+            onPressed: () {},
+            child: Row(
+              children: [
+                Icon(Icons.play_arrow),
+                Text(l10n.album_play)
+              ]
+            )
           ),
           ElevatedButton(
-              onPressed: () {},
-              child: const Row(
-                  children: [
-                    Icon(Icons.favorite),
-                    Text('Like')
-                  ]
-              )
+            onPressed: () {},
+            child: Row(
+              children: [
+                Icon(Icons.favorite),
+                Text(l10n.album_like)
+              ]
+            )
           )
         ],
       );
@@ -52,12 +53,12 @@ class AlbumFlexibleSpace extends StatelessWidget {
       double infoBlockHeight = settings.currentExtent;
       if (infoBlockHeight < 100) infoBlockHeight = 100;
 
-      widget = Row(
+      return Row(
         children: [
           YandexImage(
-              uriPlaceholder: album.ogImage,
-              size: 300,
-              borderRadius: 8
+            uriTemplate: album.ogImage,
+            size: 300,
+            borderRadius: 8
           ),
           const SizedBox(width: 20),
           Flexible(
@@ -67,7 +68,7 @@ class AlbumFlexibleSpace extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('ALBUM'),
+                  Text(l10n.album_album),
                   Text(
                     album.title,
                     overflow: TextOverflow.ellipsis,
@@ -76,7 +77,7 @@ class AlbumFlexibleSpace extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      const Text('Artist:'),
+                      Text('${l10n.album_artist}:'),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text('${album.artists.first.name} · ${album
@@ -90,9 +91,9 @@ class AlbumFlexibleSpace extends StatelessWidget {
                       Flexible(
                       child: Tooltip(
                         decoration: BoxDecoration(
-                            color: theme.primaryColor,
-                            border: Border.all(color: theme.focusColor),
-                            borderRadius: BorderRadius.all(Radius.circular(6))
+                          color: theme.primaryColor,
+                          border: Border.all(color: theme.focusColor),
+                          borderRadius: BorderRadius.all(Radius.circular(6))
                         ),
                         richMessage: WidgetSpan(
                           child: SizedBox(
@@ -104,31 +105,31 @@ class AlbumFlexibleSpace extends StatelessWidget {
                           ),
                         ),
                         child: Text(album.description!,
-                            maxLines: 3,
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis
+                          maxLines: 3,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis
                         ),
                       ),
                     )],
                   SizedBox(height: 8),
                   Row(children: [
                     ElevatedButton(
-                        onPressed: () {},
-                        child: const Row(
-                            children: [
-                              Icon(Icons.play_arrow),
-                              Text('Play')
-                            ]
-                        )
+                      onPressed: () {},
+                      child: Row(
+                        children: [
+                          Icon(Icons.play_arrow),
+                          Text(l10n.album_play)
+                        ]
+                      )
                     ),
                     ElevatedButton(
-                        onPressed: () {},
-                        child: const Row(
-                            children: [
-                              Icon(Icons.favorite),
-                              Text('Like')
-                            ]
-                        )
+                      onPressed: () {},
+                      child: Row(
+                        children: [
+                          Icon(Icons.favorite),
+                          Text(l10n.album_like)
+                        ]
+                      )
                     )
                   ])
                 ],
@@ -138,7 +139,5 @@ class AlbumFlexibleSpace extends StatelessWidget {
         ],
       );
     }
-
-    return widget;
   }
 }

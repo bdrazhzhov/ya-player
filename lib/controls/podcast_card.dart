@@ -40,7 +40,7 @@ class PodcastCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               YandexImage(
-                uriPlaceholder: podcast.image,
+                uriTemplate: podcast.image,
                 size: 200,
                 borderRadius: 8
               ),

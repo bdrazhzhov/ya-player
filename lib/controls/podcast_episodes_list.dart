@@ -37,7 +37,7 @@ class PodcastEpisodesList extends StatelessWidget {
             ),
             children: [
               YandexImage(
-                uriPlaceholder: episode.albums.first.image,
+                uriTemplate: episode.albums.first.image,
                 size: 60,
                 borderRadius: 8
               ),
