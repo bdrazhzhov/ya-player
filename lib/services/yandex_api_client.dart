@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class YandexApiClient {
   final String deviceId;
   final String deviceUuid;
-  final String lang;
+  Locale _locale;
 
   late final Dio _dio;
 
@@ -21,12 +21,17 @@ class YandexApiClient {
     }
   }
 
+  set locale(Locale value) {
+    _locale = value;
+    _dio.options.headers[HttpHeaders.acceptLanguageHeader] = _locale.languageCode;
+  }
+
   YandexApiClient({
     required String authToken,
     required this.deviceId,
     required this.deviceUuid,
-    this.lang = 'en'
-  }) {
+    locale = const Locale('en')
+  }) : _locale = locale {
     final options = BaseOptions(
       baseUrl: 'https://api.music.yandex.net',
       connectTimeout: const Duration(seconds: 10),
@@ -60,7 +65,7 @@ class YandexApiClient {
 
   Map<String, dynamic> _initHeaders(String authToken) {
     Map<String, dynamic> headers = {
-      HttpHeaders.acceptLanguageHeader: lang,
+      HttpHeaders.acceptLanguageHeader: _locale.languageCode,
       HttpHeaders.userAgentHeader: 'Windows 10',
       'X-Yandex-Music-Client': 'WindowsPhone/4.54',
       'X-Yandex-Music-Device': 'os=Windows.Desktop; os_version=10.0.22621.1992; '

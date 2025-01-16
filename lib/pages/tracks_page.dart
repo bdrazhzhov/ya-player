@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '/app_state.dart';
 import '/models/music_api/track.dart';
@@ -17,7 +18,7 @@ class TracksPage extends StatelessWidget {
     final appState = getIt<AppState>();
 
     return PageBase(
-      title: 'Tracks',
+      title: AppLocalizations.of(context)!.page_tracks,
       slivers: [
         SliverPersistentHeader(
           delegate: SliverTracksHeader(),

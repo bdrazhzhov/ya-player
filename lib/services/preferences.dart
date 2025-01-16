@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -81,6 +83,11 @@ class Preferences {
   bool get hideOnClose => _prefs.getBool('hideOnClose') ?? false;
   Future<void> setHideOnClose(bool value) async {
     await _prefs.setBool('hideOnClose', value);
+  }
+
+  Locale get locale => Locale(_prefs.getString('locale') ?? 'en');
+  Future<void> setLocale(Locale value) async {
+    await _prefs.setString('locale', value.languageCode);
   }
 
   Future<void> clear() async {

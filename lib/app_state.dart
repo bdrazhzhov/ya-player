@@ -61,6 +61,7 @@ class AppState {
   final canRepeatNotifier = ValueNotifier<bool>(false);
   // settings
   final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
+  final localeNotifier = ValueNotifier<Locale>(Locale('en'));
   bool isQueueShown = false;
 
   final _musicApi = getIt<MusicApi>();
@@ -99,6 +100,8 @@ class AppState {
 
       return;
     }
+
+    getIt<YandexApiClient>().locale = _prefs.locale;
 
     await _requestAppData();
     mainPageState.value = UiState.main;
@@ -156,21 +159,26 @@ class AppState {
 
   Future<void> _requestAppData() async {
     await _requestAccountData();
+    await _requestTranslatedData();
 
+    final List<Future> futures = [];
+    futures.add(_requestLikedTracks());
+    futures.add(_requestLikedAlbums());
+    futures.add(_requestArtists());
+    await Future.wait(futures);
+
+    await _requestInitialQueueData();
+  }
+
+  Future<void> _requestTranslatedData() async {
     final List<Future> futures = [];
     futures.add(_requestStationsDashboard());
     futures.add(_requestStations());
-    futures.add(_requestLikedTracks());
-    await Future.wait(futures);
-
-    futures.add(_requestLikedAlbums());
-    futures.add(_requestArtists());
     futures.add(_requestPlaylists());
     await Future.wait(futures);
 
     futures.add(_requestNonMusicCatalog());
     futures.add(_requestLanding());
-    futures.add(_requestInitialQueueData());
     await Future.wait(futures);
   }
 
@@ -386,6 +394,12 @@ class AppState {
 
       _windowManager.setHideOnClose(value);
       _prefs.setHideOnClose(value);
+    });
+
+    localeNotifier.addListener(() {
+      getIt<YandexApiClient>().locale = localeNotifier.value;
+      _prefs.setLocale(localeNotifier.value);
+      _requestTranslatedData();
     });
   }
 

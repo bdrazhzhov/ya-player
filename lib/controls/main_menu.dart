@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ya_player/app_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/models/music_api_types.dart';
 import '/services/service_locator.dart';
@@ -20,6 +21,7 @@ class _MainMenu extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,52 +42,52 @@ class _MainMenu extends State<MainMenu> {
             width: 20,
             height: 20,
           ),
-          text: 'Main',
+          text: l10n.menu_main,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/home'),
         ),
         MenuItem(
           icon: const Icon(Icons.radio_outlined),
-          text: 'Stations',
+          text: l10n.menu_stations,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/stations'),
         ),
         MenuItem(
           icon: const Icon(Icons.music_note),
-          text: 'Podcasts and books',
+          text: l10n.menu_podcasts,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/podcasts_books'),
         ),
         const SizedBox(height: 50),
-        if(!_collapsed) const Text('MY MUSIC'),
+        if(!_collapsed) Text(l10n.menu_myMusic),
         MenuItem(
           icon: const Icon(Icons.list),
-          text: 'Tracks',
+          text: l10n.menu_tracks,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/tracks'),
         ),
         MenuItem(
           icon: const Icon(Icons.album),
-          text: 'Albums',
+          text: l10n.menu_albums,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/albums'),
         ),
         MenuItem(
           icon: const Icon(Icons.mic),
-          text: 'Artists',
+          text: l10n.menu_artists,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/artists'),
         ),
         MenuItem(
           icon: const Icon(Icons.queue_music),
-          text: 'Playlists',
+          text: l10n.menu_playlists,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/playlists'),
         ),
         const Spacer(),
         MenuItem(
           icon: const Icon(Icons.settings),
-          text: 'Settings',
+          text: l10n.menu_settings,
           collapsed: _collapsed,
           onTap: () => _goToRoute('/settings'),
         ),

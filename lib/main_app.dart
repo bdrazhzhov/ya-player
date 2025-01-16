@@ -15,12 +15,18 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: _appState.themeNotifier,
       builder: (_, ThemeData theme, __) {
-        return MaterialApp(
-          title: 'YaPlayer',
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: theme,
-          home: MainPage()
+        return ValueListenableBuilder(
+          valueListenable: _appState.localeNotifier,
+          builder: (_, Locale locale, __) {
+            return MaterialApp(
+              title: 'YaPlayer',
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              theme: theme,
+              locale: locale,
+              home: MainPage()
+            );
+          },
         );
       },
     );

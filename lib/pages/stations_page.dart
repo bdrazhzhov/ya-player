@@ -73,7 +73,7 @@ class _StationsWidget extends StatelessWidget {
 
         return PageBase(slivers: [
           SliverText(
-            text: 'Stations',
+            text: AppLocalizations.of(context)!.page_stations,
             padding: const EdgeInsets.only(top: 12, bottom: 38),
             style: theme.textTheme.headlineLarge,
           ),

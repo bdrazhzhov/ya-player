@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/pages/page_base.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../app_state.dart';
-import '../controls/album_card.dart';
-import '../models/music_api/album.dart';
-import '../services/service_locator.dart';
+import '/pages/page_base.dart';
+import '/app_state.dart';
+import '/controls/album_card.dart';
+import '/models/music_api/album.dart';
+import '/services/service_locator.dart';
 
 class AlbumsPage extends StatelessWidget {
   const AlbumsPage({super.key});
@@ -14,7 +15,7 @@ class AlbumsPage extends StatelessWidget {
     final appState = getIt<AppState>();
 
     return PageBase(
-      title: 'Albums',
+      title: AppLocalizations.of(context)!.page_albums,
       slivers: [
         SliverToBoxAdapter(
           child: ValueListenableBuilder<List<Album>>(

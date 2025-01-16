@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/pages/page_base.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../models/music_api/block.dart';
-import '../app_state.dart';
-import '../controls/page_block.dart';
-import '../services/service_locator.dart';
+import '/pages/page_base.dart';
+import '/models/music_api/block.dart';
+import '/app_state.dart';
+import '/controls/page_block.dart';
+import '/services/service_locator.dart';
 
 class HomePage extends StatelessWidget {
   final _appState = getIt<AppState>();
@@ -12,9 +13,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return PageBase(
-      title: 'Home',
+      title: AppLocalizations.of(context)!.page_main,
       slivers: [
         ValueListenableBuilder(
           valueListenable: _appState.landingNotifier,

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/models/music_api/playlist.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../app_state.dart';
-import '../controls/playlist_card.dart';
-import '../services/service_locator.dart';
+import '/models/music_api/playlist.dart';
+import '/app_state.dart';
+import '/controls/playlist_card.dart';
+import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
   @override
   Widget build(BuildContext context) {
     return PageBase(
-      title: 'Playlists',
+      title: AppLocalizations.of(context)!.page_playlists,
       slivers: [ValueListenableBuilder<List<Playlist>>(
         valueListenable: appState.playlistsNotifier,
         builder: (_, playlists, __) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '/app_state.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
+import '/controls/settings/language_selector.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,34 +14,37 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final _appState = getIt<AppState>();
-  
+  final appState = getIt<AppState>();
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return PageBase(
-      title: 'Settings',
+      title: l10n.page_settings,
       slivers: [
         SliverList.list(
           children: [
             ListTile(
-              title: const Text('Close to system tray'),
+              title: Text(l10n.settings_closeToTray),
               trailing: ValueListenableBuilder(
-                valueListenable: _appState.closeToTrayEnabledNotifier,
+                valueListenable: appState.closeToTrayEnabledNotifier,
                 builder: (_, bool isEnabled, __) {
                   return Switch(
                     value: isEnabled,
                     onChanged: (bool value) {
-                      _appState.closeToTrayEnabledNotifier.value = value;
+                      appState.closeToTrayEnabledNotifier.value = value;
                     },
                   );
                 },
               ),
               onTap: () {
-                _appState.closeToTrayEnabledNotifier.value = !_appState.closeToTrayEnabledNotifier.value;
+                appState.closeToTrayEnabledNotifier.value = !appState.closeToTrayEnabledNotifier.value;
               },
             ),
             ListTile(
-              title: const Text('Language'),
+              title: Text(l10n.settings_language),
+              trailing: LanguageSelector(),
               // onTap: () {
               //
               // },

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/models/music_api/artist.dart';
-import 'package:ya_player/pages/page_base.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../app_state.dart';
-import '../controls/artist_card.dart';
-import '../services/service_locator.dart';
+import '/models/music_api/artist.dart';
+import '/pages/page_base.dart';
+import '/app_state.dart';
+import '/controls/artist_card.dart';
+import '/services/service_locator.dart';
 
 class ArtistsPage extends StatelessWidget {
   const ArtistsPage({super.key});
@@ -14,7 +15,7 @@ class ArtistsPage extends StatelessWidget {
     final appState = getIt<AppState>();
 
     return PageBase(
-      title: 'Artists',
+      title: AppLocalizations.of(context)!.page_artists,
       slivers: [ValueListenableBuilder<List<LikedArtist>>(
         valueListenable: appState.artistsNotifier,
         builder: (_, artists, __) {
