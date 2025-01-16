@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/models/music_api/station.dart';
-import 'station/station_circle.dart';
+import 'station_circle.dart';
 
 class StationGenre extends StatelessWidget {
   final Station station;

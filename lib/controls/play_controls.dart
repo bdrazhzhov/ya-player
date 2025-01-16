@@ -7,7 +7,7 @@ import '/services/service_locator.dart';
 import 'play_button.dart';
 import 'playback/repeat_button.dart';
 import 'playback/shuffle_button.dart';
-import 'station_settings_button.dart';
+import 'station/station_settings_button.dart';
 
 class PlayControls extends StatelessWidget {
   const PlayControls({super.key,});

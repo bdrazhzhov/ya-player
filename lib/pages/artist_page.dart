@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../controls/artist/artist_flexible_space.dart';
+import '/controls/artist/artist_flexible_space.dart';
 import '/controls/artist/artist_social_link.dart';
 import '/controls/artist/artist_section_header.dart';
 import '/app_state.dart';

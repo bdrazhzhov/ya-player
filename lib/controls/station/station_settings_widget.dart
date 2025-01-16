@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/app_state.dart';
 import '/services/service_locator.dart';
-import '/controls/station_restriction_widget.dart';
+import 'station_restriction_widget.dart';
 import '/models/music_api/station.dart';
 
 class StationSettingsWidget extends StatelessWidget {

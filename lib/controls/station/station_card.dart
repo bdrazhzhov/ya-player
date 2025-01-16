@@ -3,7 +3,7 @@ import 'package:ya_player/app_state.dart';
 
 import '/services/service_locator.dart';
 import '/models/music_api/station.dart';
-import 'station/station_circle.dart';
+import 'station_circle.dart';
 
 class StationCard extends StatelessWidget {
   final Station station;

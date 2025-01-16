@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/controls/stations_grid.dart';
+import '../controls/station/stations_grid.dart';
 import '/models/music_api/station.dart';
 import 'page_base.dart';
 
