@@ -61,7 +61,7 @@ class AppState {
   final canRepeatNotifier = ValueNotifier<bool>(false);
   // settings
   final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
-  final localeNotifier = ValueNotifier<Locale>(Locale('en'));
+  late final localeNotifier = ValueNotifier<Locale>(_prefs.locale);
   bool isQueueShown = false;
 
   final _musicApi = getIt<MusicApi>();
