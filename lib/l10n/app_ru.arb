@@ -26,5 +26,20 @@
   "page_settings": "Настройки",
 
   "settings_closeToTray": "Сворачивать в трей, а не закрывать",
-  "settings_language": "Язык"
+  "settings_language": "Язык",
+
+  "playlist": "Плейлист",
+  "playlist_compiledBy": "Составлено",
+
+  "tracks_count": "{count, plural, =0 {нет треков} one {1 трек} few {{count} трека} many {{count} треков} other {{count} треков}}",
+  "@tracks_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "date_hoursShort": "ч.",
+  "date_minutesShort": "мин."
 }

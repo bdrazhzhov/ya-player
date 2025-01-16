@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'yandex_image.dart';
 import '../pages/playlist_page.dart';
@@ -54,7 +55,7 @@ class PlaylistCard extends StatelessWidget {
                   ),
                 ),
               Text(
-                '${playlist.tracksCount} tracks',
+                AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
                 style: TextStyle(color: theme.colorScheme.outline)
               )
             ],

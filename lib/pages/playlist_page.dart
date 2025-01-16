@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '/app_state.dart';
 import '/controls/sliver_track_list.dart';
@@ -11,22 +12,18 @@ import 'page_base.dart';
 
 class PlaylistPage extends StatelessWidget {
   final Playlist playlist;
-  late final Future<Playlist> _playlistData;
+  late final Future<Playlist> _playlistData = _musicApi.playlist(playlist.uid, playlist.kind);
   final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  late final String _duration;
 
-  PlaylistPage(this.playlist, {super.key}) {
-    _playlistData = _musicApi.playlist(playlist.uid, playlist.kind);
-    _duration = _calculateDuration();
-  }
+  PlaylistPage(this.playlist, {super.key});
 
-  String _calculateDuration() {
+  String _calculateDuration(AppLocalizations l10n) {
     String duration = '';
-    if(playlist.duration.inHours > 0) duration += '${playlist.duration.inHours} hrs';
+    if(playlist.duration.inHours > 0) duration += '${playlist.duration.inHours} ${l10n.date_hoursShort}';
     if(playlist.duration.inMinutes > 0) {
       final remainingMinutes = playlist.duration.inMinutes - playlist.duration.inHours * 60;
-      duration += ' $remainingMinutes min';
+      duration += ' $remainingMinutes ${l10n.date_minutesShort}';
     }
     return duration;
   }
@@ -34,6 +31,8 @@ class PlaylistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final duration = _calculateDuration(l10n);
 
     return PageBase(
       title: playlist.title,
@@ -53,16 +52,16 @@ class PlaylistPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Playlist'),
+                  Text(l10n.playlist),
                   Text(playlist.title),
                   Text.rich(
                     TextSpan(
                       style: TextStyle(color: theme.colorScheme.outline),
-                      text: 'Compiled by ',
+                      text: l10n.playlist_compiledBy,
                       children: [
                         TextSpan(
                           style: theme.textTheme.bodyMedium,
-                          text: '${playlist.ownerName} · ${playlist.tracksCount} tracks · $_duration'
+                          text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
                         )
                       ]
                     )
