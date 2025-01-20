@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '/player/players_manager.dart';
+import '/models/music_api/artist_info.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
-import '/models/music_api/artist.dart';
 import '/controls/yandex_image.dart';
 
 class ArtistFlexibleSpace extends StatelessWidget {
-  final Artist artist;
+  final ArtistInfo artistInfo;
   final _appState = getIt<AppState>();
+  final _player = getIt<PlayersManager>();
 
-  ArtistFlexibleSpace({super.key, required this.artist});
+  ArtistFlexibleSpace({super.key, required this.artistInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +28,14 @@ class ArtistFlexibleSpace extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: YandexImage(
-              uriTemplate: artist.cover?.uri ?? '',
+              uriTemplate: artistInfo.artist.cover?.uri ?? '',
               size: 60,
               borderRadius: 4
             ),
           ),
           Expanded(
             child: Text(
-              artist.name,
+                artistInfo.artist.name,
               style: theme.textTheme.headlineLarge
             )
           ),
@@ -48,7 +50,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
       return Row(
         children: [
           YandexImage(
-            uriTemplate: artist.cover?.uri ?? '',
+            uriTemplate: artistInfo.artist.cover?.uri ?? '',
             size: 200,
             borderRadius: 8
           ),
@@ -62,7 +64,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
                 children: [
                   Text(l10n.artist_artist),
                   Text(
-                    artist.name,
+                    artistInfo.artist.name,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: theme.textTheme.headlineLarge,
@@ -79,7 +81,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
   }
 
   Widget _createActionButtons(AppLocalizations l10n) {
-    final extraActions = artist.extraActions.map(
+    final extraActions = artistInfo.artist.extraActions.map(
       (e) {
         var icon = Icons.language;
 
@@ -103,7 +105,10 @@ class ArtistFlexibleSpace extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.play_arrow),
           tooltip: l10n.artist_play,
-          onPressed: () {},
+          onPressed: () async {
+            await _appState.playContent(artistInfo, artistInfo.popularTracks, 0);
+            await _player.play(0);
+          },
         ),
         IconButton(
           icon: Icon(Icons.favorite),
@@ -113,7 +118,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.radio),
           tooltip: l10n.artist_station,
-          onPressed: () => _appState.playArtistStation(artist),
+          onPressed: () => _appState.playArtistStation(artistInfo.artist),
         ),
         ...extraActions
       ]

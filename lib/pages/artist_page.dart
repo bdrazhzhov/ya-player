@@ -41,7 +41,7 @@ class ArtistPage extends StatelessWidget {
               SliverAppBar(
                 leading: const SizedBox.shrink(),
                 pinned: true,
-                flexibleSpace: ArtistFlexibleSpace(artist: info.artist),
+                flexibleSpace: ArtistFlexibleSpace(artistInfo: info),
                 collapsedHeight: 60,
                 expandedHeight: 200,
               ),
