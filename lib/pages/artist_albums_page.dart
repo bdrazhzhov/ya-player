@@ -27,7 +27,7 @@ class _ArtistAlbumsPageState extends State<ArtistAlbumsPage> {
   AlbumsSortOrder sortOrder = AlbumsSortOrder.desc;
   final selectedStyle = TextStyle(fontWeight: FontWeight.bold);
 
-  static const _itemWidth = 200.0;
+  static const itemWidth = 200.0;
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +72,10 @@ class _ArtistAlbumsPageState extends State<ArtistAlbumsPage> {
                 itemCount: albums.length,
                 gridDelegate: CustomSliverGridDelegateExtent(
                   crossAxisSpacing: 12,
-                  maxCrossAxisExtent: _itemWidth,
-                  height: _itemWidth + 60
+                  maxCrossAxisExtent: itemWidth,
+                  height: itemWidth + 60
                 ),
-                itemBuilder: (_, index) => AlbumCard(albums[index], _itemWidth),
+                itemBuilder: (_, index) => AlbumCard(albums[index], itemWidth),
               )
             ],
           );
