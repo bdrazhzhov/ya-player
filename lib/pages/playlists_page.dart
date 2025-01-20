@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../helpers/custom_sliver_grid_delegate_extent.dart';
 import '/models/music_api/playlist.dart';
 import '/app_state.dart';
 import '/controls/playlist_card.dart';
@@ -16,8 +18,7 @@ class PlaylistsPage extends StatefulWidget {
 
 class _PlaylistsPageState extends State<PlaylistsPage> {
   final appState = getIt<AppState>();
-  static const double _minWidth = 162;
-  static const double _maxWidth = 208;
+  static const _itemWidth = 200.0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,34 +27,32 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       slivers: [ValueListenableBuilder<List<Playlist>>(
         valueListenable: appState.playlistsNotifier,
         builder: (_, playlists, __) {
-          return SliverToBoxAdapter(
-            child: LayoutBuilder(
-              builder: (_, BoxConstraints constraints) {
-                int columnsNumber = 3;
-                double width = constraints.maxWidth / columnsNumber;
+          return SliverLayoutBuilder(
+            builder: (_, SliverConstraints sliverConstraints) {
+              final constraints = sliverConstraints.asBoxConstraints();
+              final spacing = 12.0;
 
-                //TODO: rework for case with width and spacing
-                while(true) {
-                  if(width < _minWidth) columnsNumber -= 1;
-                  if(columnsNumber == 0) {
-                    columnsNumber = 1;
-                    width = constraints.maxWidth;
-                    break;
-                  }
-                  if(width > _maxWidth) columnsNumber += 1;
-
-                  width = constraints.maxWidth / columnsNumber;
-
-                  if(columnsNumber == 1 || width >= _minWidth && width <= _maxWidth) break;
-                }
-
-                return Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: playlists.map((playlist) => PlaylistCard(playlist, width: width)).toList(),
+              if(constraints.maxWidth < spacing * (playlists.length - 1) + playlists.length * _itemWidth)
+              {
+                return SliverGrid.builder(
+                  itemCount: playlists.length,
+                  gridDelegate: CustomSliverGridDelegateExtent(
+                    crossAxisSpacing: spacing,
+                    maxCrossAxisExtent: _itemWidth,
+                    height: _itemWidth + 60
+                  ),
+                  itemBuilder: (_, index) => PlaylistCard(playlists[index], width: _itemWidth),
                 );
-              },
-            ),
+              }
+
+              return SliverToBoxAdapter(
+                child: Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: playlists.map((playlist) => PlaylistCard(playlist, width: _itemWidth)).toList(),
+                ),
+              );
+            },
           );
         }
       )],
