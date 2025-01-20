@@ -16,6 +16,8 @@ class StationSettingsWidget extends StatelessWidget {
     List<StationOptionWidget> restrictions = [];
 
     station.restrictions2.forEach((key,restrictions2){
+      if(restrictions2.possibleValues.isEmpty) return;
+
       restrictions.add(StationOptionWidget(
         restrictions: restrictions2,
         value: station.settings2[key],

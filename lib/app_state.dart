@@ -497,6 +497,13 @@ class AppState {
     _playersManager.play();
   }
 
+  Future<void> playArtistStation(LikedArtist artist) async {
+    final stationId = StationId("artist", artist.id.toString());
+    final station = await _musicApi.station(stationId);
+
+    return playStation(station);
+  }
+
   bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeTrack(Track track) async {

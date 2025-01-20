@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '/app_state.dart';
+import '/services/service_locator.dart';
 import '/models/music_api/artist.dart';
 import '/controls/yandex_image.dart';
 
 class ArtistFlexibleSpace extends StatelessWidget {
   final LikedArtist artist;
+  final _appState = getIt<AppState>();
 
-  const ArtistFlexibleSpace({super.key, required this.artist});
+  ArtistFlexibleSpace({super.key, required this.artist});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +103,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
         _ActionButton(
           icon: Icons.radio,
           text: l10n.artist_station,
-          onPressed: () {},
+          onPressed: () => _appState.playArtistStation(artist),
         ),
         ...extraActions
       ]
