@@ -8,6 +8,9 @@ import 'models/music_api_types.dart';
 import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
 
+enum AlbumsSortBy { rating, year }
+enum AlbumsSortOrder { desc, asc }
+
 final class QueueIndexInvalid implements Exception {}
 
 class MusicApi {
@@ -181,11 +184,11 @@ class MusicApi {
     return albums;
   }
 
-  Future<List<LikedArtist>> likedArtists() async {
+  Future<List<Artist>> likedArtists() async {
     Map<String, dynamic> json = await _http.get('/users/$uid/likes/artists?with-timestamps=true');
 
-    List<LikedArtist> artists = [];
-    json['result'].forEach((item) => artists.add(LikedArtist.fromJson(item['artist'])));
+    List<Artist> artists = [];
+    json['result'].forEach((item) => artists.add(Artist.fromJson(item['artist'])));
 
     return artists;
   }
@@ -449,12 +452,19 @@ class MusicApi {
     return ids;
   }
 
-  Future<PagedData<Album>> artistAlbums(int artistId) async {
-    final String url = '/artists/$artistId/direct-albums?page=0&page-size=50&sort-by=rating&sort-order=desc';
+  Future<PagedData<Album>> artistAlbums({
+    required int artistId, page = 0, perPage = 50,
+    AlbumsSortBy sortBy = AlbumsSortBy.rating,
+    AlbumsSortOrder sortOrder = AlbumsSortOrder.desc
+  }) async {
+    final sortByString = sortBy.toString().split('.').last;
+    final sortOrderString = sortOrder.toString().split('.').last;
+    final String url = '/artists/$artistId/direct-albums?page=$page'
+        '&page-size=$perPage&sort-by=$sortByString&sort-order=$sortOrderString';
     Map<String, dynamic> json = await _http.get(url);
     List<Album> albums = [];
     json['result']['albums'].forEach((a) => albums.add(Album.fromJson(a)));
 
-    return PagedData.fromJson(json['pager'], albums);
+    return PagedData.fromJson(json['result']['pager'], albums);
   }
 }

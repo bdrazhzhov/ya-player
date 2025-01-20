@@ -2,7 +2,7 @@ class PagedData<T> {
   final int page;
   final int perPage;
   final int total;
-  final List<T> items;
+  final Iterable<T> items;
 
   PagedData({
     required this.page,

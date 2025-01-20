@@ -16,7 +16,7 @@ class ArtistsPage extends StatelessWidget {
 
     return PageBase(
       title: AppLocalizations.of(context)!.page_artists,
-      slivers: [ValueListenableBuilder<List<LikedArtist>>(
+      slivers: [ValueListenableBuilder<List<Artist>>(
         valueListenable: appState.artistsNotifier,
         builder: (_, artists, __) {
           return SliverToBoxAdapter(

@@ -8,6 +8,7 @@ import '/app_state.dart';
 import '/controls/custom_separated_hlist.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
+import 'artist_albums_page.dart';
 import 'page_base.dart';
 import '/controls/album_card.dart';
 import '/controls/artist_card.dart';
@@ -20,7 +21,7 @@ class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo = _musicApi.artistInfo(artist.id);
   final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  final LikedArtist artist;
+  final Artist artist;
 
   ArtistPage(this.artist, {super.key});
 
@@ -54,7 +55,14 @@ class ArtistPage extends StatelessWidget {
               ],
 
               if(info.albums.isNotEmpty) ...[
-                ArtistSectionHeader(title: l10n.artist_popularAlbums),
+                ArtistSectionHeader(title: l10n.artist_popularAlbums,
+                  onPressed: (){
+                    Navigator.of(context).push(PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
+                      reverseTransitionDuration: Duration.zero,
+                    ));
+                  }
+                ),
                 createSeparatedList(info.albums.map((album) => AlbumCard(album, 150))),
               ],
 

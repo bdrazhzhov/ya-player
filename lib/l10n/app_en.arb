@@ -61,7 +61,11 @@
   "artist_compilations": "Compilations",
   "artist_similar": "Similar",
   "artist_official": "Official pages",
-  "artist_showAll": "Show all"
-
+  "artist_showAll": "Show all",
+  "artist_allAlbums": "All Albums",
+  "artist_albumsSortByRating": "Rating",
+  "artist_albumsSortByYear": "Year",
+  "artist_albumsSortOrderAsc": "Ascending",
+  "artist_albumsSortOrderDesc": "Descending"
 
 }

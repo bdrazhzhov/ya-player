@@ -6,7 +6,7 @@ import '/pages/artist_page.dart';
 import 'yandex_image.dart';
 
 class ArtistCard extends StatelessWidget {
-  final LikedArtist artist;
+  final Artist artist;
   final double width;
 
   const ArtistCard(this.artist, this.width, {super.key});

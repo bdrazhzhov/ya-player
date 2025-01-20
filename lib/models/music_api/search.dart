@@ -64,7 +64,7 @@ class ResultsContainer<T extends Object> {
 }
 
 class SearchResult {
-  final ResultsContainer<LikedArtist>? artists;
+  final ResultsContainer<Artist>? artists;
   final ResultsContainer<Album>? albums;
   final ResultsContainer<Track>? tracks;
   final ResultsContainer<Playlist>? playlists;
@@ -77,10 +77,10 @@ class SearchResult {
   factory SearchResult.fromJson(Map<String, dynamic> json) {
     final result = json['result'];
 
-    ResultsContainer<LikedArtist>? artists;
+    ResultsContainer<Artist>? artists;
     if(result['artists'] != null) {
       artists = ResultsContainer.fromJson(result['artists']);
-      result['artists']['results'].forEach((a) => artists!.results.add(LikedArtist.fromJson(a)));
+      result['artists']['results'].forEach((a) => artists!.results.add(Artist.fromJson(a)));
     }
 
     ResultsContainer<Album>? albums;

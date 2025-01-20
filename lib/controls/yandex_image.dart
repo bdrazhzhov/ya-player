@@ -37,7 +37,6 @@ class YandexImage extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget image = CachedNetworkImage(
       width: size,
-      height: size,
       memCacheWidth: size.toInt(),
       fit: BoxFit.fitWidth,
       placeholder: (context, url) => placeholder,

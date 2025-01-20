@@ -98,7 +98,7 @@ class Block {
       case 'playlist':
         return Playlist.fromJson(payload);
       case 'artist':
-        return LikedArtist.fromJson(payload);
+        return Artist.fromJson(payload);
       default:
         debugPrint('Unknown play context: $context');
     }

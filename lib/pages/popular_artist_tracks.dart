@@ -7,7 +7,7 @@ import '../models/music_api_types.dart';
 import '../services/service_locator.dart';
 
 class PopularArtistTracks extends StatelessWidget {
-  final LikedArtist artist;
+  final Artist artist;
   late final Future<List<Track>> _tracks;
   final _appState = getIt<AppState>();
 

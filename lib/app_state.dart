@@ -38,7 +38,7 @@ class AppState {
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
   final albumsNotifier = ValueNotifier<List<Album>>([]);
-  final artistsNotifier = ValueNotifier<List<LikedArtist>>([]);
+  final artistsNotifier = ValueNotifier<List<Artist>>([]);
   final playlistsNotifier = ValueNotifier<List<Playlist>>([]);
   final albumNotifier = ValueNotifier<AlbumWithTracks?>(null);
   final searchSuggestionsNotifier = ValueNotifier<SearchSuggestions?>(null);
@@ -497,7 +497,7 @@ class AppState {
     _playersManager.play();
   }
 
-  Future<void> playArtistStation(LikedArtist artist) async {
+  Future<void> playArtistStation(Artist artist) async {
     final stationId = StationId("artist", artist.id.toString());
     if(currentStationNotifier.value?.id == stationId) return;
 

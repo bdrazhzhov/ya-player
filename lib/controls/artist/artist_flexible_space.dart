@@ -8,7 +8,7 @@ import '/models/music_api/artist.dart';
 import '/controls/yandex_image.dart';
 
 class ArtistFlexibleSpace extends StatelessWidget {
-  final LikedArtist artist;
+  final Artist artist;
   final _appState = getIt<AppState>();
 
   ArtistFlexibleSpace({super.key, required this.artist});

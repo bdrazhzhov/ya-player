@@ -61,7 +61,12 @@
   "artist_compilations": "Сборники",
   "artist_similar": "Похожие",
   "artist_official": "Официальные страницы",
-  "artist_showAll": "Показать все"
+  "artist_showAll": "Показать все",
+  "artist_allAlbums": "Все альбомы",
+  "artist_albumsSortByRating": "Рейтинг",
+  "artist_albumsSortByYear": "Год",
+  "artist_albumsSortOrderAsc": "По возрастанию",
+  "artist_albumsSortOrderDesc": "По убыванию"
 
 
 }

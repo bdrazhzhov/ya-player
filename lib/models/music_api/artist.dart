@@ -9,16 +9,16 @@ class ArtistBase {
   }
 }
 
-class LikedArtist extends ArtistBase {
+class Artist extends ArtistBase {
   final ArtistCover? cover;
   final List<String> genres;
   final ArtistCounts counts;
   final List<ArtistLink> links;
   final List<ArtistExtraAction> extraActions;
 
-  LikedArtist(super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
+  Artist(super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
 
-  factory LikedArtist.fromJson(Map<String, dynamic> json) {
+  factory Artist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];
     json['genres'].forEach((genre) => genres.add(genre));
 
@@ -35,7 +35,7 @@ class LikedArtist extends ArtistBase {
       json['extraActions'].forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
     }
 
-    return LikedArtist(
+    return Artist(
       json['id'] is String ? int.parse(json['id']) : json['id'],
       json['name'], cover, genres,
       ArtistCounts.fromJson(json['counts']), links, extraActions

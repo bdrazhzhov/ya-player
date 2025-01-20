@@ -8,8 +8,9 @@ import 'yandex_image.dart';
 class AlbumCard extends StatelessWidget {
   final Album album;
   final double width;
+  final double? imageWidth;
 
-  const AlbumCard(this.album, this.width, {super.key});
+  const AlbumCard(this.album, this.width, {super.key, this.imageWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,12 @@ class AlbumCard extends StatelessWidget {
           )
         );
       },
-      child: Container(
+      child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: width),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            YandexImage(uriTemplate: album.ogImage, size: width, borderRadius: 8),
+            YandexImage(uriTemplate: album.ogImage, size: imageWidth ?? width, borderRadius: 8),
             Text(
               HtmlCharacterEntities.decode(album.title),
               overflow: TextOverflow.ellipsis,

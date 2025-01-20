@@ -75,8 +75,8 @@ class PageBlock extends StatelessWidget {
       case const (Album):
         final album = entity as Album;
         return AlbumCard(album, 180);
-      case const (LikedArtist):
-        final artist = entity as LikedArtist;
+      case const (Artist):
+        final artist = entity as Artist;
         return ArtistCard(artist, 180);
       case const (Promotion):
         final promotion = entity as Promotion;

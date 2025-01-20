@@ -4,11 +4,11 @@ import 'album.dart';
 import 'artist.dart';
 
 class ArtistInfo {
-  final LikedArtist artist;
+  final Artist artist;
   final List<Album> albums;
   final List<Album> alsoAlbums;
   final List<Track> popularTracks;
-  final List<LikedArtist> similarArtists;
+  final List<Artist> similarArtists;
 
   ArtistInfo(this.artist, this.albums, this.alsoAlbums,
       this.popularTracks, this.similarArtists);
@@ -25,10 +25,10 @@ class ArtistInfo {
     List<Track> popularTracks = [];
     data['popularTracks'].forEach((track) => popularTracks.add(Track.fromJson(track, '')));
 
-    List<LikedArtist> similarArtists = [];
-    data['similarArtists'].forEach((artist) => similarArtists.add(LikedArtist.fromJson(artist)));
+    List<Artist> similarArtists = [];
+    data['similarArtists'].forEach((artist) => similarArtists.add(Artist.fromJson(artist)));
 
-    return ArtistInfo(LikedArtist.fromJson(data['artist']), albums,
+    return ArtistInfo(Artist.fromJson(data['artist']), albums,
         alsoAlbums, popularTracks, similarArtists);
   }
 }
