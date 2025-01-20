@@ -66,6 +66,6 @@
   "artist_albumsSortByRating": "Rating",
   "artist_albumsSortByYear": "Year",
   "artist_albumsSortOrderAsc": "Ascending",
-  "artist_albumsSortOrderDesc": "Descending"
-
+  "artist_albumsSortOrderDesc": "Descending",
+  "artist_allCompilations": "All Albums"
 }

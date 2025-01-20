@@ -48,6 +48,7 @@ class AlbumCard extends StatelessWidget {
                 album.year.toString(),
                 if(album.version != null )...[' · ', album.version!]
               ].join(),
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: theme.colorScheme.outline,
                 fontSize: theme.textTheme.labelMedium?.fontSize

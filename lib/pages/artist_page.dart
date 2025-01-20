@@ -9,6 +9,7 @@ import '/controls/custom_separated_hlist.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
 import 'artist_albums_page.dart';
+import 'artist_compilations_page.dart';
 import 'page_base.dart';
 import '/controls/album_card.dart';
 import '/controls/artist_card.dart';
@@ -55,7 +56,8 @@ class ArtistPage extends StatelessWidget {
               ],
 
               if(info.albums.isNotEmpty) ...[
-                ArtistSectionHeader(title: l10n.artist_popularAlbums,
+                ArtistSectionHeader(
+                  title: l10n.artist_popularAlbums,
                   onPressed: (){
                     Navigator.of(context).push(PageRouteBuilder(
                       pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
@@ -67,7 +69,15 @@ class ArtistPage extends StatelessWidget {
               ],
 
               if(info.alsoAlbums.isNotEmpty) ...[
-                ArtistSectionHeader(title: l10n.artist_compilations),
+                ArtistSectionHeader(
+                  title: l10n.artist_compilations,
+                  onPressed: (){
+                    Navigator.of(context).push(PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => ArtistCompilationsPage(artist: info.artist),
+                      reverseTransitionDuration: Duration.zero,
+                    ));
+                  }
+                ),
                 createSeparatedList(info.alsoAlbums.map((album) => AlbumCard(album, 150))),
               ],
 

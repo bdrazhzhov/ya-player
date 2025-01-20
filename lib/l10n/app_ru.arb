@@ -66,7 +66,7 @@
   "artist_albumsSortByRating": "Рейтинг",
   "artist_albumsSortByYear": "Год",
   "artist_albumsSortOrderAsc": "По возрастанию",
-  "artist_albumsSortOrderDesc": "По убыванию"
-
+  "artist_albumsSortOrderDesc": "По убыванию",
+  "artist_allCompilations": "Все сборники"
 
 }

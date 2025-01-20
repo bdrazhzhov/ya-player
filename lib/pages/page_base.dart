@@ -3,12 +3,25 @@ import 'package:flutter/material.dart';
 class PageBase extends StatelessWidget {
   final String? title;
   final List<Widget> slivers;
+  final _scrollController = ScrollController();
+  final Function()? onDataPreload;
 
-  const PageBase({
+  PageBase({
     super.key,
     this.title,
-    required this.slivers
-  });
+    required this.slivers,
+    this.onDataPreload
+  }) {
+    _scrollController.addListener((){
+      if(onDataPreload == null || _scrollController.position.outOfRange) return;
+      if(_scrollController.offset <
+          _scrollController.position.maxScrollExtent - 1000) {
+        return;
+      }
+
+      onDataPreload!();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +30,7 @@ class PageBase extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           if(title != null)
             SliverPadding(

@@ -467,4 +467,15 @@ class MusicApi {
 
     return PagedData.fromJson(json['result']['pager'], albums);
   }
+
+  Future<PagedData<Album>> artistAlsoAlbums({
+    required int artistId, page = 0, perPage = 50
+  }) async {
+    final String url = '/artists/$artistId/also-albums?page=$page&page-size=$perPage';
+    Map<String, dynamic> json = await _http.get(url);
+    List<Album> albums = [];
+    json['result']['albums'].forEach((a) => albums.add(Album.fromJson(a)));
+
+    return PagedData.fromJson(json['result']['pager'], albums);
+  }
 }
