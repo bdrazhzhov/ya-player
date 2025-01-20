@@ -499,6 +499,8 @@ class AppState {
 
   Future<void> playArtistStation(LikedArtist artist) async {
     final stationId = StationId("artist", artist.id.toString());
+    if(currentStationNotifier.value?.id == stationId) return;
+
     final station = await _musicApi.station(stationId);
 
     return playStation(station);
