@@ -139,7 +139,13 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "YaPlayer");
   }
 
+  // height doesn't include header bar
   gtk_window_set_default_size(window, 1080, 720);
+  GdkGeometry hints;
+  hints.min_width = 660;
+  // height includes header bar
+  hints.min_height = 840;
+  gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &hints, GDK_HINT_MIN_SIZE);
   gtk_widget_show(GTK_WIDGET(window));
   // gtk_widget_show_all(GTK_WIDGET(window));
 
