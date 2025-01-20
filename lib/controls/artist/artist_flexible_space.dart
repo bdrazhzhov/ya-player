@@ -28,7 +28,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
             child: YandexImage(
               uriTemplate: artist.cover?.uri ?? '',
               size: 60,
-              borderRadius: 8
+              borderRadius: 4
             ),
           ),
           Expanded(
@@ -80,29 +80,39 @@ class ArtistFlexibleSpace extends StatelessWidget {
 
   Widget _createActionButtons(AppLocalizations l10n) {
     final extraActions = artist.extraActions.map(
-      (e) => _ActionButton(
-        icon: Icons.language,
-        text: e.title,
-        onPressed: () => launchUrl(Uri.parse(e.url)),
-      )
+      (e) {
+        var icon = Icons.language;
+
+        switch(e.type) {
+          case 'donation':
+            icon = Icons.monetization_on;
+            break;
+        }
+
+        return IconButton(
+          icon: Icon(icon),
+          tooltip: e.title,
+          onPressed: () => launchUrl(Uri.parse(e.url)),
+        );
+      }
     );
 
     return Row(
       spacing: 8,
       children: [
-        _ActionButton(
-          icon: Icons.play_arrow,
-          text: l10n.artist_play,
+        IconButton(
+          icon: Icon(Icons.play_arrow),
+          tooltip: l10n.artist_play,
           onPressed: () {},
         ),
-        _ActionButton(
-          icon: Icons.favorite,
-          text: l10n.artist_like,
+        IconButton(
+          icon: Icon(Icons.favorite),
+          tooltip: l10n.artist_like,
           onPressed: () {},
         ),
-        _ActionButton(
-          icon: Icons.radio,
-          text: l10n.artist_station,
+        IconButton(
+          icon: Icon(Icons.radio),
+          tooltip: l10n.artist_station,
           onPressed: () => _appState.playArtistStation(artist),
         ),
         ...extraActions
@@ -110,26 +120,3 @@ class ArtistFlexibleSpace extends StatelessWidget {
     );
   }
 }
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final void Function()? onPressed;
-
-  const _ActionButton({required this.icon, required this.text, this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Row(
-        spacing: 8,
-        children: [
-          Icon(icon),
-          Text(text)
-        ]
-      )
-    );
-  }
-}
-
