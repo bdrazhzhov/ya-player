@@ -73,6 +73,7 @@ class AppState {
   final _windowManager = getIt<WindowManager>();
 
   final List<int> _likedTrackIds = [];
+  final List<int> _likedArtistIds = [];
 
   Future<void> initTheme() async {
     final ThemeData theme = await getTheme();
@@ -531,6 +532,24 @@ class AppState {
     _likedTrackIds.sort();
 
     return _requestLikedTracks();
+  }
+
+  bool isLikedArtist(Artist artist) => binarySearch(_likedArtistIds, artist.id) != -1;
+
+  Future<void> likeArtist(Artist artist) async {
+    int likedIndex = binarySearch(_likedArtistIds, artist.id);
+    final isLiked = likedIndex != -1;
+
+    if(isLiked) {
+      await _musicApi.unlikeArtist(artist.id);
+      _likedArtistIds.removeAt(likedIndex);
+    }
+    else {
+      await _musicApi.likeArtist(artist.id);
+      _likedArtistIds.add(artist.id);
+    }
+
+    _likedArtistIds.sort();
   }
 
   void _reset() {

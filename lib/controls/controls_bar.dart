@@ -48,7 +48,10 @@ class ControlsBar extends StatelessWidget {
                 builder: (_, track, __) {
                   if(track == null) return const SizedBox.shrink();
 
-                  return LikeButton(track: track);
+                  return LikeButton(
+                    likeCondition: () => _appState.isLikedTrack(track),
+                    onLikeClicked: () => _appState.likeTrack(track)
+                  );
                 }
               ),
               const Expanded(child: SizedBox(),),

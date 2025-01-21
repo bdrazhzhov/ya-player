@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../models/music_api/track.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
 
 class LikeButton extends StatefulWidget {
+  final bool Function() likeCondition;
+  final Future<void> Function() onLikeClicked;
+
   const LikeButton({
     super.key,
-    required this.track,
+    // required this.track,
+    required this.likeCondition,
+    required this.onLikeClicked,
   });
 
-  final Track track;
+  // final Track track;
 
   @override
   State<LikeButton> createState() => _LikeButtonState();
@@ -25,7 +29,7 @@ class _LikeButtonState extends State<LikeButton> {
     return ValueListenableBuilder(
       valueListenable: appState.likedTracksNotifier,
       builder: (_, value, __) {
-        final iconData = appState.isLikedTrack(widget.track) ? Icons.favorite : Icons.favorite_border;
+        final iconData = widget.likeCondition() ? Icons.favorite : Icons.favorite_border;
 
         return IconButton(
           icon: Icon(iconData),
@@ -40,7 +44,7 @@ class _LikeButtonState extends State<LikeButton> {
       isProcessing = true;
     });
 
-    await appState.likeTrack(widget.track);
+    await widget.onLikeClicked();
 
     setState(() {
       isProcessing = false;

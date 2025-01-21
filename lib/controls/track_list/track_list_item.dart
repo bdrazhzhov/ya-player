@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../like_button.dart';
+import '/controls/like_button.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
@@ -86,7 +86,10 @@ class _TrackListItemState extends State<TrackListItem> {
               if(isHovered || appState.isLikedTrack(widget.track))
                 SizedBox(
                   width: 50,
-                  child: LikeButton(track: track)
+                  child: LikeButton(
+                    likeCondition: () => appState.isLikedTrack(track),
+                    onLikeClicked: () => appState.likeTrack(track)
+                  )
                 )
               else
                 const SizedBox(width: 50),

@@ -495,4 +495,15 @@ class MusicApi {
 
     return tracks;
   }
+
+  Future<void> likeArtist(int artistId) async {
+    final url = '/users/$uid/likes/artists/add';
+    final data = {'artist-id': '$artistId'};
+    await _http.postForm(url, data: data);
+  }
+
+  Future<void> unlikeArtist(int artistId) async {
+    final url = '/users/$uid/likes/artists/$artistId/remove';
+    await _http.postForm(url);
+  }
 }

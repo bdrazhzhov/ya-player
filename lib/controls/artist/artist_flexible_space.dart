@@ -7,6 +7,7 @@ import '/models/music_api/artist_info.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
 import '/controls/yandex_image.dart';
+import '/controls/like_button.dart';
 
 class ArtistFlexibleSpace extends StatelessWidget {
   final ArtistInfo artistInfo;
@@ -110,10 +111,9 @@ class ArtistFlexibleSpace extends StatelessWidget {
             await _player.play(0);
           },
         ),
-        IconButton(
-          icon: Icon(Icons.favorite),
-          tooltip: l10n.artist_like,
-          onPressed: () {},
+        LikeButton(
+          likeCondition: () => _appState.isLikedArtist(artistInfo.artist),
+          onLikeClicked: () => _appState.likeArtist(artistInfo.artist),
         ),
         IconButton(
           icon: Icon(Icons.radio),
