@@ -74,6 +74,7 @@ class AppState {
 
   final List<int> _likedTrackIds = [];
   final List<int> _likedArtistIds = [];
+  final List<Tree> _landing3Metatags = [];
 
   Future<void> initTheme() async {
     final ThemeData theme = await getTheme();
@@ -180,6 +181,7 @@ class AppState {
 
     futures.add(_requestNonMusicCatalog());
     futures.add(_requestLanding());
+    futures.add(_requestLanding3Metatags());
     await Future.wait(futures);
   }
 
@@ -203,6 +205,11 @@ class AppState {
       likedTracksNotifier.value = await _musicApi.tracksByIds(_likedTrackIds);
       _likedTrackIds.sort();
     }
+  }
+
+  Future<void> _requestLanding3Metatags() async {
+    _landing3Metatags.clear();
+    _landing3Metatags.addAll(await _musicApi.landing3Metatags());
   }
 
   void _listenToPlaybackState() {

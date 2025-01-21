@@ -506,4 +506,13 @@ class MusicApi {
     final url = '/users/$uid/likes/artists/$artistId/remove';
     await _http.postForm(url);
   }
+
+  Future<List<Tree>> landing3Metatags() async {
+    List<Tree> trees = [];
+
+    final data = await _http.get('/landing3/metatags');
+    data['result']['trees'].forEach((tree) => trees.add(Tree.fromJson(tree)));
+
+    return trees;
+  }
 }

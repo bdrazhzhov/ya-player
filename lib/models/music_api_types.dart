@@ -14,3 +14,4 @@ export 'music_api/queue.dart';
 export 'music_api/search.dart';
 export 'music_api/station.dart';
 export 'music_api/track.dart';
+export 'music_api/meta_tags.dart';
