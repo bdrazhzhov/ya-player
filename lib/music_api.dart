@@ -478,4 +478,21 @@ class MusicApi {
 
     return PagedData.fromJson(json['result']['pager'], albums);
   }
+  
+  Future<List<Track>> artistPopularTracks(int artistId) async {
+    final String url = '/artists/$artistId/track-ids-by-rating';
+    Map<String, dynamic> json = await _http.get(url);
+
+    final trackIds = json['result']['tracks'].join(',');
+    final data = {
+      'track-ids': trackIds,
+      'with-positions': 'True'
+    };
+    json = await _http.postForm('/tracks', data: data);
+
+    List<Track> tracks = [];
+    json['result'].forEach((track) => tracks.add(Track.fromJson(track, '')));
+
+    return tracks;
+  }
 }

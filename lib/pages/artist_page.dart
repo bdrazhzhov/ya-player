@@ -10,6 +10,7 @@ import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
 import 'artist_albums_page.dart';
 import 'artist_compilations_page.dart';
+import 'artist_tracks_page.dart';
 import 'page_base.dart';
 import '/controls/album_card.dart';
 import '/controls/artist_card.dart';
@@ -47,7 +48,16 @@ class ArtistPage extends StatelessWidget {
               ),
 
               if(info.popularTracks.isNotEmpty) ...[
-                ArtistSectionHeader(title: l10n.artist_popularTracks),
+                ArtistSectionHeader(
+                  title: l10n.artist_popularTracks,
+                  onPressed: () {
+                    Navigator.of(context).push(PageRouteBuilder(
+                      pageBuilder: (_, __, ___) =>
+                          ArtistTracksPage(artist: info.artist),
+                      reverseTransitionDuration: Duration.zero,
+                    ));
+                  }
+                ),
                 SliverTrackList(
                   tracks: info.popularTracks,
                   onBeforeStartPlaying: (int? index) =>
