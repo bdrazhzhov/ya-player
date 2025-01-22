@@ -49,9 +49,10 @@ class PageBase extends StatelessWidget {
                 pinned: true,
                 flexibleSpace: flexibleSpace,
                 toolbarHeight: 50,
-                collapsedHeight: 50,
+                collapsedHeight: 64,
                 expandedHeight: 200,
                 backgroundColor: theme.colorScheme.surface,
+                surfaceTintColor: Colors.transparent,
               ),
             ),
           ...slivers.map((sliver) => SliverPadding(
