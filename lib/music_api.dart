@@ -410,7 +410,8 @@ class MusicApi {
 
   Future<List<Block>> landing() async {
     const url = '/landing3?blocks=personalplaylists,promotions,new-releases,'
-        'new-playlists,mixes,chart,charts,artists,albums,playlists,play_contexts,podcasts';
+        'new-playlists,chart,charts,artists,albums,playlists,play_contexts,podcasts';
+        // 'new-playlists,mixes,chart,charts,artists,albums,playlists,play_contexts,podcasts';
     Map<String, dynamic> json = await _http.get(url);
     List<Block> blocks = [];
 
@@ -514,5 +515,15 @@ class MusicApi {
     data['result']['trees'].forEach((tree) => trees.add(Tree.fromJson(tree)));
 
     return trees;
+  }
+
+  Future<FeedPromotions> feedPromotions(String id) async {
+    final data = await _http.get('/feed/promotions/$id');
+    return FeedPromotions.fromJson(data['result']);
+  }
+
+  Future<MetaTags> metaTags(String id) async {
+    final data = await _http.get('/metatags/$id');
+    return MetaTags.fromJson(data['result']);
   }
 }

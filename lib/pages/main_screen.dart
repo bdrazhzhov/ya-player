@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:ya_player/pages/feed_promotions_page.dart';
+import 'package:ya_player/pages/genres_tree_page.dart';
 
 import '/app_state.dart';
 import '/controls/yandex_image.dart';
@@ -58,6 +60,9 @@ class _MainScreen extends State<MainScreen> {
                   page = PodcastsBooksPage();
                 case '/home':
                   page = HomePage();
+                case '/mix_link':
+                  final url = settings.arguments as String;
+                  page = _mixLinkPage(url);
                 case '/queue':
                   page = QueuePage();
                 case '/settings':
@@ -78,6 +83,19 @@ class _MainScreen extends State<MainScreen> {
         ..._createSearch(context)
       ],
     );
+  }
+
+  Widget _mixLinkPage(String url) {
+    final List<String> segments = url.split('/');
+
+    switch(segments[1]) {
+      case 'post':
+        return FeedPromotionsPage(id: segments[2]);
+      case 'tag':
+        return GenresTreePage(id: segments[2]);
+      default:
+        return Text('No route');
+    }
   }
 
   List<Widget> _createSearch(BuildContext context) {

@@ -559,6 +559,22 @@ class AppState {
     _likedArtistIds.sort();
   }
 
+  Tree? getTree(String id) {
+    if(id == 'newbies') {
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'genres');
+    }
+
+    if(id == 'in the mood') {
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'moods');
+    }
+
+    if(id == 'background') {
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'activities');
+    }
+
+    return null;
+  }
+
   void _reset() {
     _audioPlayer.stop();
     playButtonNotifier.value = ButtonState.paused;

@@ -27,6 +27,10 @@ class Album extends Equatable {
   List<Object?> get props => [id];
   
   factory Album.fromJson(Map<String, dynamic> json) {
+    if(json['album'] != null) {
+      json = json['album'];
+    }
+
     List<ArtistBase> artists = [];
     json['artists'].forEach((item) {
       artists.add(ArtistBase.fromJson(item));
