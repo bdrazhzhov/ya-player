@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ya_player/controls/flexible_space.dart';
 
 import '/models/music_api_types.dart';
-import 'yandex_image.dart';
 
 class PlaylistFlexibleSpace extends StatelessWidget {
   final Playlist playlist;
@@ -11,87 +11,44 @@ class PlaylistFlexibleSpace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context
-        .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final duration = _calculateDuration(l10n);
 
-    if (settings!.currentExtent == settings.minExtent) {
-      return Row(
+    return FlexibleSpace(
+      imageUrl: playlist.image,
+      type: FlexibleSpaceType.playlist,
+      title: playlist.title,
+      subtitle: Column(
         children: [
-          YandexImage(uriTemplate: playlist.image, size: 50),
-          Expanded(child: Text(playlist.title)),
-          ElevatedButton(
-            onPressed: () {},
-            child: Row(
+          Text.rich(
+            TextSpan(
+              style: TextStyle(color: theme.colorScheme.outline),
+              text: l10n.playlist_compiledBy,
               children: [
-                Icon(Icons.play_arrow),
-                Text(l10n.album_play)
+                TextSpan(
+                    style: theme.textTheme.bodyMedium,
+                    text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
+                )
               ]
             )
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Row(
-              children: [
-                Icon(Icons.favorite),
-                Text(l10n.album_like)
-              ]
-            )
-          )
-        ],
-      );
-    }
-    else {
-      double infoBlockHeight = settings.currentExtent;
-      if (infoBlockHeight < 100) infoBlockHeight = 100;
-
-      return Row(
-        children: [
-          FittedBox(child: YandexImage(uriTemplate: playlist.image, size: 200)),
-          Flexible(
-            child: FittedBox(
-              fit: BoxFit.fitHeight,
-              clipBehavior: Clip.hardEdge,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.playlist),
-                  Text(playlist.title),
-                  Text.rich(
-                    TextSpan(
-                      style: TextStyle(color: theme.colorScheme.outline),
-                      text: l10n.playlist_compiledBy,
-                      children: [
-                        TextSpan(
-                          style: theme.textTheme.bodyMedium,
-                          text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
-                        )
-                      ]
-                    )
-                  ),
-                  if(playlist.description != null)
-                    Text(
-                      playlist.description!,
-                      softWrap: true,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis
-                    ),
-                  Row(
-                    children: [
-                      TextButton(onPressed: (){}, child: const Text('Play')),
-                      TextButton(onPressed: (){}, child: const Text('Like')),
-                    ],
-                  )
-                ],
-              ),
+          if(playlist.description != null)
+            Text(
+              playlist.description!,
+              softWrap: true,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis
             ),
-          )
         ],
-      );
-    }
+      ),
+      actions: Row(
+        children: [
+          TextButton(onPressed: (){}, child: const Text('Play')),
+          TextButton(onPressed: (){}, child: const Text('Like')),
+        ],
+      )
+    );
   }
 
   String _calculateDuration(AppLocalizations l10n) {

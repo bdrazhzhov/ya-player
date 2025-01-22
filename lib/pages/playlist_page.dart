@@ -20,14 +20,8 @@ class PlaylistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageBase(
+      flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
       slivers: [
-        SliverAppBar(
-          leading: const SizedBox.shrink(),
-          pinned: true,
-          flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
-          collapsedHeight: 60,
-          expandedHeight: 200,
-        ),
         FutureBuilder<Playlist>(
           future: _playlistData,
           builder: (_, AsyncSnapshot<Playlist> snapshot){

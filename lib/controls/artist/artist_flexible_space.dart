@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '/controls/flexible_space.dart';
 import '/player/players_manager.dart';
 import '/models/music_api/artist_info.dart';
 import '/app_state.dart';
 import '/services/service_locator.dart';
-import '/controls/yandex_image.dart';
 import '/controls/like_button.dart';
 
 class ArtistFlexibleSpace extends StatelessWidget {
@@ -18,67 +18,14 @@ class ArtistFlexibleSpace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = context
-        .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
-    if (settings!.currentExtent == settings.minExtent) {
-      return Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: YandexImage(
-              uriTemplate: artistInfo.artist.cover?.uri,
-              size: 60,
-              borderRadius: 4
-            ),
-          ),
-          Expanded(
-            child: Text(
-                artistInfo.artist.name,
-              style: theme.textTheme.headlineLarge
-            )
-          ),
-          _createActionButtons(l10n)
-        ],
-      );
-    }
-    else {
-      double infoBlockHeight = settings.currentExtent;
-      if (infoBlockHeight < 100) infoBlockHeight = 100;
-
-      return Row(
-        children: [
-          YandexImage(
-            uriTemplate: artistInfo.artist.cover?.uri,
-            size: 200,
-            borderRadius: 8
-          ),
-          const SizedBox(width: 20),
-          Flexible(
-            child: SizedBox(
-              height: infoBlockHeight,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.artist_artist),
-                  Text(
-                    artistInfo.artist.name,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: theme.textTheme.headlineLarge,
-                  ),
-                  SizedBox(height: 8),
-                  _createActionButtons(l10n)
-                ],
-              ),
-            ),
-          )
-        ],
-      );
-    }
+    return FlexibleSpace(
+      imageUrl: artistInfo.artist.cover?.uri,
+      type: FlexibleSpaceType.artist,
+      title: artistInfo.artist.name,
+      actions: _createActionButtons(l10n)
+    );
   }
 
   Widget _createActionButtons(AppLocalizations l10n) {

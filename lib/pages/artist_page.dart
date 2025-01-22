@@ -38,15 +38,8 @@ class ArtistPage extends StatelessWidget {
         {
           final info = snapshot.data!;
           return PageBase(
+            flexibleSpace: ArtistFlexibleSpace(artistInfo: info),
             slivers: [
-              SliverAppBar(
-                leading: const SizedBox.shrink(),
-                pinned: true,
-                flexibleSpace: ArtistFlexibleSpace(artistInfo: info),
-                collapsedHeight: 60,
-                expandedHeight: 200,
-              ),
-
               if(info.popularTracks.isNotEmpty) ...[
                 ArtistSectionHeader(
                   title: l10n.artist_popularTracks,

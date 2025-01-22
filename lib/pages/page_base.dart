@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class PageBase extends StatelessWidget {
   final String? title;
   final List<Widget> slivers;
+  final Widget? flexibleSpace;
   final _scrollController = ScrollController();
   final Function()? onDataPreload;
 
@@ -10,7 +11,8 @@ class PageBase extends StatelessWidget {
     super.key,
     this.title,
     required this.slivers,
-    this.onDataPreload
+    this.onDataPreload,
+    this.flexibleSpace
   }) {
     _scrollController.addListener((){
       if(onDataPreload == null || _scrollController.position.outOfRange) return;
@@ -37,6 +39,19 @@ class PageBase extends StatelessWidget {
               padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
               sliver: SliverToBoxAdapter(
                 child: Text(title!, style: theme.textTheme.displayMedium)
+              ),
+            ),
+          if(flexibleSpace != null)
+            SliverPadding(
+              padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 25),
+              sliver: SliverAppBar(
+                leading: const SizedBox.shrink(),
+                pinned: true,
+                flexibleSpace: flexibleSpace,
+                toolbarHeight: 50,
+                collapsedHeight: 50,
+                expandedHeight: 200,
+                backgroundColor: theme.colorScheme.surface,
               ),
             ),
           ...slivers.map((sliver) => SliverPadding(
