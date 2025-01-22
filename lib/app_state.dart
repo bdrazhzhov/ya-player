@@ -438,7 +438,8 @@ class AppState {
   }
 
   Future<void> _requestLanding() async {
-    landingNotifier.value = await _musicApi.landing();
+    final List<Block> blocks = await _musicApi.landing();
+    landingNotifier.value = blocks.where((b) => b.entities.isNotEmpty).toList();
   }
 
   Future<void> _requestInitialQueueData() async {
