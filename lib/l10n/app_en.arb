@@ -68,5 +68,9 @@
   "artist_albumsSortOrderAsc": "Ascending",
   "artist_albumsSortOrderDesc": "Descending",
   "artist_allCompilations": "All Albums",
-  "artist_allTracks": "All Tracks"
+  "artist_allTracks": "All Tracks",
+
+  "pageBlock_viewAll": "View all",
+
+  "chart_similarPlaylists": "Similar playlists"
 }

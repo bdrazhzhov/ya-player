@@ -5,6 +5,7 @@ import '/controls/like_button.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
+import 'chart_position.dart';
 import 'track_cover.dart';
 
 class TrackListItem extends StatefulWidget {
@@ -59,12 +60,17 @@ class _TrackListItemState extends State<TrackListItem> {
           padding: const EdgeInsets.only(top: 4, bottom: 4),
           child: Row(
             children: [
+              if(track.chart != null)
+                SizedBox(
+                  width: 30,
+                  child: ChartPosition(chartItem: track.chart!)
+                ),
               trackCover(track),
               Expanded(
                 flex: 2,
                 child: trackTitle(track, theme),
               ),
-              if(widget. showArtistName) Expanded(
+              if(widget.showArtistName) Expanded(
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24, right: 2),

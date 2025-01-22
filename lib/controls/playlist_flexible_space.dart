@@ -49,33 +49,45 @@ class PlaylistFlexibleSpace extends StatelessWidget {
 
       return Row(
         children: [
-          YandexImage(uriTemplate: playlist.image, size: 200),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.playlist),
-              Text(playlist.title),
-              Text.rich(
-                  TextSpan(
+          FittedBox(child: YandexImage(uriTemplate: playlist.image, size: 200)),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.fitHeight,
+              clipBehavior: Clip.hardEdge,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.playlist),
+                  Text(playlist.title),
+                  Text.rich(
+                    TextSpan(
                       style: TextStyle(color: theme.colorScheme.outline),
                       text: l10n.playlist_compiledBy,
                       children: [
                         TextSpan(
-                            style: theme.textTheme.bodyMedium,
-                            text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
+                          style: theme.textTheme.bodyMedium,
+                          text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
                         )
                       ]
+                    )
+                  ),
+                  if(playlist.description != null)
+                    Text(
+                      playlist.description!,
+                      softWrap: true,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis
+                    ),
+                  Row(
+                    children: [
+                      TextButton(onPressed: (){}, child: const Text('Play')),
+                      TextButton(onPressed: (){}, child: const Text('Like')),
+                    ],
                   )
-              ),
-              if(playlist.description != null) Text(playlist.description!),
-              Row(
-                children: [
-                  TextButton(onPressed: (){}, child: const Text('Play')),
-                  TextButton(onPressed: (){}, child: const Text('Like')),
                 ],
-              )
-            ],
+              ),
+            ),
           )
         ],
       );

@@ -68,5 +68,9 @@
   "artist_albumsSortOrderAsc": "По возрастанию",
   "artist_albumsSortOrderDesc": "По убыванию",
   "artist_allCompilations": "Все сборники",
-  "artist_allTracks": "Все треки"
+  "artist_allTracks": "Все треки",
+
+  "pageBlock_viewAll": "Смотреть всё",
+
+  "chart_similarPlaylists": "Плейлисты с другими чартами"
 }

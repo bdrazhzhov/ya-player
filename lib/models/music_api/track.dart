@@ -20,10 +20,11 @@ class Track extends Equatable {
   final TrackType type;
   final TrackParameters? trackParameters;
   late final String artist;
+  final ChartItem? chart;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
-      this.isAvailable, this.type, this.trackParameters) {
+      this.isAvailable, this.type, this.trackParameters, this.chart) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -36,6 +37,11 @@ class Track extends Equatable {
   };
 
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
+    ChartItem? chart;
+    if(json['chart'] != null) {
+      chart = ChartItem.fromJson(json['chart']);
+    }
+
     final track = json['track'] ?? json;
     Duration? duration;
     if(track['durationMs'] != null) {
@@ -63,7 +69,8 @@ class Track extends Equatable {
     return Track(id is String ? int.parse(id) : id,
       track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
-      _trackTypes[track['type'].toString()] ?? TrackType.music, trackParameters
+      _trackTypes[track['type'].toString()] ?? TrackType.music,
+      trackParameters, chart
     );
   }
 
@@ -92,5 +99,31 @@ class TrackOfList {
 
   factory TrackOfList.fromJson(Map<String, dynamic> json) {
     return TrackOfList(json['id'], json['albumId'], DateTime.parse(json['timestamp']));
+  }
+}
+
+class ChartItem {
+  final int position;
+  final String progress;
+  final int listeners;
+  final int shift;
+  final String? bgColor;
+
+  ChartItem({
+    required this.position,
+    required this.progress,
+    required this.listeners,
+    required this.shift,
+    this.bgColor
+  });
+
+  factory ChartItem.fromJson(Map<String, dynamic> json) {
+    return ChartItem(
+      position: json['position'],
+      progress: json['progress'],
+      listeners: json['listeners'],
+      shift: json['shift'],
+      bgColor: json['bgColor']
+    );
   }
 }

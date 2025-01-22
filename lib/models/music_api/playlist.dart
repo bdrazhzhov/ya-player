@@ -10,6 +10,7 @@ class Playlist {
   final String? image;
   final int tracksCount;
   final List<Track> tracks;
+  final List<Playlist> similarPlaylists;
 
   Playlist({
     required this.kind,
@@ -20,7 +21,8 @@ class Playlist {
     required this.duration,
     required this.image,
     required this.tracksCount,
-    required this.tracks
+    required this.tracks,
+    required this.similarPlaylists
   });
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
@@ -37,9 +39,17 @@ class Playlist {
       json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
 
-    return Playlist(kind: json['kind'] ?? 0, title: json['title'], uid: json['uid'] ?? 0,
-        description: json['description'], ownerName: json['owner']?['name'] ?? '',
-        duration: Duration(milliseconds: json['durationMs'] ?? 0),
-        tracksCount: json['trackCount'] ?? 0, image: image, tracks: tracks);
+    List<Playlist> similarPlaylists = [];
+    if(json['similarPlaylists'] != null) {
+      json['similarPlaylists'].forEach((p) => similarPlaylists.add(Playlist.fromJson(p)));
+    }
+
+    return Playlist(kind: json['kind'] ?? 0, title: json['title'],
+      uid: json['uid'] ?? 0, description: json['description'],
+      ownerName: json['owner']?['name'] ?? '',
+      duration: Duration(milliseconds: json['durationMs'] ?? 0),
+      tracksCount: json['trackCount'] ?? 0, image: image, tracks: tracks,
+      similarPlaylists: similarPlaylists
+    );
   }
 }

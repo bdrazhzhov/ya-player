@@ -526,4 +526,9 @@ class MusicApi {
     final data = await _http.get('/metatags/$id');
     return MetaTags.fromJson(data['result']);
   }
+
+  Future<Playlist> chart() async {
+    final json = await _http.get('/landing3/chart');
+    return Playlist.fromJson(json['result']['chart']);
+  }
 }
