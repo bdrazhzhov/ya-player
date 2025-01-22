@@ -29,14 +29,8 @@ class PodcastPage extends StatelessWidget {
         {
           final albumWithTracks = snapshot.data!;
           return PageBase(
+            flexibleSpace: AlbumFlexibleSpace(album: albumWithTracks.album),
             slivers: [
-              SliverAppBar(
-                leading: const SizedBox.shrink(),
-                pinned: true,
-                collapsedHeight: 60,
-                expandedHeight: 200,
-                flexibleSpace: AlbumFlexibleSpace(album: albumWithTracks.album),
-              ),
               SliverPersistentHeader(
                 delegate: TracksHeader(),
                 pinned: true,
