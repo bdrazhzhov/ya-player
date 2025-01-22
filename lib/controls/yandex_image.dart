@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class YandexImage extends StatelessWidget {
-  final String uriTemplate;
+  final String? uriTemplate;
   final double size;
   final double? borderRadius;
   final Widget placeholder;
@@ -14,11 +14,13 @@ class YandexImage extends StatelessWidget {
 
   YandexImage({
     super.key,
-    required this.uriTemplate,
+    this.uriTemplate,
     required this.size,
     this.borderRadius,
     this.placeholder = const DefaultImagePlaceholder()
   }) {
+    if(uriTemplate == null) return;
+
     int realSize = size.round();
 
     for(var i = _sizes.length - 1; i > 0; i--) {
@@ -30,19 +32,26 @@ class YandexImage extends StatelessWidget {
 
     final sizeString = realSize.toString();
     final dimensions = '${sizeString}x$sizeString';
-    _url = 'https://${uriTemplate.replaceAll('%%', dimensions)}';
+    _url = 'https://${uriTemplate!.replaceAll('%%', dimensions)}';
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget image = CachedNetworkImage(
-      width: size,
-      memCacheWidth: size.toInt(),
-      fit: BoxFit.fitWidth,
-      placeholder: (context, url) => placeholder,
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-      imageUrl: _url
-    );
+    Widget image;
+
+    if(uriTemplate == null) {
+      image = DefaultImagePlaceholder();
+    }
+    else {
+      image = CachedNetworkImage(
+          width: size,
+          memCacheWidth: size.toInt(),
+          fit: BoxFit.fitWidth,
+          placeholder: (context, url) => placeholder,
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+          imageUrl: _url
+      );
+    }
 
     if(borderRadius != null) {
       image = ClipRRect(

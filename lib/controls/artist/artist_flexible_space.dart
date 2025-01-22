@@ -29,7 +29,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: YandexImage(
-              uriTemplate: artistInfo.artist.cover?.uri ?? '',
+              uriTemplate: artistInfo.artist.cover?.uri,
               size: 60,
               borderRadius: 4
             ),
@@ -51,7 +51,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
       return Row(
         children: [
           YandexImage(
-            uriTemplate: artistInfo.artist.cover?.uri ?? '',
+            uriTemplate: artistInfo.artist.cover?.uri,
             size: 200,
             borderRadius: 8
           ),
