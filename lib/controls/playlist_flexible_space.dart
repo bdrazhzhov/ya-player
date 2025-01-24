@@ -20,6 +20,7 @@ class PlaylistFlexibleSpace extends StatelessWidget {
       type: FlexibleSpaceType.playlist,
       title: playlist.title,
       subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text.rich(
             TextSpan(
@@ -27,8 +28,8 @@ class PlaylistFlexibleSpace extends StatelessWidget {
               text: l10n.playlist_compiledBy,
               children: [
                 TextSpan(
-                    style: theme.textTheme.bodyMedium,
-                    text: ' ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
+                  style: theme.textTheme.bodyMedium,
+                  text: ': ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
                 )
               ]
             )

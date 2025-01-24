@@ -26,14 +26,8 @@ class ChartPage extends StatelessWidget {
           final Playlist playlist = snapshot.data!;
 
           return PageBase(
+            flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
             slivers: [
-              SliverAppBar(
-                leading: const SizedBox.shrink(),
-                pinned: true,
-                flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
-                collapsedHeight: 60,
-                expandedHeight: 200,
-              ),
               SliverTrackList(
                 tracks: snapshot.data!.tracks,
                 onBeforeStartPlaying: (int? index) =>

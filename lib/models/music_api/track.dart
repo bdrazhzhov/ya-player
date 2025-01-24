@@ -68,7 +68,8 @@ class Track extends Equatable implements CanBeRadio {
       trackParameters = TrackParameters.fromJson(json['trackParameters']);
     }
 
-    return Track(id, track['title'], track['version'], duration, artists, albums,
+    return Track(id.toString(),
+      track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
       _trackTypes[track['type'].toString()] ?? TrackType.music,
       trackParameters, chart
