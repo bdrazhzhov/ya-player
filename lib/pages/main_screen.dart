@@ -108,7 +108,7 @@ class _MainScreen extends State<MainScreen> {
             sigmaX: 16.0,
             sigmaY: 16.0,
           ),
-          child: Container(color: Colors.black.withValues(alpha: 76)),
+          child: Container(color: theme.colorScheme.surface.withValues(alpha: 76)),
         ),
       ),
       if(isSearching) Container(
