@@ -23,7 +23,7 @@ class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo = _musicApi.artistInfo(artist.id);
   final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
-  final Artist artist;
+  final ArtistBase artist;
 
   ArtistPage(this.artist, {super.key});
 
