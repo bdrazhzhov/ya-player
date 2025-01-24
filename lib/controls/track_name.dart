@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/artist/artist_names.dart';
 
+import 'artist/artist_names.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
+import 'track_title.dart';
 
 class TrackName extends StatelessWidget {
   TrackName({super.key,});
@@ -14,8 +15,8 @@ class TrackName extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: _appState.trackNotifier,
-        builder: (_, Track? value, __) {
-          if(value != null) {
+        builder: (_, Track? track, __) {
+          if(track != null) {
             return Container(
               constraints: const BoxConstraints(maxWidth: 250),
               child: Column(
@@ -23,20 +24,14 @@ class TrackName extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0),
-                    child: Text(
-                      value.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      softWrap: false,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
+                    child: TrackTitle(track: track),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0),
-                    child: ArtistNames(artists: value.artists),
+                    child: ArtistNames(artists: track.artists),
                   )
-                ]),
+                ]
+              ),
             );
           }
           else {
