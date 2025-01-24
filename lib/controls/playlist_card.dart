@@ -29,36 +29,39 @@ class PlaylistCard extends StatelessWidget {
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            (playlist.image != null && playlist.image!.isNotEmpty) ?
-              YandexImage(
-                uriTemplate: playlist.image,
-                size: width,
-                borderRadius: _borderRadius
-              ) :
-              _buildNoImage(theme),
-            Text(HtmlCharacterEntities.decode(playlist.title)),
-            if(playlist.description != null)
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 40
+        child: SizedBox(
+          width: width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              (playlist.image != null && playlist.image!.isNotEmpty) ?
+                YandexImage(
+                  uriTemplate: playlist.image,
+                  size: width,
+                  borderRadius: _borderRadius
+                ) :
+                _buildNoImage(theme),
+              Text(HtmlCharacterEntities.decode(playlist.title)),
+              if(playlist.description != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 40
+                  ),
+                  child: Text(
+                    HtmlCharacterEntities.decode(playlist.description!),
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(color: theme.colorScheme.outline)
+                  ),
                 ),
-                child: Text(
-                  HtmlCharacterEntities.decode(playlist.description!),
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: TextStyle(color: theme.colorScheme.outline)
-                ),
-              ),
-            Text(
-              AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
-              style: TextStyle(color: theme.colorScheme.outline)
-            )
-          ],
+              Text(
+                AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
+                style: TextStyle(color: theme.colorScheme.outline)
+              )
+            ],
+          ),
         ),
       ),
     );
