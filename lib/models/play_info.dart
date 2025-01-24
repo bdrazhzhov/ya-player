@@ -17,7 +17,7 @@ class PlayInfo {
     final totalPlayedSeconds = (totalPlayed.inMilliseconds / 1000.0).toString();
 
     return {
-      'track-id': track.id.toString(),
+      'track-id': track.id,
       'album-id': track.firstAlbumId.toString(),
       'from-cache': 'False',
       'from': from,

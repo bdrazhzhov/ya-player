@@ -7,7 +7,7 @@ final class StationQueue extends PlaybackQueue
   late Queue _queue;
   int _realIndex = -1; // необходим для правильной работы очереди
                        // в случаях, когда пропускаются треки
-  Iterable<int> _lastTracksIds = [];
+  Iterable<String> _lastTracksIds = [];
 
   final Station station;
   StationQueue({ required this.station, (Queue, Iterable<Track>)? initialData }) {

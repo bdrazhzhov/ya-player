@@ -14,9 +14,9 @@ class PlaybackQueue {
   int _currentIndex = -1;
   final String id;
   final String name;
-  final _preloadStreamController = StreamController<List<int>>();
+  final _preloadStreamController = StreamController<List<String>>();
 
-  Stream<List<int>> get preloadStream => _preloadStreamController.stream;
+  Stream<List<String>> get preloadStream => _preloadStreamController.stream;
   int get currentIndex => _currentIndex;
   List<Track> get tracks => _tracks;
 
@@ -68,5 +68,5 @@ class PlaybackQueue {
     return null;
   }
 
-  List<int> lastTrackIds() => _tracks.reversed.take(3).map((track) => track.id).toList();
+  List<String> lastTrackIds() => _tracks.reversed.take(3).map((track) => track.id).toList();
 }

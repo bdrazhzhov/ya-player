@@ -106,7 +106,7 @@ class QueueFactory {
   static List<QueueTrack> _createQueueTracks(Iterable<Track> tracks, from) {
     return tracks.map(
             (track) => QueueTrack(
-            track.id.toString(),
+            track.id,
             track.albums.first.id.toString(),
             from
         )

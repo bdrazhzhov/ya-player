@@ -72,7 +72,7 @@ class AppState {
   final _trayIntegration = TrayIntegration();
   final _windowManager = getIt<WindowManager>();
 
-  final List<int> _likedTrackIds = [];
+  final List<String> _likedTrackIds = [];
   final List<int> _likedArtistIds = [];
   final List<Tree> _landing3Metatags = [];
 

@@ -36,7 +36,7 @@ class MusicApi {
     return stations;
   }
 
-  Future<Iterable<Track>> stationTacks(StationId stationId, Iterable<int> queueTracks) async {
+  Future<Iterable<Track>> stationTacks(StationId stationId, Iterable<String> queueTracks) async {
     String url = '/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
     if(queueTracks.isNotEmpty) {
       url += '&queue=${queueTracks.join('%2C')}';
@@ -66,7 +66,7 @@ class MusicApi {
     await _http.postJson(url, data: settings2);
   }
 
-  Future<String> trackDownloadUrl(int trackId) async {
+  Future<String> trackDownloadUrl(String trackId) async {
     final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
     final Uint8List key = utf8.encode(_newMagicSalt);
     final Uint8List data = utf8.encode('$ts${trackId}losslessflacaache-aacmp3raw');
@@ -130,23 +130,23 @@ class MusicApi {
     await _http.postForm('/users/$uid/likes/tracks/remove', data: data);
   }
 
-  Future<({List<int> ids, int? revision})> likedTrackIds({int revision = 0}) async {
+  Future<({List<String> ids, int? revision})> likedTrackIds({int revision = 0}) async {
     final url = '/users/$uid/likes/tracks?if-modified-since-revision=$revision';
     Map<String, dynamic> json = await _http.get(url);
-    List<int> ids = [];
+    List<String> ids = [];
 
     int? newRevision;
     if(json['result'] != 'no-updates') {
       newRevision = json['result']['library']['revision'];
       json['result']['library']['tracks'].forEach((item){
-        ids.add(int.parse(item['id']));
+        ids.add(item['id']);
       });
     }
 
     return (ids: ids, revision: newRevision);
   }
 
-  Future<List<Track>> tracksByIds(List<int> ids) async {
+  Future<List<Track>> tracksByIds(List<String> ids) async {
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
     Map<String, dynamic> json = await _http.postForm('/tracks', data: data);
     List<Track> tracks = [];
@@ -445,12 +445,10 @@ class MusicApi {
     return Queue.fromJson(json['result']);
   }
 
-  Future<List<int>> trackIdsByRating(int artistId) async {
+  Future<List<String>> trackIdsByRating(int artistId) async {
     Map<String, dynamic> json = await _http.get('/artists/$artistId/track-ids-by-rating');
-    final List<int> ids = [];
-    json['result']['tracks'].forEach((t) => ids.add(int.parse(t)));
 
-    return ids;
+    return json['result']['tracks'];
   }
 
   Future<PagedData<Album>> artistAlbums({

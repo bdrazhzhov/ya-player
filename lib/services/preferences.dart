@@ -23,11 +23,10 @@ class Preferences {
   double get volume => _prefs.getDouble('volume') ?? 1;
   Future<void> setVolume(double value) async => await _prefs.setDouble('volume', value);
 
-  List<int> get likedTracks {
-    return (_prefs.getString('likedTracks') ?? '')
-        .split(',').map((e) => int.parse(e)).toList();
+  List<String> get likedTracks {
+    return (_prefs.getString('likedTracks') ?? '').split(',');
   }
-  Future<void> setLikedTracks(List<int> value) async {
+  Future<void> setLikedTracks(List<String> value) async {
     final listString = value.join(',');
     await _prefs.setString('likedTracks', listString);
   }

@@ -8,7 +8,7 @@ import 'artist.dart';
 enum TrackType { music, podcast, audiobook }
 
 class Track extends Equatable implements CanBeRadio {
-  final int id;
+  final String id;
   final String title;
   final String? version;
   final Duration? duration;
@@ -68,8 +68,7 @@ class Track extends Equatable implements CanBeRadio {
       trackParameters = TrackParameters.fromJson(json['trackParameters']);
     }
 
-    return Track(id is String ? int.parse(id) : id,
-      track['title'], track['version'], duration, artists, albums,
+    return Track(id, track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
       _trackTypes[track['type'].toString()] ?? TrackType.music,
       trackParameters, chart
@@ -80,7 +79,7 @@ class Track extends Equatable implements CanBeRadio {
   List<Object?> get props => [id];
 
   @override
-  StationId stationId() => StationId('track', id.toString());
+  StationId stationId() => StationId('track', id);
 }
 
 class TrackParameters {
