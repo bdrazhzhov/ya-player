@@ -121,7 +121,7 @@ class _ArtistAlbumsPageState extends State<ArtistAlbumsPage> {
 
   PopupMenuItem<Object> buildMenuItem(String text, Object value, Object compareTo) {
     return PopupMenuItem(
-      value: AlbumsSortBy.rating,
+      value: value,
       height: 40,
       child: Text(
         text,
