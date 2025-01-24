@@ -72,5 +72,13 @@
 
   "pageBlock_viewAll": "Смотреть всё",
 
-  "chart_similarPlaylists": "Плейлисты с другими чартами"
+  "chart_similarPlaylists": "Плейлисты с другими чартами",
+
+  "track_download": "Скачать",
+  "track_radio": "Поток по треку",
+  "track_addToPlaylist": "Добавить в плейлист",
+  "track_goToAlbum": "Перейти к альбому",
+  "track_goToArtists": "Перейти к {count, plural, one {исполнителю} other {исполнителям}}",
+  "track_share": "Поделиться",
+  "track_remove": "Удалить из фонотеки"
 }

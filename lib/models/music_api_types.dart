@@ -16,3 +16,4 @@ export 'music_api/station.dart';
 export 'music_api/track.dart';
 export 'music_api/meta_tags.dart';
 export 'music_api/feed_promotions.dart';
+export 'music_api/can_be_station.dart';

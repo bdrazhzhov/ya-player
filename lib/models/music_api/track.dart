@@ -1,11 +1,13 @@
 import 'package:equatable/equatable.dart';
 
+import 'station.dart';
+import 'can_be_station.dart';
 import 'album.dart';
 import 'artist.dart';
 
 enum TrackType { music, podcast, audiobook }
 
-class Track extends Equatable {
+class Track extends Equatable implements CanBeRadio {
   final int id;
   final String title;
   final String? version;
@@ -76,6 +78,9 @@ class Track extends Equatable {
 
   @override
   List<Object?> get props => [id];
+
+  @override
+  StationId stationId() => StationId('track', id.toString());
 }
 
 class TrackParameters {

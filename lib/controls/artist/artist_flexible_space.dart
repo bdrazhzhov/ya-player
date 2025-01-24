@@ -65,7 +65,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.radio),
           tooltip: l10n.artist_station,
-          onPressed: () => _appState.playArtistStation(artistInfo.artist),
+          onPressed: () => _appState.playObjectStation(artistInfo.artist),
         ),
         ...extraActions
       ]

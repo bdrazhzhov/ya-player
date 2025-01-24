@@ -11,6 +11,7 @@ import '/services/service_locator.dart';
 import 'like_button.dart';
 import 'play_controls.dart';
 import 'playing_speed_button.dart';
+import 'track_actions.dart';
 import 'track_image.dart';
 import 'track_name.dart';
 import 'volume_control.dart';
@@ -48,9 +49,14 @@ class ControlsBar extends StatelessWidget {
                 builder: (_, track, __) {
                   if(track == null) return const SizedBox.shrink();
 
-                  return LikeButton(
-                    likeCondition: () => _appState.isLikedTrack(track),
-                    onLikeClicked: () => _appState.likeTrack(track)
+                  return Row(
+                    children: [
+                      LikeButton(
+                        likeCondition: () => _appState.isLikedTrack(track),
+                        onLikeClicked: () => _appState.likeTrack(track)
+                      ),
+                      TrackActions(track: track)
+                    ],
                   );
                 }
               ),

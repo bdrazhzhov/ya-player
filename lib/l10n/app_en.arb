@@ -72,5 +72,13 @@
 
   "pageBlock_viewAll": "View all",
 
-  "chart_similarPlaylists": "Similar playlists"
+  "chart_similarPlaylists": "Similar playlists",
+
+  "track_download": "Download",
+  "track_radio": "Station by track",
+  "track_addToPlaylist": "Add to playlist",
+  "track_goToAlbum": "Go to album",
+  "track_goToArtists": "Go to artists",
+  "track_share": "Copy link",
+  "track_remove": "Remove"
 }

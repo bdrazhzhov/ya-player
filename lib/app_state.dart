@@ -506,8 +506,8 @@ class AppState {
     _playersManager.play();
   }
 
-  Future<void> playArtistStation(Artist artist) async {
-    final stationId = StationId("artist", artist.id.toString());
+  Future<void> playObjectStation(CanBeRadio object) async {
+    final stationId = object.stationId();
     if(currentStationNotifier.value?.id == stationId) return;
 
     final station = await _musicApi.station(stationId);

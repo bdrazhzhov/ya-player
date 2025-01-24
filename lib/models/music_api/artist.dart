@@ -1,4 +1,8 @@
-class ArtistBase {
+import 'package:ya_player/models/music_api/station.dart';
+
+import 'can_be_station.dart';
+
+class ArtistBase implements CanBeRadio {
   final int id;
   final String name;
 
@@ -7,6 +11,9 @@ class ArtistBase {
   factory ArtistBase.fromJson(Map<String, dynamic> json) {
     return ArtistBase(json['id'], json['name']);
   }
+
+  @override
+  StationId stationId() => StationId('artist', id.toString());
 }
 
 class Artist extends ArtistBase {
