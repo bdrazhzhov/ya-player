@@ -50,8 +50,8 @@ abstract base class PlayerBase {
   }
 
   Future<void> _addTrackToPlayer(Track track) async {
-    final String url = await _musicApi.trackDownloadUrl(track.id);
-    await _audioPlayer.setUrl(url);
+    final UrlData urlData = await _musicApi.trackDownloadUrl(track.id);
+    await _audioPlayer.setUrl(urlData.url, urlData.encryptionKey);
     await _audioPlayer.play();
   }
 

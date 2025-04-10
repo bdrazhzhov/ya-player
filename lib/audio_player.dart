@@ -62,7 +62,8 @@ final class AudioPlayer {
   }
   Future<void> seek(Duration position) => _platformPlayer.seek(position);
 
-  Future<void> setUrl(String url) => _platformPlayer.setUrl(url);
+  Future<void> setUrl(String url, String? encryptionKey) =>
+      _platformPlayer.setUrl(url, encryptionKey);
 
   double _linearVolume = 1;
   double get volume => _linearVolume;

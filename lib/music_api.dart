@@ -66,11 +66,11 @@ class MusicApi {
     await _http.postJson(url, data: settings2);
   }
 
-  static const _formats = ['flac', 'aac', 'he-aac', 'mp3'];
-  Future<String> trackDownloadUrl(String trackId) async {
+  static const _formats = ['flac', 'aac', 'he-aac', 'mp3', 'flac-mp4', 'aac-mp4', 'he-aac-mp4'];
+  Future<UrlData> trackDownloadUrl(String trackId) async {
     final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
     final Uint8List key = utf8.encode(_newMagicSalt);
-    final Uint8List data = utf8.encode('$ts${trackId}lossless${_formats.join()}raw');
+    final Uint8List data = utf8.encode('$ts${trackId}lossless${_formats.join()}encraw');
     final Digest digest = Hmac(sha256, key).convert(data);
     final String sign = base64.encode(digest.bytes);
     final query = {
@@ -78,7 +78,7 @@ class MusicApi {
       'trackId': trackId,
       'quality': 'lossless',
       'codecs': _formats.join(','),
-      'transports': 'raw',
+      'transports': 'encraw',
       'sign': sign.substring(0, sign.length - 1)
     };
 
@@ -87,7 +87,15 @@ class MusicApi {
       headers: {'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'},
       queryParameters: query
     );
-    return json['result']['downloadInfo']['url'].toString();
+
+    String? encryptionKey;
+    if(json['result']['downloadInfo']['key'] != null) {
+      encryptionKey = json['result']['downloadInfo']['key'].toString();
+    }
+    return UrlData(
+      url: json['result']['downloadInfo']['url'].toString(),
+      encryptionKey: encryptionKey
+    );
   }
 
   static String imageUrl(String placeholder, String dimensions) {

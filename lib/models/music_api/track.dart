@@ -132,3 +132,11 @@ class ChartItem {
     );
   }
 }
+
+class UrlData
+{
+  final String url;
+  final String? encryptionKey;
+
+  UrlData({required this.url, this.encryptionKey});
+}
