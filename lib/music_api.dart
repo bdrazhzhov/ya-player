@@ -66,17 +66,18 @@ class MusicApi {
     await _http.postJson(url, data: settings2);
   }
 
+  static const _formats = ['flac', 'aac', 'he-aac', 'mp3'];
   Future<String> trackDownloadUrl(String trackId) async {
     final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
     final Uint8List key = utf8.encode(_newMagicSalt);
-    final Uint8List data = utf8.encode('$ts${trackId}losslessflacaache-aacmp3raw');
+    final Uint8List data = utf8.encode('$ts${trackId}lossless${_formats.join()}raw');
     final Digest digest = Hmac(sha256, key).convert(data);
     final String sign = base64.encode(digest.bytes);
     final query = {
       'ts': ts,
       'trackId': trackId,
       'quality': 'lossless',
-      'codecs': 'flac,aac,he-aac,mp3',
+      'codecs': _formats.join(','),
       'transports': 'raw',
       'sign': sign.substring(0, sign.length - 1)
     };

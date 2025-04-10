@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/l10n/app_localizations.dart';
 import '../controls/album_card.dart';
 import '../controls/page_loading_indicator.dart';
 import '../helpers/custom_sliver_grid_delegate_extent.dart';

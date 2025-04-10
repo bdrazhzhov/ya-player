@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ya_player/controls/playlist_card.dart';
 
+import '/l10n/app_localizations.dart';
 import '../models/music_api_types.dart';
 import 'custom_separated_hlist.dart';
 

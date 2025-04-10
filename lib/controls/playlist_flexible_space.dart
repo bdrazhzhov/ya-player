@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ya_player/controls/flexible_space.dart';
 
+import '/l10n/app_localizations.dart';
 import '/models/music_api_types.dart';
 
 class PlaylistFlexibleSpace extends StatelessWidget {

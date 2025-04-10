@@ -45,7 +45,7 @@ class YandexApiClient {
 
   void _addInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(onError: (e, handler){
-      debugPrint('Request error: ${e.requestOptions.path}');
+      debugPrint('Request error: ${e.requestOptions.path}?${e.requestOptions.queryParameters}');
       debugPrint('Request headers: ${e.requestOptions.headers}');
 
       if (e.response != null) {

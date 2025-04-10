@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/l10n/app_localizations.dart';
 import 'yandex_image.dart';
 import '/pages/playlist_page.dart';
 import '/models/music_api/playlist.dart';

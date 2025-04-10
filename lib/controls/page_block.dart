@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/l10n/app_localizations.dart';
 import '../pages/chart_page.dart';
 import '/controls/mix_link_card.dart';
 import '/controls/podcast_card.dart';

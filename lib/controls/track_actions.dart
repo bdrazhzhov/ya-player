@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ya_player/services/service_locator.dart';
 
+import '/l10n/app_localizations.dart';
 import '/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/models/music_api/track.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/l10n/app_localizations.dart';
 import '/app_state.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/page_loading_indicator.dart';

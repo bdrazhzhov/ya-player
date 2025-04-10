@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '/l10n/app_localizations.dart';
 import '../helpers/custom_sliver_grid_delegate_extent.dart';
 import '/models/music_api/playlist.dart';
 import '/app_state.dart';
