@@ -27,7 +27,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editorial => 'Editorial';
 
   @override
+  String get podcast_episodes => 'Podcast episodes';
+
+  @override
   String get menu_main => 'Main';
+
+  @override
+  String get menu_search => 'Search';
 
   @override
   String get menu_stations => 'Stations';
@@ -207,4 +213,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get track_remove => 'Remove';
+
+  @override
+  String get search_filters_top => 'Top';
+
+  @override
+  String get search_filters_track => 'Tracks';
+
+  @override
+  String get search_filters_artist => 'Artists';
+
+  @override
+  String get search_filters_album => 'Albums';
+
+  @override
+  String get search_filters_playlist => 'Playlists';
+
+  @override
+  String get search_filters_podcast => 'Podcasts';
+
+  @override
+  String get search_filters_book => 'Books';
+
+  @override
+  String get searchbar_hint => 'Track, album, artist';
 }

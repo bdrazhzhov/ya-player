@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'can_be_played.dart';
 import 'station.dart';
 import 'can_be_station.dart';
 import 'album.dart';
@@ -7,21 +8,29 @@ import 'artist.dart';
 
 enum TrackType { music, podcast, audiobook }
 
-class Track extends Equatable implements CanBeRadio {
+class Track extends Equatable implements CanBeRadio, CanBePlayed {
+  @override
   final String id;
+  @override
   final String title;
+  @override
   final String? version;
+  @override
   final Duration? duration;
   final List<ArtistBase> artists;
   final List<Album> albums;
+  @override
   final String? coverUri;
   final String? ogImage;
   final String batchId;
   final DateTime? pubDate;
+  @override
   final bool isAvailable;
   final TrackType type;
   final TrackParameters? trackParameters;
+  @override
   late final String artist;
+  @override
   final ChartItem? chart;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
@@ -81,6 +90,12 @@ class Track extends Equatable implements CanBeRadio {
 
   @override
   StationId stationId() => StationId('track', id);
+
+  @override
+  String get albumName => albums.isNotEmpty ? albums.first.title : '';
+
+  @override
+  String get fullId => '$id:${albums.first.id}';
 }
 
 class TrackParameters {

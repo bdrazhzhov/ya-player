@@ -42,7 +42,12 @@ class PlaylistCard extends StatelessWidget {
                   borderRadius: _borderRadius
                 ) :
                 _buildNoImage(theme),
-              Text(HtmlCharacterEntities.decode(playlist.title)),
+              Text(
+                HtmlCharacterEntities.decode(playlist.title),
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
               if(playlist.description != null)
                 ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -52,12 +57,12 @@ class PlaylistCard extends StatelessWidget {
                     HtmlCharacterEntities.decode(playlist.description!),
                     softWrap: true,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                    maxLines: 1,
                     style: TextStyle(color: theme.colorScheme.outline)
                   ),
                 ),
               Text(
-                AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
+                "${playlist.tracksCount} ${AppLocalizations.of(context)!.tracks_count(playlist.tracksCount)}",
                 style: TextStyle(color: theme.colorScheme.outline)
               )
             ],

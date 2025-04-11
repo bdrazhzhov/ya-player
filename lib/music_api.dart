@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
+import '/models/music_api/can_be_played.dart';
 import 'helpers/paged_data.dart';
 import 'models/music_api_types.dart';
 import 'services/service_locator.dart';
@@ -102,7 +103,7 @@ class MusicApi {
     return 'https://${placeholder.replaceAll('%%', dimensions)}';
   }
 
-  Future<void> sendStationTrackFeedback(StationId stationId, Track? track,
+  Future<void> sendStationTrackFeedback(StationId stationId, CanBePlayed? track,
       String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
       'type': feedbackType, // известны следующие значения: radioStarted, trackStarted, trackFinished, skip, like, unlike
@@ -112,8 +113,10 @@ class MusicApi {
     String url = '/rotor/station/${stationId.type}:${stationId.tag}/feedback';
 
     if(track != null) {
-      data['trackId'] = '${track.id}:${track.albums.first.id}';
-      url += '?batch-id=${track.batchId}';
+      data['trackId'] = track.fullId;
+      if(track is Track) {
+        url += '?batch-id=${track.batchId}';
+      }
     }
 
     if(totalPlayedSeconds != null && totalPlayedSeconds.inSeconds > 0) {
@@ -128,14 +131,14 @@ class MusicApi {
     await _http.postForm('/play-audio', data: playInfo);
   }
 
-  Future<void> likeTrack(Track track) async {
+  Future<void> likeTrack(CanBePlayed track) async {
     final url = '/users/$uid/likes/tracks/add-multiple';
-    final data = {'track-ids': '${track.id}:${track.albums.first.id}'};
+    final data = {'track-ids': track.fullId};
     await _http.postForm(url, data: data);
   }
 
-  Future<void> unlikeTrack(Track track) async {
-    final data = {'track-ids': '${track.id}:${track.albums.first.id}'};
+  Future<void> unlikeTrack(CanBePlayed track) async {
+    final data = {'track-ids': track.fullId};
     await _http.postForm('/users/$uid/likes/tracks/remove', data: data);
   }
 
@@ -399,6 +402,40 @@ class MusicApi {
     Map<String, dynamic> json = await _http.get(url);
 
     return SearchResult.fromJson(json);
+  }
+
+  Future<SearchResultMixed> searchMixed({required String text, SearchFilter? filter}) async {
+    var query = {
+      'text': text,
+      'type': 'album,artist,playlist,track,wave,podcast,podcast_episode',
+      'page': 0,
+      'pageSize': 36,
+      'withLikesCount': true
+    };
+    if(filter != null) {
+      query['filter'] = filter.name;
+    }
+    Map<String, dynamic> json = await _http.get('/search/instant/mixed',
+      queryParameters: query
+    );
+
+    List<Object> items = [];
+    if(json['result']['results'] != null) {
+      json['result']['results'].forEach((item) {
+        final Object? result = createSearchResultEntry(item);
+        if(result == null) return;
+
+        items.add(result);
+      });
+    }
+
+    return SearchResultMixed(
+      page: 0,
+      perPage: 36,
+      total: json['result']['total'],
+      filter: filter,
+      items: items
+    );
   }
 
   static const List<String> skippedBlockIds = ['CONTINUE_LISTEN',

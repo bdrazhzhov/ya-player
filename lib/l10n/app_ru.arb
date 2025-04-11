@@ -5,8 +5,10 @@
   "epoch": "Era",
   "personal": "Recommendations",
   "editorial": "Editorial",
+  "podcast_episodes": "Выпуски подкастов",
 
   "menu_main": "Главное",
+  "menu_search": "Поиск",
   "menu_stations": "Станции",
   "menu_podcasts": "Подкасты и книги",
   "menu_myMusic": "Моя музыка",
@@ -80,5 +82,14 @@
   "track_goToAlbum": "Перейти к альбому",
   "track_goToArtists": "Перейти к {count, plural, one {исполнителю} other {исполнителям}}",
   "track_share": "Поделиться",
-  "track_remove": "Удалить из фонотеки"
+  "track_remove": "Удалить из фонотеки",
+
+  "search_filters_top": "Топ",
+  "search_filters_track": "Треки",
+  "search_filters_artist": "Исполнители",
+  "search_filters_album": "Альбомы",
+  "search_filters_playlist": "Плейлисты",
+  "search_filters_podcast": "Подкасты",
+  "search_filters_book": "Аудиокниги",
+  "searchbar_hint": "Трек, альбом, исполнитель"
 }

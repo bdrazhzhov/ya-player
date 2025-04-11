@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '/models/music_api/can_be_played.dart';
 import '/controls/like_button.dart';
 import '/app_state.dart';
 import '/models/music_api/track.dart';
@@ -9,7 +10,7 @@ import 'chart_position.dart';
 import 'track_cover.dart';
 
 class TrackListItem extends StatefulWidget {
-  final Track track;
+  final CanBePlayed track;
   final bool isPlaying;
   final bool isCurrent;
   final bool showAlbum;
@@ -42,7 +43,7 @@ class _TrackListItemState extends State<TrackListItem> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    Track track = widget.track;
+    final CanBePlayed track = widget.track;
 
     String trackDuration = '';
     if(track.duration != null) {
@@ -82,7 +83,7 @@ class _TrackListItemState extends State<TrackListItem> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24, right: 2),
                   child: Text(
-                    track.albums.isNotEmpty ? track.albums.first.title : '',
+                    track.albumName,
                     softWrap: false,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -111,7 +112,7 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  SizedBox trackCover(Track track) {
+  SizedBox trackCover(CanBePlayed track) {
     return SizedBox(
       width: 50,
       height: 50,
@@ -130,7 +131,7 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  Padding trackTitle(Track track, ThemeData theme) {
+  Padding trackTitle(CanBePlayed track, ThemeData theme) {
     return Padding(
       padding: EdgeInsets.only(
         left: widget.showTrackNumber ? 6 : 24,
@@ -159,7 +160,7 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  Text buildArtistName(Track track) {
+  Text buildArtistName(CanBePlayed track) {
     return Text(
       track.artist,
       softWrap: false,

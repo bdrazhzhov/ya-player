@@ -131,11 +131,23 @@ abstract class AppLocalizations {
   /// **'Editorial'**
   String get editorial;
 
+  /// No description provided for @podcast_episodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcast episodes'**
+  String get podcast_episodes;
+
   /// No description provided for @menu_main.
   ///
   /// In en, this message translates to:
   /// **'Main'**
   String get menu_main;
+
+  /// No description provided for @menu_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get menu_search;
 
   /// No description provided for @menu_stations.
   ///
@@ -472,6 +484,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get track_remove;
+
+  /// No description provided for @search_filters_top.
+  ///
+  /// In en, this message translates to:
+  /// **'Top'**
+  String get search_filters_top;
+
+  /// No description provided for @search_filters_track.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks'**
+  String get search_filters_track;
+
+  /// No description provided for @search_filters_artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Artists'**
+  String get search_filters_artist;
+
+  /// No description provided for @search_filters_album.
+  ///
+  /// In en, this message translates to:
+  /// **'Albums'**
+  String get search_filters_album;
+
+  /// No description provided for @search_filters_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists'**
+  String get search_filters_playlist;
+
+  /// No description provided for @search_filters_podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcasts'**
+  String get search_filters_podcast;
+
+  /// No description provided for @search_filters_book.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get search_filters_book;
+
+  /// No description provided for @searchbar_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Track, album, artist'**
+  String get searchbar_hint;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

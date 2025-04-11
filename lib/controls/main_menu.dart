@@ -36,15 +36,10 @@ class _MainMenu extends State<MainMenu> {
           },
         ),
         MenuItem(
-          icon: SvgPicture.asset(
-            'assets/y_icon.svg',
-            colorFilter: ColorFilter.mode(theme.colorScheme.onSurface, BlendMode.srcIn),
-            width: 20,
-            height: 20,
-          ),
-          text: l10n.menu_main,
+          icon: const Icon(Icons.search),
+          text: l10n.menu_search,
           collapsed: _collapsed,
-          onTap: () => _goToRoute('/home'),
+          onTap: () => _goToRoute('/search'),
         ),
         MenuItem(
           icon: const Icon(Icons.radio_outlined),

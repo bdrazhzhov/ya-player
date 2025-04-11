@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+
+import '/helpers/paged_data.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'playlist.dart';
@@ -115,4 +118,41 @@ class SearchResult {
 
     return SearchResult(artists, albums, tracks, playlists, podcasts, podcastEpisodes);
   }
+}
+
+enum SearchFilter { artist, track, album, playlist, podcast, book }
+
+class SearchResultMixed extends PagedData<Object> {
+  final SearchFilter? filter;
+
+  SearchResultMixed({
+    required super.page,
+    required super.perPage,
+    required super.total,
+    required super.items,
+    this.filter
+  });
+}
+
+Object? createSearchResultEntry(item) {
+  Object? result;
+  
+  switch(item['type']) {
+    case 'album':
+      result = Album.fromJson(item['album']);
+    case 'track':
+      result = Track.fromJson(item['track'], '');
+    case 'artist':
+      result = Artist.fromJson(item['artist']);
+    case 'playlist':
+      result = Playlist.fromJson(item['playlist']);
+    case 'podcast':
+      result = Podcast.fromJson(item['podcast']);
+    case 'podcast_episode':
+      result = PodcastEpisode.fromJson(item['podcast_episode']);
+    default:
+      debugPrint('Unknown search result item type: ${item['type']}');
+  }
+  
+  return result;
 }

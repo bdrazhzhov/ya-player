@@ -41,9 +41,18 @@ class Album extends Equatable {
       releaseDate = DateTime.parse(json['releaseDate']);
     }
 
-    return Album(json['id'], json['title'], json['year'], releaseDate,
-        json['coverUri'], json['ogImage'], json['genre'] ?? '',
-        json['trackCount'], artists, json['description'], json['version']);
+    return Album(json['id'],
+      json['title'],
+      json['year'],
+      releaseDate,
+      json['coverUri'] ?? '',
+      json['ogImage'],
+      json['genre'] ?? '',
+      json['trackCount'],
+      artists,
+      json['description'],
+      json['version']
+    );
   }
 }
 

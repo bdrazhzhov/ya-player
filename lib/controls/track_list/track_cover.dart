@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '/models/music_api/track.dart';
+import '/models/music_api/can_be_played.dart';
 import '/controls/yandex_image.dart';
 import 'track_animation_cover.dart';
 
 class TrackCover extends StatefulWidget {
-  final Track track;
+  final CanBePlayed track;
   final bool isCurrent;
   final bool isPlaying;
   final bool isHovered;

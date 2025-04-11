@@ -4,8 +4,9 @@ import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ya_player/tray_integration.dart';
 
+import '/models/music_api/can_be_played.dart';
+import '/tray_integration.dart';
 import 'dbus/mpris/metadata.dart';
 import 'dbus/mpris/mpris_player.dart';
 import 'helpers/app_route_observer.dart';
@@ -515,9 +516,9 @@ class AppState {
     return playStation(station);
   }
 
-  bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
+  bool isLikedTrack(CanBePlayed track) => binarySearch(_likedTrackIds, track.id) != -1;
 
-  Future<void> likeTrack(Track track) async {
+  Future<void> likeTrack(CanBePlayed track) async {
     int likedIndex = binarySearch(_likedTrackIds, track.id);
     final isLiked = likedIndex != -1;
     final Station? station = currentStationNotifier.value;

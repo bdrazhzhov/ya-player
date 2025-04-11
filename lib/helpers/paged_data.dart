@@ -11,7 +11,7 @@ class PagedData<T> {
     required this.items
   });
 
-  factory PagedData.fromJson(Map<String, dynamic> json, List<T> items) {
+  factory PagedData.fromJson(Map<String, dynamic> json, Iterable<T> items) {
     return PagedData(
       page: json['page'],
       perPage: json['perPage'],

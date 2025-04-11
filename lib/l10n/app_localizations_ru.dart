@@ -27,7 +27,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editorial => 'Editorial';
 
   @override
+  String get podcast_episodes => 'Выпуски подкастов';
+
+  @override
   String get menu_main => 'Главное';
+
+  @override
+  String get menu_search => 'Поиск';
 
   @override
   String get menu_stations => 'Станции';
@@ -215,4 +221,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get track_remove => 'Удалить из фонотеки';
+
+  @override
+  String get search_filters_top => 'Топ';
+
+  @override
+  String get search_filters_track => 'Треки';
+
+  @override
+  String get search_filters_artist => 'Исполнители';
+
+  @override
+  String get search_filters_album => 'Альбомы';
+
+  @override
+  String get search_filters_playlist => 'Плейлисты';
+
+  @override
+  String get search_filters_podcast => 'Подкасты';
+
+  @override
+  String get search_filters_book => 'Аудиокниги';
+
+  @override
+  String get searchbar_hint => 'Трек, альбом, исполнитель';
 }

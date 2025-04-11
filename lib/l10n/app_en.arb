@@ -5,8 +5,10 @@
   "epoch": "Era",
   "personal": "Recommendations",
   "editorial": "Editorial",
+  "podcast_episodes": "Podcast episodes",
 
   "menu_main": "Main",
+  "menu_search": "Search",
   "menu_stations": "Stations",
   "menu_podcasts": "Podcasts and Books",
   "menu_myMusic": "My Music",
@@ -80,5 +82,14 @@
   "track_goToAlbum": "Go to album",
   "track_goToArtists": "Go to artists",
   "track_share": "Copy link",
-  "track_remove": "Remove"
+  "track_remove": "Remove",
+
+  "search_filters_top": "Top",
+  "search_filters_track": "Tracks",
+  "search_filters_artist": "Artists",
+  "search_filters_album": "Albums",
+  "search_filters_playlist": "Playlists",
+  "search_filters_podcast": "Podcasts",
+  "search_filters_book": "Books",
+  "searchbar_hint": "Track, album, artist"
 }
