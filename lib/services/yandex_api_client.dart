@@ -5,10 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '/in_memory_cache.dart';
+
 class YandexApiClient {
   final String deviceId;
   final String deviceUuid;
   Locale _locale;
+  final _cache = InMemoryCache();
 
   late final Dio _dio;
 
@@ -82,13 +85,21 @@ class YandexApiClient {
 
   Future<Map<String, dynamic>> get(String path, {
     Map<String, String>? headers,
-    Map<String, dynamic>? queryParameters
+    Map<String, dynamic>? queryParameters,
+    Duration? cacheDuration
   }) async {
+    final String cacheKey = '$path?${queryParameters?.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+    final cacheValue = _cache.get(cacheKey);
+    if(cacheValue != null) return cacheValue;
 
     Response resp = await _dio.get(path,
       options: Options(headers: headers),
       queryParameters: queryParameters
     );
+
+    if(cacheDuration != null) {
+      _cache.set(cacheKey, resp.data, expiration: cacheDuration);
+    }
 
     return resp.data;
   }

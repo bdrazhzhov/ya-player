@@ -416,7 +416,8 @@ class MusicApi {
       query['filter'] = filter.name;
     }
     Map<String, dynamic> json = await _http.get('/search/instant/mixed',
-      queryParameters: query
+      queryParameters: query,
+      cacheDuration: const Duration(minutes: 5)
     );
 
     List<Object> items = [];

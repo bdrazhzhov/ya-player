@@ -40,7 +40,7 @@ class ArtistCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              AppLocalizations.of(context)!.tracks_count(artist.counts.tracks),
+              "${artist.counts.tracks} ${AppLocalizations.of(context)!.tracks_count(artist.counts.tracks)}",
               style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
             ),
             Text(
@@ -48,7 +48,7 @@ class ArtistCard extends StatelessWidget {
               style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              maxLines: 1,
             )
           ],
         ),

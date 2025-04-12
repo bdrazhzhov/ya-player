@@ -47,29 +47,6 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           SizedBox(height: 12),
           AppSearchBar(onChanged: onSearchTextChanged),
-          // SearchBar(
-          //   controller: searchTextController,
-          //   leading: Padding(
-          //     padding: const EdgeInsets.only(left: 8.0),
-          //     child: Icon(Icons.search, color: leadingColor),
-          //   ),
-          //   trailing: !isDefaultView ? [
-          //     IconButton(
-          //       icon: const Icon(Icons.clear),
-          //       onPressed: (){
-          //         searchTextController.clear();
-          //         isDefaultView = true;
-          //         filter = null;
-          //         setState(() {});
-          //       },
-          //     )
-          //   ] : null,
-          //   onChanged: onSearchTextChanged,
-          //   elevation: WidgetStateProperty.all<double>(0.0),
-          //   hintText: l10n.searchbar_hint,
-          //   hintStyle: WidgetStateProperty.all<TextStyle>(hintTextStyle),
-          //
-          // ),
           SizedBox(height: 12),
           buildSearchSelector(theme),
         ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '/l10n/app_localizations.dart';
 import '/app_state.dart';
@@ -20,7 +19,6 @@ class _MainMenu extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
