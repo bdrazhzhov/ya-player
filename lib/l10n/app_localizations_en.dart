@@ -237,4 +237,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchbar_hint => 'Track, album, artist';
+
+  @override
+  String get track_card_track => 'Track';
 }

@@ -245,4 +245,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get searchbar_hint => 'Трек, альбом, исполнитель';
+
+  @override
+  String get track_card_track => 'Трек';
 }

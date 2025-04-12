@@ -33,6 +33,7 @@ class PageBase extends StatelessWidget {
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: CustomScrollView(
         controller: _scrollController,
+        // physics: CustomScrollPhysics(),
         slivers: [
           if(title != null)
             SliverPadding(

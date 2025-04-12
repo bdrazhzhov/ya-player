@@ -532,6 +532,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track, album, artist'**
   String get searchbar_hint;
+
+  /// No description provided for @track_card_track.
+  ///
+  /// In en, this message translates to:
+  /// **'Track'**
+  String get track_card_track;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -21,7 +21,6 @@ class _SearchPageState extends State<SearchPage> {
   bool isDefaultView = true;
   SearchFilter? filter;
   late Future<SearchResultMixed> searchResult;
-  // final searchTextController = TextEditingController();
   String searchText = '';
   final _appState = getIt<AppState>();
 
@@ -29,21 +28,22 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return PageBase(
-      slivers: [
+    return Column(
+      children: [
         buildSearchBar(theme),
-        isDefaultView ? buildDefaultView() : SearchResultMixedPage(text: searchText, filter: filter),
-      ]
+        Expanded(
+          child: PageBase(
+            slivers: [isDefaultView ? buildDefaultView() : SearchResultMixedPage(text: searchText, filter: filter),]
+          ),
+        ),
+      ],
     );
   }
 
-  SliverAppBar buildSearchBar(ThemeData theme) {
-    return SliverAppBar(
-      leading: const SizedBox.shrink(),
-      pinned: true,
-      expandedHeight: 124,
-      collapsedHeight: 124,
-      flexibleSpace: Column(
+  Widget buildSearchBar(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
+      child: Column(
         children: [
           SizedBox(height: 12),
           AppSearchBar(onChanged: onSearchTextChanged),
@@ -51,8 +51,6 @@ class _SearchPageState extends State<SearchPage> {
           buildSearchSelector(theme),
         ],
       ),
-      backgroundColor: theme.colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
     );
   }
 
@@ -144,7 +142,9 @@ class _SearchPageState extends State<SearchPage> {
       );
     }
 
-    return Row(spacing: 8, children: items);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: items
+    );
   }
 }
-

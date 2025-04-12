@@ -611,8 +611,8 @@ class MusicApi {
     );
 
     return await _http.get(
-        json['result']['downloadUrl'],
-        cacheDuration: const Duration(days: 365)
+      json['result']['downloadUrl'],
+      cacheDuration: const Duration(days: 365)
     );
   }
 }

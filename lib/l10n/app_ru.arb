@@ -91,5 +91,7 @@
   "search_filters_playlist": "Плейлисты",
   "search_filters_podcast": "Подкасты",
   "search_filters_book": "Аудиокниги",
-  "searchbar_hint": "Трек, альбом, исполнитель"
+  "searchbar_hint": "Трек, альбом, исполнитель",
+
+  "track_card_track": "Трек"
 }

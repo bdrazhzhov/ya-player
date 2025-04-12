@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/album_card.dart';
-import 'package:ya_player/controls/artist_card.dart';
-import 'package:ya_player/controls/playlist_card.dart';
-import 'package:ya_player/controls/sliver_track_list.dart';
-import 'package:ya_player/models/music_api/album.dart';
-import 'package:ya_player/pages/search_results/podcasts_page.dart';
 
-import '../helpers/custom_sliver_grid_delegate_extent.dart';
-import '../models/music_api/playlist.dart';
-import '../models/music_api/track.dart';
+import '/controls/album_card.dart';
+import '/controls/artist_card.dart';
+import '/controls/playlist_card.dart';
+import '/controls/sliver_track_list.dart';
+import '/models/music_api/album.dart';
+import '/pages/search_results/podcasts_page.dart';
+import '/helpers/custom_sliver_grid_delegate_extent.dart';
+import '/models/music_api/playlist.dart';
+import '/models/music_api/track.dart';
 import 'search_results/top_page.dart';
-import '../models/music_api/artist.dart';
-import '../models/music_api/search.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/models/music_api/artist.dart';
+import '/models/music_api/search.dart';
+import '/music_api.dart';
+import '/services/service_locator.dart';
 
 class SearchResultMixedPage extends StatelessWidget {
   final String text;

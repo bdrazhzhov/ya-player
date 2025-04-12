@@ -91,5 +91,7 @@
   "search_filters_playlist": "Playlists",
   "search_filters_podcast": "Podcasts",
   "search_filters_book": "Books",
-  "searchbar_hint": "Track, album, artist"
+  "searchbar_hint": "Track, album, artist",
+
+  "track_card_track": "Track"
 }
