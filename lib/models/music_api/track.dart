@@ -32,10 +32,12 @@ class Track extends Equatable implements CanBeRadio, CanBePlayed {
   late final String artist;
   @override
   final ChartItem? chart;
+  LyricsInfo lyricsInfo;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
-      this.isAvailable, this.type, this.trackParameters, this.chart) {
+      this.isAvailable, this.type, this.trackParameters, this.chart,
+      this.lyricsInfo) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -77,11 +79,16 @@ class Track extends Equatable implements CanBeRadio, CanBePlayed {
       trackParameters = TrackParameters.fromJson(json['trackParameters']);
     }
 
+    var lyricsInfo = LyricsInfo(hasSync: false, hasText: false);
+    if(track['lyricsInfo'] != null) {
+      lyricsInfo = LyricsInfo.fromJson(track['lyricsInfo']);
+    }
+
     return Track(id.toString(),
       track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
       _trackTypes[track['type'].toString()] ?? TrackType.music,
-      trackParameters, chart
+      trackParameters, chart, lyricsInfo
     );
   }
 
@@ -154,4 +161,18 @@ class UrlData
   final String? encryptionKey;
 
   UrlData({required this.url, this.encryptionKey});
+}
+
+class LyricsInfo {
+  final bool hasSync;
+  final bool hasText;
+
+  LyricsInfo({required this.hasSync, required this.hasText});
+
+  factory LyricsInfo.fromJson(Map<String, dynamic> json) {
+    return LyricsInfo(
+      hasSync: json['hasSync'] ?? false,
+      hasText: json['hasText'] ?? false,
+    );
+  }
 }

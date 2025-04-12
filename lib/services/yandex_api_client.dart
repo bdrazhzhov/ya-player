@@ -83,7 +83,7 @@ class YandexApiClient {
     return headers;
   }
 
-  Future<Map<String, dynamic>> get(String path, {
+  dynamic get(String path, {
     Map<String, String>? headers,
     Map<String, dynamic>? queryParameters,
     Duration? cacheDuration

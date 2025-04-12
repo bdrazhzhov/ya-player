@@ -5,12 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import '/models/music_api/can_be_played.dart';
 import 'helpers/paged_data.dart';
+import 'models/music_api/history.dart';
 import 'models/music_api_types.dart';
 import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
 
 enum AlbumsSortBy { rating, year }
 enum AlbumsSortOrder { desc, asc }
+enum LyricsFormat { lrc, text }
 
 final class QueueIndexInvalid implements Exception {}
 
@@ -575,5 +577,42 @@ class MusicApi {
   Future<Playlist> chart() async {
     final json = await _http.get('/landing3/chart');
     return Playlist.fromJson(json['result']['chart']);
+  }
+
+  Future<List<Object>> history() async {
+    List<Object> history = [];
+
+    final json = await _http.get('/landing-blocks/history');
+
+    json['items'].forEach((item) => history.add(getHistoryItem(item)));
+
+    return history;
+  }
+
+  Future<String> getLyrics(String trackId, [LyricsFormat format = LyricsFormat.lrc]) async {
+    final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
+    final Uint8List key = utf8.encode(_newMagicSalt);
+    final Uint8List data = utf8.encode('$trackId$ts');
+    final Digest digest = Hmac(sha256, key).convert(data);
+    final String sign = base64.encode(digest.bytes);
+    final query = {
+      'format': format.name.toUpperCase(),
+      'timeStamp': ts,
+      'sign': sign
+    };
+
+    Map<String, dynamic> json = await _http.get(
+      '/tracks/$trackId/lyrics',
+      headers: {
+        'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1',
+      },
+      queryParameters: query,
+      cacheDuration: const Duration(days: 365)
+    );
+
+    return await _http.get(
+        json['result']['downloadUrl'],
+        cacheDuration: const Duration(days: 365)
+    );
   }
 }
