@@ -584,7 +584,7 @@ class MusicApi {
 
     final json = await _http.get('/landing-blocks/history');
 
-    json['items'].forEach((item) => history.add(getHistoryItem(item)));
+    json['result']['items'].forEach((item) => history.add(getHistoryItem(item)));
 
     return history;
   }

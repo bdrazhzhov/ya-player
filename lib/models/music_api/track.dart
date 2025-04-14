@@ -32,7 +32,7 @@ class Track extends Equatable implements CanBeRadio, CanBePlayed {
   late final String artist;
   @override
   final ChartItem? chart;
-  LyricsInfo lyricsInfo;
+  final LyricsInfo lyricsInfo;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,

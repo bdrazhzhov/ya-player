@@ -39,10 +39,11 @@ class ArtistCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
               overflow: TextOverflow.ellipsis,
             ),
-            Text(
-              "${artist.counts.tracks} ${AppLocalizations.of(context)!.tracks_count(artist.counts.tracks)}",
-              style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
-            ),
+            if(artist.counts != null)
+              Text(
+                "${artist.counts!.tracks} ${AppLocalizations.of(context)!.tracks_count(artist.counts!.tracks)}",
+                style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
+              ),
             Text(
               artist.genres.map((e) => '${e[0].toUpperCase()}${e.substring(1)}').join(', '),
               style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),

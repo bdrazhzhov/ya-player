@@ -12,7 +12,7 @@ class ArtistItem {
 
   factory ArtistItem.fromJson(Map<String, dynamic> json) {
     return ArtistItem(
-      id: json['id'],
+      id: json['id'].toString(),
       name: json['name'],
       coverUri: json['cover']['uri'],
     );
@@ -24,12 +24,14 @@ class NonMusicAlbum {
   final String name;
   final String coverUri;
   final List<ArtistItem> artists;
+  final int likesCount;
 
   NonMusicAlbum({
     required this.id,
     required this.name,
     required this.coverUri,
     required this.artists,
+    required this.likesCount,
   });
 
   factory NonMusicAlbum.fromJson(Map<String, dynamic> json) {
@@ -38,13 +40,15 @@ class NonMusicAlbum {
       artists.add(ArtistItem.fromJson(item));
     });
 
+    final int likesCount = json['likesCount'] ?? 0;
     json = json['album'];
     
     return NonMusicAlbum(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'].toString(),
+      name: json['title'],
       coverUri: json['cover']['uri'],
       artists: artists,
+      likesCount: likesCount
     );
   }
 }

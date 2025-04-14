@@ -19,7 +19,7 @@ class ArtistBase implements CanBeRadio {
 class Artist extends ArtistBase {
   final ArtistCover? cover;
   final List<String> genres;
-  final ArtistCounts counts;
+  final ArtistCounts? counts;
   final List<ArtistLink> links;
   final List<ArtistExtraAction> extraActions;
 
@@ -27,7 +27,7 @@ class Artist extends ArtistBase {
 
   factory Artist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];
-    json['genres'].forEach((genre) => genres.add(genre));
+    json['genres']?.forEach((genre) => genres.add(genre));
 
     List<ArtistLink> links = [];
     if(json['links'] != null) {
@@ -42,23 +42,28 @@ class Artist extends ArtistBase {
       json['extraActions'].forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
     }
 
+    final counts = json['counts'] != null
+        ? ArtistCounts.fromJson(json['counts'])
+        : null;
+
     return Artist(
       json['id'] is String ? int.parse(json['id']) : json['id'],
-      json['name'], cover, genres,
-      ArtistCounts.fromJson(json['counts']), links, extraActions
+      json['name'], cover, genres, counts, links, extraActions
     );
   }
 }
 
 class ArtistCover {
-  final String type;
-  final String prefix;
+  // final String type;
+  // final String prefix;
   final String uri;
 
-  ArtistCover(this.type, this.prefix, this.uri);
+  // ArtistCover(this.type, this.prefix, this.uri);
+  ArtistCover(this.uri);
 
   factory ArtistCover.fromJson(Map<String, dynamic> json) {
-    return ArtistCover(json['type'], json['prefix'], json['uri']);
+    // return ArtistCover(json['type'], json['prefix'], json['uri']);
+    return ArtistCover(json['uri']);
   }
 }
 
