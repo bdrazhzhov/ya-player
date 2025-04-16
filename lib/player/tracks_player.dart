@@ -4,13 +4,13 @@ final class TracksPlayer extends PlayerBase {
   final TracksQueue queue;
 
   TracksPlayer({required this.queue}) {
-    _appState.playbackSpeedNotifier.addListener((){
-      _audioPlayer.setRate(_appState.playbackSpeedNotifier.value);
+    _playerState.rateNotifier.addListener((){
+      _audioPlayer.setRate(_playerState.rateNotifier.value);
     });
-    _appState.canGoNextNotifier.value = true;
-    _appState.canGoPreviousNotifier.value = false;
-    _appState.canShuffleNotifier.value = true;
-    _appState.canRepeatNotifier.value = true;
+    _playerState.canNextNotifier.value = true;
+    _playerState.canPrevNotifier.value = false;
+    _playerState.canShuffleNotifier.value = true;
+    _playerState.canRepeatNotifier.value = true;
   }
 
   @override
@@ -23,16 +23,17 @@ final class TracksPlayer extends PlayerBase {
     }
     else {
       track = await queue.moveTo(index);
-      _appState.canGoNextNotifier.value = queue.canGoNext;
-      _appState.canGoPreviousNotifier.value = queue.canGoPrevious;
     }
+
+    _playerState.canNextNotifier.value = queue.canGoNext;
+    _playerState.canPrevNotifier.value = queue.canGoPrevious;
 
     if(track == null) {
       _appState.playButtonNotifier.value = ButtonState.paused;
       return;
     }
 
-    if(track == _currentPlayInfo?.track && _appState.repeatNotifier.value != RepeatMode.one) {
+    if(track == _currentPlayInfo?.track && _playerState.repeatNotifier.value != RepeatMode.one) {
       await _audioPlayer.play();
     }
     else {
@@ -45,7 +46,7 @@ final class TracksPlayer extends PlayerBase {
   Future<void> _stop() async {
     if(_currentPlayInfo == null) return;
 
-    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
+    _currentPlayInfo!.totalPlayed = _playerState.progressNotifier.value.position;
     await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     _currentPlayInfo = null;
   }
@@ -54,11 +55,11 @@ final class TracksPlayer extends PlayerBase {
   void next() async {
     int index = queue.currentIndex + 1;
 
-    if(_appState.shuffleNotifier.value) {
+    if(_playerState.shuffleNotifier.value) {
       index = Random().nextInt(queue.length);
     }
     else {
-      switch(_appState.repeatNotifier.value) {
+      switch(_playerState.repeatNotifier.value) {
         case RepeatMode.on:
           if(index == queue.length) {
             index = 0;
@@ -77,11 +78,11 @@ final class TracksPlayer extends PlayerBase {
   void previous() async {
     int index = queue.currentIndex - 1;
 
-    if(_appState.shuffleNotifier.value) {
+    if(_playerState.shuffleNotifier.value) {
       index = Random().nextInt(queue.length);
     }
     else {
-      switch(_appState.repeatNotifier.value) {
+      switch(_playerState.repeatNotifier.value) {
         case RepeatMode.on:
           if(index == -1) {
             index = queue.length - 1;

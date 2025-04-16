@@ -2,6 +2,7 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 
+import '/player_state.dart';
 import '/notifiers/track_duration_notifier.dart';
 import '/audio_player.dart';
 import '/app_state.dart';
@@ -18,6 +19,7 @@ import 'volume_control.dart';
 
 class ControlsBar extends StatelessWidget {
   final AppState _appState = getIt<AppState>();
+  final _playerState = getIt<PlayerState>();
   final _audioPlayer = getIt<AudioPlayer>();
 
   final bool isExpandable;
@@ -29,7 +31,7 @@ class ControlsBar extends StatelessWidget {
     return Column(
       children: [
         ValueListenableBuilder<TrackDurationState>(
-          valueListenable: _appState.progressNotifier,
+          valueListenable: _playerState.progressNotifier,
           builder: (_, value, __) {
             return ProgressBar(
               progress: value.position,
@@ -45,7 +47,7 @@ class ControlsBar extends StatelessWidget {
               TrackImage(isExpandable: isExpandable),
               TrackName(),
               ValueListenableBuilder<Track?>(
-                valueListenable: _appState.trackNotifier,
+                valueListenable: _playerState.trackNotifier,
                 builder: (_, track, __) {
                   if(track == null) return const SizedBox.shrink();
 
@@ -86,7 +88,7 @@ class ControlsBar extends StatelessWidget {
                 ),
               ),
               ValueListenableBuilder(
-                valueListenable: _appState.trackNotifier,
+                valueListenable: _playerState.trackNotifier,
                 builder: (_, Track? track, __) {
                   if(track?.type == TrackType.podcast
                       || track?.type == TrackType.audiobook) {

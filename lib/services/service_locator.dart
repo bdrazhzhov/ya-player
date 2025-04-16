@@ -4,6 +4,7 @@ import 'package:dbus/dbus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/player_state.dart';
 import '/window_manager.dart';
 import '/dbus/sleep_inhibitor.dart';
 import '/dbus/mpris/mpris_player.dart';
@@ -29,6 +30,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<AppState>(AppState());
   getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
+  getIt.registerSingleton<PlayerState>(PlayerState());
 }
 
 MusicApi _initMusicApi() {

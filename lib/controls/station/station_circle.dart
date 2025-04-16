@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/helpers/color_extension.dart';
 
+import '/player_state.dart';
 import '/app_state.dart';
 import '/models/music_api/station.dart';
 import '/music_api.dart';
-import '/notifiers/play_button_notifier.dart';
 import '/services/service_locator.dart';
 import 'animated_station_circle.dart';
 
@@ -27,6 +27,7 @@ class StationCircle extends StatelessWidget {
   );
 
   final _appState = getIt<AppState>();
+  final _playerState = getIt<PlayerState>();
 
   StationCircle({
     super.key,
@@ -39,12 +40,12 @@ class StationCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _appState.playButtonNotifier,
+      valueListenable: _playerState.playBackStateNotifier,
       builder: (BuildContext context, buttonState, Widget? child) {
         return ValueListenableBuilder(
           valueListenable: _appState.currentStationNotifier,
           builder: (_, currentStation, Widget? child) {
-            if(buttonState == ButtonState.playing && currentStation == station) {
+            if(buttonState == PlayBackState.playing && currentStation == station) {
               return AnimatedStationCircle(
                 color: station.icon.backgroundColor.toColor(),
                 maxWidth: dimension,

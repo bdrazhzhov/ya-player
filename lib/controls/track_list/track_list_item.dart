@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '/player_state.dart';
 import '/models/music_api/can_be_played.dart';
 import '/controls/like_button.dart';
 import '/app_state.dart';
@@ -38,6 +39,7 @@ class TrackListItem extends StatefulWidget {
 class _TrackListItemState extends State<TrackListItem> {
   bool isHovered = false;
   final appState = getIt<AppState>();
+  final playerState = getIt<PlayerState>();
   final df = DateFormat('mm:ss');
 
   @override
@@ -117,7 +119,7 @@ class _TrackListItemState extends State<TrackListItem> {
       width: 50,
       height: 50,
       child: ValueListenableBuilder(
-        valueListenable: appState.trackNotifier,
+        valueListenable: playerState.trackNotifier,
         builder: (_, Track? currentTrack, __) {
           return TrackCover(
             widget.track,

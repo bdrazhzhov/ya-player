@@ -2,10 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../notifiers/play_button_notifier.dart';
-import '../app_state.dart';
-import '../models/music_api/track.dart';
-import '../services/service_locator.dart';
+import '/app_state.dart';
+import '/models/music_api/track.dart';
+import '/player_state.dart';
+import '/services/service_locator.dart';
 import 'track_list/track_cover.dart';
 
 
@@ -29,6 +29,7 @@ class TrackList extends StatefulWidget {
 
 class _TrackListState extends State<TrackList> {
   final appState = getIt<AppState>();
+  final playerState = getIt<PlayerState>();
   Track? hoveredTrack;
   late bool isPlaying;
 
@@ -36,19 +37,19 @@ class _TrackListState extends State<TrackList> {
   void initState() {
     super.initState();
 
-    appState.playButtonNotifier.addListener(playingStateListener);
-    isPlaying = appState.playButtonNotifier.value == ButtonState.playing;
+    playerState.playBackStateNotifier.addListener(playingStateListener);
+    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    appState.playButtonNotifier.removeListener(playingStateListener);
+    playerState.playBackStateNotifier.removeListener(playingStateListener);
   }
 
   void playingStateListener() {
-    isPlaying = appState.playButtonNotifier.value == ButtonState.playing;
+    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
     setState(() {});
   }
 
@@ -110,7 +111,7 @@ class _TrackListState extends State<TrackList> {
                                   onEnter: (event){ hoveredTrack = track; setState(() {}); },
                                   onExit: (event){ hoveredTrack = null; setState(() {}); },
                                   child: ValueListenableBuilder(
-                                      valueListenable: appState.trackNotifier,
+                                      valueListenable: playerState.trackNotifier,
                                       builder: (_, Track? currentTrack, __) {
                                         return TrackCover(
                                           track,

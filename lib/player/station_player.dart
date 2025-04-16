@@ -5,13 +5,13 @@ final class StationPlayer extends PlayerBase {
 
   StationPlayer({required this.queue}) {
     _appState.stationSettingsNotifier.addListener(_updateStationSettings);
-    _appState.playbackSpeedNotifier.value = 1.0;
-    _appState.canGoNextNotifier.value = true;
-    _appState.canGoPreviousNotifier.value = false;
-    _appState.canShuffleNotifier.value = false;
-    _appState.canRepeatNotifier.value = false;
-    _appState.shuffleNotifier.value = false;
-    _appState.repeatNotifier.value = RepeatMode.off;
+    _playerState.rateNotifier.value = 1.0;
+    _playerState.canNextNotifier.value = true;
+    _playerState.canPrevNotifier.value = false;
+    _playerState.canShuffleNotifier.value = false;
+    _playerState.canRepeatNotifier.value = false;
+    _playerState.shuffleNotifier.value = false;
+    _playerState.repeatNotifier.value = RepeatMode.off;
   }
 
   @override
@@ -39,11 +39,11 @@ final class StationPlayer extends PlayerBase {
 
     Track? track;
 
-    _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
+    _currentPlayInfo!.totalPlayed = _playerState.progressNotifier.value.position;
     await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
 
     Track? currentTrack = _currentPlayInfo!.track;
-    final bool isSkipped = _appState.progressNotifier.value.position.inSeconds < currentTrack.duration!.inSeconds;
+    final bool isSkipped = _playerState.progressNotifier.value.position.inSeconds < currentTrack.duration!.inSeconds;
     final String feedback = isSkipped ? 'skip' : 'trackFinished';
     await _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,
         currentTrack, feedback, _currentPlayInfo!.totalPlayed);
@@ -57,7 +57,7 @@ final class StationPlayer extends PlayerBase {
 
     if(track == null) return;
 
-    _appState.trackNotifier.value = track;
+    _playerState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, queue.station.from);
     await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     await _musicApi.sendStationTrackFeedback(_appState.currentStationNotifier.value!.id,

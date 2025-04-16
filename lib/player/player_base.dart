@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:audio_player_gst/events.dart';
 import 'package:ya_player/state_enums.dart';
 
+import '/player_state.dart';
 import '/notifiers/play_button_notifier.dart';
 import '/audio_player.dart';
 import '/app_state.dart';
@@ -15,10 +16,12 @@ import 'playback_queue.dart';
 
 part 'station_player.dart';
 part 'tracks_player.dart';
+part 'single_track_player.dart';
 
 abstract base class PlayerBase {
   final _musicApi = getIt<MusicApi>();
   final _appState = getIt<AppState>();
+  final _playerState = getIt<PlayerState>();
   final _audioPlayer = getIt<AudioPlayer>();
   PlayInfo? _currentPlayInfo;
 
@@ -38,11 +41,11 @@ abstract base class PlayerBase {
 
   Future<void> _playTrack(Track track, String from) async {
     if(_currentPlayInfo != null) {
-      _currentPlayInfo!.totalPlayed = _appState.progressNotifier.value.position;
+      _currentPlayInfo!.totalPlayed = _playerState.progressNotifier.value.position;
       await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
     }
 
-    _appState.trackNotifier.value = track;
+    _playerState.trackNotifier.value = track;
     _currentPlayInfo = PlayInfo(track, from);
     await _musicApi.sendPlayingStatistics(_currentPlayInfo!.toYmPlayAudio());
 

@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 
-import '/dbus/mpris/mpris_player.dart';
+import '/player_state.dart';
 import '/state_enums.dart';
-import '/app_state.dart';
 import '/services/service_locator.dart';
 
 class RepeatButton extends StatelessWidget {
-  final _appState = getIt<AppState>();
-  final _mpris = getIt<OrgMprisMediaPlayer2>();
+  final _playerState = getIt<PlayerState>();
 
   RepeatButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _appState.canRepeatNotifier,
+      valueListenable: _playerState.canRepeatNotifier,
       builder: (BuildContext context, isEnabled, Widget? child) {
         return IconButton(
           iconSize: 26,
           onPressed: isEnabled ? _onButtonPress : null,
           icon: ValueListenableBuilder<RepeatMode>(
-            valueListenable: _appState.repeatNotifier,
+            valueListenable: _playerState.repeatNotifier,
             builder: (_, RepeatMode repeatMode, __) {
               switch(repeatMode) {
                 case RepeatMode.on:
@@ -38,15 +36,13 @@ class RepeatButton extends StatelessWidget {
   }
 
   void _onButtonPress() {
-    switch(_appState.repeatNotifier.value) {
+    switch(_playerState.repeatNotifier.value) {
       case RepeatMode.on:
-        _appState.repeatNotifier.value = RepeatMode.one;
+        _playerState.repeatNotifier.value = RepeatMode.one;
       case RepeatMode.one:
-        _appState.repeatNotifier.value = RepeatMode.off;
+        _playerState.repeatNotifier.value = RepeatMode.off;
       case RepeatMode.off:
-        _appState.repeatNotifier.value = RepeatMode.on;
+        _playerState.repeatNotifier.value = RepeatMode.on;
     }
-
-    _mpris.repeat = _appState.repeatNotifier.value;
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '/player_state.dart';
 import '/models/music_api/can_be_played.dart';
 import 'track_list/track_list_item.dart';
 import '/app_state.dart';
-import '/notifiers/play_button_notifier.dart';
 import '/player/players_manager.dart';
 import '/services/service_locator.dart';
 
@@ -25,6 +25,7 @@ class SliverTrackList extends StatefulWidget {
 
 class _SliverTrackListState extends State<SliverTrackList> {
   final appState = getIt<AppState>();
+  final playerState = getIt<PlayerState>();
   final player = getIt<PlayersManager>();
   bool isPlayingStarted = false;
 
@@ -36,12 +37,12 @@ class _SliverTrackListState extends State<SliverTrackList> {
         CanBePlayed track = widget.tracks[index];
 
         return ValueListenableBuilder(
-          valueListenable: appState.trackNotifier,
+          valueListenable: playerState.trackNotifier,
           builder: (_, CanBePlayed? currentTrack, __) {
             return ValueListenableBuilder(
-              valueListenable: appState.playButtonNotifier,
-              builder: (___, ButtonState value, ____) {
-                bool isPlaying = value == ButtonState.playing;
+              valueListenable: playerState.playBackStateNotifier,
+              builder: (___, PlayBackState value, ____) {
+                bool isPlaying = value == PlayBackState.playing;
                 bool isCurrent = currentTrack != null && currentTrack == track;
 
                 return TrackListItem(

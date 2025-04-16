@@ -16,6 +16,7 @@ import 'player/playback_queue.dart';
 import 'player/player_base.dart';
 import 'player/players_manager.dart';
 import 'player/queue_factory.dart';
+import 'player_state.dart';
 import 'services/preferences.dart';
 import 'models/music_api_types.dart';
 import 'music_api.dart';
@@ -30,9 +31,7 @@ class AppState {
   // Listeners: Updates going to the UI
   late final ValueNotifier<ThemeData> themeNotifier;
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
-  late final progressNotifier = _audioPlayer.trackDurationNotifier;
   final playButtonNotifier = PlayButtonNotifier();
-  final trackNotifier = ValueNotifier<Track?>(null);
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<Map<String,List<Station>>>({});
@@ -47,19 +46,7 @@ class AppState {
   final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
   final queueTracks = ValueNotifier<List<Track>>([]);
-  final shuffleNotifier = ValueNotifier<bool>(false);
-  final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
-  final playbackSpeedNotifier = ValueNotifier<double>(1);
-  late final volumeNotifier = _audioPlayer.volumeNotifier;
-  // abilities
-  final canGoNextNotifier = ValueNotifier<bool>(false);
-  final canGoPreviousNotifier = ValueNotifier<bool>(false);
-  final canPlayNotifier = ValueNotifier<bool>(false);
-  final canPauseNotifier = ValueNotifier<bool>(false);
-  final canSeekNotifier = ValueNotifier<bool>(false);
-  final canShuffleNotifier = ValueNotifier<bool>(false);
-  final canRepeatNotifier = ValueNotifier<bool>(false);
   // settings
   final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
   late final localeNotifier = ValueNotifier<Locale>(_prefs.locale);
@@ -68,6 +55,7 @@ class AppState {
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
+  final _playerState = getIt<PlayerState>();
   final _playersManager = getIt<PlayersManager>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
   final _trayIntegration = TrayIntegration();
@@ -88,13 +76,7 @@ class AppState {
     _listenToPlaybackState();
     _listenToMprisControlStream();
     _listenToTrackDurationNotifier();
-    _listenToShuffleState();
-    _listenToRepeatState();
-    _listenToRate();
-    _listenToVolume();
     _listenToTrayEvents();
-    _listenToPlayerAbilities();
-    _listenToTrackChange();
     _listenToRouteChanges();
     _listenToSettingsChanges();
 
@@ -108,11 +90,6 @@ class AppState {
 
     await _requestAppData();
     mainPageState.value = UiState.main;
-    _mpris.canShuffle = true;
-    shuffleNotifier.value = _prefs.shuffle;
-    _mpris.canRepeat = true;
-    repeatNotifier.value = _prefs.repeat;
-    volumeNotifier.value = _prefs.volume.clamp(0, 1);
     closeToTrayEnabledNotifier.value = _prefs.hideOnClose;
     _mpris.positionStream.listen(_audioPlayer.seek);
 
@@ -260,50 +237,6 @@ class AppState {
     });
   }
 
-  void _listenToShuffleState() {
-    _mpris.shuffleStream.listen((bool value){
-      shuffleNotifier.value = value;
-    });
-
-    shuffleNotifier.addListener((){
-      _prefs.setShuffle(shuffleNotifier.value);
-      _mpris.shuffle = shuffleNotifier.value;
-    });
-  }
-
-  void _listenToRepeatState() {
-    _mpris.repeatStream.listen((RepeatMode value){
-      repeatNotifier.value = value;
-    });
-
-    repeatNotifier.addListener((){
-      _prefs.setRepeat(repeatNotifier.value);
-      _mpris.repeat = repeatNotifier.value;
-    });
-  }
-  
-  void _listenToRate() {
-    _mpris.rateStream.listen((double value){
-      playbackSpeedNotifier.value = value;
-    });
-
-    playbackSpeedNotifier.addListener((){
-      _mpris.rate = playbackSpeedNotifier.value;
-    });
-  }
-
-  void _listenToVolume() {
-    volumeNotifier.addListener((){
-      _prefs.setVolume(volumeNotifier.value);
-      _audioPlayer.setVolume(volumeNotifier.value);
-      _mpris.volume = volumeNotifier.value;
-    });
-
-    _mpris.volumeStream.listen((volume){
-      volumeNotifier.value = volume;
-    });
-  }
-
   void _listenToTrayEvents() {
     _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type){
       switch(type) {
@@ -323,56 +256,12 @@ class AppState {
     });
 
     _trayIntegration.scrollStream.listen((int delta){
-      double volume = (volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
-      volumeNotifier.value = volume;
+      double volume = (_playerState.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
+      _playerState.volumeNotifier.value = volume;
     });
   }
 
-  void _listenToPlayerAbilities() {
-    canGoNextNotifier.addListener((){
-      _mpris.canGoNext = canGoNextNotifier.value;
-    });
-
-    canGoPreviousNotifier.addListener((){
-      _mpris.canGoPrevious = canGoPreviousNotifier.value;
-    });
-
-    canPlayNotifier.addListener((){
-      _mpris.canPlay = canPlayNotifier.value;
-    });
-
-    canPauseNotifier.addListener((){
-      _mpris.canPause = canPauseNotifier.value;
-    });
-
-    canSeekNotifier.addListener((){
-      _mpris.canSeek = canSeekNotifier.value;
-    });
-
-    canShuffleNotifier.addListener((){
-      _mpris.canShuffle = canShuffleNotifier.value;
-    });
-
-    canRepeatNotifier.addListener((){
-      _mpris.canRepeat = canRepeatNotifier.value;
-    });
-  }
-
-  void _listenToTrackChange() {
-    trackNotifier.addListener((){
-      if(trackNotifier.value == null) return;
-
-      Track track = trackNotifier.value!;
-      _windowManager.setWindowTitle(track.title, track.artist);
-
-      final trayTitle = 'YaPlayer\n${track.title} – ${track.artist}';
-      _trayIntegration.setTitle(trayTitle);
-
-      _setMprisMetagata(track);
-    });
-  }
-
-  void _setMprisMetagata(Track track) {
+  void _setMprisMetadata(Track track) {
     List<String> artist = track.artists.map((artist) => artist.name).toList();
     
     String? artUrl;
@@ -471,16 +360,16 @@ class AppState {
       track = playbackQueue.currentTrack;
     }
 
-    trackNotifier.value = track;
-    canPlayNotifier.value = true;
-    canPauseNotifier.value = true;
+    _playerState.trackNotifier.value = track;
+    _playerState.canPlayNotifier.value = true;
+    _playerState.canPauseNotifier.value = true;
 
-    _setMprisMetagata(track);
+    _setMprisMetadata(track);
   }
 
   Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
     playButtonNotifier.value = ButtonState.loading;
-    playbackSpeedNotifier.value = 1.0;
+    _playerState.rateNotifier.value = 1.0;
     index ??= 0;
 
     final Queue queue = await QueueFactory.create(
@@ -497,7 +386,7 @@ class AppState {
 
   Future<void> playStation(Station station) async {
     playButtonNotifier.value = ButtonState.loading;
-    playbackSpeedNotifier.value = 1.0;
+    _playerState.rateNotifier.value = 1.0;
     final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
     Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
     final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
@@ -580,7 +469,7 @@ class AppState {
   void _reset() {
     _audioPlayer.stop();
     playButtonNotifier.value = ButtonState.paused;
-    trackNotifier.value = null;
+    _playerState.trackNotifier.value = null;
     currentStationNotifier.value = null;
     stationsDashboardNotifier.value = [];
     accountNotifier.value = null;

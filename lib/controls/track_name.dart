@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '/player_state.dart';
 import 'artist/artist_names.dart';
-import '/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
 import 'track_title.dart';
@@ -9,12 +9,12 @@ import 'track_title.dart';
 class TrackName extends StatelessWidget {
   TrackName({super.key,});
 
-  final AppState _appState = getIt<AppState>();
+  final _playerState = getIt<PlayerState>();
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: _appState.trackNotifier,
+        valueListenable: _playerState.trackNotifier,
         builder: (_, Track? track, __) {
           if(track != null) {
             return Container(

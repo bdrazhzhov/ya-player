@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '/app_state.dart';
+import '/player_state.dart';
 import '/services/service_locator.dart';
 
 class PlayingSpeedButton extends StatelessWidget {
-  final _appState = getIt<AppState>();
+  final _playerState = getIt<PlayerState>();
   final _overlayController = OverlayPortalController();
   
   PlayingSpeedButton({super.key});
@@ -33,7 +33,7 @@ class PlayingSpeedButton extends StatelessWidget {
                 ),
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: _appState.playbackSpeedNotifier,
+                    valueListenable: _playerState.rateNotifier,
                     builder: (_, double speed, __) {
                       return SegmentedButton<double>(
                         segments: <double>[0.75, 1, 1.25, 1.5, 1.75, 2].map((i) => ButtonSegment(
@@ -43,7 +43,7 @@ class PlayingSpeedButton extends StatelessWidget {
                         selected: {speed},
                         showSelectedIcon: false,
                         onSelectionChanged: (Set<double> value) {
-                          _appState.playbackSpeedNotifier.value = value.single;
+                          _playerState.rateNotifier.value = value.single;
                         },
                       );
                     },
@@ -57,7 +57,7 @@ class PlayingSpeedButton extends StatelessWidget {
       child: TextButton(
         onPressed: () => _overlayController.show(),
         child: ValueListenableBuilder(
-          valueListenable: _appState.playbackSpeedNotifier,
+          valueListenable: _playerState.rateNotifier,
           builder: (_, double value, __) {
             return Text('${value}x');
           },
