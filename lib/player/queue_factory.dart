@@ -11,14 +11,12 @@ import '/models/music_api/queue.dart';
 class QueueFactory {
   static final _musicApi = getIt<MusicApi>();
 
-  static Future<Queue> create({required Object tracksSource,
-    int? currentIndex}) async
-  {
+  static Future<Queue> create({required Object tracksSource, int? currentIndex}) async {
     final QueueContext context;
     final Iterable<QueueTrack> queueTracks;
     String? from;
 
-    switch(tracksSource) {
+    switch (tracksSource) {
       case List<Track> tracks:
         (context, queueTracks) = _forLikedTracks(tracks);
       case AlbumWithTracks albumWithTracks:
@@ -40,50 +38,52 @@ class QueueFactory {
         tracks: queueTracks,
         currentIndex: currentIndex,
         isInteractive: true,
-        from: from
-    );
+        from: from);
   }
 
   static (QueueContext, Iterable<QueueTrack>) _forLikedTracks(Iterable<Track> tracks) {
     const context = QueueContext(description: '', id: 'fonoteca', type: 'my_music');
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        tracks, 'desktop_win-own_tracks-track-default');
+      tracks,
+      'desktop_win-own_tracks-track-default',
+    );
 
     return (context, queueTracks);
   }
 
   static (QueueContext, List<QueueTrack>) _forAlbum(AlbumWithTracks albumWithTracks) {
     final context = QueueContext(
-        description: albumWithTracks.album.title,
-        id: albumWithTracks.album.id.toString(),
-        type: 'album'
+      description: albumWithTracks.album.title,
+      id: albumWithTracks.album.id.toString(),
+      type: 'album',
     );
 
-    final List<QueueTrack> queueTracks = _createQueueTracks(
-        albumWithTracks.tracks, 'desktop_win-album-track-default');
+    final List<QueueTrack> queueTracks =
+        _createQueueTracks(albumWithTracks.tracks, 'desktop_win-album-track-default');
 
     return (context, queueTracks);
   }
 
   static (QueueContext, Iterable<QueueTrack>) _forArtist(ArtistInfo artistWithTracks) {
     final context = QueueContext(
-        description: artistWithTracks.artist.name,
-        id: artistWithTracks.artist.id.toString(),
-        type: 'artist'
+      description: artistWithTracks.artist.name,
+      id: artistWithTracks.artist.id.toString(),
+      type: 'artist',
     );
 
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        artistWithTracks.popularTracks,
-        'desktop_win-artist-track-default');
+      artistWithTracks.popularTracks,
+      'desktop_win-artist-track-default',
+    );
 
     return (context, queueTracks);
   }
 
   static (QueueContext, Iterable<QueueTrack>) _forStation(Station station, Iterable<Track> tracks) {
     final context = QueueContext(
-        description: station.name,
-        id: station.id.toString(),
-        type: 'radio'
+      description: station.name,
+      id: station.id.toString(),
+      type: 'radio',
     );
     final List<QueueTrack> queueTracks = _createQueueTracks(tracks, station.from);
 
@@ -92,24 +92,26 @@ class QueueFactory {
 
   static (QueueContext, Iterable<QueueTrack>) _forPlaylist(Playlist playlist) {
     final context = QueueContext(
-        description: playlist.title,
-        id: '${playlist.uid}:${playlist.kind}',
-        type: 'my_music'
+      description: playlist.title,
+      id: '${playlist.uid}:${playlist.kind}',
+      type: 'my_music',
     );
 
     final List<QueueTrack> queueTracks = _createQueueTracks(
-        playlist.tracks, 'desktop_win-own_playlist-track-default');
+      playlist.tracks,
+      'desktop_win-own_playlist-track-default',
+    );
 
     return (context, queueTracks);
   }
 
   static List<QueueTrack> _createQueueTracks(Iterable<Track> tracks, from) {
-    return tracks.map(
-            (track) => QueueTrack(
-            track.id,
-            track.albums.first.id.toString(),
-            from
-        )
-    ).toList();
+    return tracks
+        .map((track) => QueueTrack(
+              track.id,
+              track.albums.first.id.toString(),
+              from,
+            ))
+        .toList();
   }
 }

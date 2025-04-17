@@ -77,11 +77,11 @@ class _TrackCoverState extends State<TrackCover> with SingleTickerProviderStateM
               height: hoverButtonSize,
               decoration: const BoxDecoration(
                 color: buttonColor,
-                borderRadius: BorderRadius.all(Radius.circular(hoverButtonSize / 2))
+                borderRadius: BorderRadius.all(Radius.circular(hoverButtonSize / 2)),
               ),
               child: widget.isPlaying && widget.isCurrent
                   ? const Icon(Icons.pause, color: Colors.black)
-                  : const Icon(Icons.play_arrow, color: Colors.black)
+                  : const Icon(Icons.play_arrow, color: Colors.black),
             ),
         ]
       )

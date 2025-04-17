@@ -89,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
             return Column(
               children: [
                 PageBlock(block: blocks[index]),
-                const SizedBox(height: 50)
+                const SizedBox(height: 50),
               ],
             );
           }
@@ -104,40 +104,43 @@ class _SearchPageState extends State<SearchPage> {
     final l10n = AppLocalizations.of(context)!;
 
     if(isDefaultView) {
-      items.add(
-        OutlinedButton(
-          onPressed: (){
-            // filter = null;
-            isDefaultView = true;
-            defaultView = _DefaultView.popular;
-            setState(() {});
-          },
-          // style: filter == null ? style : null,
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(width: 2, color: defaultView == _DefaultView.popular ? theme.colorScheme.primary : Colors.transparent),
-            foregroundColor: theme.colorScheme.onSurface,
-          ),
-          child: Text('Popular')
-        )
-      );
-      items.add(
-        OutlinedButton(
-          onPressed: (){
-            // filter = null;
-            isDefaultView = true;
-            defaultView = _DefaultView.history;
-            setState(() {});
-          },
-          // style: filter == null ? style : null,
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(width: 2, color: defaultView == _DefaultView.history ? theme.colorScheme.primary : Colors.transparent),
-            foregroundColor: theme.colorScheme.onSurface,
-          ),
-          child: Text('History')
-        )
-      );
+      if(false) {
+        items.add(
+            OutlinedButton(
+                onPressed: (){
+                  // filter = null;
+                  isDefaultView = true;
+                  defaultView = _DefaultView.popular;
+                  setState(() {});
+                },
+                // style: filter == null ? style : null,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(width: 2, color: defaultView == _DefaultView.popular ? theme.colorScheme.primary : Colors.transparent),
+                  foregroundColor: theme.colorScheme.onSurface,
+                ),
+                child: Text('Popular')
+            )
+        );
+        items.add(
+            OutlinedButton(
+                onPressed: (){
+                  // filter = null;
+                  isDefaultView = true;
+                  defaultView = _DefaultView.history;
+                  setState(() {});
+                },
+                // style: filter == null ? style : null,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(width: 2, color: defaultView == _DefaultView.history ? theme.colorScheme.primary : Colors.transparent),
+                  foregroundColor: theme.colorScheme.onSurface,
+                ),
+                child: Text('History')
+            )
+        );
+      }
     }
     else {
+      final borderColor = filter == null ? theme.colorScheme.primary : Colors.transparent;
       items.add(
         OutlinedButton(
           onPressed: (){
@@ -145,12 +148,11 @@ class _SearchPageState extends State<SearchPage> {
             isDefaultView = false;
             setState(() {});
           },
-          // style: filter == null ? style : null,
           style: OutlinedButton.styleFrom(
-            side: BorderSide(width: 2, color: filter == null ? theme.colorScheme.primary : Colors.transparent),
+            side: BorderSide(width: 2, color: borderColor),
             foregroundColor: theme.colorScheme.onSurface,
           ),
-          child: Text(l10n.search_filters_top)
+          child: Text(l10n.search_filters_top),
         )
       );
 
@@ -189,7 +191,7 @@ class _SearchPageState extends State<SearchPage> {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: items
+      children: items,
     );
   }
 }

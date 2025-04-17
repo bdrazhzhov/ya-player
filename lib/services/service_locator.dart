@@ -28,9 +28,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
   getIt.registerSingleton<PlayersManager>(PlayersManager());
+  getIt.registerSingleton<PlayerState>(PlayerState());
   getIt.registerSingleton<AppState>(AppState());
   getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
-  getIt.registerSingleton<PlayerState>(PlayerState());
 }
 
 MusicApi _initMusicApi() {
@@ -50,21 +50,22 @@ YandexApiClient _initHttpClient() {
   return YandexApiClient(
     authToken: prefs.authToken ?? '',
     deviceId: prefs.deviceId,
-    deviceUuid: prefs.deviceUuid
+    deviceUuid: prefs.deviceUuid,
   );
 }
 
 Future<OrgMprisMediaPlayer2> _initMpris() async {
   final dBusClient = getIt<DBusClient>();
   final mpris = OrgMprisMediaPlayer2(
-      path: DBusObjectPath('/org/mpris/MediaPlayer2'),
-      identity: 'YaPlayer'
+    path: DBusObjectPath('/org/mpris/MediaPlayer2'),
+    identity: 'YaPlayer',
   );
 
   await dBusClient.registerObject(mpris);
   await dBusClient.requestName(
-      'org.mpris.MediaPlayer2.YaPlayer.instance$pid',
-      flags: {DBusRequestNameFlag.doNotQueue});
+    'org.mpris.MediaPlayer2.YaPlayer.instance$pid',
+    flags: {DBusRequestNameFlag.doNotQueue},
+  );
 
   return mpris;
 }

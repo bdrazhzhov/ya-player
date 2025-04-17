@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/album_card.dart';
-import 'package:ya_player/controls/playlist_card.dart';
-import 'package:ya_player/controls/podcast_card.dart';
-import 'package:ya_player/models/music_api/podcast.dart';
 
-import '../../models/music_api/album.dart';
-import '../../models/music_api/playlist.dart';
+import '/controls/album_card.dart';
+import '/controls/playlist_card.dart';
+import '/controls/podcast_card.dart';
+import '/models/music_api/podcast.dart';
+import '/models/music_api/album.dart';
+import '/models/music_api/playlist.dart';
 import '/controls/artist_card.dart';
 import '/models/music_api/artist.dart';
 import '/models/music_api/track.dart';
@@ -24,14 +24,14 @@ class SearchTopPage extends StatelessWidget {
 
     return SliverGrid(
       gridDelegate: CustomSliverGridDelegateExtent(
-          crossAxisSpacing: 12,
-          maxCrossAxisExtent: _itemWidth,
-          height: _itemWidth + 60
+        crossAxisSpacing: 12,
+        maxCrossAxisExtent: _itemWidth,
+        height: _itemWidth + 60,
       ),
       delegate: SliverChildBuilderDelegate(
         (_, index) => _buildItemWidget(data[index]),
-        childCount: data.length
-      )
+        childCount: data.length,
+      ),
     );
   }
 

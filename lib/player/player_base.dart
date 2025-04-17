@@ -62,7 +62,15 @@ abstract base class PlayerBase {
 
   void _onPlayingStateChange() {
     if(_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;
+    if(_playerState.canNextNotifier.value) next();
+  }
 
-    next();
+  void playPause() async {
+    if(_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
+      await _audioPlayer.pause();
+    }
+    else {
+      await _audioPlayer.play();
+    }
   }
 }

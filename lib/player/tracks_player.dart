@@ -2,6 +2,7 @@ part of 'player_base.dart';
 
 final class TracksPlayer extends PlayerBase {
   final TracksQueue queue;
+  int _currentIndex = -1;
 
   TracksPlayer({required this.queue}) {
     _playerState.rateNotifier.addListener((){
@@ -18,11 +19,13 @@ final class TracksPlayer extends PlayerBase {
     _appState.playButtonNotifier.value = ButtonState.loading;
 
     Track? track;
-    if(index == null) {
+    if(index == null || _currentIndex == index) {
       track = queue.currentTrack;
+      _currentIndex = queue.currentIndex;
     }
     else {
       track = await queue.moveTo(index);
+      _currentIndex = index;
     }
 
     _playerState.canNextNotifier.value = queue.canGoNext;

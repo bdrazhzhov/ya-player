@@ -1,3 +1,4 @@
+import 'package:audio_player_gst/events.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ya_player/services/preferences.dart';
 import 'package:ya_player/state_enums.dart';
@@ -37,6 +38,7 @@ class PlayerState {
     _listenToRepeatState();
     _listenToRate();
     _listenToVolume();
+    _listenToPlayingState();
 
     canRepeatNotifier.value = true;
     _mpris.canShuffle = true;
@@ -92,7 +94,7 @@ class PlayerState {
           _mpris.playbackState = 'Paused';
           break;
         case PlayBackState.stopped:
-          _mpris.canPause = false;
+          canPauseNotifier.value = false;
           canPlayNotifier.value = true;
           canSeekNotifier.value = false;
           _mpris.playbackState = 'Stopped';
@@ -142,6 +144,27 @@ class PlayerState {
 
     _mpris.volumeStream.listen((volume){
       volumeNotifier.value = volume;
+    });
+  }
+
+  void _listenToPlayingState() {
+    _audioPlayer.playingStateNotifier.addListener((){
+      switch(_audioPlayer.playingStateNotifier.value) {
+        case PlayingState.pending:
+          playBackStateNotifier.value = PlayBackState.stopped;
+        case PlayingState.idle:
+          playBackStateNotifier.value = PlayBackState.stopped;
+        case PlayingState.ready:
+          playBackStateNotifier.value = PlayBackState.stopped;
+        case PlayingState.playing:
+          playBackStateNotifier.value = PlayBackState.playing;
+        case PlayingState.paused:
+          playBackStateNotifier.value = PlayBackState.paused;
+        case PlayingState.completed:
+          playBackStateNotifier.value = PlayBackState.stopped;
+        case PlayingState.unknown:
+          playBackStateNotifier.value = PlayBackState.stopped;
+      }
     });
   }
 }

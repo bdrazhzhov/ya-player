@@ -73,6 +73,7 @@ class AppState {
   // Events: Calls coming from the UI
   void init() async {
     _trayIntegration.init();
+    _listenToTrackChange();
     _listenToPlaybackState();
     _listenToMprisControlStream();
     _listenToTrackDurationNotifier();
@@ -202,6 +203,7 @@ class AppState {
         _mpris.playbackState = 'Playing';
       }
       else if(playingState == PlayingState.completed) {
+        playButtonNotifier.value = ButtonState.paused;
         _mpris.playbackState = 'Stopped';
       }
     });
@@ -277,6 +279,20 @@ class AppState {
         album: track.albums.first.title,
         genre: null
     );
+  }
+
+  void _listenToTrackChange() {
+    _playerState.trackNotifier.addListener((){
+      if(_playerState.trackNotifier.value == null) return;
+
+      Track track = _playerState.trackNotifier.value!;
+      _windowManager.setWindowTitle(track.title, track.artist);
+
+      final trayTitle = 'YaPlayer\n${track.title} – ${track.artist}';
+      _trayIntegration.setTitle(trayTitle);
+
+      _setMprisMetadata(track);
+    });
   }
 
   void _listenToRouteChanges() {
@@ -392,6 +408,14 @@ class AppState {
     final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
     final player = StationPlayer(queue: stationsQueue);
 
+    _playersManager.setPlayer(player);
+    _playersManager.play();
+  }
+
+  Future<void> playTrack(Track track) async {
+    playButtonNotifier.value = ButtonState.loading;
+    _playerState.rateNotifier.value = 1.0;
+    final player = SingleTrackPlayer(track);
     _playersManager.setPlayer(player);
     _playersManager.play();
   }

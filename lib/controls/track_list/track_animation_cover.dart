@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class TrackAnimationCover extends StatefulWidget {
@@ -13,30 +12,27 @@ class TrackAnimationCover extends StatefulWidget {
     this.playAnimation = false,
   });
 
-
-
   @override
   State<TrackAnimationCover> createState() => _TrackAnimationCoverState();
 }
 
-class _TrackAnimationCoverState extends State<TrackAnimationCover> with SingleTickerProviderStateMixin {
+class _TrackAnimationCoverState extends State<TrackAnimationCover>
+    with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation animation;
-  static const double hoverButtonSize = 30;
 
   @override
   void initState() {
-    animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    animationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     animationController.repeat(reverse: true);
-    animation =  Tween(begin: 10.0, end: widget.radius)
-        .animate(animationController)
+    animation = Tween(begin: 10.0, end: widget.radius).animate(animationController)
       ..addListener(() => setState(() {}));
 
-    if(!widget.playAnimation) animationController.stop();
+    if (!widget.playAnimation) animationController.stop();
 
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -47,12 +43,14 @@ class _TrackAnimationCoverState extends State<TrackAnimationCover> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: animation.value,
       height: animation.value,
-      decoration: BoxDecoration(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           color: widget.bgColor,
-          borderRadius: const BorderRadius.all(Radius.circular(hoverButtonSize / 2))
+          borderRadius: BorderRadius.all(Radius.circular(widget.radius)),
+        ),
       ),
     );
   }
