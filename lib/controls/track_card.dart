@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../player/players_manager.dart';
-import '../player_state.dart';
-import '../services/service_locator.dart';
+import '/helpers/multi_value_listenable_builder.dart';
+import '/app_state.dart';
+import '/player/players_manager.dart';
+import '/player_state.dart';
+import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/track.dart';
 import 'play_pause_button.dart';
@@ -127,26 +128,20 @@ class TrackCard extends StatelessWidget {
   }
 
   Widget _buildAnimatedCover() {
-    return ValueListenableBuilder(
-      valueListenable: _playerState.playBackStateNotifier,
-      builder: (_, PlayBackState stateValue, __) {
-        bool isPlaying = stateValue == PlayBackState.playing;
+    return MultiValueListenableBuilder(
+      valuesListenable: [_playerState.trackNotifier, _playerState.playBackStateNotifier],
+      builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
+        bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
+        bool isCurrent = values.get<Track?>() == track;
 
-        return ValueListenableBuilder(
-          valueListenable: _playerState.trackNotifier,
-          builder: (___, Track? currentTrack, Widget? ____) {
-            bool isCurrent = currentTrack == track;
+        if(!isCurrent || !isPlaying) {
+          return SizedBox.shrink();
+        }
 
-            if(!isCurrent || !isPlaying) {
-              return SizedBox.shrink();
-            }
-
-            return TrackAnimationCover(
-              bgColor: buttonColor,
-              radius: hoverButtonSize,
-              playAnimation: true,
-            );
-          },
+        return TrackAnimationCover(
+          bgColor: buttonColor,
+          radius: hoverButtonSize,
+          playAnimation: true,
         );
       },
     );
