@@ -5,7 +5,6 @@ import '/pages/chart_page.dart';
 import '/controls/mix_link_card.dart';
 import '/controls/podcast_card.dart';
 import '/controls/track_list.dart';
-import '/helpers/playback_queue.dart';
 import '/models/music_api_types.dart';
 import 'album_card.dart';
 import 'artist_card.dart';
@@ -64,7 +63,7 @@ class PageBlock extends StatelessWidget {
   }
 
   Widget _createChartBlock() {
-    final tracks = block.entities.map((e) => e as Track);
+    final tracks = block.entities.map((e) => e as Track).toList();
 
     List<Track> leftTracks = tracks.take(5).toList();
     List<Track> rightTracks = tracks.skip(5).take(5).toList();
@@ -75,14 +74,14 @@ class PageBlock extends StatelessWidget {
           return Column(
             children: [
               TrackList(
-                leftTracks,
+                tracks,
                 showAlbum: true,
-                queueName: QueueNames.trackList,
+                startIndex: 0,
               ),
               TrackList(
-                rightTracks,
+                tracks,
                 showAlbum: true,
-                queueName: QueueNames.trackList,
+                startIndex: 5,
               ),
             ],
           );
@@ -91,16 +90,16 @@ class PageBlock extends StatelessWidget {
             children: [
               Flexible(
                 child: TrackList(
-                  leftTracks,
+                  tracks,
                   showAlbum: true,
-                  queueName: QueueNames.trackList,
+                  startIndex: 0,
                 ),
               ),
               Flexible(
                 child: TrackList(
-                  rightTracks,
+                  tracks,
                   showAlbum: true,
-                  queueName: QueueNames.trackList,
+                  startIndex: 5,
                 ),
               ),
             ],

@@ -1,200 +1,64 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '/app_state.dart';
+import '/helpers/multi_value_listenable_builder.dart';
+import '/models/music_api/can_be_played.dart';
+import '/player/players_manager.dart';
 import '/models/music_api/track.dart';
 import '/player_state.dart';
 import '/services/service_locator.dart';
-import 'track_list/track_cover.dart';
+import 'track_list/track_list_item.dart';
 
-
-class TrackList extends StatefulWidget {
+class TrackList extends StatelessWidget {
   final List<Track> tracks;
-  final String queueName;
   final bool showAlbum;
-  final bool showHeader;
+  final int startIndex;
 
-  const TrackList(
-      this.tracks, {
-      super.key,
-      this.showAlbum = false,
-      this.showHeader = false,
-      required this.queueName
+  TrackList(
+    this.tracks, {
+    super.key,
+    this.showAlbum = false,
+    required this.startIndex,
   });
 
-  @override
-  State<TrackList> createState() => _TrackListState();
-}
-
-class _TrackListState extends State<TrackList> {
-  final appState = getIt<AppState>();
-  final playerState = getIt<PlayerState>();
-  Track? hoveredTrack;
-  late bool isPlaying;
-
-  @override
-  void initState() {
-    super.initState();
-
-    playerState.playBackStateNotifier.addListener(playingStateListener);
-    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    playerState.playBackStateNotifier.removeListener(playingStateListener);
-  }
-
-  void playingStateListener() {
-    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
-    setState(() {});
-  }
+  final _playerState = getIt<PlayerState>();
+  final _player = getIt<PlayersManager>();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final df = DateFormat('mm:ss');
+    final children = <Widget>[];
+    tracks.skip(startIndex).take(5).toList().asMap().forEach((index, track) {
+      index += startIndex;
 
-    return LayoutBuilder(
-      builder: (_, BoxConstraints constraints) {
-        final bool isWide = constraints.maxWidth > 650;
+      children.add(
+        MultiValueListenableBuilder(
+          valuesListenable: [_playerState.trackNotifier, _playerState.playBackStateNotifier],
+          builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
+            bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
+            bool isCurrent = values.get<CanBePlayed?>() == track;
 
-        final columnWidths = isWide ? [
-          const FlexColumnWidth(1.5),
-          const FlexColumnWidth(1),
-          if(widget.showAlbum) const FlexColumnWidth(1),
-          const FixedColumnWidth(50),
-        ] : [
-          const FlexColumnWidth(),
-          const FixedColumnWidth(50),
-        ];
+            return TrackListItem(
+              track: track,
+              isPlaying: isPlaying,
+              isCurrent: isCurrent,
+              trackIndex: index,
+              showTrackNumber: false,
+              showAlbum: showAlbum,
+              showArtistName: false,
+              onTap: () async {
+                if (!track.isAvailable) return;
 
-        return Table(
-            columnWidths: columnWidths.asMap(),
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              if(widget.showHeader && isWide) TableRow(
-                  children: [
-                    const Text('TRACK'),
-                    const Text('ARTIST'),
-                    if(widget.showAlbum) const Text('ALBUM'),
-                    const Center(child: Icon(Icons.schedule))
-                  ]
-              ),
-              ...widget.tracks.mapIndexed((index, track) {
-                String trackDuration = '';
-                if(track.duration != null) {
-                  trackDuration = df.format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true));
+                if (isPlaying && isCurrent) {
+                  _player.pause();
+                } else {
+                  _player.play(index);
                 }
+              },
+            );
+          },
+        ),
+      );
+    });
 
-                return TableRow(
-                    decoration: BoxDecoration(
-                        color: theme.colorScheme.onInverseSurface,
-                        border: Border.all(width: 1, color: theme.colorScheme.surface)
-                    ),
-                    children: [
-                      Table(
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                        columnWidths: [
-                          const FixedColumnWidth(52),
-                          const FlexColumnWidth(),
-                        ].asMap(),
-                        children: [
-                          TableRow(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: MouseRegion(
-                                  onEnter: (event){ hoveredTrack = track; setState(() {}); },
-                                  onExit: (event){ hoveredTrack = null; setState(() {}); },
-                                  child: ValueListenableBuilder(
-                                      valueListenable: playerState.trackNotifier,
-                                      builder: (_, Track? currentTrack, __) {
-                                        return TrackCover(
-                                          track,
-                                          isCurrent: currentTrack != null && currentTrack == track,
-                                          isHovered: track == hoveredTrack,
-                                          isPlaying: isPlaying,
-                                          onPressed: (bool isPlaying) {
-                                            debugPrint('TrackList widget is deprecated. Playing is disabled.');
-
-                                            // if(isPlaying) {
-                                            //   appState.pause();
-                                            // } else {
-                                            //   appState.playTracks(widget.tracks, index, widget.queueName);
-                                            // }
-                                          },
-                                        );
-                                      }
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RichText(
-                                        softWrap: false,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        text: TextSpan(
-                                            text: track.title,
-                                            children: [
-                                              if(track.version != null)
-                                                TextSpan(
-                                                  text: ' (${track.version!})',
-                                                  style: TextStyle(color: theme.colorScheme.outline),
-                                                )
-                                            ]
-                                        )
-                                    ),
-                                    if(!isWide) _buildArtistName(track),
-                                  ],
-                                ),
-                              ),
-                            ]
-                          )
-                        ],
-                      ),
-
-                      if(isWide) ...[
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: _buildArtistName(track),
-                        ),
-                        if(widget.showAlbum) Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            track.albums.isNotEmpty ? track.albums.first.title : '',
-                            softWrap: false,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Text(trackDuration),
-                      )
-                    ]);
-              }
-            )
-          ]
-        );
-      },
-    );
-  }
-
-  Text _buildArtistName(Track track) {
-    return Text(
-      track.artist,
-      softWrap: false,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-    );
+    return Column(children: children);
   }
 }
