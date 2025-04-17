@@ -48,14 +48,14 @@ class _AppSearchBarState extends State<AppSearchBar> {
         setState(() {});
         if(widget.onChanged != null) widget.onChanged!(text);
       },
-      onTap: (){
-        isActive = true;
-        setState(() {});
-      },
-      onTapOutside: (_){
-        isActive = false;
-        setState(() {});
-      },
+      // onTap: (){
+      //   isActive = true;
+      //   setState(() {});
+      // },
+      // onTapOutside: (_){
+      //   isActive = false;
+      //   setState(() {});
+      // },
       elevation: WidgetStateProperty.all<double>(0.0),
       hintText: l10n.searchbar_hint,
       hintStyle: WidgetStateProperty.all<TextStyle>(hintTextStyle),

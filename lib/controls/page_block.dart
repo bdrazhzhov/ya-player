@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '../pages/chart_page.dart';
+import '/pages/chart_page.dart';
 import '/controls/mix_link_card.dart';
 import '/controls/podcast_card.dart';
 import '/controls/track_list.dart';
@@ -31,22 +31,25 @@ class PageBlock extends StatelessWidget {
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment:CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 8,
                 children: [
-                  Text(block.title ?? '', style: theme.textTheme.titleLarge,),
-                  if(block.description != null) Text(block.description!),
+                  Text(
+                    block.title ?? '',
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  if (block.description != null) Text(block.description!),
                 ],
               ),
             ),
-            if(block.type != 'personal-playlists')
+            if (block.type != 'personal-playlists')
               TextButton(
                 onPressed: () => _navigateToAll(block.type, context),
-                child: Text(l10n.pageBlock_viewAll)
-              )
+                child: Text(l10n.pageBlock_viewAll),
+              ),
           ],
         ),
-        if(block.type == 'chart')
+        if (block.type == 'chart')
           _createChartBlock()
         else
           SingleChildScrollView(
@@ -55,7 +58,7 @@ class PageBlock extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: _createEntityCards(context),
             ),
-          )
+          ),
       ],
     );
   }
@@ -66,30 +69,63 @@ class PageBlock extends StatelessWidget {
     List<Track> leftTracks = tracks.take(5).toList();
     List<Track> rightTracks = tracks.skip(5).take(5).toList();
 
-    return Row(
-      children: [
-        Flexible(child: TrackList(leftTracks, showAlbum: true, queueName: QueueNames.trackList)),
-        Flexible(child: TrackList(rightTracks, showAlbum: true, queueName: QueueNames.trackList)),
-      ],
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (constraints.maxWidth < 800) {
+          return Column(
+            children: [
+              TrackList(
+                leftTracks,
+                showAlbum: true,
+                queueName: QueueNames.trackList,
+              ),
+              TrackList(
+                rightTracks,
+                showAlbum: true,
+                queueName: QueueNames.trackList,
+              ),
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              Flexible(
+                child: TrackList(
+                  leftTracks,
+                  showAlbum: true,
+                  queueName: QueueNames.trackList,
+                ),
+              ),
+              Flexible(
+                child: TrackList(
+                  rightTracks,
+                  showAlbum: true,
+                  queueName: QueueNames.trackList,
+                ),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 
   List<Widget> _createEntityCards(BuildContext context) {
     List<Widget> cards = [];
 
-    for(Object entity in block.entities) {
+    for (Object entity in block.entities) {
       Widget? card = _createBlockEntityCard(context, entity);
-      if(card == null) continue;
+      if (card == null) continue;
       cards.addAll([card, const SizedBox(width: 20)]);
     }
 
-    if(cards.isNotEmpty) cards.removeLast();
+    if (cards.isNotEmpty) cards.removeLast();
 
     return cards;
   }
 
   Widget? _createBlockEntityCard(BuildContext context, entity) {
-    switch(entity.runtimeType) {
+    switch (entity.runtimeType) {
       case const (Playlist):
         final playlist = entity as Playlist;
         return PlaylistCard(playlist, width: 180);
@@ -113,22 +149,20 @@ class PageBlock extends StatelessWidget {
         return null;
     }
   }
-  
+
   void _navigateToAll(String type, BuildContext context) {
     Widget? page;
 
-    switch(type) {
+    switch (type) {
       case 'chart':
         page = ChartPage();
     }
 
-    if(page == null) return;
+    if (page == null) return;
 
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => page!,
-        reverseTransitionDuration: Duration.zero,
-      )
-    );
+    Navigator.of(context).push(PageRouteBuilder(
+      pageBuilder: (_, __, ___) => page!,
+      reverseTransitionDuration: Duration.zero,
+    ));
   }
 }

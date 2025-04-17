@@ -11,10 +11,7 @@ import '/models/music_api/search.dart';
 import 'page_base.dart';
 import 'search_result_mixed_page.dart';
 
-enum _DefaultView {
-  popular,
-  history
-}
+enum _DefaultView { popular, history }
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -37,9 +34,11 @@ class _SearchPageState extends State<SearchPage> {
       children: [
         buildSearchBar(),
         Expanded(
-          child: PageBase(
-            slivers: [isDefaultView ? buildDefaultView() : SearchResultMixedPage(text: searchText, filter: filter),]
-          ),
+          child: PageBase(slivers: [
+            isDefaultView
+                ? buildDefaultView()
+                : SearchResultMixedPage(text: searchText, filter: filter),
+          ]),
         ),
       ],
     );
@@ -62,8 +61,8 @@ class _SearchPageState extends State<SearchPage> {
   void onSearchTextChanged(String text) {
     searchText = text;
 
-    if(text.length < 3) {
-      if(!isDefaultView) {
+    if (text.length < 3) {
+      if (!isDefaultView) {
         isDefaultView = true;
         setState(() {});
       }
@@ -76,23 +75,21 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget buildDefaultView() {
-    if(defaultView == _DefaultView.history) {
-      return HistoryPage();
-    }
+    // if(defaultView == _DefaultView.history) {
+    //   return HistoryPage();
+    // }
 
     return ValueListenableBuilder(
       valueListenable: _appState.landingNotifier,
       builder: (_, List<Block> blocks, __) {
-        return SliverList.builder(
+        return SliverList.separated(
           itemCount: blocks.length,
           itemBuilder: (BuildContext context, int index) {
-            return Column(
-              children: [
-                PageBlock(block: blocks[index]),
-                const SizedBox(height: 50),
-              ],
-            );
-          }
+            return PageBlock(block: blocks[index]);
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return const SizedBox(height: 50);
+          },
         );
       },
     );
@@ -103,58 +100,61 @@ class _SearchPageState extends State<SearchPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    if(isDefaultView) {
-      if(false) {
-        items.add(
-            OutlinedButton(
-                onPressed: (){
-                  // filter = null;
-                  isDefaultView = true;
-                  defaultView = _DefaultView.popular;
-                  setState(() {});
-                },
-                // style: filter == null ? style : null,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(width: 2, color: defaultView == _DefaultView.popular ? theme.colorScheme.primary : Colors.transparent),
-                  foregroundColor: theme.colorScheme.onSurface,
-                ),
-                child: Text('Popular')
-            )
-        );
-        items.add(
-            OutlinedButton(
-                onPressed: (){
-                  // filter = null;
-                  isDefaultView = true;
-                  defaultView = _DefaultView.history;
-                  setState(() {});
-                },
-                // style: filter == null ? style : null,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(width: 2, color: defaultView == _DefaultView.history ? theme.colorScheme.primary : Colors.transparent),
-                  foregroundColor: theme.colorScheme.onSurface,
-                ),
-                child: Text('History')
-            )
-        );
-      }
-    }
-    else {
+    if (isDefaultView) {
+      // items.add(
+      //   OutlinedButton(
+      //     onPressed: () {
+      //       // filter = null;
+      //       isDefaultView = true;
+      //       defaultView = _DefaultView.popular;
+      //       setState(() {});
+      //     },
+      //     // style: filter == null ? style : null,
+      //     style: OutlinedButton.styleFrom(
+      //       side: BorderSide(
+      //           width: 2,
+      //           color: defaultView == _DefaultView.popular
+      //               ? theme.colorScheme.primary
+      //               : Colors.transparent),
+      //       foregroundColor: theme.colorScheme.onSurface,
+      //     ),
+      //     child: Text('Popular'),
+      //   ),
+      // );
+      // items.add(
+      //   OutlinedButton(
+      //     onPressed: () {
+      //       // filter = null;
+      //       isDefaultView = true;
+      //       defaultView = _DefaultView.history;
+      //       setState(() {});
+      //     },
+      //     // style: filter == null ? style : null,
+      //     style: OutlinedButton.styleFrom(
+      //       side: BorderSide(
+      //           width: 2,
+      //           color: defaultView == _DefaultView.history
+      //               ? theme.colorScheme.primary
+      //               : Colors.transparent),
+      //       foregroundColor: theme.colorScheme.onSurface,
+      //     ),
+      //     child: Text('History'),
+      //   ),
+      // );
+    } else {
       final borderColor = filter == null ? theme.colorScheme.primary : Colors.transparent;
-      items.add(
-        OutlinedButton(
-          onPressed: (){
-            filter = null;
-            isDefaultView = false;
-            setState(() {});
-          },
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(width: 2, color: borderColor),
-            foregroundColor: theme.colorScheme.onSurface,
-          ),
-          child: Text(l10n.search_filters_top),
-        )
-      );
+      items.add(OutlinedButton(
+        onPressed: () {
+          filter = null;
+          isDefaultView = false;
+          setState(() {});
+        },
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(width: 2, color: borderColor),
+          foregroundColor: theme.colorScheme.onSurface,
+        ),
+        child: Text(l10n.search_filters_top),
+      ));
 
       final filterTranslations = {
         SearchFilter.track: l10n.search_filters_track,
@@ -167,24 +167,23 @@ class _SearchPageState extends State<SearchPage> {
 
       for (var item in SearchFilter.values) {
         Color borderColor = Colors.transparent;
-        if(filter == item) {
+        if (filter == item) {
           borderColor = theme.colorScheme.primary;
         }
 
         items.add(
           OutlinedButton(
-            onPressed: (){
+            onPressed: () {
               filter = item;
               isDefaultView = false;
               setState(() {});
             },
-            // style: filter == item ? style : null,
             style: OutlinedButton.styleFrom(
               side: BorderSide(width: 2, color: borderColor),
               foregroundColor: theme.colorScheme.onSurface,
             ),
             child: Text(filterTranslations[item]!),
-          )
+          ),
         );
       }
     }
