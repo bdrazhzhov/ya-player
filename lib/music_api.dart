@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
+import 'package:intl/intl.dart';
 import '/models/music_api/can_be_played.dart';
 import 'helpers/paged_data.dart';
 import 'models/music_api/history.dart';
 import 'models/music_api_types.dart';
+import 'models/play_info.dart';
 import 'services/service_locator.dart';
 import 'services/yandex_api_client.dart';
 
@@ -603,9 +605,7 @@ class MusicApi {
 
     Map<String, dynamic> json = await _http.get(
       '/tracks/$trackId/lyrics',
-      headers: {
-        'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1',
-      },
+      headers: { 'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1' },
       queryParameters: query,
       cacheDuration: const Duration(days: 365)
     );
@@ -614,5 +614,12 @@ class MusicApi {
       json['result']['downloadUrl'],
       cacheDuration: const Duration(days: 365)
     );
+  }
+
+  Future<void> sendPlayInfo(PlayInfoBase playInfo) async {
+    final data = { 'plays': [playInfo.toJson()] };
+    final clientDate = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(playInfo.timestamp.toUtc())}Z';
+
+    await _http.postJson('/plays?clientNow=${Uri.encodeQueryComponent(clientDate)}', data: data);
   }
 }
