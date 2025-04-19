@@ -248,4 +248,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get track_card_track => 'Трек';
+
+  @override
+  String get new_releases_title => 'Новые релизы';
+
+  @override
+  String get new_releases_subtitle => 'Новые треки, альбомы и сборники';
+
+  @override
+  String get popular_playlists_title => 'Популярные плейлисты';
+
+  @override
+  String get popular_playlists_subtitle => 'Собрано для вас нашей редакцией';
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '/pages/popular_playlists_page.dart';
+import '/pages/new_releases_page.dart';
+import '/helpers/nav_keys.dart';
 import '/l10n/app_localizations.dart';
 import '/pages/chart_page.dart';
 import '/controls/mix_link_card.dart';
@@ -41,7 +44,7 @@ class PageBlock extends StatelessWidget {
                 ],
               ),
             ),
-            if (block.type != 'personal-playlists')
+            if (block.type != 'personal-playlists' && block.type != 'play-contexts')
               TextButton(
                 onPressed: () => _navigateToAll(block.type, context),
                 child: Text(l10n.pageBlock_viewAll),
@@ -64,9 +67,6 @@ class PageBlock extends StatelessWidget {
 
   Widget _createChartBlock() {
     final tracks = block.entities.map((e) => e as Track).toList();
-
-    List<Track> leftTracks = tracks.take(5).toList();
-    List<Track> rightTracks = tracks.skip(5).take(5).toList();
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -151,10 +151,17 @@ class PageBlock extends StatelessWidget {
 
   void _navigateToAll(String type, BuildContext context) {
     Widget? page;
+    print('PageBlock: $type');
 
     switch (type) {
       case 'chart':
         page = ChartPage();
+      case 'podcasts':
+        NavKeys.mainNav.currentState!.pushNamed('/podcasts_books');
+      case 'new-releases':
+        page = NewReleasesPage();
+      case 'new-playlists':
+        page = PopularPlaylistsPage();
     }
 
     if (page == null) return;

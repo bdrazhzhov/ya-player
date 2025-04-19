@@ -538,6 +538,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track'**
   String get track_card_track;
+
+  /// No description provided for @new_releases_title.
+  ///
+  /// In en, this message translates to:
+  /// **'New releases'**
+  String get new_releases_title;
+
+  /// No description provided for @new_releases_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New tracks, albums and mixes'**
+  String get new_releases_subtitle;
+
+  /// No description provided for @popular_playlists_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular playlists'**
+  String get popular_playlists_title;
+
+  /// No description provided for @popular_playlists_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected for you'**
+  String get popular_playlists_subtitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

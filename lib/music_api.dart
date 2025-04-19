@@ -622,4 +622,40 @@ class MusicApi {
 
     await _http.postJson('/plays?clientNow=${Uri.encodeQueryComponent(clientDate)}', data: data);
   }
+
+  Future<List<Album>> newReleases() async {
+    final json = await _http.get('/landing3/new-releases', cacheDuration: const Duration(days: 1));
+    final albumIds = json['result']['newReleases'];
+    final albumsJson = await _http.postForm(
+      '/albums',
+      data: {
+        'album-ids': albumIds.join(','),
+      },
+    );
+    List<Album> albums = [];
+    albumsJson['result'].forEach((item) {
+      final album = Album.fromJson(item);
+      albums.add(album);
+    });
+
+    return albums;
+  }
+
+  Future<List<Playlist>> newPlaylists() async {
+    final json = await _http.get('/landing3/new-playlists', cacheDuration: const Duration(days: 1));
+    final playlistsIds = json['result']['newPlaylists'];
+    final playlistsJson = await _http.postForm(
+      '/playlists/list',
+      data: {
+        'playlistIds': playlistsIds.map((i) => '${i['uid']}:${i['kind']}').join(','),
+      },
+    );
+    List<Playlist> playlists = [];
+    playlistsJson['result'].forEach((item) {
+      final playlist = Playlist.fromJson(item);
+      playlists.add(playlist);
+    });
+
+    return playlists;
+  }
 }

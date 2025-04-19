@@ -93,5 +93,10 @@
   "search_filters_book": "Аудиокниги",
   "searchbar_hint": "Трек, альбом, исполнитель",
 
-  "track_card_track": "Трек"
+  "track_card_track": "Трек",
+
+  "new_releases_title": "Новые релизы",
+  "new_releases_subtitle": "Новые треки, альбомы и сборники",
+  "popular_playlists_title": "Популярные плейлисты",
+  "popular_playlists_subtitle": "Собрано для вас нашей редакцией"
 }

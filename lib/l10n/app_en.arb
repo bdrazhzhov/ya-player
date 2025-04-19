@@ -93,5 +93,10 @@
   "search_filters_book": "Books",
   "searchbar_hint": "Track, album, artist",
 
-  "track_card_track": "Track"
+  "track_card_track": "Track",
+
+  "new_releases_title": "New releases",
+  "new_releases_subtitle": "New tracks, albums and mixes",
+  "popular_playlists_title": "Popular playlists",
+  "popular_playlists_subtitle": "Collected for you"
 }

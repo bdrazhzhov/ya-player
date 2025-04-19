@@ -240,4 +240,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get track_card_track => 'Track';
+
+  @override
+  String get new_releases_title => 'New releases';
+
+  @override
+  String get new_releases_subtitle => 'New tracks, albums and mixes';
+
+  @override
+  String get popular_playlists_title => 'Popular playlists';
+
+  @override
+  String get popular_playlists_subtitle => 'Collected for you';
 }
