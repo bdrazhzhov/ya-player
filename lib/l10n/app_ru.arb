@@ -41,6 +41,14 @@
       }
     }
   },
+  "episodes_count": "{count, plural, =0 {нет выпусков} one {1 выпуск} few {{count} выпуска} many {{count} выпусков} other {{count} выпусков}}",
+  "@episodes_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
 
   "date_hoursShort": "ч.",
   "date_minutesShort": "мин.",

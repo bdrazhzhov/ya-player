@@ -14,6 +14,7 @@ class Podcast {
   final String? shortDescription;
   final String? description;
   late final String artist;
+  final int? year;
 
   Podcast({
     required this.id,
@@ -25,7 +26,8 @@ class Podcast {
     required this.artists,
     required this.isAvailable,
     this.shortDescription,
-    this.description
+    this.description,
+    this.year,
   }) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
@@ -48,7 +50,8 @@ class Podcast {
       isAvailable: data['available'] ?? true,
       shortDescription: data['shortDescription'] ?? json['shortDescription'],
       description: data['description'] ?? json['description'],
-      artists: artists
+      artists: artists,
+      year: data['year'],
     );
   }
 }

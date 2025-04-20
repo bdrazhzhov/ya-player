@@ -67,7 +67,12 @@ class Block {
   static void _createRecentlyPlayed(entity, List<Object> entities) {
     switch(entity['type']) {
       case 'album':
-        entities.add(Album.fromJson(entity['data']));
+        if(entity['data']['type'] == 'podcast' || entity['data']['type'] == 'audiobook') {
+          entities.add(Podcast.fromJson(entity['data']));
+        } else {
+          entities.add(Album.fromJson(entity['data']));
+        }
+        // entities.add(Album.fromJson(entity['data']));
       case 'playlist':
         entities.add(Playlist.fromJson(entity['data']));
       default:

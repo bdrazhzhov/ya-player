@@ -108,6 +108,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String episodes_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'episodes',
+      one: 'episode',
+      zero: 'no episodes',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get date_hoursShort => 'hr';
 
   @override

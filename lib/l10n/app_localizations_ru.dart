@@ -110,6 +110,20 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String episodes_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count выпусков',
+      many: '$count выпусков',
+      few: '$count выпуска',
+      one: '1 выпуск',
+      zero: 'нет выпусков',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get date_hoursShort => 'ч.';
 
   @override
