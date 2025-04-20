@@ -285,6 +285,14 @@ class AppState {
     _playerState.trackNotifier.addListener((){
       if(_playerState.trackNotifier.value == null) return;
 
+      if (_playerState.trackNotifier.value!.duration != null) {
+        _playerState.progressNotifier.value = TrackDurationState(
+          position: Duration.zero,
+          buffered: Duration.zero,
+          duration: _playerState.trackNotifier.value!.duration!,
+        );
+      }
+
       Track track = _playerState.trackNotifier.value!;
       _windowManager.setWindowTitle(track.title, track.artist);
 
