@@ -22,7 +22,11 @@ class PageBlock extends StatelessWidget {
   static const ignoredTypes = [
     'personal-playlists',
     'play-contexts',
-    'promotions'
+    'promotions',
+    'editorial-playlists',
+    'album-chart',
+    'playlist-with-tracks',
+    'recently-played'
   ];
 
   @override
