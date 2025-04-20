@@ -38,37 +38,30 @@ class PodcastCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               YandexImage(uriTemplate: podcast.image, size: 200, borderRadius: 8),
-              Text(HtmlCharacterEntities.decode(podcast.title),
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                HtmlCharacterEntities.decode(podcast.title),
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               if (podcast.type == PodcastType.podcast) ...[
                 if (podcastDescription != null)
                   Text(
                     HtmlCharacterEntities.decode(podcastDescription),
-                    style: TextStyle(
-                      color: theme.colorScheme.outline,
-                      fontSize: theme.textTheme.labelMedium?.fontSize,
-                    ),
+                    style: TextStyle(color: theme.colorScheme.outline),
                     maxLines: 2,
                     softWrap: false,
                     overflow: TextOverflow.ellipsis,
                   ),
                 Text(
                   "${podcast.tracksCount} ${AppLocalizations.of(context)!.episodes_count(podcast.tracksCount)}",
-                  style: TextStyle(
-                    color: theme.colorScheme.outline,
-                    fontSize: theme.textTheme.labelMedium?.fontSize,
-                  ),
+                  style: TextStyle(color: theme.colorScheme.outline),
                 )
               ] else ...[
                 Text(
                   HtmlCharacterEntities.decode(podcast.artist),
-                  style: TextStyle(
-                    color: theme.colorScheme.outline,
-                    fontSize: theme.textTheme.labelMedium?.fontSize,
-                  ),
+                  style: TextStyle(color: theme.colorScheme.outline),
                   maxLines: 1,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
@@ -76,10 +69,7 @@ class PodcastCard extends StatelessWidget {
                 if (podcast.year != null)
                   Text(
                     podcast.year.toString(),
-                    style: TextStyle(
-                      color: theme.colorScheme.outline,
-                      fontSize: theme.textTheme.labelMedium?.fontSize,
-                    ),
+                    style: TextStyle(color: theme.colorScheme.outline),
                   ),
               ]
             ],

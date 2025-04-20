@@ -38,10 +38,7 @@ class AlbumCard extends StatelessWidget {
             Text(
               album.artists.isNotEmpty ? HtmlCharacterEntities.decode(album.artists.first.name) : '',
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: theme.colorScheme.outline,
-                fontSize: theme.textTheme.labelMedium?.fontSize
-              ),
+              style: TextStyle(color: theme.colorScheme.outline),
             ),
             Text(
               [
@@ -49,10 +46,7 @@ class AlbumCard extends StatelessWidget {
                 if(album.version != null )...[' · ', album.version!]
               ].join(),
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: theme.colorScheme.outline,
-                fontSize: theme.textTheme.labelMedium?.fontSize
-              ),
+              style: TextStyle(color: theme.colorScheme.outline),
             )
           ],
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/album_card.dart';
-import 'package:ya_player/pages/page_base.dart';
 
+import '/controls/album_card.dart';
+import 'page_base.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/album.dart';
@@ -13,6 +13,8 @@ class NewReleasesPage extends StatelessWidget {
   late final future = _musicApi.newReleases();
 
   NewReleasesPage({super.key});
+
+  static const double _width = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +50,11 @@ class NewReleasesPage extends StatelessWidget {
               gridDelegate: CustomSliverGridDelegateExtent(
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
-                maxCrossAxisExtent: 200,
-                height: 254,
+                maxCrossAxisExtent: _width,
+                height: 262,
               ),
               delegate: SliverChildBuilderDelegate(
-                (_, index) => _buildItem(albums[index]),
+                (_, index) => AlbumCard(albums[index], _width),
                 childCount: albums.length,
               ),
             )
@@ -60,9 +62,5 @@ class NewReleasesPage extends StatelessWidget {
         );
       },
     );
-  }
-
-  Widget _buildItem(Album album) {
-    return AlbumCard(album, 200);
   }
 }
