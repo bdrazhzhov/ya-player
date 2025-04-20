@@ -64,4 +64,8 @@ final class TrayIntegration
   void setTitle(String title) {
     _trayIcon.setTitle(title);
   }
+
+  void setTooltip(String title, String subtitle) {
+    _trayIcon.setToolTip(title, subtitle);
+  }
 }

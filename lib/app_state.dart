@@ -295,9 +295,7 @@ class AppState {
 
       Track track = _playerState.trackNotifier.value!;
       _windowManager.setWindowTitle(track.title, track.artist);
-
-      final trayTitle = 'YaPlayer\n${track.title} – ${track.artist}';
-      _trayIntegration.setTitle(trayTitle);
+      _trayIntegration.setTooltip(track.title, track.artist);
 
       _setMprisMetadata(track);
     });

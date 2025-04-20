@@ -79,6 +79,26 @@ class _StatusNotifierItemObject extends DBusObject {
     );
   }
 
+  late DBusStruct _dbusToolTip = DBusStruct([
+    DBusString('YaPlayer'),
+    DBusArray(DBusSignature('(iiay)'), []),
+    DBusString('YaPlayer'),
+    DBusString('')
+  ]);
+  Future<void> setToolTip(String title, String subtitle) async {
+    _dbusToolTip = DBusStruct([
+      DBusString('YaPlayer'),
+      DBusArray(DBusSignature('(iiay)'), []),
+      DBusString(title),
+      DBusString(subtitle)
+    ]);
+    await emitNewToolTip();
+    await emitPropertiesChanged(
+      "org.kde.StatusNotifierItem",
+      changedProperties: {"ToolTip": _dbusToolTip},
+    );
+  }
+
   /// Emits signal org.kde.StatusNotifierItem.NewIcon
   Future<void> emitNewIcon() async {
     await emitSignal('org.kde.StatusNotifierItem', 'NewIcon', []);
@@ -276,12 +296,7 @@ class _StatusNotifierItemObject extends DBusObject {
       case 'AttentionMovieName':
         return DBusGetPropertyResponse(DBusString(attentionMovieName));
       case 'ToolTip':
-        return DBusGetPropertyResponse(DBusStruct([
-          DBusString(''),
-          DBusArray(DBusSignature('(iiay)'), []),
-          DBusString(''),
-          DBusString('')
-        ]));
+        return DBusGetPropertyResponse(_dbusToolTip);
       case 'ItemIsMenu':
         return DBusGetPropertyResponse(DBusBoolean(false));
       case 'Menu':
@@ -306,12 +321,7 @@ class _StatusNotifierItemObject extends DBusObject {
       'AttentionIconName': DBusString(attentionIconName),
       'AttentionIconPixmap': DBusArray(DBusSignature('(iiay)'), []),
       'AttentionMovieName': DBusString(attentionMovieName),
-      'ToolTip': DBusStruct([
-        DBusString(''),
-        DBusArray(DBusSignature('(iiay)'), []),
-        DBusString(''),
-        DBusString('')
-      ]),
+      'ToolTip': _dbusToolTip,
       'ItemIsMenu': DBusBoolean(false),
       'Menu': menu!
     });
@@ -395,6 +405,10 @@ class StatusNotifierItemClient {
 
   void setTitle(String title) {
     _notifierItemObject.title = title;
+  }
+
+  void setToolTip(String title, String subtitle) {
+    _notifierItemObject.setToolTip(title, subtitle);
   }
 
   /// Terminates all active connections. If a client remains unclosed, the Dart process may not terminate.
