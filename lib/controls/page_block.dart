@@ -19,6 +19,12 @@ class PageBlock extends StatelessWidget {
 
   const PageBlock({super.key, required this.block});
 
+  static const ignoredTypes = [
+    'personal-playlists',
+    'play-contexts',
+    'promotions'
+  ];
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -44,7 +50,7 @@ class PageBlock extends StatelessWidget {
                 ],
               ),
             ),
-            if (block.type != 'personal-playlists' && block.type != 'play-contexts')
+            if (!ignoredTypes.contains(block.type))
               TextButton(
                 onPressed: () => _navigateToAll(block.type, context),
                 child: Text(l10n.pageBlock_viewAll),

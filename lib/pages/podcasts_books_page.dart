@@ -20,6 +20,8 @@ class PodcastsBooksPage extends StatelessWidget {
         ValueListenableBuilder(
           valueListenable: _appState.nonMusicNotifier,
           builder: (_, List<Block> blocks, __) {
+            blocks = blocks.where((block) => block.entities.isNotEmpty).toList();
+
             return SliverList.builder(
               itemCount: blocks.length,
               itemBuilder: (BuildContext context, int index) {

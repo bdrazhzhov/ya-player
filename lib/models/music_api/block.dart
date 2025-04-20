@@ -32,14 +32,10 @@ class Block {
           (entity) => entities.add(Playlist.fromJson(entity['data']['data']))
         );
       case 'play-contexts':
-        json['entities'].forEach((entity) {
-          final object = _createPlayContext(entity);
-          if(object == null) return;
-          entities.add(object);
-        });
+        json['entities'].forEach((entity) => _createPlayContext(entity, entities));
       case 'promotions':
         json['entities'].forEach(
-          (entity) => entities.add(Promotion.fromJson(entity['data']))
+          (entity) => entities.add(Promotion.fromJson(entity['data'])),
         );
       case 'podcasts':
         json['entities'].forEach((entity) => entities.add(Podcast.fromJson(entity)));
@@ -87,22 +83,20 @@ class Block {
     }
   }
 
-  static Object? _createPlayContext(entity) {
+  static void _createPlayContext(entity, List<Object> entities) {
     final String context = entity['data']['context'];
     final payload = entity['data']['payload'];
-    if(payload == null) return null;
+    if(payload == null) return;
 
     switch(context) {
       case 'album':
-        return Album.fromJson(payload);
+        entities.add(Album.fromJson(payload));
       case 'playlist':
-        return Playlist.fromJson(payload);
+        entities.add(Playlist.fromJson(payload));
       case 'artist':
-        return Artist.fromJson(payload);
+        entities.add(Artist.fromJson(payload));
       default:
         debugPrint('Unknown play context: $context');
     }
-
-    return null;
   }
 }
