@@ -5,6 +5,7 @@ import 'package:ya_player/state_enums.dart';
 
 import 'audio_player.dart';
 import 'dbus/mpris/mpris_player.dart';
+import 'dbus/sleep_inhibitor.dart';
 import 'models/music_api/track.dart';
 import 'services/service_locator.dart';
 
@@ -30,6 +31,7 @@ class PlayerState {
   late final progressNotifier = _audioPlayer.trackDurationNotifier;
   final _audioPlayer = getIt<AudioPlayer>();
   final _prefs = getIt<Preferences>();
+  final _sleepInhibitor = getIt<SleepInhibitor>();
 
   PlayerState() {
     _listenToPlayerAbilities();
@@ -86,18 +88,21 @@ class PlayerState {
           canPlayNotifier.value = false;
           canSeekNotifier.value = true;
           _mpris.playbackState = 'Playing';
+          _sleepInhibitor.blockSleep();
           break;
         case PlayBackState.paused:
           canPauseNotifier.value = false;
           canPlayNotifier.value = true;
           canSeekNotifier.value = true;
           _mpris.playbackState = 'Paused';
+          _sleepInhibitor.unblockSleep();
           break;
         case PlayBackState.stopped:
           canPauseNotifier.value = false;
           canPlayNotifier.value = true;
           canSeekNotifier.value = false;
           _mpris.playbackState = 'Stopped';
+          _sleepInhibitor.unblockSleep();
           break;
       }
     });

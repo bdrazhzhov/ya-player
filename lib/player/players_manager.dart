@@ -5,7 +5,6 @@ import '/player/player_base.dart';
 
 class PlayersManager {
   PlayerBase? _player;
-  final sleepInhibitor = getIt<SleepInhibitor>();
 
   PlayersManager();
 
@@ -25,16 +24,10 @@ class PlayersManager {
     }
   }
 
-  Future<void> play([int? index]) async {
-    await _player?.playByIndex(index);
-    await sleepInhibitor.blockSleep();
-  }
+  Future<void> play([int? index]) async => await _player?.playByIndex(index);
   void next() => _player?.next();
   void previous() => _player?.previous();
-  Future<void> pause() async {
-    await _player?.pause();
-    await sleepInhibitor.unblockSleep();
-  }
+  Future<void> pause() async => await _player?.pause();
 
   void playPause() {
     _player?.playPause();
