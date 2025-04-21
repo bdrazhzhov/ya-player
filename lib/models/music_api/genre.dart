@@ -101,7 +101,7 @@ final class GenreRadioIcon {
 
   factory GenreRadioIcon.fromJson(Map<String, dynamic> json) {
     return GenreRadioIcon(
-      backgroundColor: Color(int.parse(json['backgroundColor'])),
+      backgroundColor: (json['backgroundColor'] as String).toColor(),
       imageUrl: json['imageUrl'],
     );
   }

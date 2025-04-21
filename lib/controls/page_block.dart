@@ -161,7 +161,6 @@ class PageBlock extends StatelessWidget {
 
   void _navigateToAll(String type, BuildContext context) {
     Widget? page;
-    print('PageBlock: $type');
 
     switch (type) {
       case 'chart':

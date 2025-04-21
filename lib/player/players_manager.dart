@@ -1,5 +1,3 @@
-import '/dbus/sleep_inhibitor.dart';
-import '/services/service_locator.dart';
 import 'playback_queue.dart';
 import '/player/player_base.dart';
 
