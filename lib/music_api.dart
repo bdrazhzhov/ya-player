@@ -4,9 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
-import '/models/music_api/can_be_played.dart';
+
 import 'helpers/paged_data.dart';
-import 'models/music_api/history.dart';
 import 'models/music_api_types.dart';
 import 'models/play_info.dart';
 import 'services/service_locator.dart';
@@ -615,5 +614,16 @@ class MusicApi {
     });
 
     return playlists;
+  }
+
+  Future<List<Genre>> genres() async {
+    final json = await _http.get('/genres');
+    List<Genre> genres = [];
+    json['result'].forEach((item) {
+      final genre = Genre.fromJson(item);
+      genres.add(genre);
+    });
+
+    return genres;
   }
 }

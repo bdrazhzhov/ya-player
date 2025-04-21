@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '/app_state.dart';
+import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/artist.dart';
 import '/pages/artist_page.dart';
@@ -9,7 +11,9 @@ class ArtistCard extends StatelessWidget {
   final Artist artist;
   final double width;
 
-  const ArtistCard(this.artist, this.width, {super.key});
+  ArtistCard(this.artist, this.width, {super.key});
+
+  final _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class ArtistCard extends StatelessWidget {
                 style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
               ),
             Text(
-              artist.genres.map((e) => '${e[0].toUpperCase()}${e.substring(1)}').join(', '),
+              artist.genres.map((id) => _appState.getGenreTitle(id)).join(', '),
               style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,

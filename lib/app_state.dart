@@ -5,7 +5,6 @@ import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '/models/music_api/can_be_played.dart';
 import '/tray_integration.dart';
 import 'dbus/mpris/metadata.dart';
 import 'dbus/mpris/mpris_player.dart';
@@ -60,6 +59,7 @@ class AppState {
   final _mpris = getIt<OrgMprisMediaPlayer2>();
   final _trayIntegration = TrayIntegration();
   final _windowManager = getIt<WindowManager>();
+  final Map<String,String> _genres = {};
 
   final List<String> _likedTrackIds = [];
   final List<int> _likedArtistIds = [];
@@ -161,6 +161,9 @@ class AppState {
     futures.add(_requestNonMusicCatalog());
     futures.add(_requestLanding());
     futures.add(_requestLanding3Metatags());
+    await Future.wait(futures);
+
+    futures.add(_requestGenres());
     await Future.wait(futures);
   }
 
@@ -388,6 +391,24 @@ class AppState {
 
     _setMprisMetadata(track);
   }
+
+  Future<void> _requestGenres() async {
+    final List<Genre> genres = await _musicApi.genres();
+    _genres.clear();
+
+    addGenres(List<Genre> genres) {
+      for(Genre genre in genres) {
+        _genres[genre.id] = genre.title;
+        if(genre.subGenres.isNotEmpty) {
+          addGenres(genre.subGenres);
+        }
+      }
+    }
+
+    addGenres(genres);
+  }
+
+  String? getGenreTitle(String id) => _genres[id];
 
   Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
     playButtonNotifier.value = ButtonState.loading;
