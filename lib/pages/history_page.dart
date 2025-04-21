@@ -22,7 +22,7 @@ class HistoryPage extends StatelessWidget {
       children: [
         SliverToBoxAdapter(child: const Text('History')),
         FutureBuilder(
-          future: _musicApi.history(),
+          future: _musicApi.searchHistory(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             if(!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
               return SliverToBoxAdapter(child: const Text('Loading...'));

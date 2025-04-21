@@ -546,7 +546,7 @@ class MusicApi {
     return Playlist.fromJson(json['result']['chart']);
   }
 
-  Future<List<Object>> history() async {
+  Future<List<Object>> searchHistory() async {
     List<Object> history = [];
 
     final json = await _http.get('/landing-blocks/history');
