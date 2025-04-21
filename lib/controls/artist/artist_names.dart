@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 
 import '/helpers/nav_keys.dart';
 import '/pages/artist_page.dart';
@@ -8,32 +9,29 @@ class ArtistNames extends StatelessWidget {
   final Iterable<ArtistBase> artists;
   late final String _text = artists.map((artist) => artist.name).join(', ');
 
+  late final _entries = artists
+      .map((artist) => MenuItem(
+            label: artist.name,
+            icon: Icons.lens_outlined,
+            onSelected: () => _goToArtistPage(artist),
+          ))
+      .toList();
+
   ArtistNames({super.key, required this.artists});
 
   @override
   Widget build(BuildContext context) {
-    Widget artistNames = Text(
-      _text,
-      softWrap: false,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis
-    );
-
-    if(artists.length > 1) {
-      return PopupMenuButton<ArtistBase>(
-        padding: EdgeInsets.zero,
-        menuPadding: EdgeInsets.zero,
-        popUpAnimationStyle: AnimationStyle.noAnimation,
-        offset: const Offset(20, -20),
-        tooltip: '',
-        itemBuilder: (_) => artists.map((artist) => _buildMenuItem(artist.name, artist)).toList(),
-        onSelected: _goToArtistPage,
-        child: artistNames
-      );
-    }
+    Widget artistNames = Text(_text, softWrap: false, maxLines: 1, overflow: TextOverflow.ellipsis,);
 
     return GestureDetector(
-      onTap: () => _goToArtistPage(artists.first),
+      onTap: () {
+        if(artists.length > 1) {
+          showContextMenu(context, contextMenu: _buildMenu(context));
+        }
+        else {
+          _goToArtistPage(artists.first);
+        }
+      },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: artistNames,
@@ -41,20 +39,20 @@ class ArtistNames extends StatelessWidget {
     );
   }
 
-  PopupMenuItem<ArtistBase> _buildMenuItem(String text, ArtistBase artist) {
-    return PopupMenuItem(
-      value: artist,
-      height: 40,
-      child: Text(text,),
+  ContextMenu _buildMenu(BuildContext context) {
+    final renderBox = context.findRenderObject() as RenderBox;
+
+    return ContextMenu(
+      entries: _entries,
+      position: renderBox.localToGlobal(Offset.zero),
+      padding: const EdgeInsets.all(8.0),
     );
   }
 
   void _goToArtistPage(ArtistBase artist) {
-    NavKeys.mainNav.currentState!.push(
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => ArtistPage(artist),
-        reverseTransitionDuration: Duration.zero,
-      )
-    );
+    NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+      pageBuilder: (_, __, ___) => ArtistPage(artist),
+      reverseTransitionDuration: Duration.zero,
+    ));
   }
 }
