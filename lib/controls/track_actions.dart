@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:ya_player/services/service_locator.dart';
 
 import '/l10n/app_localizations.dart';
@@ -8,7 +9,7 @@ import '/models/music_api/track.dart';
 import '/pages/album_page.dart';
 import '/pages/artist_page.dart';
 
-enum TrackActionType {download, radio, addToPlaylist, toAlbum, toArtists, share, remove}
+enum TrackActionType { download, radio, addToPlaylist, toAlbum, toArtists, share, remove }
 
 class TrackActions extends StatelessWidget {
   final Track track;
@@ -18,135 +19,99 @@ class TrackActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    PopupMenuEntry<Object> artistsMenuItem;
-    if(track.artists.length > 1) {
-      artistsMenuItem = PopupMenuItem(
-        child: PopupMenuButton<Object>(
-          padding: EdgeInsets.zero,
-          menuPadding: EdgeInsets.zero,
-          popUpAnimationStyle: AnimationStyle.noAnimation,
-          offset: Offset(120, 0),
-          tooltip: '',
-          itemBuilder: (BuildContext context) => track.artists.map((artist){
-            return PopupMenuItem(
-              value: artist,
-              height: 40,
-              child: Text(artist.name),
-              onTap: (){
-                NavKeys.mainNav.currentState!.push(
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => ArtistPage(artist),
-                    reverseTransitionDuration: Duration.zero,
-                  )
-                );
-              },
-            );
-          }).toList(),
-          onSelected: (value){
-
-          },
-          child: Row(
-            spacing: 8,
-            children: [
-              Icon(Icons.person, size: 18),
-              Text(l10n.track_goToArtists(track.artists.length)),
-              Icon(Icons.arrow_forward_ios, size: 18)
-            ],
-          ),
-        ),
-      );
-    }
-    else {
-      artistsMenuItem = buildMenuItem(
-        text: l10n.track_goToArtists(track.artists.length),
-        action: TrackActionType.toArtists,
-        icon: Icons.person,
-        onTap: (){
-          NavKeys.mainNav.currentState!.push(
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => ArtistPage(track.artists.first),
-              reverseTransitionDuration: Duration.zero,
-            )
-          );
-        }
-      ); 
-    }
-
-    return PopupMenuButton<Object>(
-      icon: Icon(Icons.more_horiz),
-      padding: EdgeInsets.zero,
-      menuPadding: EdgeInsets.zero,
-      popUpAnimationStyle: AnimationStyle.noAnimation,
-      offset: Offset(40, 0),
-      tooltip: '',
-      itemBuilder: (BuildContext context) => [
-        buildMenuItem(
-          text: l10n.track_download,
-          action: TrackActionType.download,
-          icon: Icons.download
-        ),
-        buildMenuItem(
-          text: l10n.track_radio,
-          action: TrackActionType.radio,
-          icon: Icons.radio_outlined,
-          onTap: () {
-            _appState.playObjectStation(track);
-          }
-        ),
-        buildMenuItem(
-          text: l10n.track_addToPlaylist,
-          action: TrackActionType.addToPlaylist,
-          icon: Icons.add
-        ),
-        buildMenuItem(
-          text: l10n.track_goToAlbum,
-          action: TrackActionType.toAlbum,
-          icon: Icons.album,
-          onTap: (){
-            NavKeys.mainNav.currentState!.push(
-              PageRouteBuilder(
-                pageBuilder: (_, __, ___) => AlbumPage(track.firstAlbumId),
-                reverseTransitionDuration: Duration.zero,
-              )
-            );
-          }
-        ),
-        artistsMenuItem,
-        buildMenuItem(
-          text: l10n.track_share,
-          action: TrackActionType.share,
-          icon: Icons.share
-        ),
-        buildMenuItem(
-          text: l10n.track_remove,
-          action: TrackActionType.remove,
-          icon: Icons.clear
-        ),
-      ],
-      onSelected: (value){
-
+    return GestureDetector(
+      onTap: () {
+        showContextMenu(context, contextMenu: _buildMenu(context));
       },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Icon(Icons.more_horiz),
+      ),
     );
   }
 
-  PopupMenuItem<Object> buildMenuItem({
-    required String text,
-    required TrackActionType action,
-    required IconData icon,
-    void Function()? onTap
-  }) {
-    return PopupMenuItem(
-      onTap: onTap,
-      value: action,
-      height: 40,
-      child: Row(
-        spacing: 8,
-        children: [
-          Icon(icon, size: 18),
-          Text(text),
-        ],
-      ),
+  ContextMenu _buildMenu(BuildContext context) {
+    final renderBox = context.findRenderObject() as RenderBox;
+    final l10n = AppLocalizations.of(context)!;
+
+    return ContextMenu(
+      entries: [
+        MenuItem(
+          label: l10n.track_download,
+          icon: Icons.download,
+          enabled: false,
+          onSelected: () {
+            // Handle download action
+          },
+        ),
+        MenuItem(
+          label: l10n.track_radio,
+          icon: Icons.radio_outlined,
+          onSelected: () {
+            _appState.playObjectStation(track);
+          },
+        ),
+        MenuItem(
+          label: l10n.track_addToPlaylist,
+          icon: Icons.add,
+          enabled: false,
+          onSelected: () {
+            // Handle add to playlist action
+          },
+        ),
+        MenuItem(
+          label: l10n.track_goToAlbum,
+          icon: Icons.album,
+          onSelected: () {
+            NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+              pageBuilder: (_, __, ___) => AlbumPage(track.firstAlbumId),
+              reverseTransitionDuration: Duration.zero,
+            ));
+          },
+        ),
+        _buildArtistMenuItem(context),
+        MenuItem(label: l10n.track_share, icon: Icons.share, enabled: false),
+        MenuItem(label: l10n.track_remove, icon: Icons.clear, enabled: false),
+      ],
+      position: renderBox.localToGlobal(Offset.zero),
+      padding: const EdgeInsets.all(8.0),
     );
+  }
+
+  MenuItem _buildArtistMenuItem(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    MenuItem artistsMenuItem;
+    if (track.artists.length > 1) {
+      artistsMenuItem = MenuItem.submenu(
+        label: l10n.track_goToArtists(track.artists.length),
+        icon: Icons.person,
+        items: track.artists.map((artist) {
+          return MenuItem(
+            value: artist,
+            label: artist.name,
+            onSelected: () {
+              NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+                pageBuilder: (_, __, ___) => ArtistPage(artist),
+                reverseTransitionDuration: Duration.zero,
+              ));
+            },
+          );
+        }).toList(),
+      );
+    } else {
+      artistsMenuItem = MenuItem(
+        label: l10n.track_goToArtists(track.artists.length),
+        icon: Icons.person,
+        onSelected: () {
+          NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+            pageBuilder: (_, __, ___) => ArtistPage(track.artists.first),
+            reverseTransitionDuration: Duration.zero,
+          ));
+        },
+      );
+    }
+
+    return artistsMenuItem;
   }
 }

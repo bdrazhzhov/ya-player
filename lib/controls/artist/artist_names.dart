@@ -12,7 +12,7 @@ class ArtistNames extends StatelessWidget {
   late final _entries = artists
       .map((artist) => MenuItem(
             label: artist.name,
-            icon: Icons.lens_outlined,
+            icon: Icons.person,
             onSelected: () => _goToArtistPage(artist),
           ))
       .toList();
