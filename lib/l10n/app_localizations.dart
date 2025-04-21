@@ -272,13 +272,13 @@ abstract class AppLocalizations {
   /// No description provided for @tracks_count.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0 {no tracks} =1 {track} other {tracks}}'**
+  /// **'{count, plural, =0 {no tracks} =1 {1 track} other {{count} tracks}}'**
   String tracks_count(int count);
 
   /// No description provided for @episodes_count.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0 {no episodes} =1 {episode} other {episodes}}'**
+  /// **'{count, plural, =0 {no episodes} =1 {1 episode} other {{count} episodes}}'**
   String episodes_count(int count);
 
   /// No description provided for @date_hoursShort.

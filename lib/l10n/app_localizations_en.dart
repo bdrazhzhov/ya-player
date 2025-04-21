@@ -100,8 +100,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'tracks',
-      one: 'track',
+      other: '$count tracks',
+      one: '1 track',
       zero: 'no tracks',
     );
     return '$_temp0';
@@ -112,8 +112,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'episodes',
-      one: 'episode',
+      other: '$count episodes',
+      one: '1 episode',
       zero: 'no episodes',
     );
     return '$_temp0';

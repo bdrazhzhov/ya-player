@@ -62,7 +62,7 @@ class PlaylistCard extends StatelessWidget {
                   ),
                 ),
               Text(
-                "${playlist.tracksCount} ${AppLocalizations.of(context)!.tracks_count(playlist.tracksCount)}",
+                AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
                 style: TextStyle(color: theme.colorScheme.outline)
               )
             ],

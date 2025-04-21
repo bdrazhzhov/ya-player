@@ -45,7 +45,7 @@ class ArtistCard extends StatelessWidget {
             ),
             if(artist.counts != null)
               Text(
-                "${artist.counts!.tracks} ${AppLocalizations.of(context)!.tracks_count(artist.counts!.tracks)}",
+                AppLocalizations.of(context)!.tracks_count(artist.counts!.tracks),
                 style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
               ),
             Text(
