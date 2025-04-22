@@ -1,7 +1,7 @@
 import 'package:ya_player/models/music_api/artist_info.dart';
 import 'package:ya_player/models/music_api/station.dart';
 
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import '/models/music_api/playlist.dart';
 import '/models/music_api/track.dart';

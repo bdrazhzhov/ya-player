@@ -5,7 +5,7 @@ import 'page_base.dart';
 import '/models/music_api/playlist.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';
 import '/l10n/app_localizations.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 
 class PopularPlaylistsPage extends StatelessWidget {

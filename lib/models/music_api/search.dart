@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '/helpers/paged_data.dart';
+import 'paged_data.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'playlist.dart';

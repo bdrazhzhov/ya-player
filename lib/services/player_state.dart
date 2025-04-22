@@ -1,13 +1,13 @@
 import 'package:audio_player_gst/events.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ya_player/services/preferences.dart';
-import 'package:ya_player/state_enums.dart';
+import 'package:ya_player/services/state_enums.dart';
 
 import 'audio_player.dart';
-import 'dbus/mpris/mpris_player.dart';
-import 'dbus/sleep_inhibitor.dart';
-import 'models/music_api/track.dart';
-import 'services/service_locator.dart';
+import '/dbus/mpris/mpris_player.dart';
+import '/dbus/sleep_inhibitor.dart';
+import '/models/music_api/track.dart';
+import 'service_locator.dart';
 
 enum PlayBackState { playing, paused, stopped }
 

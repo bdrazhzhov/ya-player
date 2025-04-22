@@ -1,6 +1,6 @@
 import '/player/queue_factory.dart';
 import '/models/music_api/queue.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import '/models/music_api/track.dart';
 import '/models/music_api/station.dart';

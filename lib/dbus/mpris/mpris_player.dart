@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:dbus/dbus.dart';
 
-import '/state_enums.dart';
+import '/services/state_enums.dart';
 import 'metadata.dart';
 
 class OrgMprisMediaPlayer2 extends DBusObject {

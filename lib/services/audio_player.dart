@@ -5,7 +5,7 @@ import 'package:audio_player_gst/audio_player_gst.dart';
 import 'package:audio_player_gst/events.dart';
 import 'package:flutter/foundation.dart';
 
-import 'notifiers/track_duration_notifier.dart';
+import '/notifiers/track_duration_notifier.dart';
 
 final class AudioPlayer {
   final _platformPlayer = AudioPlayerGst();

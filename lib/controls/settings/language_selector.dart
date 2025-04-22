@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 
 class LanguageSelector extends StatelessWidget {

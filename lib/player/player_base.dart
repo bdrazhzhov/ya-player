@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:audio_player_gst/events.dart';
-import 'package:ya_player/state_enums.dart';
 
-import '/player_state.dart';
+import '/services/state_enums.dart';
+import '/services/player_state.dart';
 import '/notifiers/play_button_notifier.dart';
-import '/audio_player.dart';
-import '/app_state.dart';
+import '/services/audio_player.dart';
+import '/services/app_state.dart';
 import '/models/music_api/track.dart';
 import '/models/play_info.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import 'playback_queue.dart';
 

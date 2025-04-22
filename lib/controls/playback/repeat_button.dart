@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
-import '/state_enums.dart';
+import '/services/player_state.dart';
+import '/services/state_enums.dart';
 import '/services/service_locator.dart';
 
 class RepeatButton extends StatelessWidget {

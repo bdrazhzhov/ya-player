@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/app_state.dart';
 
+import '/services/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/pages/genre_page.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'page_base.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/controls/playback/repeat_button.dart';
 import '/controls/playback/shuffle_button.dart';
 import '/controls/sliver_track_list.dart';

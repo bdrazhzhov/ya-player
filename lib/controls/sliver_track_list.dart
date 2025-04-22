@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '/helpers/multi_value_listenable_builder.dart';
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/models/music_api/can_be_played.dart';
 import 'track_list/track_list_item.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/player/players_manager.dart';
 import '/services/service_locator.dart';
 

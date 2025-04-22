@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import '/l10n/app_localizations.dart';
 import '../helpers/custom_sliver_grid_delegate_extent.dart';
 import '/models/music_api/playlist.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/controls/playlist_card.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';

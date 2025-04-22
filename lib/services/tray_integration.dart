@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart';
 
-import 'dbus/status_notifier_item/dbus_menu_object.dart';
-import 'dbus/status_notifier_item/status_notifier_item_client.dart';
-import 'services/service_locator.dart';
+import '/dbus/status_notifier_item/dbus_menu_object.dart';
+import '/dbus/status_notifier_item/status_notifier_item_client.dart';
+import 'service_locator.dart';
 import 'window_manager.dart';
 
 enum PlayBackChangeType {playPause, next, prev}

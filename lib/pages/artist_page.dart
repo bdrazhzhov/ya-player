@@ -4,7 +4,7 @@ import '/l10n/app_localizations.dart';
 import '/controls/artist/artist_flexible_space.dart';
 import '/controls/artist/artist_social_link.dart';
 import '/controls/artist/artist_section_header.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/controls/custom_separated_hlist.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
@@ -17,7 +17,7 @@ import '/controls/artist_card.dart';
 import '/models/music_api/artist.dart';
 import '/models/music_api/artist_info.dart';
 import '/services/service_locator.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo = _musicApi.artistInfo(artist.id);

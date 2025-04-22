@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '/pages/search_page.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/helpers/app_route_observer.dart';
 import 'podcasts_books_page.dart';
 import '/services/service_locator.dart';

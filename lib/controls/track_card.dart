@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '/helpers/multi_value_listenable_builder.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/player/players_manager.dart';
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/track.dart';

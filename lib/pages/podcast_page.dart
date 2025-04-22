@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '/controls/album_flexible_space.dart';
 import '/controls/tracks_header.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
 import '/models/music_api_types.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 

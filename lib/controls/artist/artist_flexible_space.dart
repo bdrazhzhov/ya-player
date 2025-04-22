@@ -5,7 +5,7 @@ import '/l10n/app_localizations.dart';
 import '/controls/flexible_space.dart';
 import '/player/players_manager.dart';
 import '/models/music_api/artist_info.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 import '/controls/like_button.dart';
 

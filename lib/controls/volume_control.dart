@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/services/service_locator.dart';
 
 class VolumeControl extends StatelessWidget {

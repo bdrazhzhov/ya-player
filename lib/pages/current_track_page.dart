@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/controls/controls_bar.dart';
 import '/controls/page_base_layout.dart';
 import '/controls/yandex_image.dart';

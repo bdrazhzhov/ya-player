@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '../controls/album_card.dart';
-import '../controls/page_loading_indicator.dart';
-import '../helpers/custom_sliver_grid_delegate_extent.dart';
-import '../helpers/paged_data.dart';
-import '../models/music_api/album.dart';
-import '../models/music_api/artist.dart';
-import '../music_api.dart';
-import '../services/service_locator.dart';
+import '/controls/album_card.dart';
+import '/controls/page_loading_indicator.dart';
+import '/helpers/custom_sliver_grid_delegate_extent.dart';
+import '/models/music_api/paged_data.dart';
+import '/models/music_api/album.dart';
+import '/models/music_api/artist.dart';
+import '/services/music_api.dart';
+import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class ArtistCompilationsPage extends StatefulWidget {

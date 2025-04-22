@@ -4,15 +4,15 @@ import 'package:dbus/dbus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '/player_state.dart';
-import '/window_manager.dart';
+import 'player_state.dart';
+import 'window_manager.dart';
 import '/dbus/sleep_inhibitor.dart';
 import '/dbus/mpris/mpris_player.dart';
-import '/audio_player.dart';
+import 'audio_player.dart';
 import '/player/players_manager.dart';
-import '/app_state.dart';
+import 'app_state.dart';
 import '/helpers/app_route_observer.dart';
-import '/music_api.dart';
+import 'music_api.dart';
 import 'preferences.dart';
 import 'yandex_api_client.dart';
 

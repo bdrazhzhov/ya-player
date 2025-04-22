@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 import '/controls/settings/language_selector.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 
 class LoginPage extends StatefulWidget {

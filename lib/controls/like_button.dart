@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 
 class LikeButton extends StatefulWidget {

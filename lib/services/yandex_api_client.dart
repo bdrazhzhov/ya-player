@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '/in_memory_cache.dart';
+import '/helpers/in_memory_cache.dart';
 
 class YandexApiClient {
   final String deviceId;

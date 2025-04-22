@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/helpers/color_extension.dart';
 
-import '/player_state.dart';
-import '/app_state.dart';
+import '/services/player_state.dart';
+import '/services/app_state.dart';
 import '/models/music_api/station.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import 'animated_station_circle.dart';
 

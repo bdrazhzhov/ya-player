@@ -5,7 +5,7 @@ import '/l10n/app_localizations.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';
 import '/models/music_api/artist.dart';
 import '/pages/page_base.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/controls/artist_card.dart';
 import '/services/service_locator.dart';
 

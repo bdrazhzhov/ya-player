@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ya_player/pages/meta_tags_page.dart';
 
 import '/models/music_api/meta_tags.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 

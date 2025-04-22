@@ -12,7 +12,7 @@ import '/models/music_api/track.dart';
 import 'search_results/top_page.dart';
 import '/models/music_api/artist.dart';
 import '/models/music_api/search.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 
 class SearchResultMixedPage extends StatelessWidget {

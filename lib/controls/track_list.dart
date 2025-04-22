@@ -4,7 +4,7 @@ import '/helpers/multi_value_listenable_builder.dart';
 import '/models/music_api/can_be_played.dart';
 import '/player/players_manager.dart';
 import '/models/music_api/track.dart';
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/services/service_locator.dart';
 import 'track_list/track_list_item.dart';
 

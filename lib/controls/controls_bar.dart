@@ -2,10 +2,10 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/notifiers/track_duration_notifier.dart';
-import '/audio_player.dart';
-import '/app_state.dart';
+import '/services/audio_player.dart';
+import '/services/app_state.dart';
 import '/helpers/nav_keys.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';

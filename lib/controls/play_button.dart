@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/player/players_manager.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/notifiers/play_button_notifier.dart';
 import '/services/service_locator.dart';
 

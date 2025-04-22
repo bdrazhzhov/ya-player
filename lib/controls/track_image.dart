@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/pages/current_track_page.dart';
 import '/services/service_locator.dart';
 import 'yandex_image.dart';

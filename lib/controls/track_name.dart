@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import 'artist/artist_names.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';

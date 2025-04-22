@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-import 'package:ya_player/controls/yandex_image.dart';
 
-import '../helpers/custom_sliver_grid_delegate_extent.dart';
-import '../models/music_api/album.dart';
-import '../models/music_api/artist.dart';
-import '../models/music_api/history.dart';
-import '../models/music_api/playlist.dart';
-import '../models/music_api/track.dart';
-import '/music_api.dart';
+import '/controls/yandex_image.dart';
+import '/helpers/custom_sliver_grid_delegate_extent.dart';
+import '/models/music_api/album.dart';
+import '/models/music_api/artist.dart';
+import '/models/music_api/history.dart';
+import '/models/music_api/playlist.dart';
+import '/models/music_api/track.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 
 class HistoryPage extends StatelessWidget {

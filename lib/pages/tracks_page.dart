@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
 import '/controls/sliver_track_list.dart';

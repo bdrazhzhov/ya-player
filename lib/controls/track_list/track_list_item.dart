@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/models/music_api/can_be_played.dart';
 import '/controls/like_button.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/models/music_api/track.dart';
 import '/services/service_locator.dart';
 import 'chart_position.dart';

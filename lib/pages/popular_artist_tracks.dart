@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../app_state.dart';
-import '../controls/slivers_container.dart';
-import '../controls/track_list/sliver_tracks_header.dart';
-import '../models/music_api_types.dart';
-import '../services/service_locator.dart';
+import '/services/app_state.dart';
+import '/controls/slivers_container.dart';
+import '/controls/track_list/sliver_tracks_header.dart';
+import '/models/music_api_types.dart';
+import '/services/service_locator.dart';
 
 class PopularArtistTracks extends StatelessWidget {
   final Artist artist;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '/state_enums.dart';
-import '/app_state.dart';
-import '/audio_player.dart';
+import '/services/state_enums.dart';
+import '/services/app_state.dart';
+import '/services/audio_player.dart';
 import '/controls/controls_bar.dart';
 import '/services/service_locator.dart';
 import '/controls/main_menu.dart';

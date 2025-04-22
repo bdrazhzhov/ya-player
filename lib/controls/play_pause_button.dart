@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/models/music_api/track.dart';
-import '/player_state.dart';
+import '/services/player_state.dart';
 import '/services/service_locator.dart';
 
 class PlayPauseButton extends StatelessWidget {

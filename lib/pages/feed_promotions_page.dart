@@ -4,7 +4,7 @@ import '/models/music_api/feed_promotions.dart';
 import '/controls/album_card.dart';
 import '/controls/page_loading_indicator.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';
-import '/music_api.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import 'page_base.dart';
 

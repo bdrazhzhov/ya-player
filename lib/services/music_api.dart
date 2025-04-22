@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
 
-import 'helpers/paged_data.dart';
-import 'models/music_api_types.dart';
-import 'models/play_info.dart';
-import 'services/service_locator.dart';
-import 'services/yandex_api_client.dart';
+import '/models/music_api/paged_data.dart';
+import '/models/music_api_types.dart';
+import '/models/play_info.dart';
+import 'service_locator.dart';
+import 'yandex_api_client.dart';
 
 enum AlbumsSortBy { rating, year }
 

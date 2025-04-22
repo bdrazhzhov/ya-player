@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'playback/next_button.dart';
 import 'playback/previous_button.dart';
-import '/app_state.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
 import 'play_button.dart';
 import 'playback/repeat_button.dart';

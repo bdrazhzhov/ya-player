@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import '../state_enums.dart';
+import 'state_enums.dart';
 
 class Preferences {
   final SharedPreferences _prefs;

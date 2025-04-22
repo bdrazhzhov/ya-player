@@ -5,8 +5,8 @@ import '/controls/station/stations_grid.dart';
 import '/pages/page_base.dart';
 import '/controls/dashboard_stations.dart';
 import '/models/music_api_types.dart';
-import '/app_state.dart';
-import '/music_api.dart';
+import '/services/app_state.dart';
+import '/services/music_api.dart';
 import '/player/players_manager.dart';
 import '/services/service_locator.dart';
 
