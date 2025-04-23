@@ -626,4 +626,20 @@ class MusicApi {
 
     return genres;
   }
+
+  Future<void> plays(PlayInfoBase play) async {
+    await _http.postJson('/plays', data: {
+      'plays': [play.toJson()]
+    });
+  }
+
+  Future<void> sendRadioFeedback({
+    required String sessionId,
+    required StationFeedback feedback,
+  }) async {
+    await _http.postJson(
+      '/rotor/session/$sessionId/feedback/',
+      data: feedback.toJson(),
+    );
+  }
 }

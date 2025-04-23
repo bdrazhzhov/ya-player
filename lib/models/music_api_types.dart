@@ -20,3 +20,4 @@ export 'music_api/can_be_station.dart';
 export 'music_api/history.dart';
 export 'music_api/can_be_played.dart';
 export 'music_api/genre.dart';
+export 'music_api/radio_feedback.dart';
