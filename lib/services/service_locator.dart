@@ -15,6 +15,7 @@ import '/helpers/app_route_observer.dart';
 import 'music_api.dart';
 import 'preferences.dart';
 import 'yandex_api_client.dart';
+import 'ynison_client.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -23,6 +24,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<Preferences>(await _initPreferences());
   getIt.registerSingleton<YandexApiClient>(_initHttpClient());
   getIt.registerSingleton<MusicApi>(_initMusicApi());
+  getIt.registerSingleton<YnisonClient>(_initYnison());
   getIt.registerSingleton<DBusClient>(DBusClient.session());
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
   getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
@@ -68,4 +70,17 @@ Future<OrgMprisMediaPlayer2> _initMpris() async {
   );
 
   return mpris;
+}
+
+YnisonClient _initYnison() {
+  final prefs = getIt<Preferences>();
+
+  if (prefs.authToken == null) {
+    throw Exception('Auth token is not set');
+  }
+
+  return YnisonClient(
+    authToken: prefs.authToken!,
+    deviceId: prefs.deviceId,
+  );
 }
