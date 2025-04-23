@@ -246,13 +246,7 @@ class AppState {
     _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type){
       switch(type) {
         case PlayBackChangeType.playPause:
-          // @TODO: нужно реализовать метод playPause() в PlayersManager
-          if(playButtonNotifier.value == ButtonState.playing) {
-            _playersManager.pause();
-          }
-          else if(playButtonNotifier.value == ButtonState.paused) {
-            _playersManager.play();
-          }
+          _playersManager.playPause();
         case PlayBackChangeType.next:
           _playersManager.next();
         case PlayBackChangeType.prev:
