@@ -642,4 +642,22 @@ class MusicApi {
       data: feedback.toJson(),
     );
   }
+
+  Future<RadioSession> startRadioSession(NewRadioSessionRequest session) async {
+    Map<String, dynamic> json = await _http.postJson(
+      '/rotor/session/new',
+      data: session.toJson(),
+    );
+
+    return RadioSession.fromJson(json);
+  }
+
+  Future<RadioSession> cloneRadioSession(String sessionId, NewRadioSessionRequest session) async {
+    Map<String, dynamic> json = await _http.postJson(
+      '/rotor/session/$sessionId/clone',
+      data: session.toJson(),
+    );
+
+    return RadioSession.fromJson(json);
+  }
 }
