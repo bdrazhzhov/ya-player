@@ -38,6 +38,7 @@ dependencies:
   path: ^1.9.0
   sliver_tools: ^0.2.12
   flutter_context_menu: ^0.2.2
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:
