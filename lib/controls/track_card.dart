@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/helpers/multi_value_listenable_builder.dart';
 import '/services/app_state.dart';
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
@@ -21,7 +21,6 @@ class TrackCard extends StatelessWidget {
 
   final _appState = getIt<AppState>();
   final _playerState = getIt<PlayerState>();
-  final _player = getIt<PlayersManager>();
   final _hoverNotifier = ValueNotifier<bool>(false);
 
   static const double hoverButtonSize = 50;
@@ -35,14 +34,14 @@ class TrackCard extends StatelessWidget {
 
     return InkResponse(
       onTap: () {
-        bool isCurrent = _playerState.trackNotifier.value == track;
+        bool isCurrent = _appState.trackNotifier.value == track;
 
         if (!isCurrent) {
           _appState.playTrack(track);
           return;
         }
 
-        _player.playPause();
+        getIt<Player>().playPause();
       },
       onHover: (value){
         _hoverNotifier.value = value;
@@ -129,7 +128,7 @@ class TrackCard extends StatelessWidget {
 
   Widget _buildAnimatedCover() {
     return MultiValueListenableBuilder(
-      valuesListenable: [_playerState.trackNotifier, _playerState.playBackStateNotifier],
+      valuesListenable: [_appState.trackNotifier, _playerState.playBackStateNotifier],
       builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
         bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
         bool isCurrent = values.get<Track?>() == track;

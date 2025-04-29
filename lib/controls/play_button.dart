@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import '/services/app_state.dart';
 import '/notifiers/play_button_notifier.dart';
 import '/services/service_locator.dart';
@@ -9,7 +9,7 @@ class PlayButton extends StatelessWidget {
   PlayButton({super.key,});
 
   final AppState _appState = getIt<AppState>();
-  final _player = getIt<PlayersManager>();
+  final _player = getIt<Player>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,13 @@ class PlayButton extends StatelessWidget {
             return IconButton(
               icon: const Icon(Icons.play_arrow),
               iconSize: 40.0,
-              onPressed: () => _player.play(),
+              onPressed: () => _player.playPause(),
             );
           case ButtonState.playing:
             return IconButton(
               icon: const Icon(Icons.pause),
               iconSize: 40.0,
-              onPressed: _player.pause,
+              onPressed: _player.playPause,
             );
         }
       },

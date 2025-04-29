@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '/models/music_api/track.dart';
 import '/helpers/multi_value_listenable_builder.dart';
 import '/services/player_state.dart';
-import '/models/music_api/can_be_played.dart';
 import 'track_list/track_list_item.dart';
 import '/services/app_state.dart';
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import '/services/service_locator.dart';
 
 class SliverTrackList extends StatefulWidget {
-  final List<CanBePlayed> tracks;
+  final Object playContext;
+  final List<Track> tracks;
   final bool albumMode;
-  final Future<void> Function(int? index)? onBeforeStartPlaying;
 
-  const SliverTrackList(
-      {super.key, required this.tracks, this.albumMode = false, this.onBeforeStartPlaying});
+  const SliverTrackList({
+    super.key,
+    required this.playContext,
+    required this.tracks,
+    this.albumMode = false,
+  });
 
   @override
   State<SliverTrackList> createState() => _SliverTrackListState();
@@ -23,21 +27,23 @@ class SliverTrackList extends StatefulWidget {
 class _SliverTrackListState extends State<SliverTrackList> {
   final appState = getIt<AppState>();
   final playerState = getIt<PlayerState>();
-  final player = getIt<PlayersManager>();
   bool isPlayingStarted = false;
+  bool isQueueLoaded = false;
+  int currentIndex = -1;
+  static Object? playContext;
 
   @override
   Widget build(BuildContext context) {
     return SliverList.builder(
       itemCount: widget.tracks.length,
       itemBuilder: (BuildContext context, int index) {
-        CanBePlayed track = widget.tracks[index];
+        Track track = widget.tracks[index];
 
         return MultiValueListenableBuilder(
-          valuesListenable: [playerState.trackNotifier, playerState.playBackStateNotifier],
+          valuesListenable: [appState.trackNotifier, playerState.playBackStateNotifier],
           builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
             bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
-            bool isCurrent = values.get<CanBePlayed?>() == track;
+            bool isCurrent = values.get<Track?>() == track;
 
             return TrackListItem(
               track: track,
@@ -49,18 +55,14 @@ class _SliverTrackListState extends State<SliverTrackList> {
               showArtistName: !widget.albumMode,
               onTap: () async {
                 if (!track.isAvailable) return;
-                if (!isPlayingStarted) {
-                  isPlayingStarted = true;
-                  if (widget.onBeforeStartPlaying != null) {
-                    await widget.onBeforeStartPlaying!(index);
-                  }
+
+                if(playContext != widget.playContext) {
+                  playContext = widget.playContext;
+                  appState.playContent(playContext!, widget.tracks, index);
+                  return;
                 }
 
-                if (isPlaying && isCurrent) {
-                  player.pause();
-                } else {
-                  player.play(index);
-                }
+                getIt<Player>().playPauseByIndex(index);
               },
             );
           },

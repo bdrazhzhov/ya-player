@@ -7,7 +7,6 @@ import '/controls/dashboard_stations.dart';
 import '/models/music_api_types.dart';
 import '/services/app_state.dart';
 import '/services/music_api.dart';
-import '/player/players_manager.dart';
 import '/services/service_locator.dart';
 
 class StationsPage extends StatelessWidget {
@@ -31,7 +30,6 @@ class StationsPage extends StatelessWidget {
 
 class _StationsWidget extends StatelessWidget {
   final musicApi = getIt<MusicApi>();
-  final playersManager = getIt<PlayersManager>();
 
   _StationsWidget();
 

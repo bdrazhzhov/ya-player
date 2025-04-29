@@ -49,7 +49,10 @@ class PodcastsPage extends StatelessWidget {
             style: theme.textTheme.titleLarge,
           )
         ),
-        if(podcastEpisodes.isNotEmpty) SliverTrackList(tracks: podcastEpisodes),
+        if (podcastEpisodes.isNotEmpty) SliverTrackList(
+          playContext: podcastEpisodes.first.albums.first,
+          tracks: podcastEpisodes,
+        ),
       ]
     );
   }

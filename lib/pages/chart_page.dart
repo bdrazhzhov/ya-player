@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/controls/similar_playlists.dart';
-import '/services/app_state.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/playlist_flexible_space.dart';
 import '/controls/sliver_track_list.dart';
@@ -12,7 +11,6 @@ import 'page_base.dart';
 
 class ChartPage extends StatelessWidget {
   late final Future<Playlist> _playlistData = _musicApi.chart();
-  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
 
   ChartPage({super.key});
@@ -29,9 +27,8 @@ class ChartPage extends StatelessWidget {
             flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
             slivers: [
               SliverTrackList(
+                playContext: playlist,
                 tracks: snapshot.data!.tracks,
-                onBeforeStartPlaying: (int? index) =>
-                    _appState.playContent(playlist, playlist.tracks, index)
               ),
               if(playlist.similarPlaylists.isNotEmpty)
                 SliverPadding(

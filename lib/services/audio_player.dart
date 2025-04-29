@@ -12,10 +12,14 @@ final class AudioPlayer {
   var _duration = const Duration(milliseconds: 0);
   var _position = const Duration(milliseconds: 0);
   var _buffered = const Duration(milliseconds: 0);
+  bool _isPositionUpdateStopped = false;
 
   final trackDurationNotifier = TrackDurationNotifier();
   late final volumeNotifier = ValueNotifier<double>(_linearVolume);
   late final playingStateNotifier = ValueNotifier<PlayingState>(PlayingState.unknown);
+
+  final _seekStreamController = StreamController<Duration>.broadcast();
+  Stream<Duration> get seekStream => _seekStreamController.stream;
 
   AudioPlayer() {
     _listenToEventsStream();
@@ -29,6 +33,7 @@ final class AudioPlayer {
           _notifyPositionUpdate();
         case PlayingStateEvent playingStateEvent:
           playingStateNotifier.value = playingStateEvent.state;
+          print(playingStateEvent.state);
         case PositionEvent positionEvent:
           _position = positionEvent.position;
           _notifyPositionUpdate();
@@ -46,6 +51,8 @@ final class AudioPlayer {
   }
 
   void _notifyPositionUpdate() {
+    if(_isPositionUpdateStopped) return;
+
     trackDurationNotifier.value = TrackDurationState(
       position: _position,
       buffered: _buffered,
@@ -60,7 +67,12 @@ final class AudioPlayer {
     _position = Duration.zero;
     playingStateNotifier.value = PlayingState.idle;
   }
-  Future<void> seek(Duration position) => _platformPlayer.seek(position);
+  Future<void> seek(Duration position) async {
+    _isPositionUpdateStopped = true;
+    await _platformPlayer.seek(position);
+    _seekStreamController.add(position);
+    _isPositionUpdateStopped = false;
+  }
 
   Future<void> setUrl(String url, String? encryptionKey) =>
       _platformPlayer.setUrl(url, encryptionKey);

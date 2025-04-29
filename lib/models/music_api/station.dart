@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-class Station extends Equatable {
+import 'context_id.dart';
+
+class Station extends Equatable implements ContextId {
   final StationId id;
   final StationId? parentId;
   final String name;
@@ -34,6 +36,9 @@ class Station extends Equatable {
   List<Object> get props => [id];
 
   String get from => _from;
+
+  @override
+  String get contextId => id.toString();
 }
 
 class StationId extends Equatable {

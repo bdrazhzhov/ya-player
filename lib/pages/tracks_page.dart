@@ -10,13 +10,12 @@ import 'page_base.dart';
 
 class TracksPage extends StatelessWidget {
   final _appState = getIt<AppState>();
+  final List<Track> _context = [];
 
   TracksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appState = getIt<AppState>();
-
     return PageBase(
       title: AppLocalizations.of(context)!.page_tracks,
       slivers: [
@@ -25,11 +24,10 @@ class TracksPage extends StatelessWidget {
           pinned: true,
         ),
         ValueListenableBuilder<List<Track>>(
-          valueListenable: appState.likedTracksNotifier,
+          valueListenable: _appState.likedTracksNotifier,
           builder: (_, tracks, __) => SliverTrackList(
+            playContext: _context,
             tracks: tracks,
-            onBeforeStartPlaying: (int? index) =>
-                _appState.playContent(tracks, tracks, index)
           )
         )
       ]

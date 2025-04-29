@@ -4,12 +4,13 @@ import 'package:dbus/dbus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/player/playback_queue.dart';
 import 'player_state.dart';
 import 'window_manager.dart';
 import '/dbus/sleep_inhibitor.dart';
 import '/dbus/mpris/mpris_player.dart';
 import 'audio_player.dart';
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import 'app_state.dart';
 import '/helpers/app_route_observer.dart';
 import 'music_api.dart';
@@ -20,6 +21,7 @@ import 'ynison_client.dart';
 GetIt getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
+  getIt.registerSingleton<PlaybackQueue>(PlaybackQueue());
   getIt.registerSingleton<WindowManager>(WindowManager());
   getIt.registerSingleton<Preferences>(await _initPreferences());
   getIt.registerSingleton<YandexApiClient>(_initHttpClient());
@@ -29,8 +31,8 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<OrgMprisMediaPlayer2>(await _initMpris());
   getIt.registerSingleton<SleepInhibitor>(SleepInhibitor());
   getIt.registerSingleton<AudioPlayer>(AudioPlayer());
-  getIt.registerSingleton<PlayersManager>(PlayersManager());
   getIt.registerSingleton<PlayerState>(PlayerState());
+  getIt.registerSingleton<Player>(Player());
   getIt.registerSingleton<AppState>(AppState());
   getIt.registerSingleton<AppRouteObserver>(AppRouteObserver());
 }

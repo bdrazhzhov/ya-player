@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '/services/player_state.dart';
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import '/services/service_locator.dart';
 
 class PreviousButton extends StatelessWidget {
-  final _playersManager = getIt<PlayersManager>();
   final _playerState = getIt<PlayerState>();
 
   PreviousButton({super.key});
@@ -17,7 +16,7 @@ class PreviousButton extends StatelessWidget {
       valueListenable: _playerState.canPrevNotifier,
       builder: (_, isEnabled, __) {
         return IconButton(
-          onPressed: isEnabled ? () { _playersManager.previous(); } : null,
+          onPressed: isEnabled ? () { getIt<Player>().previous(); } : null,
           icon: const FaIcon(FontAwesomeIcons.backwardStep),
           iconSize: 20,
         );

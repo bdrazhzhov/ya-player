@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'version.dart';
 
-class Device {
+class YDevice {
   final bool? isOffline;
   final num? volume;
   final DeviceCapabilities capabilities;
@@ -9,7 +11,7 @@ class Device {
   final VolumeInfo volumeInfo;
   final bool? isShadow;
 
-  Device({
+  YDevice({
     this.isOffline,
     this.volume,
     required this.capabilities,
@@ -19,7 +21,7 @@ class Device {
     this.isShadow,
   });
 
-  Device.fromJson(Map<String, dynamic> json)
+  YDevice.fromJson(Map<String, dynamic> json)
       : isOffline = json['is_offline'],
         volume = json['volume'],
         capabilities = DeviceCapabilities.fromJson(json['capabilities']),
@@ -95,6 +97,12 @@ class DeviceInfo {
     required this.type,
   });
 
+  DeviceInfo.byDefault(this.deviceId)
+      : type = 'WEB',
+        title = 'Browser Chrome',
+        appName = 'Chrome',
+        appVersion = '134.1.1.1';
+
   DeviceInfo.fromJson(Map<String, dynamic> json)
       : appName = json['app_name'],
         appVersion = json['app_version'],
@@ -113,6 +121,8 @@ class DeviceInfo {
 
     return json;
   }
+
+  String toJsonString() => jsonEncode(toJson());
 }
 
 class DeviceSession {

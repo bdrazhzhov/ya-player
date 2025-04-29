@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
-import '/services/app_state.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/page_loading_indicator.dart';
 import '/models/music_api_types.dart';
@@ -11,7 +10,6 @@ import 'page_base.dart';
 
 class ArtistTracksPage extends StatelessWidget {
   final Artist artist;
-  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
   late final Future<List<Track>> tracksFuture = _musicApi.artistPopularTracks(artist.id);
 
@@ -56,11 +54,8 @@ class ArtistTracksPage extends StatelessWidget {
                   ),
                 ),
                 SliverTrackList(
+                  playContext: artist,
                   tracks: tracks,
-                  onBeforeStartPlaying: (int? index) {
-                    final artistInfo = ArtistInfo(artist, [], [], tracks, []);
-                    return _appState.playContent(artistInfo, tracks, index);
-                  }
                 )
               ],
             );

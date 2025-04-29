@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '/models/music_api/radio_session.dart';
 import '/models/music_api/station.dart';
 import 'station_settings_widget.dart';
 
 class StationSettingsButton extends StatelessWidget {
   final _overlayController = OverlayPortalController();
-  final Station station;
+  final RadioSession station;
 
   StationSettingsButton({super.key, required this.station});
 
@@ -31,7 +32,8 @@ class StationSettingsButton extends StatelessWidget {
                   border: Border.all(color: theme.focusColor),
                   borderRadius: BorderRadius.all(Radius.circular(12))
                 ),
-                child: StationSettingsWidget(station: station),
+                // child: StationSettingsWidget(station: station),
+                child: const Text('Station Settings Widget Placeholder'),
               ),
             ),
           )

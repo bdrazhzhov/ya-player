@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import 'can_be_played.dart';
 import 'station.dart';
 import 'can_be_station.dart';
 import 'album.dart';
@@ -8,36 +7,29 @@ import 'artist.dart';
 
 enum TrackType { music, podcast, audiobook }
 
-class Track extends Equatable implements CanBeRadio, CanBePlayed {
-  @override
+class Track extends Equatable implements CanBeRadio {
   final String id;
-  @override
   final String title;
-  @override
   final String? version;
-  @override
   final Duration? duration;
   final List<ArtistBase> artists;
   final List<Album> albums;
-  @override
   final String? coverUri;
   final String? ogImage;
   final String batchId;
   final DateTime? pubDate;
-  @override
   final bool isAvailable;
   final TrackType type;
   final TrackParameters? trackParameters;
-  @override
   late final String artist;
-  @override
   final ChartItem? chart;
-  final LyricsInfo lyricsInfo;
+  final LyricsInfo? lyricsInfo;
+  final bool? isLiked;
 
   Track(this.id, this.title, this.version, this.duration, this.artists,
       this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
       this.isAvailable, this.type, this.trackParameters, this.chart,
-      this.lyricsInfo) {
+      this.lyricsInfo, this.isLiked) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -88,7 +80,7 @@ class Track extends Equatable implements CanBeRadio, CanBePlayed {
       track['title'], track['version'], duration, artists, albums,
       track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
       _trackTypes[track['type'].toString()] ?? TrackType.music,
-      trackParameters, chart, lyricsInfo
+      trackParameters, chart, lyricsInfo, json['liked']
     );
   }
 
@@ -98,16 +90,14 @@ class Track extends Equatable implements CanBeRadio, CanBePlayed {
   @override
   StationId stationId() => StationId('track', id);
 
-  @override
   String get albumName => albums.isNotEmpty ? albums.first.title : '';
 
-  @override
   String get fullId => '$id:${albums.first.id}';
 }
 
 class TrackParameters {
   final int bpm;
-  final int hue;
+  final double hue;
   final double energy;
 
   TrackParameters(this.bpm, this.hue, this.energy);

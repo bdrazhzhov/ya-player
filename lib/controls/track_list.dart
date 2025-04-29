@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '/services/app_state.dart';
+import '/player/playback_queue.dart';
 import '/helpers/multi_value_listenable_builder.dart';
-import '/models/music_api/can_be_played.dart';
-import '/player/players_manager.dart';
+import '/player/player.dart';
 import '/models/music_api/track.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
@@ -21,7 +22,8 @@ class TrackList extends StatelessWidget {
   });
 
   final _playerState = getIt<PlayerState>();
-  final _player = getIt<PlayersManager>();
+  final _appState = getIt<AppState>();
+  bool isQueueLoaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +33,10 @@ class TrackList extends StatelessWidget {
 
       children.add(
         MultiValueListenableBuilder(
-          valuesListenable: [_playerState.trackNotifier, _playerState.playBackStateNotifier],
+          valuesListenable: [_appState.trackNotifier, _playerState.playBackStateNotifier],
           builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
             bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
-            bool isCurrent = values.get<CanBePlayed?>() == track;
+            bool isCurrent = values.get<Track?>() == track;
 
             return TrackListItem(
               track: track,
@@ -47,11 +49,14 @@ class TrackList extends StatelessWidget {
               onTap: () async {
                 if (!track.isAvailable) return;
 
-                if (isPlaying && isCurrent) {
-                  _player.pause();
-                } else {
-                  _player.play(index);
+                final queue = getIt<PlaybackQueue>();
+                if(!isQueueLoaded) {
+                  queue.replaceTracks(tracks);
+                  queue.moveTo(index);
+                  isQueueLoaded = true;
                 }
+
+                getIt<Player>().playPause();
               },
             );
           },

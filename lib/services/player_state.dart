@@ -3,16 +3,20 @@ import 'package:flutter/foundation.dart';
 import 'package:ya_player/services/preferences.dart';
 import 'package:ya_player/services/state_enums.dart';
 
+import '../player/playback_queue.dart';
 import 'audio_player.dart';
 import '/dbus/mpris/mpris_player.dart';
 import '/dbus/sleep_inhibitor.dart';
-import '/models/music_api/track.dart';
 import 'service_locator.dart';
 
 enum PlayBackState { playing, paused, stopped }
 
 class PlayerState {
+  final _audioPlayer = getIt<AudioPlayer>();
+  final _prefs = getIt<Preferences>();
+  final _sleepInhibitor = getIt<SleepInhibitor>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
+  final _queue = getIt<PlaybackQueue>();
 
   final canPlayNotifier = ValueNotifier<bool>(false);
   final canPauseNotifier = ValueNotifier<bool>(false);
@@ -26,12 +30,6 @@ class PlayerState {
   final rateNotifier = ValueNotifier<double>(1.0);
   final shuffleNotifier = ValueNotifier<bool>(false);
   final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
-  final trackNotifier = ValueNotifier<Track?>(null);
-  late final volumeNotifier = _audioPlayer.volumeNotifier;
-  late final progressNotifier = _audioPlayer.trackDurationNotifier;
-  final _audioPlayer = getIt<AudioPlayer>();
-  final _prefs = getIt<Preferences>();
-  final _sleepInhibitor = getIt<SleepInhibitor>();
 
   PlayerState() {
     _listenToPlayerAbilities();
@@ -47,7 +45,7 @@ class PlayerState {
     shuffleNotifier.value = _prefs.shuffle;
     _mpris.canRepeat = true;
     repeatNotifier.value = _prefs.repeat;
-    volumeNotifier.value = _prefs.volume.clamp(0, 1);
+    _audioPlayer.volumeNotifier.value = _prefs.volume.clamp(0, 1);
   }
 
   void _listenToPlayerAbilities() {
@@ -116,6 +114,7 @@ class PlayerState {
     shuffleNotifier.addListener((){
       _prefs.setShuffle(shuffleNotifier.value);
       _mpris.shuffle = shuffleNotifier.value;
+      _queue.isShuffleEnabled = shuffleNotifier.value;
     });
   }
 
@@ -127,6 +126,7 @@ class PlayerState {
     repeatModeNotifier.addListener((){
       _prefs.setRepeat(repeatModeNotifier.value);
       _mpris.repeat = repeatModeNotifier.value;
+      _queue.repeatMode = repeatModeNotifier.value;
     });
   }
 
@@ -141,14 +141,14 @@ class PlayerState {
   }
 
   void _listenToVolume() {
-    volumeNotifier.addListener((){
-      _prefs.setVolume(volumeNotifier.value);
-      _audioPlayer.setVolume(volumeNotifier.value);
-      _mpris.volume = volumeNotifier.value;
+    _audioPlayer.volumeNotifier.addListener((){
+      _prefs.setVolume(_audioPlayer.volumeNotifier.value);
+      _audioPlayer.setVolume(_audioPlayer.volumeNotifier.value);
+      _mpris.volume = _audioPlayer.volumeNotifier.value;
     });
 
     _mpris.volumeStream.listen((volume){
-      volumeNotifier.value = volume;
+      _audioPlayer.volumeNotifier.value = volume;
     });
   }
 

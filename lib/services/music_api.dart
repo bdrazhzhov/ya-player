@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
+import 'package:ya_player/helpers/date_extensions.dart';
 
 import '/models/music_api/paged_data.dart';
 import '/models/music_api_types.dart';
@@ -102,7 +103,7 @@ class MusicApi {
     return 'https://${placeholder.replaceAll('%%', dimensions)}';
   }
 
-  Future<void> sendStationTrackFeedback(StationId stationId, CanBePlayed? track,
+  Future<void> sendStationTrackFeedback(StationId stationId, Track? track,
       String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
       'type': feedbackType,
@@ -114,7 +115,7 @@ class MusicApi {
 
     if (track != null) {
       data['trackId'] = track.fullId;
-      if (track is Track) {
+      if (track.batchId.isNotEmpty) {
         url += '?batch-id=${track.batchId}';
       }
     }
@@ -131,13 +132,13 @@ class MusicApi {
     await _http.postForm('/play-audio', data: playInfo);
   }
 
-  Future<void> likeTrack(CanBePlayed track) async {
+  Future<void> likeTrack(Track track) async {
     final url = '/users/$uid/likes/tracks/add-multiple';
     final data = {'track-ids': track.fullId};
     await _http.postForm(url, data: data);
   }
 
-  Future<void> unlikeTrack(CanBePlayed track) async {
+  Future<void> unlikeTrack(Track track) async {
     final data = {'track-ids': track.fullId};
     await _http.postForm('/users/$uid/likes/tracks/remove', data: data);
   }
@@ -158,12 +159,12 @@ class MusicApi {
     return (ids: ids, revision: newRevision);
   }
 
-  Future<List<Track>> tracksByIds(List<String> ids) async {
+  Future<List<Track>> tracksByIds(Iterable<String> ids, [batchId = '']) async {
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
     Map<String, dynamic> json = await _http.postForm('/tracks', data: data);
     List<Track> tracks = [];
     json['result'].forEach((item) {
-      final track = Track.fromJson(item, '');
+      final track = Track.fromJson(item, batchId);
       if (track.albums.isEmpty) return;
 
       tracks.add(track);
@@ -172,13 +173,13 @@ class MusicApi {
     return tracks;
   }
 
-  Future<List<Track>> tracks(Iterable<TrackOfList> ids) async {
+  Future<List<Track>> tracks(Iterable<TrackOfList> ids, [batchId = '']) async {
     final String trackIds = ids.map((e) => '${e.id}:${e.albumId}').join(',');
     final data = {'track-ids': trackIds, 'with-positions': 'True'};
     Map<String, dynamic> json = await _http.postForm('/tracks', data: data);
     List<Track> tracks = [];
     json['result'].forEach((item) {
-      tracks.add(Track.fromJson(item, ''));
+      tracks.add(Track.fromJson(item, batchId));
     });
 
     return tracks;
@@ -351,7 +352,10 @@ class MusicApi {
   }
 
   Future<AlbumWithTracks> albumWithTracks(int albumId) async {
-    Map<String, dynamic> json = await _http.get('/albums/$albumId/with-tracks');
+    Map<String, dynamic> json = await _http.get(
+      '/albums/$albumId/with-tracks',
+      cacheDuration: const Duration(days: 1),
+    );
     final result = AlbumWithTracks.fromJson(json);
 
     return result;
@@ -628,14 +632,17 @@ class MusicApi {
   }
 
   Future<void> plays(PlayInfoBase play) async {
-    await _http.postJson('/plays', data: {
-      'plays': [play.toJson()]
-    });
+    await _http.postJson(
+      '/plays?clientNow=${Uri.encodeQueryComponent(play.timestamp.toUtcString())}',
+      data: {
+        'plays': [play.toJson()]
+      },
+    );
   }
 
   Future<void> sendRadioFeedback({
     required String sessionId,
-    required StationFeedback feedback,
+    required RadioFeedback feedback,
   }) async {
     await _http.postJson(
       '/rotor/session/$sessionId/feedback/',
@@ -649,7 +656,7 @@ class MusicApi {
       data: session.toJson(),
     );
 
-    return RadioSession.fromJson(json);
+    return RadioSession.fromJson(json['result']);
   }
 
   Future<RadioSession> cloneRadioSession(String sessionId, NewRadioSessionRequest session) async {
@@ -658,6 +665,31 @@ class MusicApi {
       data: session.toJson(),
     );
 
-    return RadioSession.fromJson(json);
+    return RadioSession.fromJson(json['result']);
+  }
+
+  Future<List<Track>> loadRadioBatch({
+    required String sessionId,
+    required Iterable<RadioFeedback> feedbacks,
+    required Iterable<String> queue,
+  }) async {
+    final List<Track> tracks = [];
+
+    Map<String, dynamic> json = await _http.postJson(
+      '/rotor/session/$sessionId/tracks',
+      data: {
+        'feedbacks': feedbacks.map((e) => e.toJson()).toList(),
+        'queue': queue,
+      },
+    );
+
+    final String batchId = json['result']['batchId'];
+
+    json['result']['sequence'].forEach((item) {
+      final track = Track.fromJson(item, batchId);
+      tracks.add(track);
+    });
+
+    return tracks;
   }
 }

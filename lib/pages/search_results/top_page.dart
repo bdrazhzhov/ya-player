@@ -43,10 +43,10 @@ class SearchTopPage extends StatelessWidget {
         widget = ArtistCard(item, _itemWidth);
       case Track():
         widget = TrackCard(track: item, width: _itemWidth);
-      case Album():
-        widget = AlbumCard(item, _itemWidth);
       case Podcast():
         widget = PodcastCard(item, _itemWidth);
+      case Album():
+        widget = AlbumCard(item, _itemWidth);
       case Playlist():
         widget = PlaylistCard(item, width: _itemWidth);
     }

@@ -1,8 +1,9 @@
 import 'package:ya_player/models/music_api/station.dart';
 
 import 'can_be_station.dart';
+import 'context_id.dart';
 
-class ArtistBase implements CanBeRadio {
+class ArtistBase implements CanBeRadio, ContextId {
   final int id;
   final String name;
 
@@ -14,6 +15,9 @@ class ArtistBase implements CanBeRadio {
 
   @override
   StationId stationId() => StationId('artist', id.toString());
+
+  @override
+  String get contextId => id.toString();
 }
 
 class Artist extends ArtistBase {

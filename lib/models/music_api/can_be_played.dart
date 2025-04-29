@@ -11,4 +11,5 @@ abstract interface class CanBePlayed {
   String? get version;
   String? get coverUri;
   String get fullId;
+  TrackType get type;
 }

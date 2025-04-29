@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '/services/player_state.dart';
-import '/models/music_api/can_be_played.dart';
 import '/controls/like_button.dart';
 import '/services/app_state.dart';
 import '/models/music_api/track.dart';
@@ -11,7 +9,7 @@ import 'chart_position.dart';
 import 'track_cover.dart';
 
 class TrackListItem extends StatefulWidget {
-  final CanBePlayed track;
+  final Track track;
   final bool isPlaying;
   final bool isCurrent;
   final bool showAlbum;
@@ -39,13 +37,12 @@ class TrackListItem extends StatefulWidget {
 class _TrackListItemState extends State<TrackListItem> {
   bool isHovered = false;
   final appState = getIt<AppState>();
-  final playerState = getIt<PlayerState>();
   final df = DateFormat('mm:ss');
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final CanBePlayed track = widget.track;
+    final Track track = widget.track;
 
     String trackDuration = '';
     if(track.duration != null) {
@@ -114,12 +111,12 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  SizedBox trackCover(CanBePlayed track) {
+  SizedBox trackCover(Track track) {
     return SizedBox(
       width: 50,
       height: 50,
       child: ValueListenableBuilder(
-        valueListenable: playerState.trackNotifier,
+        valueListenable: appState.trackNotifier,
         builder: (_, Track? currentTrack, __) {
           return TrackCover(
             widget.track,
@@ -133,7 +130,7 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  Padding trackTitle(CanBePlayed track, ThemeData theme) {
+  Padding trackTitle(Track track, ThemeData theme) {
     return Padding(
       padding: EdgeInsets.only(
         left: widget.showTrackNumber ? 6 : 24,
@@ -162,7 +159,7 @@ class _TrackListItemState extends State<TrackListItem> {
     );
   }
 
-  Text buildArtistName(CanBePlayed track) {
+  Text buildArtistName(Track track) {
     return Text(
       track.artist,
       softWrap: false,

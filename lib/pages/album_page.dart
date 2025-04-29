@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '/controls/album_flexible_space.dart';
 import '/controls/tracks_header.dart';
-import '/services/app_state.dart';
 import '/controls/sliver_track_list.dart';
 import '/services/music_api.dart';
 import '/controls/page_loading_indicator.dart';
@@ -13,7 +12,6 @@ import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class AlbumPage extends StatelessWidget {
-  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
   late final Future<AlbumWithTracks> _albumInfo;
 
@@ -38,11 +36,9 @@ class AlbumPage extends StatelessWidget {
                 ),
 
                 SliverTrackList(
+                  playContext: albumWithTracks.album,
                   tracks: albumWithTracks.tracks,
                   albumMode: true,
-                  onBeforeStartPlaying: (int? index) =>
-                      _appState.playContent(albumWithTracks,
-                          albumWithTracks.tracks, index),
                 ),
               ],
             );

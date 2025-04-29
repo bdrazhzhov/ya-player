@@ -1,52 +1,30 @@
 import 'dart:math';
 
 import 'package:uuid/uuid.dart';
-import 'package:intl/intl.dart';
 
+import '/helpers/date_extensions.dart';
 import 'music_api/playlist.dart';
+import 'music_api/radio_session.dart';
 import 'music_api/track.dart';
 
-class PlayInfo {
-  final Track track;
-  final String from;
-  var totalPlayed = const Duration();
-  final String _uuid;
+enum PlayInfoContext {
+  various, album, artist, playlist, radio;
 
-  PlayInfo(this.track, this.from) : _uuid = const Uuid().v4();
+  factory PlayInfoContext.fromString(String stringValue) {
+    for (PlayInfoContext value in values) {
+      if (value.name.toUpperCase() == stringValue) {
+        return value;
+      }
+    }
 
-  Map<String, String> toYmPlayAudio() {
-    final String dateTime = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(DateTime.now().toUtc())}Z';
-    final totalPlayedSeconds = (totalPlayed.inMilliseconds / 1000.0).toString();
-
-    return {
-      'track-id': track.id,
-      'album-id': track.firstAlbumId.toString(),
-      'from-cache': 'False',
-      'from': from,
-      'play-id': _uuid,
-      'timestamp': dateTime,
-      'client-now': dateTime,
-      'track-length-seconds': (track.duration!.inMilliseconds / 1000.0).toString(),
-      // предполагаю, что тут должно находиться количество секунд, которые
-      // были проиграны. вот хороший пример:
-      // началось проигрываниве, трек проигрался 5 секнуд, пользователь
-      // решил пропустить/перемотать часть трека, к примеру 30 секунд,
-      // пользователь прослушал еще 30 секунд трека и решил перейти к следующем
-      // в этом случае 'total-played-seconds' = 35 секунд, а
-      // 'end-position-seconds' = 65 секунд
-      // значит 'total-played-seconds' — это фактическое время прослушивания трека,
-      // 'end-position-seconds' — это позиция, на которой прослушивание завершилось
-      'total-played-seconds': totalPlayedSeconds,
-      'end-position-seconds': totalPlayedSeconds
-    };
+    throw ArgumentError('Unknown PlayInfoContext type: $stringValue');
   }
 
-  bool isTheSameAs(Track track, String from) {
-    return from == this.from && track == this.track;
+  @override
+  String toString() {
+    return name.toUpperCase();
   }
 }
-
-enum PlayInfoContext { album, artist, playlist, radio }
 
 abstract base class PlayInfoBase {
   final String albumId;
@@ -57,9 +35,9 @@ abstract base class PlayInfoBase {
   final String contextItem;
   final String from;
   bool fromCache = false;
-  double endPositionSeconds;
-  double totalPlayedSeconds;
-  double trackLengthSeconds;
+  Duration endPosition;
+  Duration totalPlayed;
+  Duration trackLength;
   bool pause;
   bool seek;
   final String playId;
@@ -67,23 +45,25 @@ abstract base class PlayInfoBase {
   final DateTime timestamp;
   int? startTimestamp;
   String? maxPlayerStage;
+  bool? isRestored;
 
   PlayInfoBase(
     Track track, {
-    required this.albumId,
     required this.context,
     required this.contextItem,
     required this.from,
-    this.endPositionSeconds = 0,
-    this.totalPlayedSeconds = 0,
-    this.trackLengthSeconds = 0,
+    this.endPosition = Duration.zero,
+    this.totalPlayed = Duration.zero,
     this.pause = false,
     this.seek = false,
-    required this.trackId,
+    this.isRestored,
   })  : playId = const Uuid().v4(),
-        timestamp = DateTime.now();
+        timestamp = DateTime.now(),
+        trackLength = track.duration!,
+        trackId = track.id,
+        albumId = track.firstAlbumId.toString();
 
-  Map<String, Object> _toMap() {
+  Map<String, Object> toJson() {
     final sinceEpoch = (timestamp.millisecondsSinceEpoch / 1000.0).round();
     final map = {
       'addTracksToPlayerTime': '${_generateRandomDigitString(18)}-$sinceEpoch',
@@ -95,14 +75,14 @@ abstract base class PlayInfoBase {
       'contextItem': contextItem,
       'fromCache': fromCache,
       'from': from,
-      'endPositionSeconds': endPositionSeconds,
-      'totalPlayedSeconds': totalPlayedSeconds,
-      'trackLengthSeconds': trackLengthSeconds,
+      'endPositionSeconds': endPosition.inMilliseconds / 1000.0,
+      'totalPlayedSeconds': totalPlayed.inMilliseconds / 1000.0,
+      'trackLengthSeconds': trackLength.inMilliseconds / 1000.0,
       'pause': pause,
       'seek': seek,
       'playId': playId,
       'trackId': trackId,
-      'timestamp': '${DateFormat('y-MM-ddTHH:mm:ss.S').format(timestamp.toUtc())}Z'
+      'timestamp': timestamp.toUtcString(),
     };
 
     if (startTimestamp != null) {
@@ -113,10 +93,12 @@ abstract base class PlayInfoBase {
       map['maxPlayerStage'] = maxPlayerStage!;
     }
 
+    if (isRestored != null) {
+      map['isRestored'] = isRestored!;
+    }
+
     return map;
   }
-
-  Map<String, Object> toJson();
 
   String _generateRandomDigitString(int length) {
     final Random random = Random();
@@ -125,30 +107,26 @@ abstract base class PlayInfoBase {
 }
 
 final class PlayInfoRadio extends PlayInfoBase {
-  final String radioSessionId;
   final bool isFromAutoflow = false;
-  final String batchId;
+  final RadioSession session;
 
-  PlayInfoRadio(
-    super.track, {
-    required super.contextItem,
-    required this.radioSessionId,
-    required this.batchId,
-  }) : super(
+  static const String defaultFrom = 'desktop-home-rup_main-radio-default';
+
+  PlayInfoRadio(super.track, this.session)
+      : super(
           context: PlayInfoContext.radio,
-          from: 'desktop-home-rup_main-radio-default',
-          trackId: track.id,
-          albumId: track.firstAlbumId.toString(),
+          from: defaultFrom,
+          contextItem: track.id.toString(),
         );
 
   @override
   Map<String, Object> toJson() {
-    final map = _toMap();
-    map['radioSessionId'] = radioSessionId;
-    map['isFromAutoflow'] = isFromAutoflow;
-    map['batchId'] = batchId;
+    final json = super.toJson();
+    json['radioSessionId'] = session.id;
+    json['isFromAutoflow'] = isFromAutoflow;
+    json['batchId'] = session.batchId;
 
-    return map;
+    return json;
   }
 }
 
@@ -158,14 +136,7 @@ final class PlayInfoAlbum extends PlayInfoBase {
           context: PlayInfoContext.album,
           from: 'desktop-own_collection-collection_new_albums-default',
           contextItem: track.firstAlbumId.toString(),
-          trackId: track.id,
-          albumId: track.firstAlbumId.toString(),
         );
-
-  @override
-  Map<String, Object> toJson() {
-    return _toMap();
-  }
 }
 
 final class PlayInfoPlaylist extends PlayInfoBase {
@@ -176,15 +147,13 @@ final class PlayInfoPlaylist extends PlayInfoBase {
           context: PlayInfoContext.playlist,
           from: 'desktop-own_collection-collection_playlists-default',
           contextItem: '${playlist.uid}:${playlist.kind}',
-          trackId: track.id,
-          albumId: track.firstAlbumId.toString(),
         ) {
     playlistId = contextItem;
   }
 
   @override
   Map<String, Object> toJson() {
-    final map = _toMap();
+    final map = super.toJson();
     map['playlistId'] = playlistId;
 
     return map;
@@ -192,22 +161,19 @@ final class PlayInfoPlaylist extends PlayInfoBase {
 }
 
 final class PlayInfoArtist extends PlayInfoBase {
-  final bool isRestored = false;
-
   PlayInfoArtist(super.track)
       : super(
           context: PlayInfoContext.artist,
           from: 'desktop-own_collection-collection_artists-default',
           contextItem: track.artists.first.id.toString(),
-          trackId: track.id,
-          albumId: track.firstAlbumId.toString(),
         );
+}
 
-  @override
-  Map<String, Object> toJson() {
-    final map = _toMap();
-    map['isRestored'] = isRestored;
-
-    return map;
-  }
+final class PlayInfoTracks extends PlayInfoBase {
+  PlayInfoTracks(super.track)
+      : super(
+          context: PlayInfoContext.playlist,
+          from: 'desktop-own_collection-collection_playlists-default',
+          contextItem: track.id,
+        );
 }

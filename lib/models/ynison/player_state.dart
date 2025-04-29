@@ -1,13 +1,14 @@
+import '../play_info.dart';
 import 'version.dart';
 
-class PlayerState {
-  final PlayerQueue playerQueue;
-  final PlayerStateStatus status;
+class YPlayerState {
+  final YPlayerQueue playerQueue;
+  PlayerStateStatus status;
 
-  PlayerState({required this.playerQueue, required this.status});
+  YPlayerState({required this.playerQueue, required this.status});
 
-  PlayerState.fromJson(Map<String, dynamic> json)
-      : playerQueue = PlayerQueue.fromJson(json['player_queue']),
+  YPlayerState.fromJson(Map<String, dynamic> json)
+      : playerQueue = YPlayerQueue.fromJson(json['player_queue']),
         status = PlayerStateStatus.fromJson(json['status']);
 
   Map<String,dynamic> toJson() {
@@ -18,19 +19,19 @@ class PlayerState {
   }
 }
 
-class PlayerQueue {
-  final int currentPlayableIndex;
+class YPlayerQueue {
+  int currentPlayableIndex;
   final String entityContext;
   final String entityId;
-  final String entityType;
+  final PlayInfoContext entityType;
   final String? from;
   final AddingOptions? addingOptions;
   final QueueOptions options;
   final List<Playable> playableList;
-  final QueueInfo? queue;
+  QueueInfo? queue;
   final Version version;
 
-  PlayerQueue({
+  YPlayerQueue({
     required this.currentPlayableIndex,
     required this.entityContext,
     required this.entityId,
@@ -43,11 +44,11 @@ class PlayerQueue {
     required this.version,
   });
 
-  PlayerQueue.fromJson(Map<String, dynamic> json)
+  YPlayerQueue.fromJson(Map<String, dynamic> json)
       : currentPlayableIndex = json['current_playable_index'],
         entityContext = json['entity_context'],
         entityId = json['entity_id'],
-        entityType = json['entity_type'],
+        entityType = PlayInfoContext.fromString(json['entity_type']),
         from = json['from_optional'],
         addingOptions = json['adding_options_optional'] != null
             ? AddingOptions.fromJson(json['adding_options_optional'])
@@ -62,7 +63,7 @@ class PlayerQueue {
       'current_playable_index': currentPlayableIndex,
       'entity_context': entityContext,
       'entity_id': entityId,
-      'entity_type': entityType,
+      'entity_type': entityType.toString(),
       'from_optional': from ?? '',
       'options': options.toJson(),
       'playable_list': playableList.map((e) => e.toJson()).toList(),
@@ -131,7 +132,7 @@ class Playable {
   final String playableId;
   final String playableType;
   final String title;
-  final PlayableTrackInfo trackInfo;
+  final PlayableTrackInfo? trackInfo;
 
   Playable({
     this.albumId,
@@ -140,7 +141,7 @@ class Playable {
     required this.playableId,
     required this.playableType,
     required this.title,
-    required this.trackInfo,
+    this.trackInfo,
   });
 
   Playable.fromJson(Map<String, dynamic> json)
@@ -150,7 +151,7 @@ class Playable {
         playableId = json['playable_id'],
         playableType = json['playable_type'],
         title = json['title'],
-        trackInfo = PlayableTrackInfo.fromJson(json['track_info']);
+        trackInfo = json['track_info'] != null ? PlayableTrackInfo.fromJson(json['track_info']) : null;
 
   Map<String,dynamic> toJson() {
     Map<String,dynamic> json = {
@@ -158,7 +159,6 @@ class Playable {
       'playable_id': playableId,
       'playable_type': playableType,
       'title': title,
-      'track_info': trackInfo.toJson(),
     };
 
     if(albumId != null) {
@@ -167,6 +167,10 @@ class Playable {
 
     if(coverUrl != null) {
       json['cover_url_optional'] = coverUrl;
+    }
+
+    if(trackInfo != null) {
+      json['track_info'] = trackInfo!.toJson();
     }
 
     return json;
@@ -352,7 +356,7 @@ class PlayerStateStatus {
   final bool isPaused;
   final double playbackSpeed;
   final Duration progress;
-  final Version version;
+  Version version;
 
   PlayerStateStatus({
     required this.duration,

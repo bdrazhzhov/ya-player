@@ -6,7 +6,8 @@ import 'package:logger/logger.dart';
 var logger = Logger(
   filter: null,
   output: null,
-  printer: _MyPrinter(colors: kDebugMode, printTime: true),
+  // printer: _MyPrinter(colors: kDebugMode, printTime: true),
+  printer: PrettyPrinter(colors: kDebugMode),
 );
 
 class _MyPrinter extends LogPrinter {

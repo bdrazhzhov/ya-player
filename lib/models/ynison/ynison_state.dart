@@ -2,8 +2,8 @@ import 'device.dart';
 import 'player_state.dart';
 
 class YnisonState {
-  final List<Device> devices;
-  final PlayerState playerState;
+  final List<YDevice> devices;
+  final YPlayerState playerState;
   final String rid;
   final DateTime timestamp;
 
@@ -15,8 +15,8 @@ class YnisonState {
   });
 
   YnisonState.fromJson(Map<String, dynamic> json)
-      : devices = (json['devices'] as List).map((e) => Device.fromJson(e)).toList(),
-        playerState = PlayerState.fromJson(json['player_state']),
+      : devices = (json['devices'] as List).map((e) => YDevice.fromJson(e)).toList(),
+        playerState = YPlayerState.fromJson(json['player_state']),
         rid = json['rid'],
         timestamp = DateTime.fromMillisecondsSinceEpoch(int.parse(json['timestamp_ms']));
 }

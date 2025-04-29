@@ -1,20 +1,13 @@
-import 'package:intl/intl.dart';
+import '/helpers/date_extensions.dart';
 
-class StationFeedback {
-  final StationEvent event;
+class RadioFeedback {
+  final RadioEvent event;
   final String batchId;
 
-  StationFeedback({
+  RadioFeedback({
     required this.event,
     required this.batchId,
   });
-
-  factory StationFeedback.fromJson(Map<String, dynamic> json) {
-    return StationFeedback(
-      event: StationEvent.fromJson(json['event']),
-      batchId: json['batchId'],
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -24,11 +17,11 @@ class StationFeedback {
   }
 }
 
-enum StationEventType {
+enum RadioEventType {
   radioStarted, trackStarted, trackFinished, skip, like, unlike;
   
-  factory StationEventType.fromString(String stringValue) {
-    for (StationEventType value in values) {
+  factory RadioEventType.fromString(String stringValue) {
+    for (RadioEventType value in values) {
       if (value.name == stringValue) {
         return value;
       }
@@ -38,38 +31,35 @@ enum StationEventType {
   }
 }
 
-class StationEvent {
+class RadioEvent {
   final DateTime timestamp;
-  final StationEventType type;
+  final RadioEventType type;
   final String from;
-  final String trackId;
-  final double totalPlayedSeconds;
+  String? trackId;
+  Duration? totalPlayed;
 
-  StationEvent({
-    required this.timestamp,
+  RadioEvent({
     required this.type,
     required this.from,
-    required this.trackId,
-    required this.totalPlayedSeconds,
-  });
-
-  factory StationEvent.fromJson(Map<String, dynamic> json) {
-    return StationEvent(
-      timestamp: DateTime.parse(json['timestamp']),
-      type: StationEventType.fromString(json['type']),
-      from: json['from'],
-      trackId: json['trackId'],
-      totalPlayedSeconds: (json['totalPlayedSeconds'] as num).toDouble(),
-    );
-  }
+    this.trackId,
+    this.totalPlayed,
+  }) : timestamp = DateTime.now();
 
   Map<String, dynamic> toJson() {
-    return {
-      'timestamp': '${DateFormat('y-MM-ddTHH:mm:ss.S').format(timestamp.toUtc())}Z',
+    final Map<String, dynamic> json = {
+      'timestamp': timestamp.toUtcString(),
       'type': type.name,
       'from': from,
-      'trackId': trackId,
-      'totalPlayedSeconds': totalPlayedSeconds,
     };
+
+    if(trackId != null) {
+      json['trackId'] = trackId!;
+    }
+
+    if(totalPlayed != null) {
+      json['totalPlayedSeconds'] = totalPlayed!.inMilliseconds / 1000.0;
+    }
+
+    return json;
   }
 }

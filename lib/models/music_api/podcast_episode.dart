@@ -1,29 +1,38 @@
 import '/models/music_api/track.dart';
-import '/models/music_api/can_be_played.dart';
 
-import 'podcast.dart';
+import 'album.dart';
+import 'artist.dart';
 
-class PodcastEpisode implements CanBePlayed {
-  @override
-  final String id;
-  @override
-  final String title;
-  @override
-  final Duration? duration;
-  @override
-  final bool isAvailable;
-  final String? shortDescription;
-  final DateTime? pubDate;
-  final List<Podcast> albums;
-  @override
-  final String? coverUri;
-
-  PodcastEpisode(this.id, this.title, this.duration, this.isAvailable,
-      this.shortDescription, this.pubDate, this.albums, this.coverUri);
+class PodcastEpisode extends Track {
+  PodcastEpisode(
+    super.id,
+    super.title,
+    super.version,
+    super.duration,
+    super.artists,
+    super.albums,
+    super.coverUri,
+    super.ogImage,
+    super.batchId,
+    super.pubDate,
+    super.isAvailable,
+    super.type,
+    super.trackParameters,
+    super.chart,
+    super.lyricsInfo,
+    super.isLiked,
+  );
 
   factory PodcastEpisode.fromJson(Map<String, dynamic> json) {
-    List<Podcast> albums = [];
-    json['albums'].forEach((podcast) => albums.add(Podcast.fromJson(podcast)));
+    List<ArtistBase> artists = [];
+    json['artists'].forEach((item) {
+      artists.add(ArtistBase.fromJson(item));
+    });
+
+    List<Album> albums = [];
+    json['albums'].forEach((item) {
+      albums.add(Album.fromJson(item));
+    });
 
     Duration? duration;
     if(json['durationMs'] != null) {
@@ -33,27 +42,20 @@ class PodcastEpisode implements CanBePlayed {
     return PodcastEpisode(
       json['id'],
       json['title'],
+      null,
       duration,
-      json['isAvailable'] ?? json['available'],
-      json['shortDescription'],
-      DateTime.tryParse(json['pubDate'] ?? ''),
+      artists,
       albums,
-      json['coverUri'] ?? json['ogImage']
+      json['coverUri'] ?? '',
+      json['ogImage'],
+      '',
+      DateTime.tryParse(json['pubDate'] ?? ''),
+      json['isAvailable'] ?? false,
+      TrackType.podcast,
+      null,
+      null,
+      null,
+      json['isLiked'],
     );
   }
-
-  @override
-  String get artist => '';
-
-  @override
-  ChartItem? get chart => null;
-
-  @override
-  String? get version => null;
-
-  @override
-  String get albumName => '';
-
-  @override
-  String get fullId => '$id:${albums.first.id}';
 }

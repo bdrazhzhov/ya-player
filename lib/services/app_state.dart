@@ -1,10 +1,16 @@
 import 'dart:async';
-
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '/models/music_api/context_id.dart';
+import '/models/ynison/version.dart';
+import '/player/radio_manager.dart';
+import '/models/play_info.dart';
+import '/services/logger.dart';
+import '/models/ynison/player_state.dart';
+import 'play_analytics.dart';
 import 'tray_integration.dart';
 import '/dbus/mpris/metadata.dart';
 import '/dbus/mpris/mpris_player.dart';
@@ -12,9 +18,7 @@ import '/helpers/app_route_observer.dart';
 import '/helpers/nav_keys.dart';
 import '/notifiers/track_duration_notifier.dart';
 import '/player/playback_queue.dart';
-import '/player/player_base.dart';
-import '/player/players_manager.dart';
-import '/player/queue_factory.dart';
+import '/player/player.dart';
 import 'player_state.dart';
 import 'preferences.dart';
 import '/models/music_api_types.dart';
@@ -25,6 +29,8 @@ import 'yandex_api_client.dart';
 import 'audio_player.dart';
 import 'state_enums.dart';
 import 'window_manager.dart';
+import 'ynison_client.dart';
+import '/models/ynison/ynison_state.dart';
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -32,6 +38,7 @@ class AppState {
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
   final playButtonNotifier = PlayButtonNotifier();
   final currentStationNotifier = ValueNotifier<Station?>(null);
+  final currentRadioNotifier = ValueNotifier<RadioSession?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<Map<String,List<Station>>>({});
   final accountNotifier = ValueNotifier<Account?>(null);
@@ -44,8 +51,10 @@ class AppState {
   final searchResultNotifier = ValueNotifier<SearchResult?>(null);
   final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
+  final trackNotifier = ValueNotifier<Track?>(null);
   final queueTracks = ValueNotifier<List<Track>>([]);
   final stationSettingsNotifier = ValueNotifier<Map<String, String>>({});
+
   // settings
   final closeToTrayEnabledNotifier = ValueNotifier<bool>(false);
   late final localeNotifier = ValueNotifier<Locale>(_prefs.locale);
@@ -55,15 +64,24 @@ class AppState {
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
   final _playerState = getIt<PlayerState>();
-  final _playersManager = getIt<PlayersManager>();
+  // final _playersManager = getIt<PlayersManager>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
   final _trayIntegration = TrayIntegration();
   final _windowManager = getIt<WindowManager>();
+  final _queue = getIt<PlaybackQueue>();
+  final _newPlayer = getIt<Player>();
+  var _playContext = Object();
   final Map<String,String> _genres = {};
+  final _playAnalytics = PlayAnalytics();
+  final _ynisonClient = getIt<YnisonClient>();
+  late YPlayerState _ynisonState;
+  final _radioManager = RadioManager();
 
   final List<String> _likedTrackIds = [];
   final List<int> _likedArtistIds = [];
   final List<Tree> _landing3Metatags = [];
+
+  Object get playContext => _playContext;
 
   Future<void> initTheme() async {
     final ThemeData theme = await getTheme();
@@ -73,7 +91,6 @@ class AppState {
   // Events: Calls coming from the UI
   void init() async {
     _trayIntegration.init();
-    _listenToTrackChange();
     _listenToPlaybackState();
     _listenToMprisControlStream();
     _listenToTrackDurationNotifier();
@@ -89,6 +106,10 @@ class AppState {
 
     getIt<YandexApiClient>().locale = _prefs.locale;
 
+    _playAnalytics.start();
+    _listenToYnisonState();
+    _listenToNewTrack();
+    _listenToBeginPlaying();
     await _requestAppData();
     mainPageState.value = UiState.main;
     closeToTrayEnabledNotifier.value = _prefs.hideOnClose;
@@ -148,7 +169,7 @@ class AppState {
     futures.add(_requestArtists());
     await Future.wait(futures);
 
-    await _requestInitialQueueData();
+    // await _requestInitialQueueData();
   }
 
   Future<void> _requestTranslatedData() async {
@@ -168,7 +189,7 @@ class AppState {
   }
 
   Future<void> _requestLikedTracks() async {
-    if((_prefs.authToken?.length ?? 0) == 0) return;
+    if(_prefs.authToken == null) return;
 
     final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
 
@@ -195,7 +216,7 @@ class AppState {
   }
 
   void _listenToPlaybackState() {
-    _audioPlayer.playingStateNotifier.addListener((){
+    _audioPlayer.playingStateNotifier.addListener(() async {
       final playingState = _audioPlayer.playingStateNotifier.value;
       if(playingState == PlayingState.paused) {
         playButtonNotifier.value = ButtonState.paused;
@@ -216,20 +237,15 @@ class AppState {
     _mpris.controlStream.listen((event) {
       switch (event) {
         case 'play':
-          _audioPlayer.play();
+          _newPlayer.play();
         case 'pause':
-          _audioPlayer.pause();
+          _newPlayer.pause();
         case 'playPause':
-          if (_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
-            _audioPlayer.pause();
-          }
-          else {
-            _audioPlayer.play();
-          }
+          _newPlayer.playPause();
         case 'next':
-          _playersManager.next();
+          _newPlayer.next();
         case 'previous':
-          _playersManager.previous();
+          _newPlayer.previous();
       }
     });
   }
@@ -238,7 +254,6 @@ class AppState {
     _audioPlayer.trackDurationNotifier.addListener(() {
       final TrackDurationState state = _audioPlayer.trackDurationNotifier.value;
       _mpris.position = state.position;
-
     });
   }
 
@@ -246,17 +261,17 @@ class AppState {
     _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type){
       switch(type) {
         case PlayBackChangeType.playPause:
-          _playersManager.playPause();
+          _newPlayer.playPause();
         case PlayBackChangeType.next:
-          _playersManager.next();
+          _newPlayer.next();
         case PlayBackChangeType.prev:
-          _playersManager.previous();
+          _newPlayer.previous();
       }
     });
 
     _trayIntegration.scrollStream.listen((int delta){
-      double volume = (_playerState.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
-      _playerState.volumeNotifier.value = volume;
+      double volume = (_audioPlayer.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
+      _audioPlayer.volumeNotifier.value = volume;
     });
   }
 
@@ -278,26 +293,6 @@ class AppState {
     );
   }
 
-  void _listenToTrackChange() {
-    _playerState.trackNotifier.addListener((){
-      if(_playerState.trackNotifier.value == null) return;
-
-      if (_playerState.trackNotifier.value!.duration != null) {
-        _playerState.progressNotifier.value = TrackDurationState(
-          position: Duration.zero,
-          buffered: Duration.zero,
-          duration: _playerState.trackNotifier.value!.duration!,
-        );
-      }
-
-      Track track = _playerState.trackNotifier.value!;
-      _windowManager.setWindowTitle(track.title, track.artist);
-      _trayIntegration.setTooltip(track.title, track.artist);
-
-      _setMprisMetadata(track);
-    });
-  }
-
   void _listenToRouteChanges() {
     getIt<AppRouteObserver>().popNotifier.addListener((){
       final bool isBackButtonVisible = NavKeys.mainNav.currentState?.canPop() == true;
@@ -317,6 +312,133 @@ class AppState {
       getIt<YandexApiClient>().locale = localeNotifier.value;
       _prefs.setLocale(localeNotifier.value);
       _requestTranslatedData();
+    });
+  }
+
+  late StreamSubscription _ynisonStateSubscription;
+  void _listenToYnisonState() {
+    _ynisonStateSubscription = _ynisonClient.stateStream.listen((YnisonState state) async {
+      _ynisonStateSubscription.cancel();
+
+      final YPlayerQueue playerQueue = state.playerState.playerQueue;
+      List<Track> tracks = [];
+      currentRadioNotifier.value = null;
+
+      _ynisonState = state.playerState;
+
+      if(playerQueue.entityType != PlayInfoContext.radio) {
+        _ynisonState.playerQueue.queue = null;
+      }
+
+      switch(playerQueue.entityType){
+        case PlayInfoContext.various:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case PlayInfoContext.album:
+          final albumId = int.parse(state.playerState.playerQueue.entityId);
+          final AlbumWithTracks albumWithTracks = await _musicApi.albumWithTracks(albumId);
+          tracks = albumWithTracks.tracks;
+          _playContext = albumWithTracks.album;
+          _playerState.canShuffleNotifier.value = true;
+          _playerState.canRepeatNotifier.value = true;
+        case PlayInfoContext.artist:
+          final ArtistInfo artistInfo = await _musicApi.artistInfo(int.parse(state.playerState.playerQueue.entityId));
+          final ids = playerQueue.playableList.map((i) => i.playableId);
+          tracks = await _musicApi.tracksByIds(ids);
+          _playContext = artistInfo.artist;
+          _playerState.canShuffleNotifier.value = true;
+          _playerState.canRepeatNotifier.value = true;
+        case PlayInfoContext.playlist:
+          final [uid,kind] = playerQueue.entityId.split(':');
+          final Playlist playlist = await _musicApi.playlist(int.parse(uid), int.parse(kind));
+          _playContext = playlist;
+          tracks = playlist.tracks;
+          _playerState.canShuffleNotifier.value = true;
+          _playerState.canRepeatNotifier.value = true;
+        case PlayInfoContext.radio:
+          final sessionId = playerQueue.queue!.waveQueue.entityOptions.waveEntity!.sessionId;
+          final playables = playerQueue.playableList.take(playerQueue.currentPlayableIndex);
+          final RadioSession session = await _radioManager.restore(
+            sessionId: sessionId,
+            queue: playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
+            seeds: playerQueue.entityId.split(','),
+          );
+          _playContext = session;
+          currentRadioNotifier.value = session;
+          _playerState.shuffleNotifier.value = false;
+          _playerState.repeatModeNotifier.value = RepeatMode.off;
+
+          final ids = playerQueue.playableList.map((i) => i.playableId);
+          tracks = await _musicApi.tracksByIds(ids, session.batchId);
+
+          if(ids.length != tracks.length) {
+            logger.i('Received track ids are not the same as Requested ids:\n'
+                '${ids.sorted().join(', ')}\n${tracks.map((t) => t.id).sorted().join(', ')}');
+          }
+      }
+
+      // print(state.playerState.playerQueue.entityType.toString());
+      // print('Tracks count: ${tracks.length}');
+
+      int index = playerQueue.currentPlayableIndex;
+      final selectedPlayable = playerQueue.playableList[index];
+      index = tracks.indexWhere((t) => t.id == selectedPlayable.playableId);
+      if(playerQueue.currentPlayableIndex != index) {
+        logger.w('Queue indices differs!\n'
+            'Saved index: ${playerQueue.currentPlayableIndex}\n'
+            'Actual index: $index');
+      }
+
+      _queue.replaceTracks(tracks);
+      _queue.moveTo(index);
+      _queue.repeatMode = _prefs.repeat;
+      _queue.isShuffleEnabled = _prefs.shuffle;
+
+      final Track? track = _queue.currentTrack;
+      if(track == null) return;
+
+      await _newPlayer.loadTrack(track);
+      _playerState.canPlayNotifier.value = true;
+      _playerState.canPauseNotifier.value = true;
+    });
+  }
+
+  void _listenToNewTrack() {
+    _newPlayer.trackLoadedEvent.addHandler((Track track) async {
+      trackNotifier.value = track;
+      _windowManager.setWindowTitle(track.title, track.artist);
+      _trayIntegration.setTooltip(track.title, track.artist);
+
+      _setMprisMetadata(track);
+    });
+  }
+
+  void _listenToBeginPlaying() {
+    _newPlayer.beforeNewTrackStartedEvent.addHandler((Track track) async {
+      _ynisonState.status = PlayerStateStatus(
+        duration: track.duration!,
+        isPaused: false,
+        playbackSpeed: 1,
+        progress: Duration.zero,
+        version: Version(deviceId: _prefs.deviceId),
+      );
+      _ynisonState.playerQueue.currentPlayableIndex = _queue.currentIndex;
+      logger.i('Current playable index: '
+          '${_ynisonState.playerQueue.currentPlayableIndex} '
+          'of ${_queue.tracks.length - 1}');
+      _ynisonClient.sendPlayerUpdate(_ynisonState);
+    });
+
+    _queue.trackListChanged.addHandler((Iterable<Track> tracks) async {
+      queueTracks.value = tracks.toList();
+      
+      _ynisonState.playerQueue.playableList.clear();
+      _ynisonState.playerQueue.playableList.addAll(
+        _queue.toPlayableList(PlayInfoRadio.defaultFrom),
+      );
+      _ynisonState.playerQueue.currentPlayableIndex = _queue.currentIndex;
+      _ynisonState.status.version = Version(deviceId: _prefs.deviceId);
+      _ynisonClient.sendPlayerUpdate(_ynisonState);
     });
   }
 
@@ -351,41 +473,6 @@ class AppState {
     landingNotifier.value = blocks.where((b) => b.entities.isNotEmpty).toList();
   }
 
-  Future<void> _requestInitialQueueData() async {
-    final List<String> queueIds = await _musicApi.queueIds();
-    if(queueIds.isEmpty) return;
-
-    final Queue queue = await _musicApi.queue(queueIds.first);
-    if((queue.tracks.isEmpty || queue.currentIndex == null) && queue.context.type != 'radio') return;
-
-    late final Track track;
-    if(queue.context.type == 'radio') {
-      final Station station = await _musicApi.station(StationId.fromString(queue.context.id!));
-      final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
-      final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
-      final player = StationPlayer(queue: stationsQueue);
-      _playersManager.setPlayer(player);
-      currentStationNotifier.value = station;
-      track = tracks.first;
-      await _musicApi.sendStationTrackFeedback(station.id, null, 'radioStarted', null);
-    }
-    else {
-      Iterable<TrackOfList> trackIds = queue.tracks.map(
-              (t) => TrackOfList(int.parse(t.trackId), int.parse(t.albumId), DateTime.now()));
-      queueTracks.value = await _musicApi.tracks(trackIds);
-      final playbackQueue = TracksQueue(queue: queue, tracks: queueTracks.value);
-      final player = TracksPlayer(queue: playbackQueue);
-      _playersManager.setPlayer(player);
-      track = playbackQueue.currentTrack;
-    }
-
-    _playerState.trackNotifier.value = track;
-    _playerState.canPlayNotifier.value = true;
-    _playerState.canPauseNotifier.value = true;
-
-    _setMprisMetadata(track);
-  }
-
   Future<void> _requestGenres() async {
     final List<Genre> genres = await _musicApi.genres();
     _genres.clear();
@@ -404,41 +491,144 @@ class AppState {
 
   String? getGenreTitle(String id) => _genres[id];
 
-  Future<void> playContent(Object source, Iterable<Track> tracks, int? index) async {
+  Future<Track?> _prepareAndPlay({
+    required Object context,
+    required Iterable<Track> tracks,
+    int index = 0,
+    shuffle = false,
+    repeatMode = RepeatMode.off,
+    canShuffle = true,
+    canRepeat = true,
+  }) async {
+    _playContext = context;
+    _queue.replaceTracks(tracks);
+    _queue.moveTo(index);
+    _queue.isShuffleEnabled = shuffle;
+    _queue.repeatMode = repeatMode;
+
+    final Track? track = _queue.currentTrack;
+    if(track == null) return null;
+
+    _playerState.canPlayNotifier.value = true;
+
+    await _newPlayer.loadTrack(track);
+    await _newPlayer.play();
+    _playerState.canPauseNotifier.value = true;
+    _playerState.canShuffleNotifier.value = canShuffle;
+    _playerState.canRepeatNotifier.value = canRepeat;
+
+    return track;
+  }
+
+  static const Map<Type, PlayInfoContext> _entityTypes = {
+    Album: PlayInfoContext.album,
+    Artist: PlayInfoContext.artist,
+    Playlist: PlayInfoContext.playlist,
+    Station: PlayInfoContext.radio,
+    RadioSession: PlayInfoContext.radio,
+    List<Track>: PlayInfoContext.playlist,
+  };
+
+  static const Map<Type, String> _entityFroms = {
+    Album: 'desktop-own_collection-collection_new_albums-default',
+    Artist: 'desktop-own_collection-collection_artists-default',
+    Playlist: 'desktop-own_collection-collection_playlists-default',
+    Station: 'desktop-home-rup_main-radio-default',
+    RadioSession: 'desktop-home-rup_main-radio-default',
+    List<Track>: 'desktop-own_collection-collection_playlists-default',
+  };
+
+  Future<void> playContent(Object contextObject, Iterable<Track> tracks, [int? index]) async {
+    if(_playContext is RadioSession) _radioManager.stop();
+
     playButtonNotifier.value = ButtonState.loading;
     _playerState.rateNotifier.value = 1.0;
     index ??= 0;
 
-    final Queue queue = await QueueFactory.create(
-      tracksSource: source,
-      currentIndex: index
+    final Track? track = await _prepareAndPlay(
+      context: contextObject,
+      tracks: tracks,
+      index: index,
+      shuffle: _playerState.shuffleNotifier.value,
+      repeatMode: _playerState.repeatNotifier.value,
     );
 
-    queueTracks.value = tracks.toList();
-    final playbackQueue = TracksQueue(queue: queue, tracks: tracks);
-    final player = TracksPlayer(queue: playbackQueue);
-    _playersManager.setPlayer(player);
-    currentStationNotifier.value = null;
+    if(track == null) return;
+
+    String getEntityId() {
+      if(_playContext is ContextId) {
+        return (_playContext as ContextId).contextId;
+      }
+      else if(_playContext is List<Track>) {
+        return track.id.toString();
+      }
+
+      throw Exception('Unknown play context type: ${_playContext.runtimeType}');
+    }
+
+    _ynisonState = YPlayerState(
+      playerQueue: YPlayerQueue(
+        currentPlayableIndex: _queue.currentIndex,
+        entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
+        entityId: getEntityId(),
+        entityType: _entityTypes[_playContext.runtimeType]!,
+        from: _entityFroms[_playContext.runtimeType]!,
+        options: QueueOptions(repeatMode: 'NONE'),
+        playableList: _queue.toPlayableList(_entityFroms[_playContext.runtimeType]!).toList(),
+        version: Version(deviceId: _prefs.deviceId),
+      ),
+      status: PlayerStateStatus(
+        duration: track.duration!,
+        isPaused: false,
+        playbackSpeed: 1,
+        progress: Duration.zero,
+        version: Version(deviceId: _prefs.deviceId),
+      ),
+    );
+    _ynisonClient.sendPlayerUpdate(_ynisonState);
   }
 
   Future<void> playStation(Station station) async {
     playButtonNotifier.value = ButtonState.loading;
     _playerState.rateNotifier.value = 1.0;
-    final Iterable<Track> tracks = await _musicApi.stationTacks(station.id, []);
-    Queue queue = await QueueFactory.create(tracksSource: (station, tracks));
-    final stationsQueue = StationQueue(station: station, initialData: (queue, tracks));
-    final player = StationPlayer(queue: stationsQueue);
 
-    _playersManager.setPlayer(player);
-    _playersManager.play();
+    final RadioSession radioSession = await _radioManager.start(station);
+    final Track? track = await _prepareAndPlay(
+      context: radioSession,
+      tracks: radioSession.sequence.map((i) => i.track),
+      canRepeat: false,
+      canShuffle: false,
+    );
+
+    if(track == null) return;
+
+    _ynisonState = YPlayerState(
+      playerQueue: YPlayerQueue(
+        currentPlayableIndex: _queue.currentIndex,
+        entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
+        entityId: track.id.toString(),
+        entityType: _entityTypes[_playContext.runtimeType]!,
+        from: PlayInfoRadio.defaultFrom,
+        options: QueueOptions(repeatMode: 'NONE'),
+        playableList: _queue.toPlayableList(PlayInfoRadio.defaultFrom).toList(),
+        addingOptions: AddingOptions(
+          radioOptions: RadioOptions(sessionId: radioSession.id),
+        ),
+        version: Version(deviceId: _prefs.deviceId),
+      ),
+      status: PlayerStateStatus(
+        duration: track.duration!,
+        isPaused: false,
+        playbackSpeed: 1,
+        progress: Duration.zero,
+        version: Version(deviceId: _prefs.deviceId),
+      ),
+    );
+    _ynisonClient.sendPlayerUpdate(_ynisonState);
   }
 
   Future<void> playTrack(Track track) async {
-    playButtonNotifier.value = ButtonState.loading;
-    _playerState.rateNotifier.value = 1.0;
-    final player = SingleTrackPlayer(track);
-    _playersManager.setPlayer(player);
-    _playersManager.play();
+    playContent(track, [track]);
   }
 
   Future<void> playObjectStation(CanBeRadio object) async {
@@ -450,9 +640,9 @@ class AppState {
     return playStation(station);
   }
 
-  bool isLikedTrack(CanBePlayed track) => binarySearch(_likedTrackIds, track.id) != -1;
+  bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
-  Future<void> likeTrack(CanBePlayed track) async {
+  Future<void> likeTrack(Track track) async {
     int likedIndex = binarySearch(_likedTrackIds, track.id);
     final isLiked = likedIndex != -1;
     final Station? station = currentStationNotifier.value;
@@ -514,7 +704,7 @@ class AppState {
   void _reset() {
     _audioPlayer.stop();
     playButtonNotifier.value = ButtonState.paused;
-    _playerState.trackNotifier.value = null;
+    trackNotifier.value = null;
     currentStationNotifier.value = null;
     stationsDashboardNotifier.value = [];
     accountNotifier.value = null;
@@ -524,6 +714,7 @@ class AppState {
     playlistsNotifier.value = [];
     nonMusicNotifier.value = [];
     landingNotifier.value = [];
+    _radioManager.stop();
   }
 
   Future<void> login(String authToken) async {

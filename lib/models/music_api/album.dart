@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 
 import 'artist.dart';
+import 'context_id.dart';
 import 'track.dart';
 
-class Album extends Equatable {
+class Album extends Equatable implements ContextId {
   final int id;
   final String title;
   final int? year;
@@ -54,6 +55,9 @@ class Album extends Equatable {
       json['version']
     );
   }
+
+  @override
+  String get contextId => id.toString();
 }
 
 class AlbumWithTracks extends Equatable {

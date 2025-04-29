@@ -1,3 +1,4 @@
+import 'context_id.dart';
 import 'track.dart';
 
 class NewRadioSessionRequest {
@@ -28,7 +29,7 @@ class NewRadioSessionRequest {
         queue = json['queue'] != null ? List<String>.from(json['queue']) : null;
 }
 
-class RadioSession {
+class RadioSession implements ContextId {
   final String id;
   final String batchId;
   final bool isPumpkin;
@@ -52,12 +53,17 @@ class RadioSession {
   RadioSession.fromJson(Map<String, dynamic> json)
       : id = json['radioSessionId'],
         batchId = json['batchId'],
-        isPumpkin = json['isPumpkin'],
-        isTerminated = json['isTerminated'],
+        isPumpkin = json['pumpkin'],
+        isTerminated = json['terminated'],
         acceptedSeeds = (json['acceptedSeeds'] as List).map((e) => RadioSeed.fromJson(e)).toList(),
         descriptionSeed = RadioSeed.fromJson(json['descriptionSeed']),
-        sequence = (json['sequence'] as List).map((e) => SequenceEntry.fromJson(e)).toList(),
+        sequence = (json['sequence'] as List)
+            .map((e) => SequenceEntry.fromJson(e, json['batchId']))
+            .toList(),
         wave = RadioWave.fromJson(json['wave']);
+
+  @override
+  String get contextId => id;
 }
 
 class RadioSeed {
@@ -94,10 +100,10 @@ class SequenceEntry {
     required this.trackParameters,
   });
 
-  SequenceEntry.fromJson(Map<String, dynamic> json)
-      : isLiked = json['isLiked'],
+  SequenceEntry.fromJson(Map<String, dynamic> json, String batchId)
+      : isLiked = json['liked'],
         type = json['type'],
-        track = Track.fromJson(json['track'], ''),
+        track = Track.fromJson(json['track'], batchId),
         trackParameters = TrackParameters.fromJson(json['trackParameters']);
 }
 

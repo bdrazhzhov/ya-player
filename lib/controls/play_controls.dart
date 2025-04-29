@@ -33,7 +33,8 @@ class _RepeatShuffle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _appState.currentStationNotifier,
+      // valueListenable: _appState.currentStationNotifier,
+      valueListenable: _appState.currentRadioNotifier,
       builder: (_, value, __) {
         if(value == null) {
           return Row(children: [
@@ -42,7 +43,7 @@ class _RepeatShuffle extends StatelessWidget {
           ]);
         }
 
-        return StationSettingsButton(station: _appState.currentStationNotifier.value!);
+        return StationSettingsButton(station: _appState.currentRadioNotifier.value!);
       },
     );
   }

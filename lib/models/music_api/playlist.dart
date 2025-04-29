@@ -1,6 +1,7 @@
+import 'context_id.dart';
 import 'track.dart';
 
-class Playlist {
+class Playlist implements ContextId {
   final int kind;
   final String title;
   final int uid;
@@ -52,4 +53,7 @@ class Playlist {
       similarPlaylists: similarPlaylists
     );
   }
+
+  @override
+  String get contextId => '$uid:$kind';
 }

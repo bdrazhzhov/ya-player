@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
+import '/helpers/date_extensions.dart';
 import '/helpers/in_memory_cache.dart';
 
 class YandexApiClient {
@@ -60,7 +60,7 @@ class YandexApiClient {
 
       return handler.next(e);
     }, onRequest: (RequestOptions options, RequestInterceptorHandler handler){
-      options.headers['X-Yandex-Music-Client-Now'] = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(DateTime.now().toUtc())}Z';
+      options.headers['X-Yandex-Music-Client-Now'] = DateTime.now().toUtcString();
 
       return handler.next(options);
     }));

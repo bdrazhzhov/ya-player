@@ -1,7 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-import '/services/player_state.dart';
+import '/services/app_state.dart';
 import '/pages/current_track_page.dart';
 import '/services/service_locator.dart';
 import 'yandex_image.dart';
@@ -10,13 +10,13 @@ class TrackImage extends StatelessWidget {
   final bool isExpandable;
   TrackImage({super.key, required this.isExpandable,});
 
-  final _playerState = getIt<PlayerState>();
+  final _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
 
     return ValueListenableBuilder(
-        valueListenable: _playerState.trackNotifier,
+        valueListenable: _appState.trackNotifier,
         builder: (_, track, __) {
           Widget image = Padding(
             padding: const EdgeInsets.all(2.0),

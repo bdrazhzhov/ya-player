@@ -4,7 +4,6 @@ import '/l10n/app_localizations.dart';
 import '/controls/artist/artist_flexible_space.dart';
 import '/controls/artist/artist_social_link.dart';
 import '/controls/artist/artist_section_header.dart';
-import '/services/app_state.dart';
 import '/controls/custom_separated_hlist.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
@@ -21,7 +20,6 @@ import '/services/music_api.dart';
 
 class ArtistPage extends StatelessWidget {
   late final Future<ArtistInfo> artistInfo = _musicApi.artistInfo(artist.id);
-  final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
   final ArtistBase artist;
 
@@ -52,9 +50,8 @@ class ArtistPage extends StatelessWidget {
                   }
                 ),
                 SliverTrackList(
+                  playContext: info.artist,
                   tracks: info.popularTracks,
-                  onBeforeStartPlaying: (int? index) =>
-                      _appState.playContent(info, info.popularTracks, index)
                 ),
               ],
 

@@ -3,7 +3,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '/l10n/app_localizations.dart';
 import '/controls/flexible_space.dart';
-import '/player/players_manager.dart';
 import '/models/music_api/artist_info.dart';
 import '/services/app_state.dart';
 import '/services/service_locator.dart';
@@ -12,7 +11,6 @@ import '/controls/like_button.dart';
 class ArtistFlexibleSpace extends StatelessWidget {
   final ArtistInfo artistInfo;
   final _appState = getIt<AppState>();
-  final _player = getIt<PlayersManager>();
 
   ArtistFlexibleSpace({super.key, required this.artistInfo});
 
@@ -55,7 +53,6 @@ class ArtistFlexibleSpace extends StatelessWidget {
           tooltip: l10n.artist_play,
           onPressed: () async {
             await _appState.playContent(artistInfo, artistInfo.popularTracks, 0);
-            await _player.play(0);
           },
         ),
         LikeButton(

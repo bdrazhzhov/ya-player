@@ -43,7 +43,7 @@ class QueuePage extends StatelessWidget {
       ValueListenableBuilder(
         valueListenable: _appState.queueTracks,
         builder: (_, List<Track> tracks, __) {
-          return SliverTrackList(tracks: tracks);
+          return SliverTrackList(playContext: _appState.playContext, tracks: tracks);
         },
       ),
     ]);

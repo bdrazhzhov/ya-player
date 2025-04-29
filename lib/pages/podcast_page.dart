@@ -14,7 +14,6 @@ class PodcastPage extends StatelessWidget {
   final Podcast podcast;
   late final Future<AlbumWithTracks> _albumWidthTracks;
   final _musicApi = getIt<MusicApi>();
-  final _appState = getIt<AppState>();
 
   PodcastPage(this.podcast, {super.key}) {
     _albumWidthTracks = _musicApi.albumWithTracks(podcast.id);
@@ -37,11 +36,9 @@ class PodcastPage extends StatelessWidget {
               ),
 
               SliverTrackList(
+                playContext: podcast,
                 tracks: albumWithTracks.tracks,
                 albumMode: true,
-                onBeforeStartPlaying: (int? index) =>
-                    _appState.playContent(albumWithTracks,
-                        albumWithTracks.tracks, index),
               ),
             ],
           );

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '/services/player_state.dart';
+import '/services/app_state.dart';
 import '/controls/controls_bar.dart';
 import '/controls/page_base_layout.dart';
 import '/controls/yandex_image.dart';
 import '/services/service_locator.dart';
 
 class CurrentTrackPage extends StatelessWidget {
-  final _playerState = getIt<PlayerState>();
+  final _appState = getIt<AppState>();
 
   CurrentTrackPage({super.key});
 
@@ -18,7 +18,7 @@ class CurrentTrackPage extends StatelessWidget {
     return PageBaseLayout(
       body: Center(
         child: ValueListenableBuilder(
-        valueListenable: _playerState.trackNotifier,
+        valueListenable: _appState.trackNotifier,
         builder: (_, track, __) {
           if(track == null) return const Text('No track');
 

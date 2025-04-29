@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:uuid/uuid.dart';
+import 'package:ya_player/models/play_info.dart';
+import 'package:ya_player/services/logger.dart';
 
 import '/models/ynison/redirect_answer.dart';
 import '/models/ynison/ynison_state.dart';
@@ -15,10 +18,15 @@ class YnisonClient {
   final String _deviceId;
   late final WebSocket _wsRedirect;
   late final WebSocket _wsPutState;
+  final DeviceInfo _deviceInfo;
+
+  final _stateStreamController = StreamController<YnisonState>();
+  Stream<YnisonState> get stateStream => _stateStreamController.stream;
 
   YnisonClient({required String authToken, required String deviceId})
       : _authToken = authToken,
-        _deviceId = deviceId {
+        _deviceId = deviceId,
+        _deviceInfo = DeviceInfo.byDefault(deviceId) {
     _connectToRedirect();
   }
 
@@ -29,15 +37,15 @@ class YnisonClient {
       headers: {
         HttpHeaders.authorizationHeader: 'OAuth $_authToken',
         'Origin': 'https://music.yandex.ru',
-        'Sec-Websocket-Protocol': 'Bearer,v2,{"Ynison-Device-Id":"$_deviceId","Ynison-Device-Info":'
-            '"{\\"app_name\\":\\"Chrome\\",\\"app_version\\":\\"135.0.0.0\\",\\"type\\":1}"}',
+        'Sec-Websocket-Protocol': 'Bearer,v2,{"Ynison-Device-Id":"$_deviceId",'
+            '"Ynison-Device-Info":"${_deviceInfo.toJsonString().replaceAll('"', '\\"')}"}',
       },
     ).then(
       (WebSocket ws) {
         _wsRedirect = ws;
         _wsRedirect.listen(
           (message) {
-            print('Redirect received message: $message');
+            // print('Redirect received message: $message');
             final json = jsonDecode(message);
             final redirect = RedirectAnswer.fromJson(json);
             _connectToPutState(redirect);
@@ -65,11 +73,10 @@ class YnisonClient {
         headers: {
           HttpHeaders.authorizationHeader: 'OAuth $_authToken',
           'Origin': 'https://music.yandex.ru',
-          'Sec-Websocket-Protocol':
-              'Bearer,v2,{"Ynison-Device-Id":"$_deviceId","Ynison-Device-Info":'
-                  '"{\\"app_name\\":\\"Chrome\\",\\"app_version\\":\\"135.0.0.0\\",\\"type\\":1}",'
-                  '"Ynison-Redirect-Ticket":"${redirect.tiket}",'
-                  '"Ynison-Session-Id":"${redirect.sessionId}"}',
+          'Sec-Websocket-Protocol': 'Bearer,v2,{"Ynison-Device-Id":"$_deviceId",'
+              '"Ynison-Device-Info":"${_deviceInfo.toJsonString().replaceAll('"', '\\"')}",'
+              '"Ynison-Redirect-Ticket":"${redirect.tiket}",'
+              '"Ynison-Session-Id":"${redirect.sessionId}"}',
         },
       );
     } catch (error) {
@@ -79,9 +86,16 @@ class YnisonClient {
     _wsPutState.pingInterval = redirect.keepAliveParams.time;
     _wsPutState.listen(
       (message) {
-        print('State received message: $message');
+        // print('State received message: $message');
         final json = jsonDecode(message);
-        final obj = YnisonState.fromJson(json);
+        try {
+          final stateUpdate = YnisonState.fromJson(json);
+          _stateStreamController.add(stateUpdate);
+        }
+        catch (error) {
+          logger.e('Error parsing state update:\n$message', error: error);
+          return;
+        }
       },
       onError: (error) {
         print('Error: $error');
@@ -91,22 +105,17 @@ class YnisonClient {
       },
     );
 
-    final version = Version(
-      deviceId: _deviceId,
-      version: '9021243204784341000',
-      timestampMs: '0',
-    );
-
+    final version = Version(deviceId: _deviceId);
     final messageData = PlayerUpdateStateMessage(
       rid: Uuid().v4().toString(),
       playerActionTimeStamptpMs: 0,
       activityInterceptionType: 'DO_NOT_INTERCEPT_BY_DEFAULT',
       updateFullState: UpdateFullState(
-        playerState: PlayerState(
-          playerQueue: PlayerQueue(
+        playerState: YPlayerState(
+          playerQueue: YPlayerQueue(
             currentPlayableIndex: -1,
             entityId: '',
-            entityType: 'VARIOUS',
+            entityType: PlayInfoContext.various,
             playableList: [],
             options: QueueOptions(repeatMode: 'NONE'),
             entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
@@ -121,19 +130,13 @@ class YnisonClient {
             version: version,
           ),
         ),
-        device: Device(
+        device: YDevice(
           capabilities: DeviceCapabilities(
             canBePlayer: true,
             canBeRemoteController: false,
             volumeGranularity: 10,
           ),
-          info: DeviceInfo(
-            deviceId: _deviceId,
-            type: 'WEB',
-            title: 'Browser Chrome',
-            appName: 'Chrome',
-            appVersion: '135.0.0.0',
-          ),
+          info: _deviceInfo,
           isShadow: true,
           volumeInfo: VolumeInfo(volume: 0),
         ),
@@ -142,7 +145,22 @@ class YnisonClient {
     );
 
     final message = messageData.toJsonString();
-    print(message);
+    // print(message);
     _wsPutState.add(message);
+  }
+
+  void sendPlayerUpdate(YPlayerState state) {
+    if (_wsPutState.readyState == WebSocket.open) {
+      final message = PlayerUpdateStateMessage(
+        playerState: state,
+        rid: Uuid().v4().toString(),
+        playerActionTimeStamptpMs: DateTime.now().millisecondsSinceEpoch,
+        activityInterceptionType: 'DO_NOT_INTERCEPT_BY_DEFAULT',
+      );
+      // logger.i('Send player update: ${message.toJsonString()}');
+      _wsPutState.add(message.toJsonString());
+    } else {
+      logger.w('WebSocket is not open');
+    }
   }
 }
