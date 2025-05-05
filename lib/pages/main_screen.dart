@@ -65,9 +65,11 @@ class _MainScreen extends State<MainScreen> {
         }
 
         return PageRouteBuilder(
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
           pageBuilder: (_, __, ___) {
             return page;
-          }
+          },
         );
       },
     );
