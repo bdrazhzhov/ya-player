@@ -53,7 +53,7 @@ class TrackCard extends StatelessWidget {
             children: [
               YandexImage(
                 uriTemplate: track.ogImage,
-                size: width,
+                width: width,
                 borderRadius: 8,
               ),
               Positioned(

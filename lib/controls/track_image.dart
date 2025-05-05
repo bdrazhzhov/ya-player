@@ -21,8 +21,8 @@ class TrackImage extends StatelessWidget {
           Widget image = Padding(
             padding: const EdgeInsets.all(2.0),
             child: YandexImage(
-                uriTemplate: track?.coverUri,
-                size: 50
+              uriTemplate: track?.coverUri,
+              width: 50,
             ),
           );
 

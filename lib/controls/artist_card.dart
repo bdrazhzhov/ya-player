@@ -35,7 +35,7 @@ class ArtistCard extends StatelessWidget {
             if(artist.cover != null)
               YandexImage(
                 uriTemplate: artist.cover?.uri,
-                size: width,
+                width: width,
                 borderRadius: 8
               ),
             Text(

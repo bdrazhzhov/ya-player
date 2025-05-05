@@ -27,7 +27,7 @@ class MixLinkCard extends StatelessWidget {
             children: [
               YandexImage(
                 uriTemplate: mixLink.image,
-                size: 200,
+                width: 200,
                 borderRadius: 8
               ),
               Positioned(

@@ -93,7 +93,7 @@ class FlexibleSpace extends StatelessWidget {
       child: FittedBox(
         child: YandexImage(
           uriTemplate: imageUrl,
-          size: size,
+          width: size,
           borderRadius: borderRadius,
         )
       )

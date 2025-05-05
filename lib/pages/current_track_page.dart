@@ -49,7 +49,7 @@ class CurrentTrackPage extends StatelessWidget {
                         ),
                         child: YandexImage(
                           uriTemplate: track.coverUri,
-                          size: 460,
+                          width: 460,
                           borderRadius: 8,
                         ),
                       ),

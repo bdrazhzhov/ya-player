@@ -37,7 +37,7 @@ class PodcastCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              YandexImage(uriTemplate: podcast.ogImage, size: 200, borderRadius: 8),
+              YandexImage(uriTemplate: podcast.ogImage, width: 200, borderRadius: 8),
               Text(
                 HtmlCharacterEntities.decode(podcast.title),
                 maxLines: 1,

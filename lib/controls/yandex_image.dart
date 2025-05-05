@@ -4,7 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class YandexImage extends StatelessWidget {
   final String? uriTemplate;
-  final double size;
+  late final double? _width;
+  late final double? _height;
   final double? borderRadius;
   final Widget placeholder;
   late final String _url;
@@ -15,13 +16,30 @@ class YandexImage extends StatelessWidget {
   YandexImage({
     super.key,
     this.uriTemplate,
-    required this.size,
+    double? width,
+    double? height,
     this.borderRadius,
     this.placeholder = const DefaultImagePlaceholder()
   }) {
     if(uriTemplate == null) return;
+    if(width == null && height == null) {
+      _width = 160;
+      _height = 160;
+    }
+    else if(width == null && height != null) {
+      _width = height;
+      _height = height;
+    }
+    else if(width != null && height == null) {
+      _width = width;
+      _height = width;
+    }
+    else {
+      _width = width;
+      _height = height;
+    }
 
-    int realSize = size.round();
+    int realSize = _width!.round();
 
     for(var i = _sizes.length - 1; i > 0; i--) {
       if(_sizes[i] >= realSize) continue;
@@ -44,12 +62,14 @@ class YandexImage extends StatelessWidget {
     }
     else {
       image = CachedNetworkImage(
-          width: size,
-          memCacheWidth: size.toInt(),
-          fit: BoxFit.fitWidth,
-          placeholder: (context, url) => placeholder,
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-          imageUrl: _url
+        width: _width,
+        height: _height,
+        memCacheWidth: _width!.toInt(),
+        memCacheHeight: _height!.toInt(),
+        fit: BoxFit.fitWidth,
+        placeholder: (context, url) => placeholder,
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+        imageUrl: _url,
       );
     }
 

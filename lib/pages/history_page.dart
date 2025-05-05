@@ -66,9 +66,9 @@ class HistoryPage extends StatelessWidget {
         return ListTile(
           minTileHeight: 60,
           leading: YandexImage(
-            size: 50,
+            width: 50,
             uriTemplate: item.coverUri,
-            borderRadius: 4
+            borderRadius: 4,
           ),
           title: Text(item.title),
           subtitle: Text(item.albumName),
@@ -88,9 +88,9 @@ class HistoryPage extends StatelessWidget {
         return ListTile(
           minTileHeight: 60,
           leading: YandexImage(
-            size: 50,
+            width: 50,
             uriTemplate: item.cover!.uri,
-            borderRadius: 4
+            borderRadius: 4,
           ),
           title: Text(item.name),
           subtitle: const Text('Artist'),
@@ -104,7 +104,7 @@ class HistoryPage extends StatelessWidget {
         return ListTile(
           minTileHeight: 60,
           leading: YandexImage(
-            size: 50,
+            width: 50,
             uriTemplate: item.coverUri,
             borderRadius: 4
           ),

@@ -38,7 +38,7 @@ class PlaylistCard extends StatelessWidget {
               (playlist.image != null && playlist.image!.isNotEmpty) ?
                 YandexImage(
                   uriTemplate: playlist.image,
-                  size: width,
+                  width: width,
                   borderRadius: _borderRadius
                 ) :
                 _buildNoImage(theme),
