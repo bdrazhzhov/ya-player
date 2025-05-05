@@ -1,28 +1,55 @@
 import 'package:flutter/material.dart';
 
-class PageBase extends StatelessWidget {
+import '/player/playback_queue.dart';
+import '/player/player.dart';
+import '/services/service_locator.dart';
+
+class PageBase extends StatefulWidget {
   final String? title;
   final List<Widget> slivers;
   final Widget? flexibleSpace;
-  final _scrollController = ScrollController();
+  final double? scrollItemHeight;
+  final Future<dynamic>? onScrollPrepare;
   final Function()? onDataPreload;
 
-  PageBase({
+  const PageBase({
     super.key,
     this.title,
     required this.slivers,
+    this.flexibleSpace,
+    this.scrollItemHeight,
+    this.onScrollPrepare,
     this.onDataPreload,
-    this.flexibleSpace
-  }) {
-    _scrollController.addListener((){
-      if(onDataPreload == null || _scrollController.position.outOfRange) return;
-      if(_scrollController.offset <
-          _scrollController.position.maxScrollExtent - 1000) {
-        return;
-      }
+  });
 
-      onDataPreload!();
-    });
+  @override
+  State<PageBase> createState() => _PageBaseState();
+}
+
+class _PageBaseState extends State<PageBase> {
+  final scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    initPageScrolling();
+    initDataPreload();
+  }
+
+  @override
+  void dispose() {
+    getIt<Player>().trackLoadedEvent.removeHandler(trackLoadedHandler);
+    super.dispose();
+  }
+
+  Future<void> trackLoadedHandler(track) async => scrollToCurrentTrack();
+
+  Future<void> scrollToCurrentTrack() async {
+    int index = getIt<PlaybackQueue>().currentIndex;
+    if(index == -1) return;
+
+    scrollController.jumpTo(index * widget.scrollItemHeight!);
   }
 
   @override
@@ -32,23 +59,22 @@ class PageBase extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: CustomScrollView(
-        controller: _scrollController,
-        // physics: CustomScrollPhysics(),
+        controller: scrollController,
         slivers: [
-          if(title != null)
+          if(widget.title != null)
             SliverPadding(
               padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
               sliver: SliverToBoxAdapter(
-                child: Text(title!, style: theme.textTheme.displayMedium)
+                child: Text(widget.title!, style: theme.textTheme.displayMedium),
               ),
             ),
-          if(flexibleSpace != null)
+          if(widget.flexibleSpace != null)
             SliverPadding(
               padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 25),
               sliver: SliverAppBar(
                 leading: const SizedBox.shrink(),
                 pinned: true,
-                flexibleSpace: flexibleSpace,
+                flexibleSpace: widget.flexibleSpace,
                 toolbarHeight: 50,
                 collapsedHeight: 64,
                 expandedHeight: 200,
@@ -56,13 +82,37 @@ class PageBase extends StatelessWidget {
                 surfaceTintColor: Colors.transparent,
               ),
             ),
-          ...slivers.map((sliver) => SliverPadding(
+          ...widget.slivers.map((sliver) => SliverPadding(
               padding: const EdgeInsets.only(left: 32, right: 32),
-              sliver: sliver
+              sliver: sliver,
             )
           )
         ]
       ),
     );
+  }
+
+  void initDataPreload() {
+    scrollController.addListener((){
+      if(widget.onDataPreload == null || scrollController.position.outOfRange) return;
+      if(scrollController.offset <
+          scrollController.position.maxScrollExtent - 1000) {
+        return;
+      }
+
+      widget.onDataPreload!();
+    });
+  }
+
+  void initPageScrolling() {
+    if(widget.scrollItemHeight == null) return;
+
+    getIt<Player>().trackLoadedEvent.addHandler(trackLoadedHandler);
+
+    if(widget.onScrollPrepare != null) {
+      widget.onScrollPrepare!.then((_) => scrollToCurrentTrack());
+    } else {
+      scrollToCurrentTrack();
+    }
   }
 }

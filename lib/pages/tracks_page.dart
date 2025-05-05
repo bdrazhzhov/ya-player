@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '/controls/page_loading_indicator.dart';
@@ -11,29 +13,37 @@ import 'page_base.dart';
 
 class TracksPage extends StatelessWidget {
   late final Future<Playlist> _playlistData = getIt<MusicApi>().likedTracksPlaylist();
+  final _dataLoadedFuture = Completer();
 
   TracksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return PageBase(title: AppLocalizations.of(context)!.page_tracks, slivers: [
-      SliverPersistentHeader(
-        delegate: SliverTracksHeader(),
-        pinned: true,
-      ),
-      FutureBuilder<Playlist>(
-        future: _playlistData,
-        builder: (_, AsyncSnapshot<Playlist> snapshot) {
-          if (snapshot.hasData) {
-            return SliverTrackList(
-              playContext: snapshot.data!,
-              tracks: snapshot.data!.tracks,
-            );
-          } else {
-            return const SliverToBoxAdapter(child: PageLoadingIndicator());
-          }
-        },
-      ),
-    ]);
+    return PageBase(
+      scrollItemHeight: 58,
+      onScrollPrepare: _dataLoadedFuture.future,
+      title: AppLocalizations.of(context)!.page_tracks,
+      slivers: [
+        SliverPersistentHeader(
+          delegate: SliverTracksHeader(),
+          pinned: true,
+        ),
+        FutureBuilder<Playlist>(
+          future: _playlistData,
+          builder: (_, AsyncSnapshot<Playlist> snapshot) {
+            if (snapshot.hasData) {
+              _dataLoadedFuture.complete();
+
+              return SliverTrackList(
+                playContext: snapshot.data!,
+                tracks: snapshot.data!.tracks,
+              );
+            } else {
+              return const SliverToBoxAdapter(child: PageLoadingIndicator());
+            }
+          },
+        ),
+      ],
+    );
   }
 }

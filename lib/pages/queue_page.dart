@@ -18,34 +18,32 @@ class QueuePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return PageBase(slivers: [
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 24, top: 20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Playback queue',
-                  style: theme.textTheme.displayMedium
-                )
-              ),
-              RepeatButton(),
-              ShuffleButton()
-            ],
+    return PageBase(
+      scrollItemHeight: 58,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 24, top: 20),
+            child: Row(
+              children: [
+                Expanded(child: Text('Playback queue', style: theme.textTheme.displayMedium)),
+                RepeatButton(),
+                ShuffleButton()
+              ],
+            ),
           ),
         ),
-      ),
-      SliverPersistentHeader(
-        delegate: SliverTracksHeader(),
-        pinned: true,
-      ),
-      ValueListenableBuilder(
-        valueListenable: _appState.queueTracks,
-        builder: (_, List<Track> tracks, __) {
-          return SliverTrackList(playContext: _appState.playContext, tracks: tracks);
-        },
-      ),
-    ]);
+        SliverPersistentHeader(
+          delegate: SliverTracksHeader(),
+          pinned: true,
+        ),
+        ValueListenableBuilder(
+          valueListenable: _appState.queueTracks,
+          builder: (_, List<Track> tracks, __) {
+            return SliverTrackList(playContext: _appState.playContext, tracks: tracks);
+          },
+        ),
+      ],
+    );
   }
 }
