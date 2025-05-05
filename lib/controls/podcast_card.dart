@@ -55,7 +55,7 @@ class PodcastCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 Text(
-                  "${podcast.tracksCount} ${AppLocalizations.of(context)!.episodes_count(podcast.tracksCount)}",
+                  AppLocalizations.of(context)!.episodes_count(podcast.tracksCount),
                   style: TextStyle(color: theme.colorScheme.outline),
                 )
               ] else ...[
