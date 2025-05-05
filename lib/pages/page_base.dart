@@ -112,7 +112,7 @@ class _PageBaseState extends State<PageBase> {
     if(widget.onScrollPrepare != null) {
       widget.onScrollPrepare!.then((_) => scrollToCurrentTrack());
     } else {
-      scrollToCurrentTrack();
+      WidgetsBinding.instance.addPostFrameCallback((_) => scrollToCurrentTrack());
     }
   }
 }
