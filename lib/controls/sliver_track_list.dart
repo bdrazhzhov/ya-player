@@ -27,6 +27,7 @@ class SliverTrackList extends StatefulWidget {
 class _SliverTrackListState extends State<SliverTrackList> {
   final appState = getIt<AppState>();
   final playerState = getIt<PlayerState>();
+  late final availableTracks = widget.tracks.where((t) => t.isAvailable).toList();
   bool isPlayingStarted = false;
   bool isQueueLoaded = false;
   int currentIndex = -1;
@@ -34,10 +35,11 @@ class _SliverTrackListState extends State<SliverTrackList> {
 
   @override
   Widget build(BuildContext context) {
+
     return SliverList.builder(
-      itemCount: widget.tracks.length,
+      itemCount: availableTracks.length,
       itemBuilder: (BuildContext context, int index) {
-        Track track = widget.tracks[index];
+        Track track = availableTracks[index];
 
         return MultiValueListenableBuilder(
           valuesListenable: [appState.trackNotifier, playerState.playBackStateNotifier],
@@ -54,11 +56,10 @@ class _SliverTrackListState extends State<SliverTrackList> {
               showAlbum: !widget.albumMode,
               showArtistName: !widget.albumMode,
               onTap: () async {
-                if (!track.isAvailable) return;
-
                 if(playContext != widget.playContext) {
                   playContext = widget.playContext;
-                  appState.playContent(playContext!, widget.tracks, index);
+
+                  appState.playContent(playContext!, availableTracks, index);
                   return;
                 }
 

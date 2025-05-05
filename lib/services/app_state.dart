@@ -378,6 +378,7 @@ class AppState {
       // print(state.playerState.playerQueue.entityType.toString());
       // print('Tracks count: ${tracks.length}');
 
+      tracks = tracks.where((t) => t.isAvailable).toList();
       int index = playerQueue.currentPlayableIndex;
       final selectedPlayable = playerQueue.playableList[index];
       index = tracks.indexWhere((t) => t.id == selectedPlayable.playableId);
@@ -553,22 +554,11 @@ class AppState {
 
     if(track == null) return;
 
-    String getEntityId() {
-      if(_playContext is ContextId) {
-        return (_playContext as ContextId).contextId;
-      }
-      else if(_playContext is List<Track>) {
-        return track.id.toString();
-      }
-
-      throw Exception('Unknown play context type: ${_playContext.runtimeType}');
-    }
-
     _ynisonState = YPlayerState(
       playerQueue: YPlayerQueue(
         currentPlayableIndex: _queue.currentIndex,
         entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
-        entityId: getEntityId(),
+        entityId: (_playContext as ContextId).contextId,
         entityType: _entityTypes[_playContext.runtimeType]!,
         from: _entityFroms[_playContext.runtimeType]!,
         options: QueueOptions(repeatMode: 'NONE'),
