@@ -33,7 +33,6 @@ final class AudioPlayer {
           _notifyPositionUpdate();
         case PlayingStateEvent playingStateEvent:
           playingStateNotifier.value = playingStateEvent.state;
-          print(playingStateEvent.state);
         case PositionEvent positionEvent:
           _position = positionEvent.position;
           _notifyPositionUpdate();
