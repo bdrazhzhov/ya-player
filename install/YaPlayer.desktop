@@ -1,0 +1,11 @@
+[Desktop Entry]
+Categories=Mutimedia;
+Exec='/opt/ya-player/YaPlayer' %F
+Icon=YaPlayer
+Keywords=Yandex; Yandex Music; yandex; music;
+Name[en_US]=YaPlayer
+Name=YaPlayer
+Path=/opt/ya-player
+StartupNotify=true
+Terminal=false
+Type=Application
