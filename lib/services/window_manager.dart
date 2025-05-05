@@ -47,6 +47,13 @@ final class WindowManager {
     };
   }
 
+  Future<Brightness> getThemeType() async {
+    final Map<String,Color> themeColors = await getThemeColors();
+    final double luminance = themeColors['surface']!.computeLuminance();
+
+    return luminance < 0.5 ? Brightness.dark : Brightness.light;
+  }
+
   Future<void> showWindow() async {
     await _platform.invokeMethod('showWindow');
   }

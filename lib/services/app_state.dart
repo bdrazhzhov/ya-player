@@ -121,15 +121,13 @@ class AppState {
   Future<ThemeData> getTheme() async {
     final Map<String,Color> themeColors = await _windowManager.getThemeColors();
 
-    final double luminance = themeColors['surface']!.computeLuminance();
-
     return ThemeData(
       primaryColor: yaColor,
       scaffoldBackgroundColor: themeColors['surface']!,
       colorScheme: ColorScheme.fromSeed(
         surface: themeColors['surface']!,
         seedColor: themeColors['textColor']!,
-        brightness: luminance < 0.5 ? Brightness.dark : Brightness.light,
+        brightness: await _windowManager.getThemeType(),
         primary: yaColor,
         onSurface: themeColors['textColor']!,
       ),
