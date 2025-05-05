@@ -94,7 +94,7 @@ final class PlaybackQueue {
   int indexOf(Track track) => _tracks.indexOf(track);
 
   Iterable<Playable> toPlayableList(String from) {
-    return _tracks.map((track) => Playable(
+    return _tracks.where((t) => t.isAvailable).map((track) => Playable(
         from: from,
         playableType: 'TRACK',
         albumId: track.firstAlbumId.toString(),

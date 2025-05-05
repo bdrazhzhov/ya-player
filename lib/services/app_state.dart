@@ -64,7 +64,6 @@ class AppState {
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
   final _playerState = getIt<PlayerState>();
-  // final _playersManager = getIt<PlayersManager>();
   final _mpris = getIt<OrgMprisMediaPlayer2>();
   final _trayIntegration = TrayIntegration();
   final _windowManager = getIt<WindowManager>();
@@ -205,7 +204,6 @@ class AppState {
     }
 
     if(_likedTrackIds.isNotEmpty) {
-      likedTracksNotifier.value = await _musicApi.tracksByIds(_likedTrackIds);
       _likedTrackIds.sort();
     }
   }

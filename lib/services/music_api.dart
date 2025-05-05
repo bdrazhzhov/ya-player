@@ -159,6 +159,13 @@ class MusicApi {
     return (ids: ids, revision: newRevision);
   }
 
+  Future<Playlist> likedTracksPlaylist() async {
+    Map<String, dynamic> json = await _http.get('/landing-blocks/collection/playlist-with-likes?count=1');
+    final int kind = json['result']['playlist']['kind'];
+
+    return playlist(uid, kind);
+  }
+
   Future<List<Track>> tracksByIds(Iterable<String> ids, [batchId = '']) async {
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
     Map<String, dynamic> json = await _http.postForm('/tracks', data: data);
