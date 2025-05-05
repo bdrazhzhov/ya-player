@@ -14,9 +14,9 @@ final class PlaybackQueue {
 
   Track? get currentTrack => _tracks[_currentIndex];
 
-  bool get canGoNext => _tracks.isNotEmpty && _currentIndex < (_tracks.length - 1);
+  bool get canGoNext => _tracks.isNotEmpty && (_currentIndex < (_tracks.length - 1) || repeatMode != RepeatMode.off || isShuffleEnabled);
 
-  bool get canGoPrevious => _tracks.isNotEmpty && _currentIndex > 0;
+  bool get canGoPrevious => _tracks.isNotEmpty && (_currentIndex > 0 || repeatMode != RepeatMode.off || isShuffleEnabled);
 
   Iterable<Track> get tracks => _tracks;
 

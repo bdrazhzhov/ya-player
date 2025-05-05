@@ -18,7 +18,7 @@ class RepeatButton extends StatelessWidget {
           iconSize: 26,
           onPressed: isEnabled ? _onButtonPress : null,
           icon: ValueListenableBuilder<RepeatMode>(
-            valueListenable: _playerState.repeatNotifier,
+            valueListenable: _playerState.repeatModeNotifier,
             builder: (_, RepeatMode repeatMode, __) {
               switch(repeatMode) {
                 case RepeatMode.on:
@@ -36,13 +36,13 @@ class RepeatButton extends StatelessWidget {
   }
 
   void _onButtonPress() {
-    switch(_playerState.repeatNotifier.value) {
+    switch(_playerState.repeatModeNotifier.value) {
       case RepeatMode.on:
-        _playerState.repeatNotifier.value = RepeatMode.one;
+        _playerState.repeatModeNotifier.value = RepeatMode.one;
       case RepeatMode.one:
-        _playerState.repeatNotifier.value = RepeatMode.off;
+        _playerState.repeatModeNotifier.value = RepeatMode.off;
       case RepeatMode.off:
-        _playerState.repeatNotifier.value = RepeatMode.on;
+        _playerState.repeatModeNotifier.value = RepeatMode.on;
     }
   }
 }

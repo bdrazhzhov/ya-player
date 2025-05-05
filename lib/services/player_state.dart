@@ -29,7 +29,6 @@ class PlayerState {
   final repeatModeNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final rateNotifier = ValueNotifier<double>(1.0);
   final shuffleNotifier = ValueNotifier<bool>(false);
-  final repeatNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
 
   PlayerState() {
     _listenToPlayerAbilities();
@@ -44,7 +43,7 @@ class PlayerState {
     _mpris.canShuffle = true;
     shuffleNotifier.value = _prefs.shuffle;
     _mpris.canRepeat = true;
-    repeatNotifier.value = _prefs.repeat;
+    repeatModeNotifier.value = _prefs.repeat;
     _audioPlayer.volumeNotifier.value = _prefs.volume.clamp(0, 1);
   }
 
@@ -115,6 +114,8 @@ class PlayerState {
       _prefs.setShuffle(shuffleNotifier.value);
       _mpris.shuffle = shuffleNotifier.value;
       _queue.isShuffleEnabled = shuffleNotifier.value;
+      canNextNotifier.value = _queue.canGoNext;
+      canPrevNotifier.value = _queue.canGoPrevious;
     });
   }
 
@@ -127,6 +128,8 @@ class PlayerState {
       _prefs.setRepeat(repeatModeNotifier.value);
       _mpris.repeat = repeatModeNotifier.value;
       _queue.repeatMode = repeatModeNotifier.value;
+      canNextNotifier.value = _queue.canGoNext;
+      canPrevNotifier.value = _queue.canGoPrevious;
     });
   }
 

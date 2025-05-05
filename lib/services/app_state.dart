@@ -549,7 +549,7 @@ class AppState {
       tracks: tracks,
       index: index,
       shuffle: _playerState.shuffleNotifier.value,
-      repeatMode: _playerState.repeatNotifier.value,
+      repeatMode: _playerState.repeatModeNotifier.value,
     );
 
     if(track == null) return;

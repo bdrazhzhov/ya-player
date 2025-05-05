@@ -67,6 +67,8 @@ class Player {
   }
 
   Future<void> _beginPlaying() async {
+    _playerState.canNextNotifier.value = _queue.canGoNext;
+    _playerState.canPrevNotifier.value = _queue.canGoPrevious;
     await loadTrack(_queue.currentTrack!);
     await play();
   }
@@ -106,8 +108,7 @@ class Player {
     if(index == -1) return;
 
     _queue.moveTo(index);
-    await loadTrack(track);
-    await play();
+    await _beginPlaying();
   }
 
   Future<void> playPauseByIndex(int index) async {
@@ -122,7 +123,6 @@ class Player {
       return;
     }
 
-    await loadTrack(_queue.currentTrack!);
-    await play();
+    await _beginPlaying();
   }
 }
