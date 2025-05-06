@@ -72,7 +72,7 @@ class AppState {
   var _playContext = Object();
   final Map<String,String> _genres = {};
   final _playAnalytics = PlayAnalytics();
-  final _ynisonClient = getIt<YnisonClient>();
+  late final YnisonClient _ynisonClient;
   late YPlayerState _ynisonState;
   final _radioManager = RadioManager();
 
@@ -104,6 +104,10 @@ class AppState {
     }
 
     getIt<YandexApiClient>().locale = _prefs.locale;
+    _ynisonClient = YnisonClient(
+      authToken: _prefs.authToken!,
+      deviceId: _prefs.deviceId,
+    );
 
     _playAnalytics.start();
     _listenToYnisonState();
