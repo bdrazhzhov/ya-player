@@ -89,55 +89,29 @@ static void my_application_activate(GApplication* application) {
   GtkWindow* window = GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
   g_signal_connect(window, "delete-event", G_CALLBACK(onWindowDeleteCallback), nullptr);
 
-  // Use a header bar when running in GNOME as this is the common style used
-  // by applications and is the setup most users will be using (e.g. Ubuntu
-  // desktop).
-  // If running on X and not using GNOME then just use a traditional title bar
-  // in case the window manager does more exotic layout, e.g. tiling.
-  // If running on Wayland assume the header bar will work (may need changing
-  // if future cases occur).
-  gboolean use_header_bar = TRUE;
-#ifdef GDK_WINDOWING_X11
-//  GdkScreen* screen = gtk_window_get_screen(window);
-  if (GDK_IS_X11_SCREEN(screen)) {
-    const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-    if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-      use_header_bar = FALSE;
-    }
-  }
-#endif
-  GtkHeaderBar* header_bar = nullptr;
-  GtkWidget* backButton = nullptr;
-  GtkWidget* icon = nullptr;
+  GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
 
-  if (use_header_bar) {
-    header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
+  GtkWidget* icon = gtk_image_new_from_icon_name("YaPlayer", GTK_ICON_SIZE_LARGE_TOOLBAR);
+  gtk_widget_set_margin_start(icon, 6);
+  gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), icon);
+  gtk_widget_show(GTK_WIDGET(icon));
 
-    icon = gtk_image_new_from_icon_name("YaPlayer", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_set_margin_start(icon, 6);
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), icon);
-    gtk_widget_show(GTK_WIDGET(icon));
+  GtkWidget* backButton = gtk_button_new_with_label("🡨"); // back button
+  GtkStyleContext* context = gtk_widget_get_style_context(backButton);
+  gtk_style_context_add_class(context, "back-button");
 
-    backButton = gtk_button_new_with_label("🡨"); // back button
-    GtkStyleContext* context = gtk_widget_get_style_context(backButton);
-    gtk_style_context_add_class(context, "back-button");
+  g_signal_connect(backButton, "clicked", G_CALLBACK(on_button_clicked), NULL);
+  g_signal_connect(backButton, "enter-notify-event", G_CALLBACK(on_button_enter), NULL);
+  g_signal_connect(backButton, "leave-notify-event", G_CALLBACK(on_button_leave), NULL);
 
-    g_signal_connect(backButton, "clicked", G_CALLBACK(on_button_clicked), NULL);
-    g_signal_connect(backButton, "enter-notify-event", G_CALLBACK(on_button_enter), NULL);
-    g_signal_connect(backButton, "leave-notify-event", G_CALLBACK(on_button_leave), NULL);
+  gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), backButton);
+  // gtk_widget_show(GTK_WIDGET(button));
 
-    gtk_header_bar_pack_start(GTK_HEADER_BAR(header_bar), backButton);
-    // gtk_widget_show(GTK_WIDGET(button));
+  gtk_header_bar_set_title(header_bar, "YaPlayer");
+  gtk_header_bar_set_show_close_button(header_bar, TRUE);
+  gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
+  gtk_widget_show(GTK_WIDGET(header_bar));
 
-    gtk_header_bar_set_title(header_bar, "YaPlayer");
-    gtk_header_bar_set_show_close_button(header_bar, TRUE);
-    gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
-    gtk_widget_show(GTK_WIDGET(header_bar));
-
-//    gtk_widget_set_visible(GTK_WIDGET(header_bar), FALSE);
-  } else {
-    gtk_window_set_title(window, "YaPlayer");
-  }
 
   // height doesn't include header bar
   gtk_window_set_default_size(window, 1080, 720);
