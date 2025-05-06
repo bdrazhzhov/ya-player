@@ -1,16 +1,55 @@
-# ya_player
+# YaPlayer
 
-Open source Yandex.Music player
+Этот проект представляет собой **клиент Яндекс Музыки**,
+разработанный с использованием **Dart** и **Flutter**.
+Он предоставляет богатый функционал для взаимодействия с API Yandex Music,
+позволяя пользователям исследовать, воспроизводить и управлять музыкальным контентом.
 
-## Getting Started
+### Предостережение
 
-This project is a starting point for a Flutter application.
+Это альфа-версия, поэтому что-то может работать
+некорректно или не работать вовсе.
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Возможности
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Воспроизведение музыки**: Воспроизведение треков, станций и плейлистов и более.
+- **Управление радио**: Запуск, восстановление и управление радиосессиями.
+- **Поиск**: Поиск треков, исполнителей, плейлистов и т.п.
+- **Пользовательские предпочтения**: Добавление/удаление треков
+  и исполнителей в избранное, управление понравившимся контентом.
+- **Локализация**: Поддержка русского и английского языков.
+- **Настраиваемое воспроизведение**: Управление режимами воспроизведения, такими как перемешивание и повтор.
+
+---
+
+## Установка и настройка
+
+### Предварительные требования
+- Dart SDK
+- Flutter SDK
+- webkit2gtk-4.1 (для аутентификации в Яндекс Музыке)
+
+### Шаги
+1. Клонируйте репозиторий:
+   ```bash
+   git clone git@github.com:bdrazhzhov/ya-player.git
+   cd ya-player
+   ```
+2. Установите зависимости:
+   ```bash
+   flutter pub get
+   ```
+
+3. Запустите приложение:
+   ```bash
+   flutter run
+   ```
+
+---
+
+## Контакты
+
+Для вопросов или поддержки, пожалуйста, свяжитесь:
+- **GitHub**: [bdrazhzhov](https://github.com/bdrazhzhov)
