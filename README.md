@@ -1,6 +1,6 @@
 # YaPlayer
 
-Этот проект представляет собой **клиент Яндекс Музыки**,
+Этот проект представляет собой **клиент Яндекс Музыки** для Linux,
 разработанный с использованием **Dart** и **Flutter**.
 Он предоставляет богатый функционал для взаимодействия с API Yandex Music,
 позволяя пользователям исследовать, воспроизводить и управлять музыкальным контентом.
@@ -30,10 +30,20 @@
 yay ya-player
 ```
 
+Для Ubuntu 24.04 и для Linux Mint 22.1:
+```bash
+sudo add-apt-repository ppa:bdrazhzhov/ya-player
+sudo apt update
+sudo apt install ya-player
+```
+
 ### Сборка вручную
-- Dart SDK
-- Flutter SDK
+Нужно установить:
+- [Flutter SDK](https://docs.flutter.dev/get-started/install/linux/desktop)
 - webkit2gtk-4.1 (для аутентификации в Яндекс Музыке)
+- libgcrypt (для расшифровки аудио)
+- [gstreamer](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
+  (для проигрывания аудио)
 
 ### Шаги
 1. Клонируйте репозиторий:
