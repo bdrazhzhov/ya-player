@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 import 'package:ya_player/helpers/date_extensions.dart';
 
 import '/models/music_api/paged_data.dart';
@@ -698,5 +699,82 @@ class MusicApi {
     });
 
     return tracks;
+  }
+
+  Future<Playlist> createPlaylist(String title) async {
+    final result = await _http.postForm(
+      '/users/$uid/playlists/create',
+      data: {
+        'visibility': 'public',
+        'title': title,
+      },
+    );
+    final playlist = Playlist.fromJson(result['result']);
+
+    return playlist;
+  }
+
+  Future<void> deletePlaylist(int kind) async {
+    await _http.postForm('/users/$uid/playlists/$kind/delete');
+  }
+
+  Future<TrackUploaderInfo> createPlaylistTracksLoader(Playlist playlist, String filename) async {
+    final result = await _http.postForm('/loader/upload-url?uid=$uid'
+        '&playlist-id=${playlist.kind}%3A${playlist.kind}&path=${Uri.encodeComponent(filename)}');
+
+    return TrackUploaderInfo.fromJson(result['result']);
+  }
+
+  Stream<double> uploadPlaylistTrack(Playlist playlist, String filepath) async* {
+    yield 0;
+
+    final String filename = basename(filepath);
+    final TrackUploaderInfo uploaderInfo = await createPlaylistTracksLoader(playlist, filename);
+
+    yield* _http.uploadFile(uploaderInfo.postTarget, filepath);
+  }
+  
+  Future<Playlist> _playlistChangeRelative(int kind, List<Map<String,dynamic>> diff, int revision) async {
+    final json = await _http.postForm(
+      '/users/$uid/playlists/$kind/change-relative',
+      data: {
+        'diff': jsonEncode(diff),
+        'revision': revision
+      },
+    );
+
+    return Playlist.fromJson(json['result']);
+  }
+
+  Future<Playlist> insertPlaylistTracks(Playlist playlist, Iterable<Track> tracks,
+      [int position = 0]) async {
+    final diff = [{
+      'op': 'insert',
+      'at': position,
+      'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}).toList(),
+    }];
+
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+  }
+
+  Future<Playlist> deletePlaylistTracks(Playlist playlist, Iterable<int> positions) async {
+    final diff = positions.map((i) => {
+      'op': 'delete',
+      'from': i,
+      'to': i + 1,
+    }).toList();
+
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+  }
+
+  Future<Playlist> movePlaylistTracks(Playlist playlist, Iterable<Track> tracks, int from, int to) async {
+    final diff = [{
+      'op': 'move',
+      'from': from,
+      'to': to,
+      'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}),
+    }];
+
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
   }
 }

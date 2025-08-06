@@ -28,11 +28,9 @@ packages:
   audio_player_gst:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: eae3530c8e6d1666e8a4769e07da12c6783722fb
-      url: "https://github.com/bdrazhzhov/audio-player-gst.git"
-    source: git
+      path: "../audio_player_gst"
+      relative: true
+    source: path
     version: "0.0.1"
   audio_video_progress_bar:
     dependency: "direct main"

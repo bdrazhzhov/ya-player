@@ -3,6 +3,7 @@ import 'package:ya_player/controls/flexible_space.dart';
 
 import '/l10n/app_localizations.dart';
 import '/models/music_api_types.dart';
+import 'delete_playlist_button.dart';
 
 class PlaylistFlexibleSpace extends StatelessWidget {
   final Playlist playlist;
@@ -47,7 +48,13 @@ class PlaylistFlexibleSpace extends StatelessWidget {
         children: [
           TextButton(onPressed: (){}, child: const Text('Play')),
           TextButton(onPressed: (){}, child: const Text('Like')),
-        ],
+          DeletePlaylistButton(
+              playlistKind: playlist.kind,
+              onDeleted: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
       )
     );
   }

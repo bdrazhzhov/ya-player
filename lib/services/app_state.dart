@@ -177,7 +177,7 @@ class AppState {
     final List<Future> futures = [];
     futures.add(_requestStationsDashboard());
     futures.add(_requestStations());
-    futures.add(_requestPlaylists());
+    futures.add(requestPlaylists());
     await Future.wait(futures);
 
     futures.add(_requestNonMusicCatalog());
@@ -461,7 +461,7 @@ class AppState {
     artistsNotifier.value = await _musicApi.likedArtists();
   }
 
-  Future<void> _requestPlaylists() async {
+  Future<void> requestPlaylists() async {
     playlistsNotifier.value = await _musicApi.playlists();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ya_player/controls/track_actions.dart';
 
 import '/controls/like_button.dart';
 import '/services/app_state.dart';
@@ -99,11 +100,13 @@ class _TrackListItemState extends State<TrackListItem> {
                 )
               else
                 const SizedBox(width: 50),
-              Container(
+              SizedBox(
                 width: 50,
-                padding: const EdgeInsets.only(left: 2, right: 2),
-                child: Text(trackDuration),
-              )
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: isHovered ? TrackActions(track: track) : Text(trackDuration),
+                ),
+              ),
             ],
           ),
         ),

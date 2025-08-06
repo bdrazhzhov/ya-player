@@ -166,3 +166,31 @@ class LyricsInfo {
     );
   }
 }
+
+final class TrackUploaderInfo {
+  final String pollResult;
+  final String postTarget;
+  final String ugcTrackId;
+
+  TrackUploaderInfo({
+    required this.pollResult,
+    required this.postTarget,
+    required this.ugcTrackId,
+  });
+
+  factory TrackUploaderInfo.fromJson(Map<String, dynamic> json) {
+    return TrackUploaderInfo(
+      pollResult: json['poll-result'],
+      postTarget: json['post-target'],
+      ugcTrackId: json['ugc-track-id'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'poll-result': pollResult,
+      'post-target': postTarget,
+      'ugc-track-id': ugcTrackId,
+    };
+  }
+}

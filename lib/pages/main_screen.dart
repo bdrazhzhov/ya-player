@@ -49,7 +49,7 @@ class _MainScreen extends State<MainScreen> {
           case '/artists':
             page = const ArtistsPage();
           case '/playlists':
-            page = const PlaylistsPage();
+            page = PlaylistsPage();
           case '/podcasts_books':
             page = PodcastsBooksPage();
           case '/mix_link':

@@ -32,7 +32,7 @@ class TracksPage extends StatelessWidget {
           future: _playlistData,
           builder: (_, AsyncSnapshot<Playlist> snapshot) {
             if (snapshot.hasData) {
-              _dataLoadedFuture.complete();
+              if(!_dataLoadedFuture.isCompleted) _dataLoadedFuture.complete();
 
               return SliverTrackList(
                 playContext: snapshot.data!,

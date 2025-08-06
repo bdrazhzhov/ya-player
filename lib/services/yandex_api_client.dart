@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -122,5 +123,28 @@ class YandexApiClient {
     );
 
     return resp.data;
+  }
+
+  Stream<double> uploadFile(String path, String pathToFile) async* {
+    final multipartFile = await MultipartFile.fromFile(pathToFile);
+    final formData = FormData.fromMap({ 'file': multipartFile });
+
+    final progressStreamController = StreamController<double>();
+
+    _dio.post(
+      path,
+      data: formData,
+      onSendProgress: (int sent, int total) {
+        if (total != -1) {
+          progressStreamController.add(sent / total);
+        }
+      },
+    ).whenComplete((){
+      if(progressStreamController.isClosed) return;
+
+      progressStreamController.close();
+    });
+
+    yield* progressStreamController.stream;
   }
 }
