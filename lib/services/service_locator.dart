@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '/player/playback_queue.dart';
+import 'context_menu_manager.dart';
 import 'player_state.dart';
 import 'window_manager.dart';
 import '/dbus/sleep_inhibitor.dart';
@@ -23,6 +24,7 @@ GetIt getIt = GetIt.instance;
 Future<void> setupServiceLocator() async {
   getIt.registerSingleton<PlaybackQueue>(PlaybackQueue());
   getIt.registerSingleton<WindowManager>(WindowManager());
+  getIt.registerSingleton<ContextMenuManager>(ContextMenuManager());
   getIt.registerSingleton<Preferences>(await _initPreferences());
   getIt.registerSingleton<YandexApiClient>(_initHttpClient());
   getIt.registerSingleton<MusicApi>(_initMusicApi());

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_context_menu/flutter_context_menu.dart';
 
 import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
@@ -8,6 +7,8 @@ import '/helpers/nav_keys.dart';
 import '/models/music_api/track.dart';
 import '/pages/album_page.dart';
 import '/pages/artist_page.dart';
+import 'context_menu/context_menu.dart';
+import 'context_menu/context_menu_item.dart';
 
 enum TrackActionType { download, radio, addToPlaylist, toAlbum, toArtists, share, remove }
 
@@ -19,50 +20,29 @@ class TrackActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showContextMenu(context, contextMenu: _buildMenu(context));
-      },
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: Icon(Icons.more_horiz),
-      ),
-    );
-  }
-
-  ContextMenu _buildMenu(BuildContext context) {
-    final renderBox = context.findRenderObject() as RenderBox;
     final l10n = AppLocalizations.of(context)!;
 
     return ContextMenu(
-      entries: [
+      items: [
         MenuItem(
           label: l10n.track_download,
           icon: Icons.download,
-          enabled: false,
-          onSelected: () {
-            // Handle download action
-          },
         ),
         MenuItem(
           label: l10n.track_radio,
           icon: Icons.radio_outlined,
-          onSelected: () {
+          onTap: () {
             _appState.playObjectStation(track);
           },
         ),
         MenuItem(
           label: l10n.track_addToPlaylist,
           icon: Icons.add,
-          enabled: false,
-          onSelected: () {
-            // Handle add to playlist action
-          },
         ),
         MenuItem(
           label: l10n.track_goToAlbum,
           icon: Icons.album,
-          onSelected: () {
+          onTap: () {
             NavKeys.mainNav.currentState!.push(PageRouteBuilder(
               pageBuilder: (_, __, ___) => AlbumPage(track.firstAlbumId),
               reverseTransitionDuration: Duration.zero,
@@ -70,11 +50,10 @@ class TrackActions extends StatelessWidget {
           },
         ),
         _buildArtistMenuItem(context),
-        MenuItem(label: l10n.track_share, icon: Icons.share, enabled: false),
-        MenuItem(label: l10n.track_remove, icon: Icons.clear, enabled: false),
+        MenuItem(label: l10n.track_share, icon: Icons.share),
+        MenuItem(label: l10n.track_remove, icon: Icons.clear),
       ],
-      position: renderBox.localToGlobal(Offset.zero),
-      padding: const EdgeInsets.all(8.0),
+      child: Icon(Icons.more_horiz),
     );
   }
 
@@ -83,14 +62,13 @@ class TrackActions extends StatelessWidget {
 
     MenuItem artistsMenuItem;
     if (track.artists.length > 1) {
-      artistsMenuItem = MenuItem.submenu(
+      artistsMenuItem = MenuItem(
         label: l10n.track_goToArtists(track.artists.length),
         icon: Icons.person,
         items: track.artists.map((artist) {
           return MenuItem(
-            value: artist,
             label: artist.name,
-            onSelected: () {
+            onTap: () {
               NavKeys.mainNav.currentState!.push(PageRouteBuilder(
                 pageBuilder: (_, __, ___) => ArtistPage(artist),
                 reverseTransitionDuration: Duration.zero,
@@ -103,7 +81,7 @@ class TrackActions extends StatelessWidget {
       artistsMenuItem = MenuItem(
         label: l10n.track_goToArtists(track.artists.length),
         icon: Icons.person,
-        onSelected: () {
+        onTap: () {
           NavKeys.mainNav.currentState!.push(PageRouteBuilder(
             pageBuilder: (_, __, ___) => ArtistPage(track.artists.first),
             reverseTransitionDuration: Duration.zero,

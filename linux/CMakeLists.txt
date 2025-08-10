@@ -1,5 +1,5 @@
 # Project-level configuration.
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(runner LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
@@ -49,6 +49,7 @@ endfunction()
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/context-menu-manager")
 
 # System-level dependencies.
 find_package(PkgConfig REQUIRED)
@@ -65,6 +66,7 @@ add_executable(${BINARY_NAME}
   main.cc
   my_application.cc
   auth-manager.cpp
+  context-menu-manager.cpp
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
 
@@ -72,12 +74,14 @@ add_executable(${BINARY_NAME}
 # that need different build settings.
 apply_standard_settings(${BINARY_NAME})
 
-target_include_directories(${BINARY_NAME} PRIVATE ${WEBKIT2_INCLUDE_DIRS})
+target_include_directories(${BINARY_NAME} PRIVATE ${WEBKIT2_INCLUDE_DIRS}
+        "${CMAKE_CURRENT_SOURCE_DIR}/context-menu-manager")
 
 # Add dependency libraries. Add any application-specific dependencies here.
 target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
 target_link_libraries(${BINARY_NAME} PRIVATE ${WEBKIT2_LIBRARIES})
+target_link_libraries(${BINARY_NAME} PRIVATE context-menu-manager)
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
