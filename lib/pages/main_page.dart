@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '/services/state_enums.dart';
@@ -56,19 +57,27 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Column _buildAppUi() {
-    return Column(
-      children: [
-        const Expanded(
-          child: Row(
-            children: [
-              MainMenu(),
-              Expanded(child: MainScreen())
-            ],
-          )
-        ),
-        ControlsBar(isExpandable: true)
-      ],
+  Widget _buildAppUi() {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (event) {
+        if(event.original?.kind == PointerDeviceKind.mouse && event.original?.buttons == kBackMouseButton) {
+          getIt<AppState>().navigateBack();
+        }
+      },
+      child: Column(
+        children: [
+          const Expanded(
+            child: Row(
+              children: [
+                MainMenu(),
+                Expanded(child: MainScreen())
+              ],
+            )
+          ),
+          ControlsBar(isExpandable: true)
+        ],
+      ),
     );
   }
 }

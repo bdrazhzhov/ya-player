@@ -78,18 +78,6 @@ class WindowManager
     fl_method_call_respond(method_call, response, nullptr);
   }
 
-  static gboolean onMouseButtonPressEvent(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
-  {
-    const auto windowManager = static_cast<WindowManager*>(user_data);
-
-    if (event->type == GDK_BUTTON_PRESS && event->button == BUTTON_BACK && windowManager->_canGoBack)
-    {
-      windowManager->pushBackButton();
-      return TRUE;
-    }
-    return FALSE; // Возврат FALSE позволяет событию распространяться дальше
-  }
-
   void _setWindowTitle(const char* title, const char* sunTitle) const
   {
     if(_headerBar != nullptr)
@@ -188,8 +176,6 @@ public:
     g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
     _channel = fl_method_channel_new(_binaryMessenger, "YaPlayerWindowManager/events", FL_METHOD_CODEC(codec));
     fl_method_channel_set_method_call_handler(_channel, _handleMethodCall, this, nullptr);
-
-    g_signal_connect(window, "button-press-event", G_CALLBACK(WindowManager::onMouseButtonPressEvent), this);
   }
 
   void pushBackButton() const

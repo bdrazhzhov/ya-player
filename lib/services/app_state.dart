@@ -443,9 +443,9 @@ class AppState {
     });
   }
 
-  void _onBackButtonClicked() {
+  void navigateBack() {
     NavigatorState? navState = NavKeys.mainNav.currentState;
-    if(navState == null) return;
+    if(navState == null || !navState.canPop()) return;
 
     navState.pop();
     if(isQueueShown) {
