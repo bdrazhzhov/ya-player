@@ -39,9 +39,9 @@ class FlexibleSpace extends StatelessWidget {
         .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
     if (settings!.currentExtent == settings.minExtent) {
       return Row(
+        spacing: 12,
         children: [
           _buildImage(50, 4),
-          SizedBox(width: 12),
           Expanded(
             child: Text(
               title,
@@ -55,23 +55,19 @@ class FlexibleSpace extends StatelessWidget {
     }
 
     return Row(
+      spacing: 24,
       children: [
         _buildImage(200, 8),
-        SizedBox(width: 24),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.fitHeight,
-            clipBehavior: Clip.hardEdge,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(typeToTitle[type]!),
-                EditableTitle(title: title, onSubmitted: onTitleChanged,),
-                if(subtitle != null) subtitle!,
-                actions
-              ],
-            ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(typeToTitle[type]!),
+              EditableTitle(title: title, onSubmitted: onTitleChanged,),
+              if(subtitle != null) subtitle!,
+              actions
+            ],
           ),
         )
       ],

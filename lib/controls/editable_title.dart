@@ -13,79 +13,97 @@ class EditableTitle extends StatefulWidget {
 
 class _EditableTitleState extends State<EditableTitle> {
   bool isEditing = false;
+  bool showEditIcon = false;
   late String oldText = widget.title;
   late final controller = TextEditingController(text: widget.title);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final TextStyle? style =
+        Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold);
 
-    if(widget.onSubmitted != null) {
-      if(isEditing) {
-        return Focus(
-          onKeyEvent: onKeyEvent,
-          child: SizedBox(
-            height: 64,
-            width: 500,
-            child: TextField(
-              autofocus: true,
-              controller: controller,
-              style: theme.textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
-              onSubmitted: onSubmitted,
-            ),
-          ),
+    if (widget.onSubmitted == null) {
+      return buildTitleText(style);
+    }
+
+    return SizedBox(
+      height: 64,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: isEditing ? buildTextField(style) : buildEditableTitle(style),
+      ),
+    );
+  }
+
+  GestureDetector buildEditableTitle(TextStyle? style) {
+    return GestureDetector(
+      onTap: () => setState(() {
+        isEditing = true;
+        oldText = controller.text;
+      }),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: buildTitleText(style),
+      ),
+    );
+  }
+
+  Focus buildTextField(TextStyle? style) {
+    return Focus(
+      onKeyEvent: onKeyEvent,
+      onFocusChange: (hasFocus) {
+        if (!hasFocus && isEditing) cancelEdit();
+      },
+      child: TextField(
+        controller: controller,
+        autofocus: true,
+        style: style,
+        onSubmitted: submit,
+      ),
+    );
+  }
+
+  Widget buildTitleText(TextStyle? style) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+      final effectiveStyle = style ?? DefaultTextStyle.of(context).style;
+
+      final tp = TextPainter(
+        text: TextSpan(text: controller.text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.of(context).textScaler,
+        maxLines: 1,
+      );
+
+      tp.layout(maxWidth: constraints.maxWidth);
+      final textWidget = Text(controller.text, style: effectiveStyle, overflow: TextOverflow.ellipsis);
+
+      if(tp.didExceedMaxLines) {
+        return Tooltip(
+          message: controller.text,
+          child: textWidget,
         );
       }
 
-      return Row(
-        children: [
-          buildTitleLabel(),
-          IconButton(
-            onPressed: onEditPress,
-            icon: const Icon(Icons.edit),
-          ),
-        ],
-      );
-    }
-
-    return buildTitleLabel();
+      return textWidget;
+    });
   }
 
-  Text buildTitleLabel() {
-    return Text(
-      controller.text,
-      style: Theme.of(context).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-  
-  void onEditPress() {
-    isEditing = true;
-    oldText = controller.text;
-    setState(() {});
+  void submit(String value) {
+    setState(() => isEditing = false);
+    oldText = value;
+    widget.onSubmitted?.call(value);
   }
 
-  void onSubmitted(String newValue) {
-    isEditing = false;
-    oldText = newValue;
-    setState(() {});
-    widget.onSubmitted?.call(newValue);
-  }
-
-  void onEditCanceled() {
-    isEditing = false;
+  void cancelEdit() {
+    setState(() => isEditing = false);
     controller.text = oldText;
-    setState(() {});
   }
 
   KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) {
-    if(event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-      isEditing = false;
-      controller.text = oldText;
-      setState(() {});
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+      cancelEdit();
       return KeyEventResult.handled;
     }
-
     return KeyEventResult.ignored;
   }
 }
