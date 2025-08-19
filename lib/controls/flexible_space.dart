@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/l10n/app_localizations.dart';
+import 'editable_title.dart';
 import 'yandex_image.dart';
 
 enum FlexibleSpaceType {playlist, artist, album}
@@ -11,6 +12,7 @@ class FlexibleSpace extends StatelessWidget {
   final String title;
   final Widget? subtitle;
   final Widget actions;
+  final void Function(String)? onTitleChanged;
 
   const FlexibleSpace({
     super.key,
@@ -18,6 +20,7 @@ class FlexibleSpace extends StatelessWidget {
     required this.type,
     required this.title,
     this.subtitle,
+    this.onTitleChanged,
     required this.actions
   });
 
@@ -64,11 +67,7 @@ class FlexibleSpace extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(typeToTitle[type]!),
-                Text(
-                  title,
-                  style: theme.textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                EditableTitle(title: title, onSubmitted: onTitleChanged,),
                 if(subtitle != null) subtitle!,
                 actions
               ],

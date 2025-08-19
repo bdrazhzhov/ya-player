@@ -96,6 +96,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get playlist_compiledBy => 'Составитель';
 
   @override
+  String get playlist_delete => 'Удалить плейлист';
+
+  @override
+  String get playlist_create => 'Создать плейлист';
+
+  @override
+  String get playlist_new => 'Новый плейлист';
+
+  @override
+  String get playlist_remove_from => 'Удалить из плейлиста';
+
+  @override
+  String get playlist_listen_to => 'Слушать';
+
+  @override
+  String get playlist_like => 'Нравится';
+
+  @override
   String tracks_count(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

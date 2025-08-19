@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ya_player/controls/flexible_space.dart';
 
+import '/services/app_state.dart';
+import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
+import '/controls/flexible_space.dart';
 import '/models/music_api_types.dart';
 import 'delete_playlist_button.dart';
 
@@ -46,16 +48,23 @@ class PlaylistFlexibleSpace extends StatelessWidget {
       ),
       actions: Row(
         children: [
-          TextButton(onPressed: (){}, child: const Text('Play')),
-          TextButton(onPressed: (){}, child: const Text('Like')),
-          DeletePlaylistButton(
-              playlistKind: playlist.kind,
-              onDeleted: () {
-                Navigator.of(context).pop();
-              },
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.play_arrow),
+              tooltip: l10n.playlist_listen_to,
             ),
-          ],
-      )
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.favorite),
+            tooltip: l10n.playlist_like,
+          ),
+          DeletePlaylistButton(
+            playlist: playlist,
+            onDeleted: () { Navigator.of(context).pop(); },
+          ),
+        ],
+      ),
+      onTitleChanged: _onTitleChanged,
     );
   }
 
@@ -67,5 +76,9 @@ class PlaylistFlexibleSpace extends StatelessWidget {
       duration += ' $remainingMinutes ${l10n.date_minutesShort}';
     }
     return duration;
+  }
+
+  void _onTitleChanged(String newTitle) {
+    getIt<AppState>().changePlaylistTitle(playlist, newTitle);
   }
 }

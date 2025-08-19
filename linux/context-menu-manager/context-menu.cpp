@@ -36,9 +36,7 @@ void initIconsFont()
 
     const auto fontPath = path.string() + "/data/flutter_assets/fonts/MaterialIcons-Regular.otf";
     const FcBool fontAddStatus = FcConfigAppFontAddFile(FcConfigGetCurrent(), reinterpret_cast<const FcChar8*>(fontPath.c_str()));
-    if (fontAddStatus) {
-        fprintf(stdout, "  - allocated font-config font from `%s`\n", fontPath.c_str());
-    } else {
+    if (!fontAddStatus) {
         fprintf(stderr, "  - [ERROR] could not load font from file `%s`\n", fontPath.c_str());
     }
 }
@@ -49,12 +47,8 @@ void contextMenuInit(GdkWindow* win)
 
     const auto css =
         "menuitem {"
-        "  font-size: 14px;"
-        "  padding: 6px 10px 6px 6px;"
-        // "  min-width: 250px;"
-        // "}"
-        // "menuitem image {"
-        // "  margin-right: 8px;"
+          "font-size: 14px;"
+          "padding: 6px 10px 6px 6px;"
         "}";
     GtkCssProvider *provider = gtk_css_provider_new ();
     gtk_css_provider_load_from_data (provider, css, -1, nullptr);
@@ -89,7 +83,7 @@ int createMenu(const std::vector<MenuItem>& items)
 
 void destroyMenu(const int index)
 {
-    std::cout << "Destroying menu: " << index << std::endl;
+//    std::cout << "Destroying menu: " << index << std::endl;
     GtkWidget* menu = menus[index].menuWidget;
     gtk_widget_destroy(menu);
     g_object_unref(menu);

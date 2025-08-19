@@ -32,6 +32,12 @@
 
   "playlist": "PLAYLIST",
   "playlist_compiledBy": "Compiled by",
+  "playlist_delete": "Delete playlist",
+  "playlist_create": "Create playlist",
+  "playlist_new": "New playlist",
+  "playlist_remove_from": "Remove from playlist",
+  "playlist_listen_to": "Listen",
+  "playlist_like": "Like",
 
   "tracks_count": "{count, plural, =0 {no tracks} =1 {1 track} other {{count} tracks}}",
   "@tracks_count": {

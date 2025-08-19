@@ -40,7 +40,7 @@ class PlaylistsPage extends StatelessWidget {
               CreatePlaylistButton(onCreated: (Playlist playlist) {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => PlaylistPage(playlist),
+                    pageBuilder: (_, __, ___) => PlaylistPage(uid: playlist.uid, kind: playlist.kind,),
                     reverseTransitionDuration: Duration.zero,
                   ),
                 );

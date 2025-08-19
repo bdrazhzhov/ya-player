@@ -60,6 +60,9 @@ class AppState {
   late final localeNotifier = ValueNotifier<Locale>(_prefs.locale);
   bool isQueueShown = false;
 
+  final _playlistUpdatesController = StreamController<(int uid, int kind)>.broadcast();
+  Stream<(int uid, int kind)> get playlistUpdatesStream => _playlistUpdatesController.stream;
+
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
   final _audioPlayer = getIt<AudioPlayer>();
@@ -118,7 +121,7 @@ class AppState {
     closeToTrayEnabledNotifier.value = _prefs.hideOnClose;
     _mpris.positionStream.listen(_audioPlayer.seek);
 
-    _windowManager.backButtonStream.listen((_) => _onBackButtonClicked());
+    _windowManager.backButtonStream.listen((_) => navigateBack());
   }
 
   static const yaColor = Color.fromARGB(255, 254, 218, 76);
@@ -769,5 +772,26 @@ class AppState {
   Future<List<Track>> popularTracks(int artistId) async {
     final trackIds = await _musicApi.trackIdsByRating(artistId);
     return _musicApi.tracksByIds(trackIds);
+  }
+
+  Future<void> insertTrackToPlaylist(Track track, Playlist playlist) async {
+    await getIt<MusicApi>().insertPlaylistTracks(playlist, [track]);
+    _playlistUpdatesController.add((playlist.uid, playlist.kind));
+    await getIt<AppState>().requestPlaylists();
+  }
+
+  Future<void> deletePlaylistTracks(Playlist playlist, List<int> trackIndices) async {
+    await getIt<MusicApi>().deletePlaylistTracks(playlist, trackIndices);
+    _playlistUpdatesController.add((playlist.uid, playlist.kind));
+    await requestPlaylists();
+  }
+
+  Future<void> changePlaylistTitle(Playlist playlist, String newTitle) async {
+    await getIt<MusicApi>().changePlaylistTitle(playlist, newTitle);
+    await requestPlaylists();
+  }
+
+  bool isPlaylistEditable(Playlist playlist) {
+    return _musicApi.uid == playlist.uid && playlist.kind >= 1000;
   }
 }

@@ -32,6 +32,12 @@
 
   "playlist": "ПЛЕЙЛИСТ",
   "playlist_compiledBy": "Составитель",
+  "playlist_delete": "Удалить плейлист",
+  "playlist_create": "Создать плейлист",
+  "playlist_new": "Новый плейлист",
+  "playlist_remove_from": "Удалить из плейлиста",
+  "playlist_listen_to": "Слушать",
+  "playlist_like": "Нравится",
 
   "tracks_count": "{count, plural, =0 {нет треков} one {1 трек} few {{count} трека} many {{count} треков} other {{count} треков}}",
   "@tracks_count": {

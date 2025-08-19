@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/models/music_api/radio_session.dart';
-import '/models/music_api/station.dart';
-import 'station_settings_widget.dart';
 
 class StationSettingsButton extends StatelessWidget {
   final _overlayController = OverlayPortalController();

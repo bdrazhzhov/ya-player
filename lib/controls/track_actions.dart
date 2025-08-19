@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '/pages/playlist_page.dart';
+import '/models/music_api/playlist.dart';
+import '/services/music_api.dart';
 import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
 import '/services/app_state.dart';
@@ -14,9 +17,13 @@ enum TrackActionType { download, radio, addToPlaylist, toAlbum, toArtists, share
 
 class TrackActions extends StatelessWidget {
   final Track track;
-  final _appState = getIt<AppState>();
+  final Object? playContext;
+  final int trackIndex;
 
-  TrackActions({super.key, required this.track});
+  final _appState = getIt<AppState>();
+  final _musicApi = getIt<MusicApi>();
+
+  TrackActions({super.key, required this.track, this.playContext, this.trackIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +45,7 @@ class TrackActions extends StatelessWidget {
         MenuItem(
           label: l10n.track_addToPlaylist,
           icon: Icons.add,
+          items: _buildPlaylists(track, l10n),
         ),
         MenuItem(
           label: l10n.track_goToAlbum,
@@ -49,17 +57,23 @@ class TrackActions extends StatelessWidget {
             ));
           },
         ),
-        _buildArtistMenuItem(context),
+        _buildArtistMenuItem(l10n),
         MenuItem(label: l10n.track_share, icon: Icons.share),
         MenuItem(label: l10n.track_remove, icon: Icons.clear),
+        if(playContext is Playlist && _appState.isPlaylistEditable(playContext as Playlist)) MenuItem(
+          label: l10n.playlist_remove_from,
+          icon: Icons.remove_circle_outline,
+          onTap: () async {
+            final playlist = playContext as Playlist;
+            _appState.deletePlaylistTracks(playlist, [trackIndex]);
+          },
+        ),
       ],
       child: Icon(Icons.more_horiz),
     );
   }
 
-  MenuItem _buildArtistMenuItem(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
+  MenuItem _buildArtistMenuItem(AppLocalizations l10n) {
     MenuItem artistsMenuItem;
     if (track.artists.length > 1) {
       artistsMenuItem = MenuItem(
@@ -91,5 +105,34 @@ class TrackActions extends StatelessWidget {
     }
 
     return artistsMenuItem;
+  }
+
+  List<MenuItem> _buildPlaylists(Track track, AppLocalizations l10n) {
+    final playlists = getIt<AppState>().playlistsNotifier.value.map((playlist){
+      return MenuItem(
+        label: playlist.title,
+        onTap: () async {
+          await getIt<MusicApi>().insertPlaylistTracks(playlist, [track]);
+          await getIt<AppState>().requestPlaylists();
+        },
+      );
+    }).toList();
+
+    final newPlaylistItem = MenuItem(
+      label: l10n.playlist_create,
+      icon: Icons.add,
+      onTap: () async {
+        final Playlist newPlaylist = await _musicApi.createPlaylist(l10n.playlist_new);
+        await _musicApi.insertPlaylistTracks(newPlaylist, [track]);
+        _appState.requestPlaylists();
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+          pageBuilder: (_, __, ___) => PlaylistPage(uid: newPlaylist.uid, kind: newPlaylist.kind,),
+          reverseTransitionDuration: Duration.zero,
+        ));
+      }
+    );
+    playlists.insert(0, newPlaylistItem);
+
+    return playlists;
   }
 }

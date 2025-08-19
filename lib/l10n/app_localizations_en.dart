@@ -96,6 +96,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playlist_compiledBy => 'Compiled by';
 
   @override
+  String get playlist_delete => 'Delete playlist';
+
+  @override
+  String get playlist_create => 'Create playlist';
+
+  @override
+  String get playlist_new => 'New playlist';
+
+  @override
+  String get playlist_remove_from => 'Remove from playlist';
+
+  @override
+  String get playlist_listen_to => 'Listen';
+
+  @override
+  String get playlist_like => 'Like';
+
+  @override
   String tracks_count(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

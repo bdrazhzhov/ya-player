@@ -272,6 +272,42 @@ abstract class AppLocalizations {
   /// **'Compiled by'**
   String get playlist_compiledBy;
 
+  /// No description provided for @playlist_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete playlist'**
+  String get playlist_delete;
+
+  /// No description provided for @playlist_create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create playlist'**
+  String get playlist_create;
+
+  /// No description provided for @playlist_new.
+  ///
+  /// In en, this message translates to:
+  /// **'New playlist'**
+  String get playlist_new;
+
+  /// No description provided for @playlist_remove_from.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from playlist'**
+  String get playlist_remove_from;
+
+  /// No description provided for @playlist_listen_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get playlist_listen_to;
+
+  /// No description provided for @playlist_like.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get playlist_like;
+
   /// No description provided for @tracks_count.
   ///
   /// In en, this message translates to:

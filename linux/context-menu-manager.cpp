@@ -104,6 +104,17 @@ void ContextMenuManager::_handleMethodCall(FlMethodChannel* /*channel*/, FlMetho
       response = FL_METHOD_RESPONSE(fl_method_error_response_new("BAD_ARGS", "Expected integer menu index", nullptr));
     }
   }
+  else if(strcmp(method, "updateStyles") == 0)
+  {
+    if(fl_value_get_type(args) == FL_VALUE_TYPE_MAP)
+    {
+      response = FL_METHOD_RESPONSE(fl_method_success_response_new(nullptr));
+    }
+    else
+    {
+      response = FL_METHOD_RESPONSE(fl_method_error_response_new("BAD_ARGS", "Expected map with styles", nullptr));
+    }
+  }
   else
   {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());

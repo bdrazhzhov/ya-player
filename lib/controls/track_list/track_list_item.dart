@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ya_player/controls/track_actions.dart';
 
+import '/controls/track_actions.dart';
 import '/controls/like_button.dart';
 import '/services/app_state.dart';
 import '/models/music_api/track.dart';
@@ -17,6 +17,7 @@ class TrackListItem extends StatefulWidget {
   final bool showArtistName;
   final int trackIndex;
   final bool showTrackNumber;
+  final Object? playContext;
   final void Function()? onTap;
 
   const TrackListItem({
@@ -28,6 +29,7 @@ class TrackListItem extends StatefulWidget {
     this.showArtistName = true,
     this.trackIndex = 0,
     this.showTrackNumber = false,
+    this.playContext,
     this.onTap,
   });
 
@@ -104,7 +106,13 @@ class _TrackListItemState extends State<TrackListItem> {
                 width: 50,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: isHovered ? TrackActions(track: track) : Text(trackDuration),
+                  child: isHovered
+                      ? TrackActions(
+                          track: track,
+                          playContext: widget.playContext,
+                          trackIndex: widget.trackIndex,
+                        )
+                      : Text(trackDuration),
                 ),
               ),
             ],
@@ -141,6 +149,7 @@ class _TrackListItemState extends State<TrackListItem> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RichText(
             softWrap: false,

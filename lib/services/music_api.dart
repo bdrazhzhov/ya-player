@@ -714,8 +714,8 @@ class MusicApi {
     return playlist;
   }
 
-  Future<void> deletePlaylist(int kind) async {
-    await _http.postForm('/users/$uid/playlists/$kind/delete');
+  Future<void> deletePlaylist(Playlist playlist) async {
+    await _http.postForm('/users/${playlist.uid}/playlists/${playlist.kind}/delete');
   }
 
   Future<TrackUploaderInfo> createPlaylistTracksLoader(Playlist playlist, String filename) async {
@@ -772,9 +772,18 @@ class MusicApi {
       'op': 'move',
       'from': from,
       'to': to,
-      'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}),
+      'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}).toList(),
     }];
 
     return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+  }
+
+  Future<Playlist> changePlaylistTitle(Playlist playlist, String newTitle) async {
+    final json = await _http.postForm(
+      '/users/${playlist.uid}/playlists/${playlist.kind}/name',
+      data: { 'value': newTitle },
+    );
+
+    return Playlist.fromJson(json['result']);
   }
 }

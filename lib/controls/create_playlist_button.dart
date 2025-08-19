@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/l10n/app_localizations.dart';
 import '/services/app_state.dart';
 import '/services/music_api.dart';
 import '/services/service_locator.dart';
@@ -29,7 +30,7 @@ class _CreatePlaylistButtonState extends State<CreatePlaylistButton> {
     return IconButton(
       onPressed: createPlaylist,
       icon: const Icon(Icons.add),
-      tooltip: 'Create new playlist',
+      tooltip: AppLocalizations.of(context)!.playlist_create,
     );
   }
   

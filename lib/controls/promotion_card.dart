@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ya_player/controls/yandex_image.dart';
 
-import '/services/music_api.dart';
 import '/models/music_api/promotion.dart';
 
 class PromotionCard extends StatelessWidget {
