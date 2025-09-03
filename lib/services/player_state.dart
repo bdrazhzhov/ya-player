@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:ya_player/services/preferences.dart';
 import 'package:ya_player/services/state_enums.dart';
 
-import '../player/playback_queue.dart';
-import 'audio_player.dart';
 import '/dbus/mpris/mpris_player.dart';
 import '/dbus/sleep_inhibitor.dart';
+import '/player/playback_queue.dart';
+import 'audio_player.dart';
 import 'service_locator.dart';
 
 enum PlayBackState { playing, paused, stopped }
@@ -48,38 +48,38 @@ class PlayerState {
   }
 
   void _listenToPlayerAbilities() {
-    canNextNotifier.addListener((){
+    canNextNotifier.addListener(() {
       _mpris.canGoNext = canNextNotifier.value;
     });
 
-    canPrevNotifier.addListener((){
+    canPrevNotifier.addListener(() {
       _mpris.canGoPrevious = canNextNotifier.value;
     });
 
-    canPlayNotifier.addListener((){
+    canPlayNotifier.addListener(() {
       _mpris.canPlay = canPlayNotifier.value;
     });
 
-    canPauseNotifier.addListener((){
+    canPauseNotifier.addListener(() {
       _mpris.canPause = canPauseNotifier.value;
     });
 
-    canSeekNotifier.addListener((){
+    canSeekNotifier.addListener(() {
       _mpris.canSeek = canSeekNotifier.value;
     });
 
-    canShuffleNotifier.addListener((){
+    canShuffleNotifier.addListener(() {
       _mpris.canShuffle = canShuffleNotifier.value;
     });
 
-    canRepeatNotifier.addListener((){
+    canRepeatNotifier.addListener(() {
       _mpris.canRepeat = canRepeatNotifier.value;
     });
   }
 
   void _listenToPlaybackState() {
-    playBackStateNotifier.addListener((){
-      switch(playBackStateNotifier.value) {
+    playBackStateNotifier.addListener(() {
+      switch (playBackStateNotifier.value) {
         case PlayBackState.playing:
           canPauseNotifier.value = true;
           canPlayNotifier.value = false;
@@ -106,11 +106,11 @@ class PlayerState {
   }
 
   void _listenToShuffleState() {
-    _mpris.shuffleStream.listen((bool value){
+    _mpris.shuffleStream.listen((bool value) {
       shuffleNotifier.value = value;
     });
 
-    shuffleNotifier.addListener((){
+    shuffleNotifier.addListener(() {
       _prefs.setShuffle(shuffleNotifier.value);
       _mpris.shuffle = shuffleNotifier.value;
       _queue.isShuffleEnabled = shuffleNotifier.value;
@@ -120,11 +120,11 @@ class PlayerState {
   }
 
   void _listenToRepeatState() {
-    _mpris.repeatStream.listen((RepeatMode value){
+    _mpris.repeatStream.listen((RepeatMode value) {
       repeatModeNotifier.value = value;
     });
 
-    repeatModeNotifier.addListener((){
+    repeatModeNotifier.addListener(() {
       _prefs.setRepeat(repeatModeNotifier.value);
       _mpris.repeat = repeatModeNotifier.value;
       _queue.repeatMode = repeatModeNotifier.value;
@@ -134,30 +134,31 @@ class PlayerState {
   }
 
   void _listenToRate() {
-    _mpris.rateStream.listen((double value){
+    _mpris.rateStream.listen((double value) {
       rateNotifier.value = value;
     });
 
-    rateNotifier.addListener((){
+    rateNotifier.addListener(() {
       _mpris.rate = rateNotifier.value;
+      _audioPlayer.setRate(rateNotifier.value);
     });
   }
 
   void _listenToVolume() {
-    _audioPlayer.volumeNotifier.addListener((){
+    _audioPlayer.volumeNotifier.addListener(() {
       _prefs.setVolume(_audioPlayer.volumeNotifier.value);
       _audioPlayer.setVolume(_audioPlayer.volumeNotifier.value);
       _mpris.volume = _audioPlayer.volumeNotifier.value;
     });
 
-    _mpris.volumeStream.listen((volume){
+    _mpris.volumeStream.listen((volume) {
       _audioPlayer.volumeNotifier.value = volume;
     });
   }
 
   void _listenToPlayingState() {
-    _audioPlayer.playingStateNotifier.addListener((){
-      switch(_audioPlayer.playingStateNotifier.value) {
+    _audioPlayer.playingStateNotifier.addListener(() {
+      switch (_audioPlayer.playingStateNotifier.value) {
         case PlayingState.pending:
           playBackStateNotifier.value = PlayBackState.stopped;
         case PlayingState.idle:
