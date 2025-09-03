@@ -85,21 +85,18 @@ class PlayerState {
           canPlayNotifier.value = false;
           canSeekNotifier.value = true;
           _mpris.playbackState = 'Playing';
-          _sleepInhibitor.blockSleep();
           break;
         case PlayBackState.paused:
           canPauseNotifier.value = false;
           canPlayNotifier.value = true;
           canSeekNotifier.value = true;
           _mpris.playbackState = 'Paused';
-          _sleepInhibitor.unblockSleep();
           break;
         case PlayBackState.stopped:
           canPauseNotifier.value = false;
           canPlayNotifier.value = true;
           canSeekNotifier.value = false;
           _mpris.playbackState = 'Stopped';
-          _sleepInhibitor.unblockSleep();
           break;
       }
     });
@@ -173,6 +170,12 @@ class PlayerState {
           playBackStateNotifier.value = PlayBackState.stopped;
         case PlayingState.unknown:
           playBackStateNotifier.value = PlayBackState.stopped;
+      }
+
+      if (_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
+        _sleepInhibitor.blockSleep();
+      } else {
+        _sleepInhibitor.unblockSleep();
       }
     });
   }
