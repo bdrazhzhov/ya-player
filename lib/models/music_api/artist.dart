@@ -4,20 +4,20 @@ import 'can_be_station.dart';
 import 'context_id.dart';
 
 class ArtistBase implements CanBeRadio, ContextId {
-  final int id;
+  final String id;
   final String name;
 
   ArtistBase(this.id, this.name);
 
   factory ArtistBase.fromJson(Map<String, dynamic> json) {
-    return ArtistBase(json['id'], json['name']);
+    return ArtistBase(json['id']?.toString() ?? '', json['name']);
   }
 
   @override
-  StationId stationId() => StationId('artist', id.toString());
+  StationId stationId() => StationId('artist', id);
 
   @override
-  String get contextId => id.toString();
+  String get contextId => id;
 }
 
 class Artist extends ArtistBase {
@@ -51,7 +51,7 @@ class Artist extends ArtistBase {
         : null;
 
     return Artist(
-      json['id'] is String ? int.parse(json['id']) : json['id'],
+      json['id'].toString(),
       json['name'], cover, genres, counts, links, extraActions
     );
   }

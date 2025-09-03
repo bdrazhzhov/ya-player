@@ -80,7 +80,7 @@ class AppState {
   final _radioManager = RadioManager();
 
   final List<String> _likedTrackIds = [];
-  final List<int> _likedArtistIds = [];
+  final List<String> _likedArtistIds = [];
   final List<Tree> _landing3Metatags = [];
 
   Object get playContext => _playContext;
@@ -291,7 +291,7 @@ class AppState {
         length: track.duration,
         artist: artist,
         artUrl: artUrl,
-        album: track.albums.first.title,
+        album: track.albums.isNotEmpty ? track.albums.first.title : null,
         genre: null
     );
   }
@@ -345,7 +345,7 @@ class AppState {
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.artist:
-          final ArtistInfo artistInfo = await _musicApi.artistInfo(int.parse(state.playerState.playerQueue.entityId));
+          final ArtistInfo artistInfo = await _musicApi.artistInfo(state.playerState.playerQueue.entityId);
           final ids = playerQueue.playableList.map((i) => i.playableId);
           tracks = await _musicApi.tracksByIds(ids);
           _playContext = artistInfo.artist;
@@ -769,7 +769,7 @@ class AppState {
     searchResultNotifier.value = await _musicApi.searchResult(text: text);
   }
 
-  Future<List<Track>> popularTracks(int artistId) async {
+  Future<List<Track>> popularTracks(String artistId) async {
     final trackIds = await _musicApi.trackIdsByRating(artistId);
     return _musicApi.tracksByIds(trackIds);
   }

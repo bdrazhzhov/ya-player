@@ -33,7 +33,7 @@ class Track extends Equatable implements CanBeRadio {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
-  int get firstAlbumId => albums.first.id;
+  int? get firstAlbumId => albums.isNotEmpty ? albums.first.id : null;
 
   static final _trackTypes = {
     'music': TrackType.music,

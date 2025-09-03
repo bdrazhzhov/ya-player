@@ -369,7 +369,7 @@ class MusicApi {
     return result;
   }
 
-  Future<ArtistInfo> artistInfo(int artistId) async {
+  Future<ArtistInfo> artistInfo(String artistId) async {
     Map<String, dynamic> json = await _http.get('/artists/$artistId/brief-info');
     final result = ArtistInfo.fromJson(json);
 
@@ -476,14 +476,14 @@ class MusicApi {
     return Queue.fromJson(json['result']);
   }
 
-  Future<List<String>> trackIdsByRating(int artistId) async {
+  Future<List<String>> trackIdsByRating(String artistId) async {
     Map<String, dynamic> json = await _http.get('/artists/$artistId/track-ids-by-rating');
 
     return json['result']['tracks'];
   }
 
   Future<PagedData<Album>> artistAlbums(
-      {required int artistId,
+      {required String artistId,
       page = 0,
       perPage = 50,
       AlbumsSortBy sortBy = AlbumsSortBy.rating,
@@ -499,7 +499,7 @@ class MusicApi {
     return PagedData.fromJson(json['result']['pager'], albums);
   }
 
-  Future<PagedData<Album>> artistAlsoAlbums({required int artistId, page = 0, perPage = 50}) async {
+  Future<PagedData<Album>> artistAlsoAlbums({required String artistId, page = 0, perPage = 50}) async {
     final String url = '/artists/$artistId/also-albums?page=$page&page-size=$perPage';
     Map<String, dynamic> json = await _http.get(url);
     List<Album> albums = [];
@@ -508,7 +508,7 @@ class MusicApi {
     return PagedData.fromJson(json['result']['pager'], albums);
   }
 
-  Future<List<Track>> artistPopularTracks(int artistId) async {
+  Future<List<Track>> artistPopularTracks(String artistId) async {
     final String url = '/artists/$artistId/track-ids-by-rating';
     Map<String, dynamic> json = await _http.get(url);
 
@@ -522,13 +522,13 @@ class MusicApi {
     return tracks;
   }
 
-  Future<void> likeArtist(int artistId) async {
+  Future<void> likeArtist(String artistId) async {
     final url = '/users/$uid/likes/artists/add';
-    final data = {'artist-id': '$artistId'};
+    final data = {'artist-id': artistId};
     await _http.postForm(url, data: data);
   }
 
-  Future<void> unlikeArtist(int artistId) async {
+  Future<void> unlikeArtist(String artistId) async {
     final url = '/users/$uid/likes/artists/$artistId/remove';
     await _http.postForm(url);
   }
