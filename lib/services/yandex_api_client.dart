@@ -17,10 +17,9 @@ class YandexApiClient {
   late final Dio _dio;
 
   set authToken(String value) {
-    if(value.isNotEmpty) {
+    if (value.isNotEmpty) {
       _dio.options.headers[HttpHeaders.authorizationHeader] = 'OAuth $value';
-    }
-    else {
+    } else {
       _dio.options.headers.remove(HttpHeaders.authorizationHeader);
     }
   }
@@ -30,25 +29,24 @@ class YandexApiClient {
     _dio.options.headers[HttpHeaders.acceptLanguageHeader] = _locale.languageCode;
   }
 
-  YandexApiClient({
-    required String authToken,
-    required this.deviceId,
-    required this.deviceUuid,
-    locale = const Locale('en')
-  }) : _locale = locale {
+  YandexApiClient(
+      {required String authToken,
+      required this.deviceId,
+      required this.deviceUuid,
+      locale = const Locale('en')})
+      : _locale = locale {
     final options = BaseOptions(
-      baseUrl: 'https://api.music.yandex.net',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: _initHeaders(authToken)
-    );
+        baseUrl: 'https://api.music.yandex.net',
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: _initHeaders(authToken));
     _dio = Dio(options);
 
     _addInterceptors();
   }
 
   void _addInterceptors() {
-    _dio.interceptors.add(InterceptorsWrapper(onError: (e, handler){
+    _dio.interceptors.add(InterceptorsWrapper(onError: (e, handler) {
       debugPrint('Request error: ${e.requestOptions.path}?${e.requestOptions.queryParameters}');
       debugPrint('Request headers: ${e.requestOptions.headers}');
 
@@ -60,7 +58,7 @@ class YandexApiClient {
       }
 
       return handler.next(e);
-    }, onRequest: (RequestOptions options, RequestInterceptorHandler handler){
+    }, onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
       options.headers['X-Yandex-Music-Client-Now'] = DateTime.now().toUtcString();
 
       return handler.next(options);
@@ -75,59 +73,53 @@ class YandexApiClient {
       'X-Yandex-Music-Device': 'os=Windows.Desktop; os_version=10.0.22621.1992; '
           'manufacturer=Micro-Star International Co., Ltd.; model=MS-0A00; '
           'clid=WindowsPhone; device_id=$deviceId; '
-          'uuid=generated-by-music-$deviceUuid'
+          'uuid=generated-by-music-$deviceUuid',
+      'X-Yandex-Music-Without-Invocation-Info': '1'
     };
 
-    if(authToken.isNotEmpty) {
+    if (authToken.isNotEmpty) {
       headers[HttpHeaders.authorizationHeader] = 'OAuth $authToken';
     }
     return headers;
   }
 
-  dynamic get(String path, {
-    Map<String, String>? headers,
-    Map<String, dynamic>? queryParameters,
-    Duration? cacheDuration
-  }) async {
-    final String cacheKey = '$path?${queryParameters?.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+  dynamic get(String path,
+      {Map<String, String>? headers,
+      Map<String, dynamic>? queryParameters,
+      Duration? cacheDuration}) async {
+    final String cacheKey =
+        '$path?${queryParameters?.entries.map((e) => '${e.key}=${e.value}').join('&')}';
     final cacheValue = _cache.get(cacheKey);
-    if(cacheValue != null) return cacheValue;
+    if (cacheValue != null) return cacheValue;
 
-    Response resp = await _dio.get(path,
-      options: Options(headers: headers),
-      queryParameters: queryParameters
-    );
+    Response resp =
+        await _dio.get(path, options: Options(headers: headers), queryParameters: queryParameters);
 
-    if(cacheDuration != null) {
+    if (cacheDuration != null) {
       _cache.set(cacheKey, resp.data, expiration: cacheDuration);
     }
 
     return resp.data;
   }
 
-  Future<Map<String, dynamic>> postJson(String path, {required Map<String, dynamic> data}) async {
+  Future<dynamic> postJson(String path, {required Map<String, dynamic> data}) async {
     Response resp = await _dio.post(path,
-      options: Options(headers: {
-        HttpHeaders.contentTypeHeader: Headers.jsonContentType
-      }),
-      data: jsonEncode(data)
-    );
+        options: Options(headers: {HttpHeaders.contentTypeHeader: Headers.jsonContentType}),
+        data: jsonEncode(data));
 
     return resp.data;
   }
 
-  Future<Map<String, dynamic>> postForm(String path, {Map<String, dynamic>? data}) async {
+  Future<dynamic> postForm(String path, {Map<String, dynamic>? data}) async {
     Response resp = await _dio.post(path,
-      options: Options(contentType: Headers.formUrlEncodedContentType),
-      data: data
-    );
+        options: Options(contentType: Headers.formUrlEncodedContentType), data: data);
 
     return resp.data;
   }
 
   Stream<double> uploadFile(String path, String pathToFile) async* {
     final multipartFile = await MultipartFile.fromFile(pathToFile);
-    final formData = FormData.fromMap({ 'file': multipartFile });
+    final formData = FormData.fromMap({'file': multipartFile});
 
     final progressStreamController = StreamController<double>();
 
@@ -139,8 +131,8 @@ class YandexApiClient {
           progressStreamController.add(sent / total);
         }
       },
-    ).whenComplete((){
-      if(progressStreamController.isClosed) return;
+    ).whenComplete(() {
+      if (progressStreamController.isClosed) return;
 
       progressStreamController.close();
     });

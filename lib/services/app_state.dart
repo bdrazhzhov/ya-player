@@ -1,36 +1,37 @@
 import 'dart:async';
+
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '/models/music_api/context_id.dart';
-import '/models/ynison/version.dart';
-import '/player/radio_manager.dart';
-import '/models/play_info.dart';
-import '/services/logger.dart';
-import '/models/ynison/player_state.dart';
-import 'play_analytics.dart';
-import 'tray_integration.dart';
 import '/dbus/mpris/metadata.dart';
 import '/dbus/mpris/mpris_player.dart';
 import '/helpers/app_route_observer.dart';
 import '/helpers/nav_keys.dart';
+import '/models/music_api/context_id.dart';
+import '/models/music_api_types.dart';
+import '/models/play_info.dart';
+import '/models/ynison/player_state.dart';
+import '/models/ynison/version.dart';
+import '/models/ynison/ynison_state.dart';
+import '/notifiers/play_button_notifier.dart';
 import '/notifiers/track_duration_notifier.dart';
 import '/player/playback_queue.dart';
 import '/player/player.dart';
+import '/player/radio_manager.dart';
+import '/services/logger.dart';
+import 'audio_player.dart';
+import 'music_api.dart';
+import 'play_analytics.dart';
 import 'player_state.dart';
 import 'preferences.dart';
-import '/models/music_api_types.dart';
-import 'music_api.dart';
-import '/notifiers/play_button_notifier.dart';
 import 'service_locator.dart';
-import 'yandex_api_client.dart';
-import 'audio_player.dart';
 import 'state_enums.dart';
+import 'tray_integration.dart';
 import 'window_manager.dart';
+import 'yandex_api_client.dart';
 import 'ynison_client.dart';
-import '/models/ynison/ynison_state.dart';
 
 class AppState {
   // Listeners: Updates going to the UI
@@ -40,14 +41,13 @@ class AppState {
   final currentStationNotifier = ValueNotifier<Station?>(null);
   final currentRadioNotifier = ValueNotifier<RadioSession?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
-  final stationsNotifier = ValueNotifier<Map<String,List<Station>>>({});
+  final stationsNotifier = ValueNotifier<Map<String, List<Station>>>({});
   final accountNotifier = ValueNotifier<Account?>(null);
   final likedTracksNotifier = ValueNotifier<List<Track>>([]);
   final albumsNotifier = ValueNotifier<List<Album>>([]);
   final artistsNotifier = ValueNotifier<List<Artist>>([]);
   final playlistsNotifier = ValueNotifier<List<Playlist>>([]);
   final albumNotifier = ValueNotifier<AlbumWithTracks?>(null);
-  final searchSuggestionsNotifier = ValueNotifier<SearchSuggestions?>(null);
   final searchResultNotifier = ValueNotifier<SearchResult?>(null);
   final nonMusicNotifier = ValueNotifier<List<Block>>([]);
   final landingNotifier = ValueNotifier<List<Block>>([]);
@@ -73,7 +73,7 @@ class AppState {
   final _queue = getIt<PlaybackQueue>();
   final _newPlayer = getIt<Player>();
   var _playContext = Object();
-  final Map<String,String> _genres = {};
+  final Map<String, String> _genres = {};
   final _playAnalytics = PlayAnalytics();
   late final YnisonClient _ynisonClient;
   late YPlayerState _ynisonState;
@@ -100,7 +100,7 @@ class AppState {
     _listenToRouteChanges();
     _listenToSettingsChanges();
 
-    if(_prefs.authToken == null) {
+    if (_prefs.authToken == null) {
       mainPageState.value = UiState.auth;
 
       return;
@@ -126,7 +126,7 @@ class AppState {
 
   static const yaColor = Color.fromARGB(255, 254, 218, 76);
   Future<ThemeData> getTheme() async {
-    final Map<String,Color> themeColors = await _windowManager.getThemeColors();
+    final Map<String, Color> themeColors = await _windowManager.getThemeColors();
 
     return ThemeData(
       primaryColor: yaColor,
@@ -146,14 +146,14 @@ class AppState {
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states){
-            if(states.contains(WidgetState.selected)) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return yaColor;
             }
             return themeColors['surface']!;
           }),
-          foregroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states){
-            if(states.contains(WidgetState.selected)) {
+          foregroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return themeColors['surface']!;
             }
             return themeColors['textColor']!;
@@ -193,22 +193,21 @@ class AppState {
   }
 
   Future<void> _requestLikedTracks() async {
-    if(_prefs.authToken == null) return;
+    if (_prefs.authToken == null) return;
 
     final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
 
-    if(resultTuple.revision != null) {
+    if (resultTuple.revision != null) {
       _likedTrackIds.clear();
       _likedTrackIds.addAll(resultTuple.ids);
       await _prefs.setLikedTracks(_likedTrackIds);
       await _prefs.setLikedTracksRevision(resultTuple.revision!);
-    }
-    else {
+    } else {
       _likedTrackIds.clear();
       _likedTrackIds.addAll(_prefs.likedTracks);
     }
 
-    if(_likedTrackIds.isNotEmpty) {
+    if (_likedTrackIds.isNotEmpty) {
       _likedTrackIds.sort();
     }
   }
@@ -221,15 +220,13 @@ class AppState {
   void _listenToPlaybackState() {
     _audioPlayer.playingStateNotifier.addListener(() async {
       final playingState = _audioPlayer.playingStateNotifier.value;
-      if(playingState == PlayingState.paused) {
+      if (playingState == PlayingState.paused) {
         playButtonNotifier.value = ButtonState.paused;
         _mpris.playbackState = 'Paused';
-      }
-      else if(playingState == PlayingState.playing) {
+      } else if (playingState == PlayingState.playing) {
         playButtonNotifier.value = ButtonState.playing;
         _mpris.playbackState = 'Playing';
-      }
-      else if(playingState == PlayingState.completed) {
+      } else if (playingState == PlayingState.completed) {
         playButtonNotifier.value = ButtonState.paused;
         _mpris.playbackState = 'Stopped';
       }
@@ -261,8 +258,8 @@ class AppState {
   }
 
   void _listenToTrayEvents() {
-    _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type){
-      switch(type) {
+    _trayIntegration.playBackChangeStream.listen((PlayBackChangeType type) {
+      switch (type) {
         case PlayBackChangeType.playPause:
           _newPlayer.playPause();
         case PlayBackChangeType.next:
@@ -272,7 +269,7 @@ class AppState {
       }
     });
 
-    _trayIntegration.scrollStream.listen((int delta){
+    _trayIntegration.scrollStream.listen((int delta) {
       double volume = (_audioPlayer.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
       _audioPlayer.volumeNotifier.value = volume;
     });
@@ -280,31 +277,30 @@ class AppState {
 
   void _setMprisMetadata(Track track) {
     List<String> artist = track.artists.map((artist) => artist.name).toList();
-    
+
     String? artUrl;
-    if(track.coverUri != null) {
+    if (track.coverUri != null) {
       artUrl = MusicApi.imageUrl(track.coverUri!, '260x260');
     }
-    
+
     _mpris.metadata = Metadata(
         title: track.title,
         length: track.duration,
         artist: artist,
         artUrl: artUrl,
         album: track.albums.isNotEmpty ? track.albums.first.title : null,
-        genre: null
-    );
+        genre: null);
   }
 
   void _listenToRouteChanges() {
-    getIt<AppRouteObserver>().popNotifier.addListener((){
+    getIt<AppRouteObserver>().popNotifier.addListener(() {
       final bool isBackButtonVisible = NavKeys.mainNav.currentState?.canPop() == true;
       _windowManager.showBackButton(isBackButtonVisible);
     });
   }
 
   void _listenToSettingsChanges() {
-    closeToTrayEnabledNotifier.addListener((){
+    closeToTrayEnabledNotifier.addListener(() {
       final bool value = closeToTrayEnabledNotifier.value;
 
       _windowManager.setHideOnClose(value);
@@ -329,11 +325,11 @@ class AppState {
 
       _ynisonState = state.playerState;
 
-      if(playerQueue.entityType != PlayInfoContext.radio) {
+      if (playerQueue.entityType != PlayInfoContext.radio) {
         _ynisonState.playerQueue.queue = null;
       }
 
-      switch(playerQueue.entityType){
+      switch (playerQueue.entityType) {
         case PlayInfoContext.various:
           // TODO: Handle this case.
           throw UnimplementedError();
@@ -345,14 +341,15 @@ class AppState {
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.artist:
-          final ArtistInfo artistInfo = await _musicApi.artistInfo(state.playerState.playerQueue.entityId);
+          final ArtistInfo artistInfo =
+              await _musicApi.artistInfo(state.playerState.playerQueue.entityId);
           final ids = playerQueue.playableList.map((i) => i.playableId);
           tracks = await _musicApi.tracksByIds(ids);
           _playContext = artistInfo.artist;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.playlist:
-          final [uid,kind] = playerQueue.entityId.split(':');
+          final [uid, kind] = playerQueue.entityId.split(':');
           final Playlist playlist = await _musicApi.playlist(int.parse(uid), int.parse(kind));
           _playContext = playlist;
           tracks = playlist.tracks;
@@ -374,7 +371,7 @@ class AppState {
           final ids = playerQueue.playableList.map((i) => i.playableId);
           tracks = await _musicApi.tracksByIds(ids, session.batchId);
 
-          if(ids.length != tracks.length) {
+          if (ids.length != tracks.length) {
             logger.i('Received track ids are not the same as Requested ids:\n'
                 '${ids.sorted().join(', ')}\n${tracks.map((t) => t.id).sorted().join(', ')}');
           }
@@ -387,7 +384,7 @@ class AppState {
       int index = playerQueue.currentPlayableIndex;
       final selectedPlayable = playerQueue.playableList[index];
       index = tracks.indexWhere((t) => t.id == selectedPlayable.playableId);
-      if(playerQueue.currentPlayableIndex != index) {
+      if (playerQueue.currentPlayableIndex != index) {
         logger.w('Queue indices differs!\n'
             'Saved index: ${playerQueue.currentPlayableIndex}\n'
             'Actual index: $index');
@@ -399,7 +396,7 @@ class AppState {
       _queue.isShuffleEnabled = _prefs.shuffle;
 
       final Track? track = _queue.currentTrack;
-      if(track == null) return;
+      if (track == null) return;
 
       await _newPlayer.loadTrack(track);
       _playerState.canPlayNotifier.value = true;
@@ -435,7 +432,7 @@ class AppState {
 
     _queue.trackListChanged.addHandler((Iterable<Track> tracks) async {
       queueTracks.value = tracks.toList();
-      
+
       _ynisonState.playerQueue.playableList.clear();
       _ynisonState.playerQueue.playableList.addAll(
         _queue.toPlayableList(PlayInfoRadio.defaultFrom),
@@ -448,10 +445,10 @@ class AppState {
 
   void navigateBack() {
     NavigatorState? navState = NavKeys.mainNav.currentState;
-    if(navState == null || !navState.canPop()) return;
+    if (navState == null || !navState.canPop()) return;
 
     navState.pop();
-    if(isQueueShown) {
+    if (isQueueShown) {
       isQueueShown = false;
     }
   }
@@ -482,9 +479,9 @@ class AppState {
     _genres.clear();
 
     addGenres(List<Genre> genres) {
-      for(Genre genre in genres) {
+      for (Genre genre in genres) {
         _genres[genre.id] = genre.title;
-        if(genre.subGenres.isNotEmpty) {
+        if (genre.subGenres.isNotEmpty) {
           addGenres(genre.subGenres);
         }
       }
@@ -511,7 +508,7 @@ class AppState {
     _queue.repeatMode = repeatMode;
 
     final Track? track = _queue.currentTrack;
-    if(track == null) return null;
+    if (track == null) return null;
 
     _playerState.canPlayNotifier.value = true;
 
@@ -543,7 +540,7 @@ class AppState {
   };
 
   Future<void> playContent(Object contextObject, Iterable<Track> tracks, [int? index]) async {
-    if(_playContext is RadioSession) _radioManager.stop();
+    if (_playContext is RadioSession) _radioManager.stop();
 
     playButtonNotifier.value = ButtonState.loading;
     _playerState.rateNotifier.value = 1.0;
@@ -557,7 +554,7 @@ class AppState {
       repeatMode: _playerState.repeatModeNotifier.value,
     );
 
-    if(track == null) return;
+    if (track == null) return;
 
     _ynisonState = YPlayerState(
       playerQueue: YPlayerQueue(
@@ -593,7 +590,7 @@ class AppState {
       canShuffle: false,
     );
 
-    if(track == null) return;
+    if (track == null) return;
 
     _ynisonState = YPlayerState(
       playerQueue: YPlayerQueue(
@@ -626,7 +623,7 @@ class AppState {
 
   Future<void> playObjectStation(CanBeRadio object) async {
     final stationId = object.stationId();
-    if(currentStationNotifier.value?.id == stationId) return;
+    if (currentStationNotifier.value?.id == stationId) return;
 
     final station = await _musicApi.station(stationId);
 
@@ -640,16 +637,15 @@ class AppState {
     final isLiked = likedIndex != -1;
     final Station? station = currentStationNotifier.value;
 
-    if(isLiked) {
+    if (isLiked) {
       await _musicApi.unlikeTrack(track);
-      if(station != null) {
+      if (station != null) {
         await _musicApi.sendStationTrackFeedback(station.id, track, 'unlike', null);
       }
       _likedTrackIds.removeAt(likedIndex);
-    }
-    else {
+    } else {
       await _musicApi.likeTrack(track);
-      if(station != null) {
+      if (station != null) {
         await _musicApi.sendStationTrackFeedback(station.id, track, 'like', null);
       }
       _likedTrackIds.add(track.id);
@@ -666,11 +662,10 @@ class AppState {
     int likedIndex = binarySearch(_likedArtistIds, artist.id);
     final isLiked = likedIndex != -1;
 
-    if(isLiked) {
+    if (isLiked) {
       await _musicApi.unlikeArtist(artist.id);
       _likedArtistIds.removeAt(likedIndex);
-    }
-    else {
+    } else {
       await _musicApi.likeArtist(artist.id);
       _likedArtistIds.add(artist.id);
     }
@@ -679,15 +674,15 @@ class AppState {
   }
 
   Tree? getTree(String id) {
-    if(id == 'newbies') {
+    if (id == 'newbies') {
       return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'genres');
     }
 
-    if(id == 'in the mood') {
+    if (id == 'in the mood') {
       return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'moods');
     }
 
-    if(id == 'background') {
+    if (id == 'background') {
       return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'activities');
     }
 
@@ -731,7 +726,7 @@ class AppState {
 
   Future<void> _requestAccountData() async {
     final accountStatus = await _musicApi.accountStatus();
-    if(accountStatus.account == null) return;
+    if (accountStatus.account == null) return;
 
     _musicApi.uid = accountStatus.account!.uid;
     accountNotifier.value = accountStatus.account;
@@ -745,24 +740,20 @@ class AppState {
   Future<void> _requestStations() async {
     final stations = await _musicApi.stationsList();
 
-    if(stations.isEmpty) return;
+    if (stations.isEmpty) return;
 
     final groups = stations.groupListsBy((element) => element.id.type);
     final genres = groups['genre']!;
 
-    for(Station station in genres) {
-      if(station.parentId == null) continue;
+    for (Station station in genres) {
+      if (station.parentId == null) continue;
 
       Station? parent = genres.firstWhereOrNull((genre) => genre.id == station.parentId);
-      if(parent != null) parent.subStations.add(station);
+      if (parent != null) parent.subStations.add(station);
     }
     genres.removeWhere((station) => station.parentId != null);
 
     stationsNotifier.value = groups;
-  }
-
-  void searchSuggestions(String text) async {
-    searchSuggestionsNotifier.value = await _musicApi.searchSuggestions(text);
   }
 
   void searchResult(String text) async {

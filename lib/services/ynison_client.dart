@@ -6,12 +6,12 @@ import 'package:uuid/uuid.dart';
 import 'package:ya_player/models/play_info.dart';
 import 'package:ya_player/services/logger.dart';
 
-import '/models/ynison/redirect_answer.dart';
-import '/models/ynison/ynison_state.dart';
 import '/models/ynison/device.dart';
 import '/models/ynison/player_state.dart';
+import '/models/ynison/redirect_answer.dart';
 import '/models/ynison/update_full_state.dart';
 import '/models/ynison/version.dart';
+import '/models/ynison/ynison_state.dart';
 
 class YnisonClient {
   final String? _authToken;
@@ -91,8 +91,7 @@ class YnisonClient {
         try {
           final stateUpdate = YnisonState.fromJson(json);
           _stateStreamController.add(stateUpdate);
-        }
-        catch (error) {
+        } catch (error) {
           logger.e('Error parsing state update:\n$message', error: error);
           return;
         }
@@ -137,7 +136,7 @@ class YnisonClient {
             volumeGranularity: 10,
           ),
           info: _deviceInfo,
-          isShadow: true,
+          isShadow: false,
           volumeInfo: VolumeInfo(volume: 0),
         ),
         isCurrentlyActive: false,

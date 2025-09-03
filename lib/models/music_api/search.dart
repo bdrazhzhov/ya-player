@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import 'paged_data.dart';
 import 'album.dart';
 import 'artist.dart';
+import 'paged_data.dart';
 import 'playlist.dart';
 import 'podcast.dart';
 import 'podcast_episode.dart';
@@ -16,9 +16,9 @@ class SearchSuggestions {
 
   factory SearchSuggestions.fromJson(Map<String, dynamic> json) {
     BestSuggestion? best;
-    if(json['result']['best'] != null) best = BestSuggestion.fromJson(json['result']['best']);
+    if (json['best'] != null) best = BestSuggestion.fromJson(json['best']);
 
-    final suggestions = (json['result']['suggestions'] as List).map((i) => i as String).toList();
+    final suggestions = (json['suggestions'] as List).map((i) => i as String).toList();
 
     return SearchSuggestions(suggestions, best);
   }
@@ -38,7 +38,7 @@ class BestSuggestion {
     String title;
     String imageUrl;
 
-    switch(type) {
+    switch (type) {
       case 'artist':
         title = resultJson['name'];
         imageUrl = resultJson['ogImage'];
@@ -74,46 +74,45 @@ class SearchResult {
   final ResultsContainer<Podcast>? podcasts;
   final ResultsContainer<PodcastEpisode>? podcastEpisodes;
 
-  SearchResult(this.artists, this.albums, this.tracks,
-      this.playlists, this.podcasts, this.podcastEpisodes);
+  SearchResult(
+      this.artists, this.albums, this.tracks, this.playlists, this.podcasts, this.podcastEpisodes);
 
   factory SearchResult.fromJson(Map<String, dynamic> json) {
-    final result = json['result'];
-
     ResultsContainer<Artist>? artists;
-    if(result['artists'] != null) {
-      artists = ResultsContainer.fromJson(result['artists']);
-      result['artists']['results'].forEach((a) => artists!.results.add(Artist.fromJson(a)));
+    if (json['artists'] != null) {
+      artists = ResultsContainer.fromJson(json['artists']);
+      json['artists']['results'].forEach((a) => artists!.results.add(Artist.fromJson(a)));
     }
 
     ResultsContainer<Album>? albums;
-    if(result['albums'] != null) {
-      albums = ResultsContainer.fromJson(result['albums']);
-      result['albums']['results'].forEach((a) => albums!.results.add(Album.fromJson(a)));
+    if (json['albums'] != null) {
+      albums = ResultsContainer.fromJson(json['albums']);
+      json['albums']['results'].forEach((a) => albums!.results.add(Album.fromJson(a)));
     }
 
     ResultsContainer<Track>? tracks;
-    if(result['tracks'] != null) {
-      tracks = ResultsContainer.fromJson(result['tracks']);
-      result['tracks']['results'].forEach((a) => tracks!.results.add(Track.fromJson(a, '')));
+    if (json['tracks'] != null) {
+      tracks = ResultsContainer.fromJson(json['tracks']);
+      json['tracks']['results'].forEach((a) => tracks!.results.add(Track.fromJson(a, '')));
     }
 
     ResultsContainer<Playlist>? playlists;
-    if(result['playlists'] != null) {
-      playlists = ResultsContainer.fromJson(result['playlists']);
-      result['playlists']['results'].forEach((a) => playlists!.results.add(Playlist.fromJson(a)));
+    if (json['playlists'] != null) {
+      playlists = ResultsContainer.fromJson(json['playlists']);
+      json['playlists']['results'].forEach((a) => playlists!.results.add(Playlist.fromJson(a)));
     }
 
     ResultsContainer<Podcast>? podcasts;
-    if(result['podcasts'] != null) {
-      podcasts = ResultsContainer.fromJson(result['podcasts']);
-      result['podcasts']['results'].forEach((a) => podcasts!.results.add(Podcast.fromJson(a)));
+    if (json['podcasts'] != null) {
+      podcasts = ResultsContainer.fromJson(json['podcasts']);
+      json['podcasts']['results'].forEach((a) => podcasts!.results.add(Podcast.fromJson(a)));
     }
 
     ResultsContainer<PodcastEpisode>? podcastEpisodes;
-    if(result['podcast_episodes'] != null) {
-      podcastEpisodes = ResultsContainer.fromJson(result['podcast_episodes']);
-      result['podcast_episodes']['results'].forEach((a) => podcastEpisodes!.results.add(PodcastEpisode.fromJson(a)));
+    if (json['podcast_episodes'] != null) {
+      podcastEpisodes = ResultsContainer.fromJson(json['podcast_episodes']);
+      json['podcast_episodes']['results']
+          .forEach((a) => podcastEpisodes!.results.add(PodcastEpisode.fromJson(a)));
     }
 
     return SearchResult(artists, albums, tracks, playlists, podcasts, podcastEpisodes);
@@ -125,19 +124,18 @@ enum SearchFilter { artist, track, album, playlist, podcast, book }
 class SearchResultMixed extends PagedData<Object> {
   final SearchFilter? filter;
 
-  SearchResultMixed({
-    required super.page,
-    required super.perPage,
-    required super.total,
-    required super.items,
-    this.filter
-  });
+  SearchResultMixed(
+      {required super.page,
+      required super.perPage,
+      required super.total,
+      required super.items,
+      this.filter});
 }
 
 Object? createSearchResultEntry(item) {
   Object? result;
-  
-  switch(item['type']) {
+
+  switch (item['type']) {
     case 'album':
       result = Album.fromJson(item['album']);
     case 'track':
@@ -153,6 +151,6 @@ Object? createSearchResultEntry(item) {
     default:
       debugPrint('Unknown search result item type: ${item['type']}');
   }
-  
+
   return result;
 }

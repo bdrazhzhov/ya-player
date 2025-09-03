@@ -18,17 +18,16 @@ class Album extends Equatable implements ContextId {
   final String? version;
   late final String artist;
 
-  Album(this.id, this.title, this.year, this.releaseDate, this.coverUri,
-      this.ogImage, this.genre, this.tracksCount, this.artists,
-      this.description, this.version) {
+  Album(this.id, this.title, this.year, this.releaseDate, this.coverUri, this.ogImage, this.genre,
+      this.tracksCount, this.artists, this.description, this.version) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
   @override
   List<Object?> get props => [id];
-  
+
   factory Album.fromJson(Map<String, dynamic> json) {
-    if(json['album'] != null) {
+    if (json['album'] != null) {
       json = json['album'];
     }
 
@@ -38,22 +37,22 @@ class Album extends Equatable implements ContextId {
     });
 
     DateTime? releaseDate;
-    if(json['releaseDate'] != null) {
+    if (json['releaseDate'] != null) {
       releaseDate = DateTime.parse(json['releaseDate']);
     }
 
-    return Album(json['id'],
-      json['title'],
-      json['year'],
-      releaseDate,
-      json['coverUri'] ?? '',
-      json['ogImage'],
-      json['genre'] ?? '',
-      json['trackCount'],
-      artists,
-      json['description'],
-      json['version']
-    );
+    return Album(
+        json['id'],
+        json['title'],
+        json['year'],
+        releaseDate,
+        json['coverUri'] ?? '',
+        json['ogImage'],
+        json['genre'] ?? '',
+        json['trackCount'],
+        artists,
+        json['description'],
+        json['version']);
   }
 
   @override
@@ -72,10 +71,10 @@ class AlbumWithTracks extends Equatable {
   factory AlbumWithTracks.fromJson(Map<String, dynamic> json) {
     List<Track> tracks = [];
 
-    json['result']['volumes'].first.forEach((trackJson){
+    json['volumes'].first.forEach((trackJson) {
       tracks.add(Track.fromJson(trackJson, ''));
     });
 
-    return AlbumWithTracks(Album.fromJson(json['result']), tracks);
+    return AlbumWithTracks(Album.fromJson(json), tracks);
   }
 }

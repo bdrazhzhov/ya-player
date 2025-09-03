@@ -30,30 +30,34 @@ class Playlist implements ContextId {
 
   factory Playlist.fromJson(Map<String, dynamic> json) {
     String? image;
-    if(json['cover'] != null && json['cover']['uri'] != null) {
+    if (json['cover'] != null && json['cover']['uri'] != null) {
       image = json['cover']['uri'];
-    }
-    else {
+    } else {
       image = json['ogImage'];
     }
 
     List<Track> tracks = [];
-    if(json['tracks'] != null) {
+    if (json['tracks'] != null) {
       json['tracks'].forEach((t) => tracks.add(Track.fromJson(t, '')));
     }
 
     List<Playlist> similarPlaylists = [];
-    if(json['similarPlaylists'] != null) {
+    if (json['similarPlaylists'] != null) {
       json['similarPlaylists'].forEach((p) => similarPlaylists.add(Playlist.fromJson(p)));
     }
 
-    return Playlist(kind: json['kind'] ?? 0, title: json['title'],
-      uid: json['uid'] ?? 0, description: json['description'],
-      ownerName: json['owner']?['name'] ?? '',
-      duration: Duration(milliseconds: json['durationMs'] ?? 0),
-      tracksCount: json['trackCount'] ?? 0, image: image, tracks: tracks,
-      similarPlaylists: similarPlaylists, revision: json['revision']
-    );
+    return Playlist(
+        kind: json['kind'] ?? 0,
+        title: json['title'],
+        uid: json['uid'] ?? 0,
+        description: json['description'],
+        ownerName: json['owner']?['name'] ?? '',
+        duration: Duration(milliseconds: json['durationMs'] ?? 0),
+        tracksCount: json['trackCount'] ?? 0,
+        image: image,
+        tracks: tracks,
+        similarPlaylists: similarPlaylists,
+        revision: json['revision']);
   }
 
   @override
