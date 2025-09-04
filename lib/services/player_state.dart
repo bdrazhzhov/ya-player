@@ -44,7 +44,7 @@ class PlayerState {
     shuffleNotifier.value = _prefs.shuffle;
     _mpris.canRepeat = true;
     repeatModeNotifier.value = _prefs.repeat;
-    _audioPlayer.volumeNotifier.value = _prefs.volume.clamp(0, 1);
+    _audioPlayer.volumeNotifier.value = _prefs.volume;
   }
 
   void _listenToPlayerAbilities() {

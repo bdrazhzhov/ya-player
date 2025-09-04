@@ -11,8 +11,7 @@ class Preferences {
   Preferences(this._prefs);
 
   String? get authToken => _prefs.getString('authToken');
-  Future<void> setAuthToken(String value) async =>
-      await _prefs.setString('authToken', value);
+  Future<void> setAuthToken(String value) async => await _prefs.setString('authToken', value);
 
   int? get uid => _prefs.getInt('uid');
   Future<void> setUid(int value) async => await _prefs.setInt('uid', value);
@@ -20,12 +19,13 @@ class Preferences {
   int? get expiresIn => _prefs.getInt('expiresAt');
   Future<void> setExpiresAt(int value) async => await _prefs.setInt('expiresAt', value);
 
-  double get volume => _prefs.getDouble('volume') ?? 1;
+  double get volume => _prefs.getDouble('volume')?.clamp(0, 1) ?? 1;
   Future<void> setVolume(double value) async => await _prefs.setDouble('volume', value);
 
   List<String> get likedTracks {
     return (_prefs.getString('likedTracks') ?? '').split(',');
   }
+
   Future<void> setLikedTracks(List<String> value) async {
     final listString = value.join(',');
     await _prefs.setString('likedTracks', listString);
@@ -38,7 +38,7 @@ class Preferences {
   String get deviceId {
     String? value = _prefs.getString('deviceId');
 
-    if(value == null) {
+    if (value == null) {
       value = const Uuid().v4();
       _prefs.setString('deviceId', value);
     }
@@ -49,7 +49,7 @@ class Preferences {
   String get deviceUuid {
     String? value = _prefs.getString('deviceUuid');
 
-    if(value == null) {
+    if (value == null) {
       value = const Uuid().v4();
       _prefs.setString('deviceUuid', value);
     }
@@ -63,14 +63,14 @@ class Preferences {
   }
 
   static final _repeatModes = {
-    RepeatMode.off.toString() : RepeatMode.off,
-    RepeatMode.on.toString() : RepeatMode.on,
-    RepeatMode.one.toString() : RepeatMode.one,
+    RepeatMode.off.toString(): RepeatMode.off,
+    RepeatMode.on.toString(): RepeatMode.on,
+    RepeatMode.one.toString(): RepeatMode.one,
   };
   RepeatMode get repeat {
     String? value = _prefs.getString('repeat');
 
-    if(value == null) return RepeatMode.off;
+    if (value == null) return RepeatMode.off;
 
     return _repeatModes[value] ?? RepeatMode.off;
   }
