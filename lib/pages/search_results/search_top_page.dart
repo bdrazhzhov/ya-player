@@ -15,6 +15,7 @@ import '/models/music_api/playlist.dart';
 import '/models/music_api/podcast.dart';
 import '/models/music_api/search.dart';
 import '/models/music_api/track.dart';
+import '../../controls/search/best_result_recent_release_card.dart';
 
 class SearchTopPage extends StatelessWidget {
   final Iterable<Object> items;
@@ -42,6 +43,8 @@ class SearchTopPage extends StatelessWidget {
                   return BestResultArtistCard(result);
                 } else if (result is BestResultWave) {
                   return BestResultWaveCard(result);
+                } else if (result is BestResultRecentRelease) {
+                  return BestResultRecentReleaseCard(bestResult: result);
                 } else {
                   return Text('Unknown best result type: ${result.runtimeType.toString()}');
                 }

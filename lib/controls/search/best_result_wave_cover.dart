@@ -45,6 +45,7 @@ class _BestResultWaveCoverState extends State<BestResultWaveCover> {
     return BestResultCover(
       uriTemplate: widget.bestResult.backgroundImageUrl,
       filterColor: widget.bestResult.colors.average.toColor(),
+      borderRadius: 40,
       hasPlayAnimation: !widget.isHovered && isPlaying,
       hasPlayPause: widget.isHovered,
       isPlaying: isPlaying,

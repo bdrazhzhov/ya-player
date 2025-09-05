@@ -292,4 +292,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get popular_playlists_subtitle => 'Собрано для вас нашей редакцией';
+
+  @override
+  String get recent_release => 'Недавний релиз';
 }

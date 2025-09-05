@@ -368,17 +368,20 @@ class MusicApi {
           bestResults.add(BestResultArtist.fromJson(item['best_result_artist']));
         } else if (item['type'] == 'best_result_wave') {
           bestResults.add(BestResultWave.fromJson(item['best_result_wave']));
+        } else if (item['type'] == 'best_result_recent_release') {
+          bestResults.add(BestResultRecentRelease.fromJson(item['best_result_recent_release']));
         }
       });
     }
 
     return SearchResultMixed(
-        page: 0,
-        perPage: 36,
-        total: json['total'],
-        filter: filter,
-        items: items,
-        bestResults: bestResults);
+      page: 0,
+      perPage: 36,
+      total: json['total'],
+      filter: filter,
+      items: items,
+      bestResults: bestResults,
+    );
   }
 
   static const List<String> skippedBlockIds = [

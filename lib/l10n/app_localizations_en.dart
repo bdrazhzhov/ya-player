@@ -282,4 +282,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get popular_playlists_subtitle => 'Collected for you';
+
+  @override
+  String get recent_release => 'Recently released';
 }

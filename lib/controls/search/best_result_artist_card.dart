@@ -33,7 +33,7 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
             spacing: 12,
             children: [
               BestResultArtistCover(
-                bestResult: widget.bestResult,
+                bestResult: widget.bestResult.artist,
                 isHovered: isHovered,
               ),
               Expanded(
@@ -41,14 +41,15 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.bestResult.name),
-                    _LikesCount(widget.bestResult.likesCount),
+                    Text(widget.bestResult.artist.name),
+                    if (widget.bestResult.likesCount != null)
+                      _LikesCount(widget.bestResult.likesCount!),
                   ],
                 ),
               ),
               LikeButton(
-                likeCondition: () => appState.isLikedArtist(widget.bestResult.id),
-                onLikeClicked: () => appState.likeArtist(widget.bestResult.id),
+                likeCondition: () => appState.isLikedArtist(widget.bestResult.artist.id),
+                onLikeClicked: () => appState.likeArtist(widget.bestResult.artist.id),
               ),
               const Icon(Icons.chevron_right)
             ],
@@ -65,7 +66,7 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
       ),
       onTap: () {
         Navigator.of(context).push(PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ArtistPage(artistId: widget.bestResult.id),
+          pageBuilder: (_, __, ___) => ArtistPage(artistId: widget.bestResult.artist.id),
           reverseTransitionDuration: Duration.zero,
         ));
       },

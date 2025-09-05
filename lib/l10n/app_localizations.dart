@@ -607,6 +607,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collected for you'**
   String get popular_playlists_subtitle;
+
+  /// No description provided for @recent_release.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently released'**
+  String get recent_release;
 }
 
 class _AppLocalizationsDelegate

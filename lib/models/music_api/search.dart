@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'album.dart';
 import 'artist.dart';
+import 'entity_cover.dart';
 import 'paged_data.dart';
 import 'playlist.dart';
 import 'podcast.dart';
@@ -160,29 +161,47 @@ Object? createSearchResultEntry(item) {
 }
 
 class BestResultArtist {
-  final String id;
-  final String name;
-  final ArtistCover? cover;
-  final int likesCount;
+  final BestResultArtistArtist artist;
+  final int? likesCount;
   final bool trailerAvailable;
 
   BestResultArtist({
-    required this.id,
-    required this.name,
-    this.cover,
+    required this.artist,
     required this.likesCount,
     this.trailerAvailable = false,
   });
 
   factory BestResultArtist.fromJson(Map<String, dynamic> json) {
-    final artistJson = json['artist'];
+    bool trailerAvailable = false;
+    if (json['trailer'] != null) {
+      trailerAvailable = json['trailer']['available'] ?? false;
+    }
 
     return BestResultArtist(
-      id: '${artistJson['id']}',
-      name: artistJson['name'],
-      cover: ArtistCover.fromJson(artistJson['cover']),
+      artist: BestResultArtistArtist.fromJson(json['artist']),
       likesCount: json['likesCount'],
-      trailerAvailable: json['trailer']?['available'] ?? false,
+      trailerAvailable: trailerAvailable,
+    );
+  }
+}
+
+class BestResultArtistArtist extends ArtistBase {
+  final EntityCover? cover;
+  final bool? various;
+
+  BestResultArtistArtist({
+    required String id,
+    required String name,
+    this.cover,
+    this.various,
+  }) : super(id, name);
+
+  factory BestResultArtistArtist.fromJson(Map<String, dynamic> json) {
+    return BestResultArtistArtist(
+      id: '${json['id']}',
+      name: json['name'],
+      cover: EntityCover.fromJson(json['cover']),
+      various: json['various'] ?? false,
     );
   }
 }
@@ -237,4 +256,49 @@ class WaveColors {
       waveText: json['waveText'],
     );
   }
+}
+
+class BestResultRecentRelease {
+  final BestResultAlbum album;
+  final Iterable<BestResultArtistArtist> artists;
+  final bool trailerAvailable;
+
+  BestResultRecentRelease({
+    required this.album,
+    required this.artists,
+    required this.trailerAvailable,
+  });
+
+  factory BestResultRecentRelease.fromJson(Map<String, dynamic> json) {
+    final album = BestResultAlbum.fromJson(json['album']);
+
+    final artists = (json['artists'] as List)
+        .map((a) => BestResultArtistArtist.fromJson(a))
+        .toList(growable: false);
+
+    bool trailerAvailable = false;
+    if (json['trailer'] != null) {
+      trailerAvailable = json['trailer']['available'] ?? false;
+    }
+
+    return BestResultRecentRelease(
+      album: album,
+      artists: artists,
+      trailerAvailable: trailerAvailable,
+    );
+  }
+}
+
+class BestResultAlbum {
+  final int id;
+  final String title;
+  final EntityCover? cover;
+
+  BestResultAlbum({required this.id, required this.title, this.cover});
+
+  factory BestResultAlbum.fromJson(Map<String, dynamic> json) => BestResultAlbum(
+        id: json['id'] as int,
+        title: json['title'] as String,
+        cover: json['cover'] != null ? EntityCover.fromJson(json['cover']) : null,
+      );
 }

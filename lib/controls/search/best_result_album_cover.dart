@@ -9,23 +9,23 @@ import '/services/player_state.dart';
 import '/services/service_locator.dart';
 import 'best_result_cover.dart';
 
-class BestResultArtistCover extends StatefulWidget {
-  const BestResultArtistCover({
+class BestResultAlbumCover extends StatefulWidget {
+  const BestResultAlbumCover({
     super.key,
     required this.bestResult,
     this.isHovered = false,
   });
 
-  final BestResultArtistArtist bestResult;
+  final BestResultAlbum bestResult;
   final bool isHovered;
 
   @override
-  State<BestResultArtistCover> createState() => _BestResultArtistCoverState();
+  State<BestResultAlbumCover> createState() => _BestResultAlbumCoverState();
 }
 
-class _BestResultArtistCoverState extends State<BestResultArtistCover> {
-  ArtistInfo? artistInfo;
-  CancelableOperation<ArtistInfo>? artistInfoOperation;
+class _BestResultAlbumCoverState extends State<BestResultAlbumCover> {
+  AlbumWithTracks? albumWithTracks;
+  CancelableOperation<AlbumWithTracks>? albumOperation;
   final musicApi = getIt<MusicApi>();
   final appState = getIt<AppState>();
   final playerState = getIt<PlayerState>();
@@ -34,9 +34,9 @@ class _BestResultArtistCoverState extends State<BestResultArtistCover> {
   @override
   void initState() {
     super.initState();
-    artistInfoOperation = CancelableOperation.fromFuture(musicApi.artistInfo(widget.bestResult.id));
-    artistInfoOperation?.value.then((info) {
-      artistInfo = info;
+    albumOperation = CancelableOperation.fromFuture(musicApi.albumWithTracks(widget.bestResult.id));
+    albumOperation?.value.then((album) {
+      albumWithTracks = album;
       updateState();
     });
     appState.trackNotifier.addListener(updateState);
@@ -47,7 +47,7 @@ class _BestResultArtistCoverState extends State<BestResultArtistCover> {
   void dispose() {
     appState.trackNotifier.removeListener(updateState);
     playerState.playBackStateNotifier.removeListener(updateState);
-    artistInfoOperation?.cancel();
+    albumOperation?.cancel();
     super.dispose();
   }
 
@@ -57,36 +57,38 @@ class _BestResultArtistCoverState extends State<BestResultArtistCover> {
       onTap: _onTap,
       child: BestResultCover(
         uriTemplate: widget.bestResult.cover?.uri,
-        borderRadius: 40,
+        borderRadius: 4,
         hasPlayAnimation: !widget.isHovered && isPlaying,
-        hasPlayPause: widget.isHovered && artistInfo != null,
+        hasPlayPause: widget.isHovered,
         isPlaying: isPlaying,
       ),
     );
   }
 
   bool _isPlaying() {
-    if (artistInfo == null) return false;
-    if (appState.playContext is! Artist) return false;
+    if (albumWithTracks == null) return false;
+    if (appState.playContext is! Album) return false;
 
-    final artist = appState.playContext as Artist;
-    if (artist.id != widget.bestResult.id) return false;
+    final album = appState.playContext as Album;
+    if (album.id != widget.bestResult.id) return false;
 
     Track? track = appState.trackNotifier.value;
     if (track == null) return false;
 
     return playerState.playBackStateNotifier.value == PlayBackState.playing &&
-        artistInfo!.popularTracks.contains(track);
+        albumWithTracks!.tracks.contains(track);
   }
 
   void _onTap() async {
     final playContext = appState.playContext;
-    if (playContext is Artist && playContext.id == widget.bestResult.id) {
+    if (playContext is Album && playContext.id == widget.bestResult.id) {
       getIt<Player>().playPause();
       return;
     }
 
-    appState.playContent(artistInfo!.artist, artistInfo!.popularTracks);
+    if (albumWithTracks != null) {
+      appState.playContent(albumWithTracks!.album, albumWithTracks!.tracks);
+    }
   }
 
   void updateState() {

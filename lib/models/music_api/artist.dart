@@ -1,7 +1,7 @@
-import 'package:ya_player/models/music_api/station.dart';
-
+import '/models/music_api/station.dart';
 import 'can_be_station.dart';
 import 'context_id.dart';
+import 'entity_cover.dart';
 
 class ArtistBase implements CanBeRadio, ContextId {
   final String id;
@@ -21,7 +21,7 @@ class ArtistBase implements CanBeRadio, ContextId {
 }
 
 class Artist extends ArtistBase {
-  final ArtistCover? cover;
+  final EntityCover? cover;
   final List<String> genres;
   final ArtistCounts? counts;
   final List<ArtistLink> links;
@@ -38,8 +38,8 @@ class Artist extends ArtistBase {
       json['links'].forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
     }
 
-    ArtistCover? cover;
-    if (json['cover'] != null) cover = ArtistCover.fromJson(json['cover']);
+    EntityCover? cover;
+    if (json['cover'] != null) cover = EntityCover.fromJson(json['cover']);
 
     List<ArtistExtraAction> extraActions = [];
     if (json['extraActions'] != null) {
@@ -50,45 +50,6 @@ class Artist extends ArtistBase {
     final counts = json['counts'] != null ? ArtistCounts.fromJson(json['counts']) : null;
 
     return Artist(json['id'].toString(), json['name'], cover, genres, counts, links, extraActions);
-  }
-}
-
-class ArtistCover {
-  final String uri;
-  final DerivedColors? derivedColors;
-
-  ArtistCover({required this.uri, this.derivedColors});
-
-  factory ArtistCover.fromJson(Map<String, dynamic> json) {
-    DerivedColors? derivedColors;
-    if (json['derivedColors'] != null) {
-      derivedColors = DerivedColors.fromJson(json['derivedColors']);
-    }
-
-    return ArtistCover(uri: json['uri'], derivedColors: derivedColors);
-  }
-}
-
-class DerivedColors {
-  final String average;
-  final String waveText;
-  final String miniPlayer;
-  final String accent;
-
-  DerivedColors({
-    required this.average,
-    required this.waveText,
-    required this.miniPlayer,
-    required this.accent,
-  });
-
-  factory DerivedColors.fromJson(Map<String, dynamic> json) {
-    return DerivedColors(
-      average: json['average'],
-      waveText: json['waveText'],
-      miniPlayer: json['miniPlayer'],
-      accent: json['accent'],
-    );
   }
 }
 

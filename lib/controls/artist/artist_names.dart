@@ -22,12 +22,25 @@ class ArtistNames extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final artistNames = Text(
       _text,
       softWrap: false,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: theme.colorScheme.outline),
     );
+
+    if (artists.length == 1) {
+      return GestureDetector(
+        onTap: () => _goToArtistPage(artists.first),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: artistNames,
+        ),
+      );
+    }
 
     return ContextMenu(
       items: _entries,

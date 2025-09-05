@@ -7,6 +7,7 @@ import '/controls/yandex_image.dart';
 class BestResultCover extends StatelessWidget {
   final String? uriTemplate;
   final Color? filterColor;
+  final double? borderRadius;
   final bool hasPlayAnimation;
   final bool hasPlayPause;
   final bool isPlaying;
@@ -15,6 +16,7 @@ class BestResultCover extends StatelessWidget {
     super.key,
     this.uriTemplate,
     this.filterColor,
+    this.borderRadius,
     required this.hasPlayAnimation,
     required this.hasPlayPause,
     required this.isPlaying,
@@ -33,7 +35,7 @@ class BestResultCover extends StatelessWidget {
           uriTemplate: uriTemplate,
           width: 80,
           height: 80,
-          borderRadius: 40,
+          borderRadius: borderRadius,
           filterColor: filterColor,
         ),
         if (hasPlayAnimation)

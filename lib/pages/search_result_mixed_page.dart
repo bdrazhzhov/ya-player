@@ -11,7 +11,7 @@ import '/models/music_api/search.dart';
 import '/pages/search_results/podcasts_page.dart';
 import '/services/music_api.dart';
 import '/services/service_locator.dart';
-import 'search_results/top_page.dart';
+import 'search_results/search_top_page.dart';
 
 class SearchResultMixedPage extends StatelessWidget {
   final String text;

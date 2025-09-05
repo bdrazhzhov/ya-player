@@ -112,5 +112,7 @@
   "new_releases_title": "New releases",
   "new_releases_subtitle": "New tracks, albums and mixes",
   "popular_playlists_title": "Popular playlists",
-  "popular_playlists_subtitle": "Collected for you"
+  "popular_playlists_subtitle": "Collected for you",
+
+  "recent_release": "Recently released"
 }
