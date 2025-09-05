@@ -12,7 +12,7 @@ class Playlist implements ContextId {
   final int tracksCount;
   final List<Track> tracks;
   final List<Playlist> similarPlaylists;
-  final int revision;
+  final int? revision;
 
   Playlist({
     required this.kind,
@@ -25,7 +25,7 @@ class Playlist implements ContextId {
     required this.tracksCount,
     required this.tracks,
     required this.similarPlaylists,
-    required this.revision,
+    this.revision,
   });
 
   factory Playlist.fromJson(Map<String, dynamic> json) {

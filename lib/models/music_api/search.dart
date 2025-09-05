@@ -293,12 +293,22 @@ class BestResultAlbum {
   final int id;
   final String title;
   final EntityCover? cover;
+  final String? albumType;
+  final String? contentWarning;
 
-  BestResultAlbum({required this.id, required this.title, this.cover});
+  BestResultAlbum({
+    required this.id,
+    required this.title,
+    this.cover,
+    this.albumType,
+    this.contentWarning,
+  });
 
   factory BestResultAlbum.fromJson(Map<String, dynamic> json) => BestResultAlbum(
-        id: json['id'] as int,
-        title: json['title'] as String,
+        id: json['id'],
+        title: json['title'],
         cover: json['cover'] != null ? EntityCover.fromJson(json['cover']) : null,
+        albumType: json['albumType'],
+        contentWarning: json['contentWarning'],
       );
 }

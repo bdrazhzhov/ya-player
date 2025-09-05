@@ -689,7 +689,7 @@ class MusicApi {
       }
     ];
 
-    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision!);
   }
 
   Future<Playlist> deletePlaylistTracks(Playlist playlist, Iterable<int> positions) async {
@@ -701,7 +701,7 @@ class MusicApi {
             })
         .toList();
 
-    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision!);
   }
 
   Future<Playlist> movePlaylistTracks(
@@ -715,7 +715,7 @@ class MusicApi {
       }
     ];
 
-    return _playlistChangeRelative(playlist.kind, diff, playlist.revision);
+    return _playlistChangeRelative(playlist.kind, diff, playlist.revision!);
   }
 
   Future<Playlist> changePlaylistTitle(Playlist playlist, String newTitle) async {
