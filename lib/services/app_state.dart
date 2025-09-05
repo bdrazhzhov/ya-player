@@ -459,6 +459,11 @@ class AppState {
 
   Future<void> _requestArtists() async {
     artistsNotifier.value = await _musicApi.likedArtists();
+    _likedArtistIds.clear();
+    for (final Artist artist in artistsNotifier.value) {
+      _likedArtistIds.add(artist.id);
+    }
+    _likedArtistIds.sort();
   }
 
   Future<void> requestPlaylists() async {
@@ -621,8 +626,7 @@ class AppState {
     playContent(track, [track]);
   }
 
-  Future<void> playObjectStation(CanBeRadio object) async {
-    final stationId = object.stationId();
+  Future<void> playObjectStation(StationId stationId) async {
     if (currentStationNotifier.value?.id == stationId) return;
 
     final station = await _musicApi.station(stationId);
@@ -656,18 +660,18 @@ class AppState {
     return _requestLikedTracks();
   }
 
-  bool isLikedArtist(Artist artist) => binarySearch(_likedArtistIds, artist.id) != -1;
+  bool isLikedArtist(String artistId) => binarySearch(_likedArtistIds, artistId) != -1;
 
-  Future<void> likeArtist(Artist artist) async {
-    int likedIndex = binarySearch(_likedArtistIds, artist.id);
+  Future<void> likeArtist(String artistId) async {
+    int likedIndex = binarySearch(_likedArtistIds, artistId);
     final isLiked = likedIndex != -1;
 
     if (isLiked) {
-      await _musicApi.unlikeArtist(artist.id);
+      await _musicApi.unlikeArtist(artistId);
       _likedArtistIds.removeAt(likedIndex);
     } else {
-      await _musicApi.likeArtist(artist.id);
-      _likedArtistIds.add(artist.id);
+      await _musicApi.likeArtist(artistId);
+      _likedArtistIds.add(artistId);
     }
 
     _likedArtistIds.sort();

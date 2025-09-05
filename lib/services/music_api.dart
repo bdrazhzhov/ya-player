@@ -53,7 +53,7 @@ class MusicApi {
 
   Future<Station> station(StationId stationId) async {
     final url = '/rotor/station/${stationId.type}:${stationId.tag}/info';
-    List<Map<String, dynamic>> json = await _http.get(url);
+    List<dynamic> json = await _http.get(url);
 
     return Station.fromJson(json.first['station'], json.first['settings2']);
   }
@@ -145,7 +145,10 @@ class MusicApi {
 
     final json = result as Map<String, dynamic>;
     int newRevision = json['library']['revision'];
-    Iterable<String> ids = json['library']['tracks'].map((item) => item['id']);
+    List<String> ids = [];
+    for (final item in json['library']['tracks']) {
+      ids.add(item['id']);
+    }
 
     return (ids: ids, revision: newRevision);
   }
@@ -160,7 +163,7 @@ class MusicApi {
 
   Future<List<Track>> tracksByIds(Iterable<String> ids, [batchId = '']) async {
     final data = {'track-ids': ids.join(','), 'with-positions': 'True'};
-    List<Map<String, dynamic>> json = await _http.postForm('/tracks', data: data);
+    List<dynamic> json = await _http.postForm('/tracks', data: data);
 
     return json.map((item) => Track.fromJson(item, batchId)).toList();
   }
@@ -339,7 +342,8 @@ class MusicApi {
       'type': 'album,artist,playlist,track,wave,podcast,podcast_episode',
       'page': 0,
       'pageSize': 36,
-      'withLikesCount': true
+      'withLikesCount': true,
+      'withBestResults': true,
     };
     if (filter != null) {
       query['filter'] = filter.name;
@@ -357,8 +361,24 @@ class MusicApi {
       });
     }
 
+    List<Object> bestResults = [];
+    if (json['bestResults'] != null) {
+      json['bestResults'].forEach((item) {
+        if (item['type'] == 'best_result_artist') {
+          bestResults.add(BestResultArtist.fromJson(item['best_result_artist']));
+        } else if (item['type'] == 'best_result_wave') {
+          bestResults.add(BestResultWave.fromJson(item['best_result_wave']));
+        }
+      });
+    }
+
     return SearchResultMixed(
-        page: 0, perPage: 36, total: json['total'], filter: filter, items: items);
+        page: 0,
+        perPage: 36,
+        total: json['total'],
+        filter: filter,
+        items: items,
+        bestResults: bestResults);
   }
 
   static const List<String> skippedBlockIds = [
@@ -590,7 +610,7 @@ class MusicApi {
     return RadioSession.fromJson(json);
   }
 
-  Future<List<Track>> loadRadioBatch({
+  Future<Iterable<Track>> loadRadioBatch({
     required String sessionId,
     required Iterable<RadioFeedback> feedbacks,
     required Iterable<String> queue,
@@ -605,7 +625,12 @@ class MusicApi {
 
     final String batchId = json['batchId'];
 
-    return json['sequence'].map((item) => Track.fromJson(item, batchId));
+    List<Track> tracks = [];
+    for (final item in json['sequence']) {
+      tracks.add(Track.fromJson(item, batchId));
+    }
+
+    return tracks;
   }
 
   Future<Playlist> createPlaylist(String title) async {

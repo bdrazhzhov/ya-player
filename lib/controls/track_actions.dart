@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '/pages/playlist_page.dart';
-import '/models/music_api/playlist.dart';
-import '/services/music_api.dart';
-import '/services/service_locator.dart';
-import '/l10n/app_localizations.dart';
-import '/services/app_state.dart';
 import '/helpers/nav_keys.dart';
+import '/l10n/app_localizations.dart';
+import '/models/music_api/playlist.dart';
 import '/models/music_api/track.dart';
 import '/pages/album_page.dart';
 import '/pages/artist_page.dart';
+import '/pages/playlist_page.dart';
+import '/services/app_state.dart';
+import '/services/music_api.dart';
+import '/services/service_locator.dart';
 import 'context_menu/context_menu.dart';
 import 'context_menu/context_menu_item.dart';
 
@@ -39,7 +39,7 @@ class TrackActions extends StatelessWidget {
           label: l10n.track_radio,
           icon: Icons.radio_outlined,
           onTap: () {
-            _appState.playObjectStation(track);
+            _appState.playObjectStation(track.stationId());
           },
         ),
         MenuItem(
@@ -60,14 +60,15 @@ class TrackActions extends StatelessWidget {
         _buildArtistMenuItem(l10n),
         MenuItem(label: l10n.track_share, icon: Icons.share),
         MenuItem(label: l10n.track_remove, icon: Icons.clear),
-        if(playContext is Playlist && _appState.isPlaylistEditable(playContext as Playlist)) MenuItem(
-          label: l10n.playlist_remove_from,
-          icon: Icons.remove_circle_outline,
-          onTap: () async {
-            final playlist = playContext as Playlist;
-            _appState.deletePlaylistTracks(playlist, [trackIndex]);
-          },
-        ),
+        if (playContext is Playlist && _appState.isPlaylistEditable(playContext as Playlist))
+          MenuItem(
+            label: l10n.playlist_remove_from,
+            icon: Icons.remove_circle_outline,
+            onTap: () async {
+              final playlist = playContext as Playlist;
+              _appState.deletePlaylistTracks(playlist, [trackIndex]);
+            },
+          ),
       ],
       child: Icon(Icons.more_horiz),
     );
@@ -84,7 +85,7 @@ class TrackActions extends StatelessWidget {
             label: artist.name,
             onTap: () {
               NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-                pageBuilder: (_, __, ___) => ArtistPage(artist),
+                pageBuilder: (_, __, ___) => ArtistPage(artistId: artist.id),
                 reverseTransitionDuration: Duration.zero,
               ));
             },
@@ -97,7 +98,7 @@ class TrackActions extends StatelessWidget {
         icon: Icons.person,
         onTap: () {
           NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-            pageBuilder: (_, __, ___) => ArtistPage(track.artists.first),
+            pageBuilder: (_, __, ___) => ArtistPage(artistId: track.artists.first.id),
             reverseTransitionDuration: Duration.zero,
           ));
         },
@@ -108,7 +109,7 @@ class TrackActions extends StatelessWidget {
   }
 
   List<MenuItem> _buildPlaylists(Track track, AppLocalizations l10n) {
-    final playlists = getIt<AppState>().playlistsNotifier.value.map((playlist){
+    final playlists = getIt<AppState>().playlistsNotifier.value.map((playlist) {
       return MenuItem(
         label: playlist.title,
         onTap: () async {
@@ -119,18 +120,20 @@ class TrackActions extends StatelessWidget {
     }).toList();
 
     final newPlaylistItem = MenuItem(
-      label: l10n.playlist_create,
-      icon: Icons.add,
-      onTap: () async {
-        final Playlist newPlaylist = await _musicApi.createPlaylist(l10n.playlist_new);
-        await _musicApi.insertPlaylistTracks(newPlaylist, [track]);
-        _appState.requestPlaylists();
-        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-          pageBuilder: (_, __, ___) => PlaylistPage(uid: newPlaylist.uid, kind: newPlaylist.kind,),
-          reverseTransitionDuration: Duration.zero,
-        ));
-      }
-    );
+        label: l10n.playlist_create,
+        icon: Icons.add,
+        onTap: () async {
+          final Playlist newPlaylist = await _musicApi.createPlaylist(l10n.playlist_new);
+          await _musicApi.insertPlaylistTracks(newPlaylist, [track]);
+          _appState.requestPlaylists();
+          NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+            pageBuilder: (_, __, ___) => PlaylistPage(
+              uid: newPlaylist.uid,
+              kind: newPlaylist.kind,
+            ),
+            reverseTransitionDuration: Duration.zero,
+          ));
+        });
     playlists.insert(0, newPlaylistItem);
 
     return playlists;

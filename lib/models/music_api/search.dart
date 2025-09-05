@@ -6,6 +6,7 @@ import 'paged_data.dart';
 import 'playlist.dart';
 import 'podcast.dart';
 import 'podcast_episode.dart';
+import 'station.dart';
 import 'track.dart';
 
 class SearchSuggestions {
@@ -123,13 +124,16 @@ enum SearchFilter { artist, track, album, playlist, podcast, book }
 
 class SearchResultMixed extends PagedData<Object> {
   final SearchFilter? filter;
+  final Iterable<Object> bestResults;
 
-  SearchResultMixed(
-      {required super.page,
-      required super.perPage,
-      required super.total,
-      required super.items,
-      this.filter});
+  SearchResultMixed({
+    required super.page,
+    required super.perPage,
+    required super.total,
+    required super.items,
+    this.filter,
+    required this.bestResults,
+  });
 }
 
 Object? createSearchResultEntry(item) {
@@ -153,4 +157,84 @@ Object? createSearchResultEntry(item) {
   }
 
   return result;
+}
+
+class BestResultArtist {
+  final String id;
+  final String name;
+  final ArtistCover? cover;
+  final int likesCount;
+  final bool trailerAvailable;
+
+  BestResultArtist({
+    required this.id,
+    required this.name,
+    this.cover,
+    required this.likesCount,
+    this.trailerAvailable = false,
+  });
+
+  factory BestResultArtist.fromJson(Map<String, dynamic> json) {
+    final artistJson = json['artist'];
+
+    return BestResultArtist(
+      id: '${artistJson['id']}',
+      name: artistJson['name'],
+      cover: ArtistCover.fromJson(artistJson['cover']),
+      likesCount: json['likesCount'],
+      trailerAvailable: json['trailer']?['available'] ?? false,
+    );
+  }
+}
+
+class BestResultWave {
+  final String title;
+  final String header;
+  final String animationUrl;
+  final String backgroundImageUrl;
+  final StationId stationId;
+  final List<String> seeds;
+  final WaveColors colors;
+  final String compactImageUrl;
+
+  BestResultWave({
+    required this.title,
+    required this.header,
+    required this.animationUrl,
+    required this.backgroundImageUrl,
+    required this.stationId,
+    required this.seeds,
+    required this.colors,
+    required this.compactImageUrl,
+  });
+
+  factory BestResultWave.fromJson(Map<String, dynamic> json) {
+    return BestResultWave(
+      title: json['title'],
+      header: json['header'],
+      animationUrl: json['animationUrl'],
+      backgroundImageUrl: json['backgroundImageUrl'],
+      stationId: StationId.fromString(json['stationId']),
+      seeds: List<String>.from(json['seeds']),
+      colors: WaveColors.fromJson(json['colors']),
+      compactImageUrl: json['compactImageUrl'],
+    );
+  }
+}
+
+class WaveColors {
+  final String average;
+  final String waveText;
+
+  WaveColors({
+    required this.average,
+    required this.waveText,
+  });
+
+  factory WaveColors.fromJson(Map<String, dynamic> json) {
+    return WaveColors(
+      average: json['average'],
+      waveText: json['waveText'],
+    );
+  }
 }

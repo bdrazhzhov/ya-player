@@ -9,9 +9,35 @@ class YandexImage extends StatelessWidget {
   final double? borderRadius;
   final Widget placeholder;
   late final String _url;
-  
-  static final _sizes = [30, 40, 50, 60, 70, 80, 100, 120, 150, 160, 200, 260,
-    300, 360, 400, 460, 480, 520, 600, 700, 720, 800, 960, 1000, 1080];
+  final Color? filterColor;
+
+  static final _sizes = [
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    100,
+    120,
+    150,
+    160,
+    200,
+    260,
+    300,
+    360,
+    400,
+    460,
+    480,
+    520,
+    600,
+    700,
+    720,
+    800,
+    960,
+    1000,
+    1080
+  ];
 
   YandexImage({
     super.key,
@@ -19,30 +45,28 @@ class YandexImage extends StatelessWidget {
     double? width,
     double? height,
     this.borderRadius,
-    this.placeholder = const DefaultImagePlaceholder()
+    this.placeholder = const DefaultImagePlaceholder(),
+    this.filterColor,
   }) {
-    if(uriTemplate == null) return;
-    if(width == null && height == null) {
+    if (uriTemplate == null) return;
+    if (width == null && height == null) {
       _width = 160;
       _height = 160;
-    }
-    else if(width == null && height != null) {
+    } else if (width == null && height != null) {
       _width = height;
       _height = height;
-    }
-    else if(width != null && height == null) {
+    } else if (width != null && height == null) {
       _width = width;
       _height = width;
-    }
-    else {
+    } else {
       _width = width;
       _height = height;
     }
 
     int realSize = _width!.round();
 
-    for(var i = _sizes.length - 1; i > 0; i--) {
-      if(_sizes[i] >= realSize) continue;
+    for (var i = _sizes.length - 1; i > 0; i--) {
+      if (_sizes[i] >= realSize) continue;
 
       realSize = _sizes[i + 1];
       break;
@@ -57,10 +81,9 @@ class YandexImage extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget image;
 
-    if(uriTemplate == null) {
+    if (uriTemplate == null) {
       image = DefaultImagePlaceholder();
-    }
-    else {
+    } else {
       image = CachedNetworkImage(
         width: _width,
         height: _height,
@@ -73,7 +96,17 @@ class YandexImage extends StatelessWidget {
       );
     }
 
-    if(borderRadius != null) {
+    if (filterColor != null) {
+      image = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          filterColor!,
+          BlendMode.dstATop,
+        ),
+        child: image,
+      );
+    }
+
+    if (borderRadius != null) {
       image = ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius!),
         child: image,
@@ -92,4 +125,3 @@ class DefaultImagePlaceholder extends StatelessWidget {
     return SvgPicture.asset('assets/svg/track_placeholder.svg');
   }
 }
-

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '/controls/app_search_bar.dart';
-import 'history_page.dart';
-import '/services/app_state.dart';
 import '/controls/page_block.dart';
-import '/models/music_api/block.dart';
-import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
+import '/models/music_api/block.dart';
 import '/models/music_api/search.dart';
+import '/services/app_state.dart';
+import '/services/service_locator.dart';
 import 'page_base.dart';
 import 'search_result_mixed_page.dart';
 
@@ -61,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
   void onSearchTextChanged(String text) {
     searchText = text;
 
-    if (text.length < 3) {
+    if (text.length < 2) {
       if (!isDefaultView) {
         isDefaultView = true;
         setState(() {});

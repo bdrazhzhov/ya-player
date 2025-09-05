@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '/helpers/nav_keys.dart';
+import '/models/music_api/artist.dart';
+import '/pages/artist_page.dart';
 import '../context_menu/context_menu.dart';
 import '../context_menu/context_menu_item.dart';
-import '/helpers/nav_keys.dart';
-import '/pages/artist_page.dart';
-import '/models/music_api/artist.dart';
 
 class ArtistNames extends StatelessWidget {
   final Iterable<ArtistBase> artists;
@@ -22,7 +22,12 @@ class ArtistNames extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final artistNames = Text(_text, softWrap: false, maxLines: 1, overflow: TextOverflow.ellipsis,);
+    final artistNames = Text(
+      _text,
+      softWrap: false,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
 
     return ContextMenu(
       items: _entries,
@@ -32,7 +37,7 @@ class ArtistNames extends StatelessWidget {
 
   void _goToArtistPage(ArtistBase artist) {
     NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-      pageBuilder: (_, __, ___) => ArtistPage(artist),
+      pageBuilder: (_, __, ___) => ArtistPage(artistId: artist.id),
       reverseTransitionDuration: Duration.zero,
     ));
   }

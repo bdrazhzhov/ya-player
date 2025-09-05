@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-import '/models/music_api/track.dart';
-import '/player/playback_queue.dart';
-import 'player.dart';
-import '/services/service_locator.dart';
 import '/models/music_api/radio_feedback.dart';
 import '/models/music_api/radio_session.dart';
 import '/models/music_api/station.dart';
+import '/models/music_api/track.dart';
 import '/models/play_info.dart';
+import '/player/playback_queue.dart';
 import '/services/audio_player.dart';
 import '/services/logger.dart';
 import '/services/music_api.dart';
+import '/services/service_locator.dart';
+import 'player.dart';
 
 class RadioManager {
   final List<RadioFeedback> _radioFeedbacks = [];
@@ -70,7 +70,7 @@ class RadioManager {
   Future<void> _loadTracksBatch() async {
     final prevTracks = _queue.tracks.map((t) => t.id).toList();
 
-    List<Track> batch = await _musicApi.loadRadioBatch(
+    Iterable<Track> batch = await _musicApi.loadRadioBatch(
       sessionId: _session.id,
       feedbacks: _radioFeedbacks,
       queue: _queue.tracks.map((t) => '${t.id}:${t.firstAlbumId}').toList(),
@@ -112,7 +112,7 @@ class RadioManager {
       ),
     ));
 
-    if(eventType == RadioEventType.skip) {
+    if (eventType == RadioEventType.skip) {
       // skip following tracks and load next batch of radio tracks
       await _loadTracksBatch();
     }
@@ -121,7 +121,7 @@ class RadioManager {
   Future<void> _onTrackFinished(Track track) async {
     logger.i('Radio track finished: ${track.title}');
 
-    if(_queue.canGoNext) return;
+    if (_queue.canGoNext) return;
 
     logger.i('Loading fresh batch of radio tracks');
 

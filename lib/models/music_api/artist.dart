@@ -34,40 +34,61 @@ class Artist extends ArtistBase {
     json['genres']?.forEach((genre) => genres.add(genre));
 
     List<ArtistLink> links = [];
-    if(json['links'] != null) {
+    if (json['links'] != null) {
       json['links'].forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
     }
 
     ArtistCover? cover;
-    if(json['cover'] != null) cover = ArtistCover.fromJson(json['cover']);
+    if (json['cover'] != null) cover = ArtistCover.fromJson(json['cover']);
 
     List<ArtistExtraAction> extraActions = [];
-    if(json['extraActions'] != null) {
-      json['extraActions'].forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
+    if (json['extraActions'] != null) {
+      json['extraActions']
+          .forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
     }
 
-    final counts = json['counts'] != null
-        ? ArtistCounts.fromJson(json['counts'])
-        : null;
+    final counts = json['counts'] != null ? ArtistCounts.fromJson(json['counts']) : null;
 
-    return Artist(
-      json['id'].toString(),
-      json['name'], cover, genres, counts, links, extraActions
-    );
+    return Artist(json['id'].toString(), json['name'], cover, genres, counts, links, extraActions);
   }
 }
 
 class ArtistCover {
-  // final String type;
-  // final String prefix;
   final String uri;
+  final DerivedColors? derivedColors;
 
-  // ArtistCover(this.type, this.prefix, this.uri);
-  ArtistCover(this.uri);
+  ArtistCover({required this.uri, this.derivedColors});
 
   factory ArtistCover.fromJson(Map<String, dynamic> json) {
-    // return ArtistCover(json['type'], json['prefix'], json['uri']);
-    return ArtistCover(json['uri']);
+    DerivedColors? derivedColors;
+    if (json['derivedColors'] != null) {
+      derivedColors = DerivedColors.fromJson(json['derivedColors']);
+    }
+
+    return ArtistCover(uri: json['uri'], derivedColors: derivedColors);
+  }
+}
+
+class DerivedColors {
+  final String average;
+  final String waveText;
+  final String miniPlayer;
+  final String accent;
+
+  DerivedColors({
+    required this.average,
+    required this.waveText,
+    required this.miniPlayer,
+    required this.accent,
+  });
+
+  factory DerivedColors.fromJson(Map<String, dynamic> json) {
+    return DerivedColors(
+      average: json['average'],
+      waveText: json['waveText'],
+      miniPlayer: json['miniPlayer'],
+      accent: json['accent'],
+    );
   }
 }
 
@@ -80,8 +101,8 @@ class ArtistCounts {
   ArtistCounts(this.tracks, this.directAlbums, this.alsoAlbums, this.alsoTracks);
 
   factory ArtistCounts.fromJson(Map<String, dynamic> json) {
-    return ArtistCounts(json['tracks'], json['directAlbums'],
-        json['alsoAlbums'], json['alsoTracks']);
+    return ArtistCounts(
+        json['tracks'], json['directAlbums'], json['alsoAlbums'], json['alsoTracks']);
   }
 }
 
@@ -94,8 +115,7 @@ class ArtistLink {
   ArtistLink(this.title, this.href, this.type, this.socialNetwork);
 
   factory ArtistLink.fromJson(Map<String, dynamic> json) {
-    return ArtistLink(json['title'], json['href'],
-        json['type'], json['socialNetwork']);
+    return ArtistLink(json['title'], json['href'], json['type'], json['socialNetwork']);
   }
 }
 
