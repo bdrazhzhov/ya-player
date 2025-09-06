@@ -15,21 +15,20 @@ class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
         pageRoute.markForAdd();
       }
       results.add(pageRoute);
-
     }
     for (final RouteTransitionRecord exitingPageRoute in locationToExitingPageRoute.values) {
       // Checks the isWaitingForExitingDecision before calling the markFor methods.
       if (exitingPageRoute.isWaitingForExitingDecision) {
-        exitingPageRoute.markForRemove();
-        final List<RouteTransitionRecord>? pagelessRoutes = pageRouteToPagelessRoutes[exitingPageRoute];
+        exitingPageRoute.markForComplete();
+        final List<RouteTransitionRecord>? pagelessRoutes =
+            pageRouteToPagelessRoutes[exitingPageRoute];
         if (pagelessRoutes != null) {
           for (final RouteTransitionRecord pagelessRoute in pagelessRoutes) {
-            pagelessRoute.markForRemove();
+            pagelessRoute.markForComplete();
           }
         }
       }
       results.add(exitingPageRoute);
-
     }
     return results;
   }
