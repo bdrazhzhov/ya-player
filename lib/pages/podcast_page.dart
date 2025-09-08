@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '/controls/album_flexible_space.dart';
-import '/controls/tracks_header.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/sliver_track_list.dart';
+import '/controls/tracks_header.dart';
 import '/models/music_api_types.dart';
 import '/services/music_api.dart';
 import '/services/service_locator.dart';
@@ -21,31 +21,27 @@ class PodcastPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<AlbumWithTracks>(
-      future: _albumWidthTracks,
-      builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot){
-        if(snapshot.hasData)
-        {
-          final albumWithTracks = snapshot.data!;
-          return PageBase(
-            flexibleSpace: AlbumFlexibleSpace(album: albumWithTracks.album),
-            slivers: [
-              SliverPersistentHeader(
-                delegate: TracksHeader(),
-                pinned: true,
-              ),
-              SliverTrackList(
-                playContext: podcast,
-                tracks: albumWithTracks.tracks,
-                albumMode: true,
-              ),
-            ],
-          );
-        }
-        else
-        {
-          return const PageLoadingIndicator();
-        }
-      }
-    );
+        future: _albumWidthTracks,
+        builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot) {
+          if (snapshot.hasData) {
+            final albumWithTracks = snapshot.data!;
+            return PageBase(
+              flexibleSpace: AlbumFlexibleSpace(albumWithTracks: albumWithTracks),
+              slivers: [
+                SliverPersistentHeader(
+                  delegate: TracksHeader(),
+                  pinned: true,
+                ),
+                SliverTrackList(
+                  playContext: podcast,
+                  tracks: albumWithTracks.tracks,
+                  albumMode: true,
+                ),
+              ],
+            );
+          } else {
+            return const PageLoadingIndicator();
+          }
+        });
   }
 }

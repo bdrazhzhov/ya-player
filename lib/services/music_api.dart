@@ -726,4 +726,17 @@ class MusicApi {
 
     return Playlist.fromJson(json);
   }
+
+  Future<void> likeAlbum(int albumId) async {
+    final url = '/users/$uid/likes/albums/add';
+    final data = {'album-id': albumId.toString()};
+
+    await _http.postForm(url, data: data);
+  }
+
+  Future<void> unlikeAlbum(int albumId) async {
+    final url = '/users/$uid/likes/albums/$albumId/remove';
+
+    await _http.postForm(url);
+  }
 }

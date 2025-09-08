@@ -677,6 +677,18 @@ class AppState {
     _likedArtistIds.sort();
   }
 
+  bool isLikedAlbum(Album album) => albumsNotifier.value.contains(album);
+
+  Future<void> likeAlbum(Album album) async {
+    if (isLikedAlbum(album)) {
+      await _musicApi.unlikeAlbum(album.id);
+      albumsNotifier.value.remove(album);
+    } else {
+      await _musicApi.likeAlbum(album.id);
+      albumsNotifier.value.add(album);
+    }
+  }
+
   Tree? getTree(String id) {
     if (id == 'newbies') {
       return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'genres');
