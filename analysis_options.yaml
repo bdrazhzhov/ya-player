@@ -30,3 +30,4 @@ linter:
 analyzer:
   errors:
     invalid_use_of_protected_member: error
+    avoid_print: ignore
