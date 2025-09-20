@@ -1,7 +1,9 @@
+import 'package:equatable/equatable.dart';
+
 import 'context_id.dart';
 import 'track.dart';
 
-class Playlist implements ContextId {
+class Playlist extends Equatable implements ContextId {
   final int kind;
   final String title;
   final int uid;
@@ -14,7 +16,7 @@ class Playlist implements ContextId {
   final List<Playlist> similarPlaylists;
   final int? revision;
 
-  Playlist({
+  const Playlist({
     required this.kind,
     required this.title,
     required this.uid,
@@ -62,4 +64,7 @@ class Playlist implements ContextId {
 
   @override
   String get contextId => '$uid:$kind';
+
+  @override
+  List<Object?> get props => [contextId];
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audio_player_gst/events.dart';
 import 'package:collection/collection.dart' hide binarySearch;
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -83,7 +84,7 @@ class AppState {
   final List<String> _likedArtistIds = [];
   final List<Tree> _landing3Metatags = [];
 
-  Object get playContext => _playContext;
+  Equatable get playContext => _playContext as Equatable;
 
   Future<void> initTheme() async {
     final ThemeData theme = await getTheme();

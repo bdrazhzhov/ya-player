@@ -285,4 +285,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recent_release => 'Recently released';
+
+  @override
+  String get play_context_tooltip => 'Play';
 }

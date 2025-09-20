@@ -114,5 +114,7 @@
   "popular_playlists_title": "Popular playlists",
   "popular_playlists_subtitle": "Collected for you",
 
-  "recent_release": "Recently released"
+  "recent_release": "Recently released",
+
+  "play_context_tooltip": "Play"
 }

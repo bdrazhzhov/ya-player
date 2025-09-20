@@ -1,13 +1,15 @@
+import 'package:equatable/equatable.dart';
+
 import '/models/music_api/station.dart';
 import 'can_be_station.dart';
 import 'context_id.dart';
 import 'entity_cover.dart';
 
-class ArtistBase implements CanBeRadio, ContextId {
+class ArtistBase extends Equatable implements CanBeRadio, ContextId {
   final String id;
   final String name;
 
-  ArtistBase(this.id, this.name);
+  const ArtistBase(this.id, this.name);
 
   factory ArtistBase.fromJson(Map<String, dynamic> json) {
     return ArtistBase(json['id']?.toString() ?? '', json['name']);
@@ -18,6 +20,9 @@ class ArtistBase implements CanBeRadio, ContextId {
 
   @override
   String get contextId => id;
+
+  @override
+  List<Object?> get props => [id];
 }
 
 class Artist extends ArtistBase {
@@ -27,7 +32,8 @@ class Artist extends ArtistBase {
   final List<ArtistLink> links;
   final List<ArtistExtraAction> extraActions;
 
-  Artist(super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
+  const Artist(
+      super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
 
   factory Artist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];

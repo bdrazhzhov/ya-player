@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '/controls/flexible_space.dart';
+import '/controls/play_context_button.dart';
+import '/l10n/app_localizations.dart';
+import '/models/music_api_types.dart';
 import '/services/app_state.dart';
 import '/services/service_locator.dart';
-import '/l10n/app_localizations.dart';
-import '/controls/flexible_space.dart';
-import '/models/music_api_types.dart';
 import 'delete_playlist_button.dart';
 
 class PlaylistFlexibleSpace extends StatelessWidget {
@@ -25,34 +26,23 @@ class PlaylistFlexibleSpace extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text.rich(
-            TextSpan(
+          Text.rich(TextSpan(
               style: TextStyle(color: theme.colorScheme.outline),
               text: l10n.playlist_compiledBy,
               children: [
                 TextSpan(
-                  style: theme.textTheme.bodyMedium,
-                  text: ': ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration'
-                )
-              ]
-            )
-          ),
-          if(playlist.description != null)
-            Text(
-              playlist.description!,
-              softWrap: true,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis
-            ),
+                    style: theme.textTheme.bodyMedium,
+                    text:
+                        ': ${playlist.ownerName} · ${l10n.tracks_count(playlist.tracksCount)} · $duration')
+              ])),
+          if (playlist.description != null)
+            Text(playlist.description!,
+                softWrap: true, maxLines: 3, overflow: TextOverflow.ellipsis),
         ],
       ),
       actions: Row(
         children: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.play_arrow),
-              tooltip: l10n.playlist_listen_to,
-            ),
+          PlayContextButton(context: playlist, tracks: playlist.tracks),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.favorite),
@@ -60,7 +50,9 @@ class PlaylistFlexibleSpace extends StatelessWidget {
           ),
           DeletePlaylistButton(
             playlist: playlist,
-            onDeleted: () { Navigator.of(context).pop(); },
+            onDeleted: () {
+              Navigator.of(context).pop();
+            },
           ),
         ],
       ),
@@ -70,8 +62,10 @@ class PlaylistFlexibleSpace extends StatelessWidget {
 
   String _calculateDuration(AppLocalizations l10n) {
     String duration = '';
-    if(playlist.duration.inHours > 0) duration += '${playlist.duration.inHours} ${l10n.date_hoursShort}';
-    if(playlist.duration.inMinutes > 0) {
+    if (playlist.duration.inHours > 0) {
+      duration += '${playlist.duration.inHours} ${l10n.date_hoursShort}';
+    }
+    if (playlist.duration.inMinutes > 0) {
       final remainingMinutes = playlist.duration.inMinutes - playlist.duration.inHours * 60;
       duration += ' $remainingMinutes ${l10n.date_minutesShort}';
     }

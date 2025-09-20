@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '/controls/flexible_space.dart';
 import '/controls/like_button.dart';
+import '/controls/play_context_button.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/artist_info.dart';
 import '/services/app_state.dart';
@@ -43,13 +44,7 @@ class ArtistFlexibleSpace extends StatelessWidget {
     });
 
     return Row(spacing: 8, children: [
-      IconButton(
-        icon: Icon(Icons.play_arrow),
-        tooltip: l10n.artist_play,
-        onPressed: () async {
-          await _appState.playContent(artistInfo.artist, artistInfo.popularTracks, 0);
-        },
-      ),
+      PlayContextButton(context: artistInfo.artist, tracks: artistInfo.popularTracks),
       LikeButton(
         likeCondition: () => _appState.isLikedArtist(artistInfo.artist.id),
         onLikeClicked: () => _appState.likeArtist(artistInfo.artist.id),

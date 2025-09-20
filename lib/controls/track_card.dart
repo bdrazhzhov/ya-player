@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '/helpers/multi_value_listenable_builder.dart';
-import '/services/app_state.dart';
-import '/player/player.dart';
-import '/services/player_state.dart';
-import '/services/service_locator.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/track.dart';
+import '/player/player.dart';
+import '/services/app_state.dart';
+import '/services/player_state.dart';
+import '/services/service_locator.dart';
 import 'play_pause_button.dart';
 import 'track_list/track_animation_cover.dart';
 import 'yandex_image.dart';
@@ -14,8 +14,6 @@ import 'yandex_image.dart';
 class TrackCard extends StatelessWidget {
   final Track track;
   final double width;
-  final bool isPlaying = false;
-  final bool isCurrent = false;
 
   TrackCard({super.key, required this.track, required this.width});
 
@@ -24,7 +22,6 @@ class TrackCard extends StatelessWidget {
   final _hoverNotifier = ValueNotifier<bool>(false);
 
   static const double hoverButtonSize = 50;
-  static const buttonColor = Color.fromARGB(255, 255, 219, 77);
   static const double coverCornersRadius = 4.0;
 
   @override
@@ -43,7 +40,7 @@ class TrackCard extends StatelessWidget {
 
         getIt<Player>().playPause();
       },
-      onHover: (value){
+      onHover: (value) {
         _hoverNotifier.value = value;
       },
       child: Column(
@@ -80,7 +77,7 @@ class TrackCard extends StatelessWidget {
                 child: ValueListenableBuilder(
                   valueListenable: _hoverNotifier,
                   builder: (BuildContext context, bool value, Widget? child) {
-                    if(!value) {
+                    if (!value) {
                       return Center(child: _buildAnimatedCover());
                     }
 
@@ -130,15 +127,16 @@ class TrackCard extends StatelessWidget {
     return MultiValueListenableBuilder(
       valuesListenable: [_appState.trackNotifier, _playerState.playBackStateNotifier],
       builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
+        final theme = Theme.of(context);
         bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
         bool isCurrent = values.get<Track?>() == track;
 
-        if(!isCurrent || !isPlaying) {
+        if (!isCurrent || !isPlaying) {
           return SizedBox.shrink();
         }
 
         return TrackAnimationCover(
-          bgColor: buttonColor,
+          bgColor: theme.primaryColor,
           radius: hoverButtonSize,
           playAnimation: true,
         );

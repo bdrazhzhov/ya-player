@@ -114,5 +114,7 @@
   "popular_playlists_title": "Популярные плейлисты",
   "popular_playlists_subtitle": "Собрано для вас нашей редакцией",
 
-  "recent_release": "Недавний релиз"
+  "recent_release": "Недавний релиз",
+
+  "play_context_tooltip": "Слушать"
 }

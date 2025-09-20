@@ -295,4 +295,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get recent_release => 'Недавний релиз';
+
+  @override
+  String get play_context_tooltip => 'Слушать';
 }

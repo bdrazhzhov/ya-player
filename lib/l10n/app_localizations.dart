@@ -613,6 +613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recently released'**
   String get recent_release;
+
+  /// No description provided for @play_context_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play_context_tooltip;
 }
 
 class _AppLocalizationsDelegate

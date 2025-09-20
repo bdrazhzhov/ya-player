@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 import 'context_id.dart';
 import 'track.dart';
 
@@ -29,7 +31,7 @@ class NewRadioSessionRequest {
         queue = json['queue'] != null ? List<String>.from(json['queue']) : null;
 }
 
-class RadioSession implements ContextId {
+class RadioSession extends Equatable implements ContextId {
   final String id;
   final String batchId;
   final bool isPumpkin;
@@ -39,7 +41,7 @@ class RadioSession implements ContextId {
   final List<SequenceEntry> sequence;
   final RadioWave wave;
 
-  RadioSession({
+  const RadioSession({
     required this.id,
     required this.batchId,
     required this.isPumpkin,
@@ -64,6 +66,9 @@ class RadioSession implements ContextId {
 
   @override
   String get contextId => id;
+
+  @override
+  List<Object?> get props => [id];
 }
 
 class RadioSeed {

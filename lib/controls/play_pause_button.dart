@@ -1,48 +1,60 @@
 import 'package:flutter/material.dart';
 
-import '/services/app_state.dart';
 import '/models/music_api/track.dart';
+import '/services/app_state.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
 
-class PlayPauseButton extends StatelessWidget {
-  static const buttonColor = Color.fromARGB(255, 255, 219, 77);
+class PlayPauseButton extends StatefulWidget {
   final Track track;
   final double size;
 
-  PlayPauseButton({super.key, required this.track, required this.size});
+  const PlayPauseButton({super.key, required this.track, required this.size});
 
-  final _playerState = getIt<PlayerState>();
-  final _appState = getIt<AppState>();
+  @override
+  State<PlayPauseButton> createState() => _PlayPauseButtonState();
+}
+
+class _PlayPauseButtonState extends State<PlayPauseButton> {
+  final playerState = getIt<PlayerState>();
+  final appState = getIt<AppState>();
+  IconData icon = Icons.play_arrow;
+
+  @override
+  void initState() {
+    super.initState();
+    appState.trackNotifier.addListener(onStateChange);
+    playerState.playBackStateNotifier.addListener(onStateChange);
+    onStateChange();
+  }
+
+  @override
+  void dispose() {
+    appState.trackNotifier.removeListener(onStateChange);
+    playerState.playBackStateNotifier.removeListener(onStateChange);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: buttonColor,
-        borderRadius: BorderRadius.all(Radius.circular(size / 2)),
-      ),
-      child: ValueListenableBuilder(
-        valueListenable: _playerState.playBackStateNotifier,
-        builder: (_, PlayBackState stateValue, __) {
-          if(stateValue != PlayBackState.playing) {
-            return const Icon(Icons.play_arrow, color: Colors.black);
-          }
+    final theme = Theme.of(context);
 
-          return ValueListenableBuilder(
-            valueListenable: _appState.trackNotifier,
-            builder: (___, Track? currentTrack, Widget? ____) {
-              if(currentTrack == track) {
-                return const Icon(Icons.pause, color: Colors.black);
-              } else {
-                return const Icon(Icons.play_arrow, color: Colors.black);
-              }
-            },
-          );
-        },
+    return Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(
+        color: theme.primaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(widget.size / 2)),
       ),
+      child: Icon(icon, color: Colors.black),
     );
+  }
+
+  void onStateChange() {
+    if (appState.trackNotifier.value != widget.track) return;
+
+    final isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
+    icon = isPlaying ? Icons.pause : Icons.play_arrow;
+    setState(() {});
   }
 }
