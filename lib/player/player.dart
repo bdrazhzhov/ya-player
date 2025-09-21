@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:audio_player_gst/events.dart';
 
 import '/helpers/event.dart';
-import '/services/logger.dart';
 import '/models/music_api/track.dart';
 import '/services/audio_player.dart';
+import '/services/logger.dart';
 import '/services/music_api.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
@@ -32,7 +32,7 @@ class Player {
 
   Player() {
     _audioPlayer.playingStateNotifier.addListener(() async {
-      if(_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;
+      if (_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;
 
       await _trackFinishedEvent.emit(_queue.currentTrack!);
       await next();
@@ -40,41 +40,38 @@ class Player {
   }
 
   Future<void> play() async {
-    if(!_playerState.canPlayNotifier.value) return;
+    if (!_playerState.canPlayNotifier.value) return;
 
-    if(isNewTrack) {
+    if (isNewTrack) {
       isNewTrack = false;
       await _beforeNewTrackStartedEvent.emit(_queue.currentTrack!);
     }
-    
+
     await _audioPlayer.play();
     await _playingStartedEvent.emit(_queue.currentTrack!);
   }
 
   Future<void> pause() async {
-    if(!_playerState.canPauseNotifier.value) return;
+    if (!_playerState.canPauseNotifier.value) return;
 
     await _audioPlayer.pause();
   }
 
   Future<void> playPause() async {
-    if(_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
+    if (_audioPlayer.playingStateNotifier.value == PlayingState.playing) {
       await pause();
-    }
-    else {
+    } else {
       await play();
     }
   }
 
   Future<void> _beginPlaying() async {
-    _playerState.canNextNotifier.value = _queue.canGoNext;
-    _playerState.canPrevNotifier.value = _queue.canGoPrevious;
     await loadTrack(_queue.currentTrack!);
     await play();
   }
 
   Future<void> next() async {
-    if(!_queue.canGoNext) return;
+    if (!_queue.canGoNext) return;
 
     _beforeNextTrackEvent.emit(_queue.currentTrack!);
     _queue.next();
@@ -82,7 +79,7 @@ class Player {
   }
 
   Future<void> previous() async {
-    if(!_queue.canGoPrevious) return;
+    if (!_queue.canGoPrevious) return;
 
     _queue.previous();
     await _beginPlaying();
@@ -99,26 +96,26 @@ class Player {
   }
 
   Future<void> playPauseTrack(Track track) async {
-    if(track == _queue.currentTrack) {
+    if (track == _queue.currentTrack) {
       await playPause();
       return;
     }
 
     int index = _queue.indexOf(track);
-    if(index == -1) return;
+    if (index == -1) return;
 
     _queue.moveTo(index);
     await _beginPlaying();
   }
 
   Future<void> playPauseByIndex(int index) async {
-    if(index == _queue.currentIndex) {
+    if (index == _queue.currentIndex) {
       await playPause();
       return;
     }
 
     _queue.moveTo(index);
-    if(index != _queue.currentIndex) {
+    if (index != _queue.currentIndex) {
       logger.w('Error: index is not equal to current index');
       return;
     }
