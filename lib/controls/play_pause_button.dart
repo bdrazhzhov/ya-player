@@ -4,6 +4,7 @@ import '/models/music_api/track.dart';
 import '/services/app_state.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
+import 'track_list/play_pause_cover.dart';
 
 class PlayPauseButton extends StatefulWidget {
   final Track track;
@@ -18,7 +19,7 @@ class PlayPauseButton extends StatefulWidget {
 class _PlayPauseButtonState extends State<PlayPauseButton> {
   final playerState = getIt<PlayerState>();
   final appState = getIt<AppState>();
-  IconData icon = Icons.play_arrow;
+  bool isPlaying = false;
 
   @override
   void initState() {
@@ -37,24 +38,13 @@ class _PlayPauseButtonState extends State<PlayPauseButton> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: widget.size,
-      height: widget.size,
-      decoration: BoxDecoration(
-        color: theme.primaryColor,
-        borderRadius: BorderRadius.all(Radius.circular(widget.size / 2)),
-      ),
-      child: Icon(icon, color: Colors.black),
-    );
+    return PlayPauseCover(buttonSize: widget.size, isPlaying: isPlaying);
   }
 
   void onStateChange() {
     if (appState.trackNotifier.value != widget.track) return;
 
-    final isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
-    icon = isPlaying ? Icons.pause : Icons.play_arrow;
+    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
     setState(() {});
   }
 }

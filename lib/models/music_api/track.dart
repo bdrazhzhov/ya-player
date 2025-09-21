@@ -1,13 +1,14 @@
 import 'package:equatable/equatable.dart';
+import 'package:ya_player/models/music_api/context_id.dart';
 
-import 'station.dart';
-import 'can_be_station.dart';
 import 'album.dart';
 import 'artist.dart';
+import 'can_be_station.dart';
+import 'station.dart';
 
 enum TrackType { music, podcast, audiobook }
 
-class Track extends Equatable implements CanBeRadio {
+class Track extends Equatable implements CanBeRadio, ContextId {
   final String id;
   final String title;
   final String? version;
@@ -26,10 +27,23 @@ class Track extends Equatable implements CanBeRadio {
   final LyricsInfo? lyricsInfo;
   final bool? isLiked;
 
-  Track(this.id, this.title, this.version, this.duration, this.artists,
-      this.albums, this.coverUri, this.ogImage, this.batchId, this.pubDate,
-      this.isAvailable, this.type, this.trackParameters, this.chart,
-      this.lyricsInfo, this.isLiked) {
+  Track(
+      this.id,
+      this.title,
+      this.version,
+      this.duration,
+      this.artists,
+      this.albums,
+      this.coverUri,
+      this.ogImage,
+      this.batchId,
+      this.pubDate,
+      this.isAvailable,
+      this.type,
+      this.trackParameters,
+      this.chart,
+      this.lyricsInfo,
+      this.isLiked) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 
@@ -43,45 +57,56 @@ class Track extends Equatable implements CanBeRadio {
 
   factory Track.fromJson(Map<String, dynamic> json, String batchId) {
     ChartItem? chart;
-    if(json['chart'] != null) {
+    if (json['chart'] != null) {
       chart = ChartItem.fromJson(json['chart']);
     }
 
     final track = json['track'] ?? json;
     Duration? duration;
-    if(track['durationMs'] != null) {
+    if (track['durationMs'] != null) {
       duration = Duration(milliseconds: track['durationMs']);
     }
     List<ArtistBase> artists = [];
-    track['artists'].forEach((item){
+    track['artists'].forEach((item) {
       artists.add(ArtistBase.fromJson(item));
     });
     List<Album> albums = [];
-    track['albums'].forEach((item){
+    track['albums'].forEach((item) {
       albums.add(Album.fromJson(item));
     });
 
     final id = json['id'] ?? json['realId'] ?? track['id'] ?? track['realId'];
 
     DateTime? pubDate;
-    if(track['pubDate'] != null) pubDate = DateTime.tryParse(track['pubDate']);
+    if (track['pubDate'] != null) pubDate = DateTime.tryParse(track['pubDate']);
 
     TrackParameters? trackParameters;
-    if(json['trackParameters'] != null) {
+    if (json['trackParameters'] != null) {
       trackParameters = TrackParameters.fromJson(json['trackParameters']);
     }
 
     var lyricsInfo = LyricsInfo(hasSync: false, hasText: false);
-    if(track['lyricsInfo'] != null) {
+    if (track['lyricsInfo'] != null) {
       lyricsInfo = LyricsInfo.fromJson(track['lyricsInfo']);
     }
 
-    return Track(id.toString(),
-      track['title'], track['version'], duration, artists, albums,
-      track['coverUri'], track['ogImage'], batchId, pubDate, track['available'],
-      _trackTypes[track['type'].toString()] ?? TrackType.music,
-      trackParameters, chart, lyricsInfo, json['liked']
-    );
+    return Track(
+        id.toString(),
+        track['title'],
+        track['version'],
+        duration,
+        artists,
+        albums,
+        track['coverUri'],
+        track['ogImage'],
+        batchId,
+        pubDate,
+        track['available'],
+        _trackTypes[track['type'].toString()] ?? TrackType.music,
+        trackParameters,
+        chart,
+        lyricsInfo,
+        json['liked']);
   }
 
   @override
@@ -93,6 +118,9 @@ class Track extends Equatable implements CanBeRadio {
   String get albumName => albums.isNotEmpty ? albums.first.title : '';
 
   String get fullId => '$id:${albums.first.id}';
+
+  @override
+  String get contextId => id;
 }
 
 class TrackParameters {
@@ -108,8 +136,8 @@ class TrackParameters {
 }
 
 class TrackOfList {
-  final int id;
-  final int albumId;
+  final String id;
+  final String albumId;
   final DateTime timestamp;
 
   TrackOfList(this.id, this.albumId, this.timestamp);
@@ -126,27 +154,24 @@ class ChartItem {
   final int shift;
   final String? bgColor;
 
-  ChartItem({
-    required this.position,
-    required this.progress,
-    required this.listeners,
-    required this.shift,
-    this.bgColor
-  });
+  ChartItem(
+      {required this.position,
+      required this.progress,
+      required this.listeners,
+      required this.shift,
+      this.bgColor});
 
   factory ChartItem.fromJson(Map<String, dynamic> json) {
     return ChartItem(
-      position: json['position'],
-      progress: json['progress'],
-      listeners: json['listeners'],
-      shift: json['shift'],
-      bgColor: json['bgColor']
-    );
+        position: json['position'],
+        progress: json['progress'],
+        listeners: json['listeners'],
+        shift: json['shift'],
+        bgColor: json['bgColor']);
   }
 }
 
-class UrlData
-{
+class UrlData {
   final String url;
   final String? encryptionKey;
 

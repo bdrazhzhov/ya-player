@@ -53,6 +53,7 @@ class TrackCard extends StatelessWidget {
                 width: width,
                 borderRadius: 8,
               ),
+              // "Track" text
               Positioned(
                 left: 8,
                 top: 8,
@@ -73,6 +74,7 @@ class TrackCard extends StatelessWidget {
                   ),
                 ),
               ),
+              // Play button
               Positioned.fill(
                 child: ValueListenableBuilder(
                   valueListenable: _hoverNotifier,

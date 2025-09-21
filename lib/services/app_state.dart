@@ -332,8 +332,15 @@ class AppState {
 
       switch (playerQueue.entityType) {
         case PlayInfoContext.various:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+          final trackOfList = TrackOfList(
+            state.playerState.playerQueue.entityId,
+            state.playerState.playerQueue.playableList.first.albumId!,
+            DateTime.now(),
+          );
+          tracks = await _musicApi.tracks([trackOfList]);
+          _playContext = tracks.first;
+          _playerState.canShuffleNotifier.value = false;
+          _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.album:
           final albumId = int.parse(state.playerState.playerQueue.entityId);
           final AlbumWithTracks albumWithTracks = await _musicApi.albumWithTracks(albumId);
@@ -534,6 +541,7 @@ class AppState {
     Station: PlayInfoContext.radio,
     RadioSession: PlayInfoContext.radio,
     List<Track>: PlayInfoContext.playlist,
+    Track: PlayInfoContext.various,
   };
 
   static const Map<Type, String> _entityFroms = {
@@ -543,6 +551,7 @@ class AppState {
     Station: 'desktop-home-rup_main-radio-default',
     RadioSession: 'desktop-home-rup_main-radio-default',
     List<Track>: 'desktop-own_collection-collection_playlists-default',
+    Track: 'web-search-search_open_best_results-default',
   };
 
   Future<void> playContent(Object contextObject, Iterable<Track> tracks, [int? index]) async {

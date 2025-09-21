@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:audio_player_gst/events.dart';
 
-import '/player/player.dart';
 import '/models/music_api_types.dart';
 import '/models/play_info.dart';
+import '/player/player.dart';
 import 'app_state.dart';
 import 'audio_player.dart';
 import 'logger.dart';
@@ -20,19 +20,23 @@ class PlayAnalytics {
   final _musicApi = getIt<MusicApi>();
 
   void start() {
-    _audioPlayer.playingStateNotifier.addListener((){
+    _audioPlayer.playingStateNotifier.addListener(() {
       _processState(_audioPlayer.playingStateNotifier.value);
     });
-    _audioPlayer.seekStream.listen((_){ _playInfo?.seek = true; _isSeeking = true; });
+    _audioPlayer.seekStream.listen((_) {
+      _playInfo?.seek = true;
+      _isSeeking = true;
+    });
 
     // getIt<NewPlayer>().startTrackStream.listen(_onStartTrack);
     getIt<Player>().beforeNewTrackStartedEvent.addHandler(_onBeforeTrackStart);
   }
 
   void _processState(PlayingState state) {
-    switch(state) {
+    switch (state) {
       case PlayingState.pending:
-      case PlayingState.idle: break;
+      case PlayingState.idle:
+        break;
       case PlayingState.ready:
         _stopwatch.reset();
         _playInfo?.seek = false;
@@ -41,7 +45,7 @@ class PlayAnalytics {
         _isSeeking = false;
         _stopwatch.start();
       case PlayingState.paused:
-        if(!_isSeeking) _playInfo?.pause = true;
+        if (!_isSeeking) _playInfo?.pause = true;
         _stopwatch.stop();
       case PlayingState.completed:
         _onTrackFinish();
@@ -50,7 +54,7 @@ class PlayAnalytics {
   }
 
   Future<void> _onBeforeTrackStart(Track? track) async {
-    if(track == null) return;
+    if (track == null) return;
 
     final playContext = getIt<AppState>().playContext;
     switch (playContext) {
@@ -62,7 +66,8 @@ class PlayAnalytics {
         _playInfo = PlayInfoArtist(track);
       case Album():
         _playInfo = PlayInfoAlbum(track);
-      case List<Track>():
+      case Iterable<Track>():
+      case Track():
         _playInfo = PlayInfoTracks(track);
       default:
         logger.w('Unknown context object: $playContext');
