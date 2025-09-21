@@ -17,31 +17,35 @@ class DeletePlaylistButton extends StatefulWidget {
 
 class _DeletePlaylistButtonState extends State<DeletePlaylistButton> {
   final musicApi = getIt<MusicApi>();
+  final appState = getIt<AppState>();
   bool isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
-    if(isDeleting) {
+    if (isDeleting) {
       return CircularProgressIndicator();
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final bool isEditable = appState.isPlaylistEditable(widget.playlist);
 
     return IconButton(
-      onPressed: () async {
-        isDeleting = true;
-        setState(() {});
-
-        await musicApi.deletePlaylist(widget.playlist);
-        getIt<AppState>().requestPlaylists();
-
-        isDeleting = false;
-        setState(() {});
-
-        if(widget.onDeleted != null) widget.onDeleted!();
-      },
+      onPressed: isEditable ? onPressed : null,
       icon: const Icon(Icons.delete),
-      tooltip: l10n.playlist_delete,
+      tooltip: isEditable ? l10n.playlist_delete : null,
     );
+  }
+
+  void onPressed() async {
+    isDeleting = true;
+    setState(() {});
+
+    await musicApi.deletePlaylist(widget.playlist);
+    appState.requestPlaylists();
+
+    isDeleting = false;
+    setState(() {});
+
+    if (widget.onDeleted != null) widget.onDeleted!();
   }
 }
