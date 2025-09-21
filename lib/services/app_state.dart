@@ -318,6 +318,8 @@ class AppState {
   late StreamSubscription _ynisonStateSubscription;
   void _listenToYnisonState() {
     _ynisonStateSubscription = _ynisonClient.stateStream.listen((YnisonState state) async {
+      // отписываемся от обновлений состояния плеера, кроме 1-го,
+      // т.к. еще не умеем корректно работать с обновлениями
       _ynisonStateSubscription.cancel();
 
       final YPlayerQueue playerQueue = state.playerState.playerQueue;
@@ -409,6 +411,9 @@ class AppState {
       await _newPlayer.loadTrack(track);
       _playerState.canPlayNotifier.value = true;
       _playerState.canPauseNotifier.value = true;
+
+      logger.i('Player state restored from ynison: context: '
+          '$_playContext, track: ${trackNotifier.value}');
     });
   }
 
