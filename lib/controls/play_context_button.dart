@@ -7,19 +7,11 @@ import '/player/player.dart';
 import '/services/app_state.dart';
 import '/services/player_state.dart';
 import '/services/service_locator.dart';
-import 'track_list/track_animation_cover.dart';
 
 class PlayContextButton extends StatefulWidget {
   final Equatable context;
   final Iterable<Track> tracks;
-  final int? index;
-  final bool hasBeatAnimation;
-  const PlayContextButton(
-      {super.key,
-      required this.context,
-      required this.tracks,
-      this.index,
-      this.hasBeatAnimation = false});
+  const PlayContextButton({super.key, required this.context, required this.tracks});
 
   @override
   State<PlayContextButton> createState() => _PlayContextButtonState();
@@ -30,16 +22,8 @@ class _PlayContextButtonState extends State<PlayContextButton> {
   final appState = getIt<AppState>();
   bool isPlaying = false;
   bool isLoading = false;
-  bool isHovered = false;
 
-  bool get isCurrent =>
-      appState.playContext == widget.context ||
-      track != null && appState.trackNotifier.value == track;
-  Track? get track {
-    if (widget.index == null) return null;
-
-    return widget.tracks.elementAt(widget.index!);
-  }
+  bool get isCurrent => appState.playContext == widget.context;
 
   @override
   void initState() {
@@ -58,38 +42,11 @@ class _PlayContextButtonState extends State<PlayContextButton> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
-    late final Widget child;
-
-    if (widget.hasBeatAnimation && isPlaying && !isHovered) {
-      child = TrackAnimationCover(
-        bgColor: theme.primaryColor,
-        radius: 25,
-        playAnimation: true,
-      );
-    } else {
-      child = IconButton(
-        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-        tooltip: isCurrent ? null : l10n.play_context_tooltip,
-        onPressed: isLoading ? null : onPressed,
-      );
-    }
-
-    return MouseRegion(
-      onEnter: (_) {
-        isHovered = true;
-        setState(() {});
-      },
-      onExit: (_) {
-        isHovered = false;
-        setState(() {});
-      },
-      child: SizedBox(
-        width: 50,
-        height: 50,
-        child: Center(child: child),
-      ),
+    return IconButton(
+      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+      tooltip: isCurrent ? null : l10n.play_context_tooltip,
+      onPressed: isLoading ? null : onPressed,
     );
   }
 
@@ -114,7 +71,7 @@ class _PlayContextButtonState extends State<PlayContextButton> {
     isLoading = true;
     setState(() {});
 
-    await appState.playContent(widget.context, widget.tracks, widget.index);
+    await appState.playContent(widget.context, widget.tracks);
 
     isLoading = false;
     setState(() {});
