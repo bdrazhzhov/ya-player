@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/controls/play_context_button.dart';
-import '/l10n/app_localizations.dart';
 import '/models/music_api/album.dart';
 import '/services/app_state.dart';
 import '/services/service_locator.dart';
@@ -17,8 +16,6 @@ class AlbumFlexibleSpace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return FlexibleSpace(
       imageUrl: albumWithTracks.album.ogImage,
       type: FlexibleSpaceType.album,
