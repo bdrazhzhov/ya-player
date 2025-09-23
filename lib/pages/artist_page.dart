@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '/controls/album_card.dart';
 import '/controls/artist/artist_flexible_space.dart';
-import '/controls/artist/artist_section_header.dart';
 import '/controls/artist/artist_social_link.dart';
 import '/controls/artist_card.dart';
-import '/controls/custom_separated_hlist.dart';
+import '/controls/horizontal_list_with_title.dart';
 import '/controls/page_loading_indicator.dart';
+import '/controls/page_section_header.dart';
 import '/controls/sliver_track_list.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/artist_info.dart';
@@ -24,6 +24,8 @@ class ArtistPage extends StatelessWidget {
 
   ArtistPage({super.key, required this.artistId});
 
+  static const double _cardWidth = 150;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -37,50 +39,63 @@ class ArtistPage extends StatelessWidget {
               flexibleSpace: ArtistFlexibleSpace(artistInfo: info),
               slivers: [
                 if (info.popularTracks.isNotEmpty) ...[
-                  ArtistSectionHeader(
+                  toSliverWithPadding(
+                    child: PageSectionHeader(
                       title: l10n.artist_popularTracks,
                       onPressed: () {
                         Navigator.of(context).push(PageRouteBuilder(
                           pageBuilder: (_, __, ___) => ArtistTracksPage(artist: info.artist),
                           reverseTransitionDuration: Duration.zero,
                         ));
-                      }),
+                      },
+                    ),
+                    bottom: 20,
+                  ),
                   SliverTrackList(
                     playContext: info.artist,
                     tracks: info.popularTracks,
                   ),
                 ],
                 if (info.albums.isNotEmpty) ...[
-                  ArtistSectionHeader(
-                      title: l10n.artist_popularAlbums,
-                      onPressed: () {
-                        Navigator.of(context).push(PageRouteBuilder(
-                          pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
-                          reverseTransitionDuration: Duration.zero,
-                        ));
-                      }),
-                  createSeparatedList(info.albums.map((album) => AlbumCard(album, 150))),
+                  createSeparatedList(
+                    items: info.albums.map((album) => AlbumCard(album, _cardWidth)),
+                    title: l10n.artist_popularAlbums,
+                    onHeaderTap: () {
+                      Navigator.of(context).push(PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
+                        reverseTransitionDuration: Duration.zero,
+                      ));
+                    },
+                  ),
                 ],
                 if (info.alsoAlbums.isNotEmpty) ...[
-                  ArtistSectionHeader(
-                      title: l10n.artist_compilations,
-                      onPressed: () {
-                        Navigator.of(context).push(PageRouteBuilder(
-                          pageBuilder: (_, __, ___) => ArtistCompilationsPage(artist: info.artist),
-                          reverseTransitionDuration: Duration.zero,
-                        ));
-                      }),
-                  createSeparatedList(info.alsoAlbums.map((album) => AlbumCard(album, 150))),
+                  createSeparatedList(
+                    items: info.alsoAlbums.map((album) => AlbumCard(album, _cardWidth)),
+                    title: l10n.artist_compilations,
+                    onHeaderTap: () {
+                      Navigator.of(context).push(PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => ArtistCompilationsPage(artist: info.artist),
+                        reverseTransitionDuration: Duration.zero,
+                      ));
+                    },
+                  ),
                 ],
                 if (info.similarArtists.isNotEmpty) ...[
-                  ArtistSectionHeader(title: l10n.artist_similar),
-                  createSeparatedList(info.similarArtists.map((artist) => ArtistCard(artist, 150))),
+                  createSeparatedList(
+                    items: info.similarArtists.map((artist) => ArtistCard(artist, _cardWidth)),
+                    title: l10n.artist_similar,
+                  ),
                 ],
                 if (info.artist.links.isNotEmpty) ...[
-                  ArtistSectionHeader(title: l10n.artist_official),
+                  toSliverWithPadding(
+                    child: PageSectionHeader(title: l10n.artist_official),
+                    top: 20,
+                    bottom: 12,
+                  ),
                   SliverToBoxAdapter(
                     child: Wrap(
-                        children: info.artist.links.map((link) => ArtistSocialLink(link)).toList()),
+                      children: info.artist.links.map((link) => ArtistSocialLink(link)).toList(),
+                    ),
                   )
                 ],
               ],
@@ -91,12 +106,27 @@ class ArtistPage extends StatelessWidget {
         });
   }
 
-  SliverToBoxAdapter createSeparatedList(Iterable<Widget> items) {
-    return SliverToBoxAdapter(
-      child: CustomSeparatedHList(
+  Widget createSeparatedList({
+    required Iterable<Widget> items,
+    required String title,
+    void Function()? onHeaderTap,
+    double? itemWidth,
+  }) {
+    return toSliverWithPadding(
+      child: HorizontalListWithTitle(
+        title: PageSectionHeader(title: title, onPressed: onHeaderTap),
+        spacing: 20,
+        itemWidth: itemWidth ?? _cardWidth,
         children: items,
-        separatorWidget: const SizedBox(width: 20),
       ),
+      top: 20,
+    );
+  }
+
+  Widget toSliverWithPadding({required Widget child, double? top, double? bottom}) {
+    return SliverPadding(
+      sliver: SliverToBoxAdapter(child: child),
+      padding: EdgeInsetsGeometry.only(top: top ?? 0, bottom: bottom ?? 0),
     );
   }
 }

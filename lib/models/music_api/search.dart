@@ -189,7 +189,7 @@ class BestResultArtistArtist extends ArtistBase {
   final EntityCover? cover;
   final bool? various;
 
-  BestResultArtistArtist({
+  const BestResultArtistArtist({
     required String id,
     required String name,
     this.cover,

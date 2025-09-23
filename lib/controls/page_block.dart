@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '/pages/popular_playlists_page.dart';
-import '/pages/new_releases_page.dart';
-import '/helpers/nav_keys.dart';
-import '/l10n/app_localizations.dart';
-import '/pages/chart_page.dart';
 import '/controls/mix_link_card.dart';
 import '/controls/podcast_card.dart';
 import '/controls/track_list.dart';
+import '/helpers/nav_keys.dart';
 import '/models/music_api_types.dart';
+import '/pages/chart_page.dart';
+import '/pages/new_releases_page.dart';
+import '/pages/popular_playlists_page.dart';
 import 'album_card.dart';
 import 'artist_card.dart';
+import 'horizontal_list_with_title.dart';
+import 'page_section_header.dart';
 import 'playlist_card.dart';
 import 'promotion_card.dart';
 
@@ -29,48 +30,52 @@ class PageBlock extends StatelessWidget {
     'recently-played'
   ];
 
+  static const double _entityCardWidth = 180;
+
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  Text(
-                    block.title ?? '',
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  if (block.description != null) Text(block.description!),
-                ],
-              ),
-            ),
-            if (!ignoredTypes.contains(block.type))
-              TextButton(
-                onPressed: () => _navigateToAll(block.type, context),
-                child: Text(l10n.pageBlock_viewAll),
-              ),
-          ],
-        ),
-        if (block.type == 'chart')
-          _createChartBlock()
-        else
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+        if (block.type == 'chart') ...[_buildEntityTitle(context), _createChartBlock()] else
+          HorizontalListWithTitle(
+            title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: _createEntityCards(context),
+              children: [
+                if (block.title != null)
+                  PageSectionHeader(
+                    title: block.title!,
+                    onPressed: !ignoredTypes.contains(block.type)
+                        ? () => _navigateToAll(block.type, context)
+                        : null,
+                  ),
+                if (block.description != null) Text(block.description!),
+              ],
             ),
+            spacing: 20,
+            itemWidth: _entityCardWidth,
+            children: block.entities
+                .map((e) => _createBlockEntityCard(context, e))
+                .whereType<Widget>()
+                .toList(),
+          )
+      ],
+    );
+  }
+
+  Widget _buildEntityTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (block.title != null)
+          PageSectionHeader(
+            title: block.title!,
+            onPressed: !ignoredTypes.contains(block.type)
+                ? () => _navigateToAll(block.type, context)
+                : null,
           ),
+        if (block.description != null) Text(block.description!),
       ],
     );
   }
@@ -119,40 +124,26 @@ class PageBlock extends StatelessWidget {
     );
   }
 
-  List<Widget> _createEntityCards(BuildContext context) {
-    List<Widget> cards = [];
-
-    for (Object entity in block.entities) {
-      Widget? card = _createBlockEntityCard(context, entity);
-      if (card == null) continue;
-      cards.addAll([card, const SizedBox(width: 20)]);
-    }
-
-    if (cards.isNotEmpty) cards.removeLast();
-
-    return cards;
-  }
-
   Widget? _createBlockEntityCard(BuildContext context, entity) {
     switch (entity.runtimeType) {
       case const (Playlist):
         final playlist = entity as Playlist;
-        return PlaylistCard(playlist, width: 180);
+        return PlaylistCard(playlist, width: _entityCardWidth);
       case const (Album):
         final album = entity as Album;
-        return AlbumCard(album, 180);
+        return AlbumCard(album, _entityCardWidth);
       case const (Artist):
         final artist = entity as Artist;
-        return ArtistCard(artist, 180);
+        return ArtistCard(artist, _entityCardWidth);
       case const (Promotion):
         final promotion = entity as Promotion;
-        return PromotionCard(promotion, width: 300);
+        return PromotionCard(promotion, width: _entityCardWidth);
       case const (Podcast):
         final podcast = entity as Podcast;
-        return PodcastCard(podcast, 180);
+        return PodcastCard(podcast, _entityCardWidth);
       case const (MixLink):
         final mixLink = entity as MixLink;
-        return MixLinkCard(mixLink, width: 180);
+        return MixLinkCard(mixLink, width: _entityCardWidth);
       default:
         debugPrint('Unknown entity type: ${entity.runtimeType.toString()}');
         return null;
