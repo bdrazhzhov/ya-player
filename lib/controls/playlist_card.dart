@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
 
+import '/helpers/nav_keys.dart';
 import '/l10n/app_localizations.dart';
-import 'yandex_image.dart';
-import '/pages/playlist_page.dart';
 import '/models/music_api/playlist.dart';
+import '/pages/playlist_page.dart';
+import 'yandex_image.dart';
 
 class PlaylistCard extends StatelessWidget {
   final Playlist playlist;
@@ -19,13 +20,11 @@ class PlaylistCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: (){
-        Navigator.of(context).push(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => PlaylistPage(uid: playlist.uid, kind: playlist.kind),
-            reverseTransitionDuration: Duration.zero,
-          )
-        );
+      onTap: () {
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+          pageBuilder: (_, __, ___) => PlaylistPage(uid: playlist.uid, kind: playlist.kind),
+          reverseTransitionDuration: Duration.zero,
+        ));
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -35,36 +34,27 @@ class PlaylistCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              (playlist.image != null && playlist.image!.isNotEmpty) ?
-                YandexImage(
-                  uriTemplate: playlist.image,
-                  width: width,
-                  borderRadius: _borderRadius
-                ) :
-                _buildNoImage(theme),
+              (playlist.image != null && playlist.image!.isNotEmpty)
+                  ? YandexImage(
+                      uriTemplate: playlist.image, width: width, borderRadius: _borderRadius)
+                  : _buildNoImage(theme),
               Text(
                 HtmlCharacterEntities.decode(playlist.title),
                 softWrap: true,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
-              if(playlist.description != null)
+              if (playlist.description != null)
                 ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 40
-                  ),
-                  child: Text(
-                    HtmlCharacterEntities.decode(playlist.description!),
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: TextStyle(color: theme.colorScheme.outline)
-                  ),
+                  constraints: const BoxConstraints(maxHeight: 40),
+                  child: Text(HtmlCharacterEntities.decode(playlist.description!),
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(color: theme.colorScheme.outline)),
                 ),
-              Text(
-                AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
-                style: TextStyle(color: theme.colorScheme.outline)
-              )
+              Text(AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
+                  style: TextStyle(color: theme.colorScheme.outline))
             ],
           ),
         ),
@@ -76,9 +66,7 @@ class PlaylistCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(_borderRadius),
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary
-        ),
+        decoration: BoxDecoration(color: theme.colorScheme.primary),
         child: AspectRatio(
           aspectRatio: 1,
           child: SizedBox(

@@ -3,10 +3,11 @@ import 'package:ya_player/controls/artist/artist_names.dart';
 import 'package:ya_player/models/music_api/search.dart';
 import 'package:ya_player/pages/album_page.dart';
 
-import '../../l10n/app_localizations.dart';
-import '../../services/app_state.dart';
-import '../../services/service_locator.dart';
-import '../like_button.dart';
+import '/controls/like_button.dart';
+import '/helpers/nav_keys.dart';
+import '/l10n/app_localizations.dart';
+import '/services/app_state.dart';
+import '/services/service_locator.dart';
 import 'best_result_album_cover.dart';
 
 class BestResultRecentReleaseCard extends StatefulWidget {
@@ -73,7 +74,7 @@ class _BestResultRecentReleaseCardState extends State<BestResultRecentReleaseCar
         },
       ),
       onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
           pageBuilder: (_, __, ___) => AlbumPage(widget.bestResult.album.id),
           reverseTransitionDuration: Duration.zero,
         ));

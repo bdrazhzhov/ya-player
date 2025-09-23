@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../controls/create_playlist_button.dart';
-import '/l10n/app_localizations.dart';
+import '/controls/playlist_card.dart';
 import '/helpers/custom_sliver_grid_delegate_extent.dart';
+import '/l10n/app_localizations.dart';
 import '/models/music_api/playlist.dart';
 import '/services/app_state.dart';
-import '/controls/playlist_card.dart';
 import '/services/service_locator.dart';
+import '../controls/create_playlist_button.dart';
+import '../helpers/nav_keys.dart';
 import 'page_base.dart';
 import 'playlist_page.dart';
 
@@ -37,14 +38,19 @@ class PlaylistsPage extends StatelessWidget {
             backgroundColor: theme.colorScheme.surface,
             surfaceTintColor: Colors.transparent,
             actions: [
-              CreatePlaylistButton(onCreated: (Playlist playlist) {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => PlaylistPage(uid: playlist.uid, kind: playlist.kind,),
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
-              },),
+              CreatePlaylistButton(
+                onCreated: (Playlist playlist) {
+                  NavKeys.mainNav.currentState!.push(
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => PlaylistPage(
+                        uid: playlist.uid,
+                        kind: playlist.kind,
+                      ),
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

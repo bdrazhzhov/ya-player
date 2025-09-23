@@ -1,15 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '/services/state_enums.dart';
+import '/controls/controls_bar.dart';
+import '/controls/main_menu.dart';
 import '/services/app_state.dart';
 import '/services/audio_player.dart';
-import '/controls/controls_bar.dart';
 import '/services/service_locator.dart';
-import '/controls/main_menu.dart';
+import '/services/state_enums.dart';
+import 'app_loading_page.dart';
 import 'login_page.dart';
 import 'main_screen.dart';
-import 'app_loading_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -31,55 +31,47 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Stack(
-        children: [
-          ValueListenableBuilder(
-            valueListenable: appState.mainPageState,
-            builder: (_, UiState value, __) {
-              Widget page;
+        child: Stack(
+      children: [
+        ValueListenableBuilder(
+          valueListenable: appState.mainPageState,
+          builder: (_, UiState value, __) {
+            Widget page;
 
-              if(value == UiState.loading) {
-                page = const AppLoadingPage();
-              }
-              else if(value == UiState.auth) {
-                page = LoginPage();
-              }
-              else {
-                page = _buildAppUi();
-              }
+            if (value == UiState.loading) {
+              page = const AppLoadingPage();
+            } else if (value == UiState.auth) {
+              page = LoginPage();
+            } else {
+              page = _buildAppUi();
+            }
 
-              return page;
-            },
-          ),
-          // const TitleBar(),
-        ],
-      )
-    );
+            return page;
+          },
+        ),
+        // const TitleBar(),
+      ],
+    ));
   }
 
   Widget _buildAppUi() {
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (event) {
-        if(event.original?.kind == PointerDeviceKind.mouse && event.original?.buttons == kBackMouseButton) {
+        if (event.original?.kind == PointerDeviceKind.mouse &&
+            event.original?.buttons == kBackMouseButton) {
           getIt<AppState>().navigateBack();
         }
       },
       child: Column(
         children: [
           const Expanded(
-            child: Row(
-              children: [
-                MainMenu(),
-                Expanded(child: MainScreen())
-              ],
-            )
-          ),
+              child: Row(
+            children: [MainMenu(), Expanded(child: MainScreen())],
+          )),
           ControlsBar(isExpandable: true)
         ],
       ),
     );
   }
 }
-
-

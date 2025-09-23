@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html_character_entities/html_character_entities.dart';
 
-import '../l10n/app_localizations.dart';
+import '/helpers/nav_keys.dart';
+import '/l10n/app_localizations.dart';
 import '/models/music_api/podcast.dart';
 import '/pages/podcast_page.dart';
 import 'yandex_image.dart';
@@ -25,7 +26,7 @@ class PodcastCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
           pageBuilder: (_, __, ___) => PodcastPage(podcast),
           reverseTransitionDuration: Duration.zero,
         ));

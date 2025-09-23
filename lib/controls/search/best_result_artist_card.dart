@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '/controls/like_button.dart';
+import '/helpers/nav_keys.dart';
 import '/models/music_api/search.dart';
 import '/pages/artist_page.dart';
 import '/services/app_state.dart';
@@ -65,7 +66,7 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
         },
       ),
       onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
           pageBuilder: (_, __, ___) => ArtistPage(artistId: widget.bestResult.artist.id),
           reverseTransitionDuration: Duration.zero,
         ));

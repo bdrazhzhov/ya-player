@@ -73,7 +73,7 @@ class AppState {
   final _windowManager = getIt<WindowManager>();
   final _queue = getIt<PlaybackQueue>();
   final _newPlayer = getIt<Player>();
-  var _playContext = Object();
+  Object? _playContext;
   final Map<String, String> _genres = {};
   final _playAnalytics = PlayAnalytics();
   late final YnisonClient _ynisonClient;

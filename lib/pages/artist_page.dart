@@ -8,6 +8,7 @@ import '/controls/horizontal_list_with_title.dart';
 import '/controls/page_loading_indicator.dart';
 import '/controls/page_section_header.dart';
 import '/controls/sliver_track_list.dart';
+import '/helpers/nav_keys.dart';
 import '/l10n/app_localizations.dart';
 import '/models/music_api/artist_info.dart';
 import '/services/music_api.dart';
@@ -43,7 +44,7 @@ class ArtistPage extends StatelessWidget {
                     child: PageSectionHeader(
                       title: l10n.artist_popularTracks,
                       onPressed: () {
-                        Navigator.of(context).push(PageRouteBuilder(
+                        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
                           pageBuilder: (_, __, ___) => ArtistTracksPage(artist: info.artist),
                           reverseTransitionDuration: Duration.zero,
                         ));
@@ -61,7 +62,7 @@ class ArtistPage extends StatelessWidget {
                     items: info.albums.map((album) => AlbumCard(album, _cardWidth)),
                     title: l10n.artist_popularAlbums,
                     onHeaderTap: () {
-                      Navigator.of(context).push(PageRouteBuilder(
+                      NavKeys.mainNav.currentState!.push(PageRouteBuilder(
                         pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
                         reverseTransitionDuration: Duration.zero,
                       ));
@@ -73,7 +74,7 @@ class ArtistPage extends StatelessWidget {
                     items: info.alsoAlbums.map((album) => AlbumCard(album, _cardWidth)),
                     title: l10n.artist_compilations,
                     onHeaderTap: () {
-                      Navigator.of(context).push(PageRouteBuilder(
+                      NavKeys.mainNav.currentState!.push(PageRouteBuilder(
                         pageBuilder: (_, __, ___) => ArtistCompilationsPage(artist: info.artist),
                         reverseTransitionDuration: Duration.zero,
                       ));

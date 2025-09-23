@@ -166,7 +166,7 @@ class PageBlock extends StatelessWidget {
 
     if (page == null) return;
 
-    Navigator.of(context).push(PageRouteBuilder(
+    NavKeys.mainNav.currentState!.push(PageRouteBuilder(
       pageBuilder: (_, __, ___) => page!,
       reverseTransitionDuration: Duration.zero,
     ));

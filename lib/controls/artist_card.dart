@@ -5,6 +5,7 @@ import '/models/music_api/artist.dart';
 import '/pages/artist_page.dart';
 import '/services/app_state.dart';
 import '/services/service_locator.dart';
+import '../helpers/nav_keys.dart';
 import 'yandex_image.dart';
 
 class ArtistCard extends StatelessWidget {
@@ -21,7 +22,7 @@ class ArtistCard extends StatelessWidget {
 
     return InkResponse(
       onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
           pageBuilder: (_, __, ___) => ArtistPage(artistId: artist.id),
           reverseTransitionDuration: Duration.zero,
         ));
