@@ -454,7 +454,7 @@ class MusicApi {
     final String url = '/artists/$artistId/direct-albums?page=$page'
         '&page-size=$perPage&sort-by=$sortByString&sort-order=$sortOrderString';
     Map<String, dynamic> json = await _http.get(url);
-    final albums = json['albums'].map((a) => Album.fromJson(a));
+    final albums = json['albums'].map<Album>((a) => Album.fromJson(a));
 
     return PagedData.fromJson(json['pager'], albums);
   }
@@ -463,7 +463,7 @@ class MusicApi {
       {required String artistId, page = 0, perPage = 50}) async {
     final String url = '/artists/$artistId/also-albums?page=$page&page-size=$perPage';
     Map<String, dynamic> json = await _http.get(url);
-    final albums = json['albums'].map((a) => Album.fromJson(a));
+    final albums = json['albums'].map<Album>((a) => Album.fromJson(a));
 
     return PagedData.fromJson(json['pager'], albums);
   }
