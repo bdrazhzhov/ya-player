@@ -19,4 +19,18 @@ class AppRouteObserver extends RouteObserver<PageRoute<dynamic>> {
     popNotifier.value = route.navigator!.canPop();
     // debugPrint('Can pop: ${popNotifier.value}');
   }
+
+  // @override
+  // void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+  //   // print('Route: $route');
+  //   // print('Previous route: $previousRoute');
+  //   super.didRemove(route, previousRoute);
+  //   final name = route.settings.name;
+  //   print('Удалён маршрут: $name');
+  //   if (route is PageRoute) {
+  //     print('PageRoute удалён: ${route.runtimeType}, settings=${route.settings}');
+  //   } else {
+  //     print('Другой тип маршрута удалён: ${route.runtimeType}');
+  //   }
+  // }
 }

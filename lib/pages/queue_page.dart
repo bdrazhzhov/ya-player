@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
 
-import 'page_base.dart';
-import '/services/app_state.dart';
 import '/controls/playback/repeat_button.dart';
 import '/controls/playback/shuffle_button.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/track_list/sliver_tracks_header.dart';
 import '/models/music_api/track.dart';
+import '/services/app_state.dart';
 import '/services/service_locator.dart';
+import 'page_base.dart';
 
-class QueuePage extends StatelessWidget {
+class QueuePage extends StatefulWidget {
+  QueuePage({super.key});
+
+  @override
+  State<QueuePage> createState() => _QueuePageState();
+}
+
+class _QueuePageState extends State<QueuePage> {
   final _appState = getIt<AppState>();
 
-  QueuePage({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _appState.isQueueShown = true;
+  }
+
+  @override
+  void dispose() {
+    _appState.isQueueShown = false;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

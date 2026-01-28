@@ -461,9 +461,6 @@ class AppState {
     if (navState == null || !navState.canPop()) return;
 
     navState.pop();
-    if (isQueueShown) {
-      isQueueShown = false;
-    }
   }
 
   Future<void> _requestLikedAlbums() async {
