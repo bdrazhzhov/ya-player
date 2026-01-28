@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '/models/music_api/station.dart';
+import '/notifiers/play_button_notifier.dart';
+import '/player/player.dart';
 import '/services/app_state.dart';
 import '/services/service_locator.dart';
 import 'station_restriction_widget.dart';
-import '/models/music_api/station.dart';
 
 class StationSettingsWidget extends StatelessWidget {
   final Station station;
   final _appState = getIt<AppState>();
+  final Function()? onCloseRequested;
 
-  StationSettingsWidget({super.key, required this.station});
+  StationSettingsWidget({super.key, required this.station, this.onCloseRequested});
 
   @override
   Widget build(BuildContext context) {
     List<StationOptionWidget> restrictions = [];
 
-    station.restrictions2.forEach((key,restrictions2){
-      if(restrictions2.possibleValues.isEmpty) return;
+    station.restrictions2.forEach((key, restrictions2) {
+      if (restrictions2.possibleValues.isEmpty) return;
 
       restrictions.add(StationOptionWidget(
         restrictions: restrictions2,
@@ -38,6 +41,12 @@ class StationSettingsWidget extends StatelessWidget {
 
   void _settingsChanged(String key, String value) async {
     station.settings2[key] = value;
-    _appState.stationSettingsNotifier.value = Map.from(station.settings2);
+    _appState.playButtonNotifier.value = ButtonState.loading;
+    if (onCloseRequested != null) {
+      onCloseRequested!();
+    }
+    await _appState.updatesStationSettings(station.settings2);
+    await getIt<Player>().next();
+    // _appState.playButtonNotifier.value = ButtonState.playing;
   }
 }

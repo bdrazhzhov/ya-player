@@ -48,7 +48,13 @@ class MusicApi {
     }
     Map<String, dynamic> json = await _http.get(url);
 
-    return json['sequence'].map((item) => Track.fromJson(item, json['batchId']));
+    List<Track> tracks = [];
+
+    json['sequence'].forEach((item) {
+      tracks.add(Track.fromJson(item, json['batchId']));
+    });
+
+    return tracks;
   }
 
   Future<Station> station(StationId stationId) async {

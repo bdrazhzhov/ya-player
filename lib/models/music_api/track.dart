@@ -125,7 +125,7 @@ class Track extends Equatable implements CanBeRadio, ContextId {
 
 class TrackParameters {
   final int bpm;
-  final double hue;
+  final num hue;
   final double energy;
 
   TrackParameters(this.bpm, this.hue, this.energy);

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'context_id.dart';
+import 'station.dart';
 import 'track.dart';
 
 class NewRadioSessionRequest {
@@ -116,7 +117,7 @@ class RadioWave {
   final String idForFrom;
   final String name;
   final List<String> seeds;
-  final String stationId;
+  final StationId stationId;
 
   RadioWave({
     required this.idForFrom,
@@ -138,5 +139,5 @@ class RadioWave {
       : idForFrom = json['idForFrom'],
         name = json['name'],
         seeds = List<String>.from(json['seeds']),
-        stationId = json['stationId'];
+        stationId = StationId.fromString(json['stationId']);
 }

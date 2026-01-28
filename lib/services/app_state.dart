@@ -40,7 +40,7 @@ class AppState {
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
   final playButtonNotifier = PlayButtonNotifier();
   final currentStationNotifier = ValueNotifier<Station?>(null);
-  final currentRadioNotifier = ValueNotifier<RadioSession?>(null);
+  // final currentRadioNotifier = ValueNotifier<RadioSession?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<Map<String, List<Station>>>({});
   final accountNotifier = ValueNotifier<Account?>(null);
@@ -324,7 +324,8 @@ class AppState {
 
       final YPlayerQueue playerQueue = state.playerState.playerQueue;
       List<Track> tracks = [];
-      currentRadioNotifier.value = null;
+      // currentRadioNotifier.value = null;
+      currentStationNotifier.value = null;
 
       _ynisonState = state.playerState;
 
@@ -374,7 +375,8 @@ class AppState {
             seeds: playerQueue.entityId.split(','),
           );
           _playContext = session;
-          currentRadioNotifier.value = session;
+          // currentRadioNotifier.value = session;
+          currentStationNotifier.value = await _musicApi.station(session.wave.stationId);
           _playerState.shuffleNotifier.value = false;
           _playerState.repeatModeNotifier.value = RepeatMode.off;
 
@@ -603,6 +605,8 @@ class AppState {
     _playerState.rateNotifier.value = 1.0;
 
     final RadioSession radioSession = await _radioManager.start(station);
+    // currentRadioNotifier.value = radioSession;
+    currentStationNotifier.value = station;
     final Track? track = await _prepareAndPlay(
       context: radioSession,
       tracks: radioSession.sequence.map((i) => i.track),
@@ -635,6 +639,20 @@ class AppState {
       ),
     );
     _ynisonClient.sendPlayerUpdate(_ynisonState);
+  }
+
+  Future<void> updatesStationSettings(Map<String, String> settings2) async {
+    // copy settings hash to the notifier
+    stationSettingsNotifier.value = Map.from(settings2);
+
+    final stationId = currentStationNotifier.value!.id;
+    await _musicApi.updateStationSettings2(stationId, settings2);
+
+    final List<String> lastTracksIds =
+        _queue.tracks.skip(_queue.currentIndex).map((t) => t.id).toList();
+    final Iterable<Track> tracks = await _musicApi.stationTacks(stationId, lastTracksIds);
+
+    _queue.replaceTracksLeft(tracks);
   }
 
   Future<void> playTrack(Track track) async {
