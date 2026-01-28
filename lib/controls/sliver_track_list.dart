@@ -16,7 +16,6 @@ class SliverTrackList extends StatelessWidget {
 
   final appState = getIt<AppState>();
   final playerState = getIt<PlayerState>();
-  late final availableTracks = tracks.where((t) => t.isAvailable).toList();
 
   SliverTrackList({
     super.key,
@@ -28,7 +27,7 @@ class SliverTrackList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     itemBuilder(BuildContext context, int index) {
-      Track track = availableTracks[index];
+      Track track = tracks[index];
 
       return TrackListItem(
         track: track,
@@ -46,10 +45,10 @@ class SliverTrackList extends StatelessWidget {
 
       if (appState.isPlaylistEditable(playlist)) {
         return SliverReorderableList(
-          itemCount: availableTracks.length,
+          itemCount: tracks.length,
           itemBuilder: (BuildContext context, int index) {
             return ReorderableDragStartListener(
-              key: ValueKey(availableTracks[index].id),
+              key: ValueKey(tracks[index].id),
               index: index,
               child: itemBuilder(context, index),
             );
@@ -58,9 +57,9 @@ class SliverTrackList extends StatelessWidget {
           onReorder: (int oldIndex, int newIndex) async {
             if (oldIndex < newIndex) newIndex -= 1;
 
-            final track = availableTracks[oldIndex];
-            final item = availableTracks.removeAt(oldIndex);
-            availableTracks.insert(newIndex, item);
+            final track = tracks[oldIndex];
+            final item = tracks.removeAt(oldIndex);
+            tracks.insert(newIndex, item);
 
             playlist =
                 await getIt<MusicApi>().movePlaylistTracks(playlist, [track], oldIndex, newIndex);
@@ -71,7 +70,7 @@ class SliverTrackList extends StatelessWidget {
     }
 
     return SliverList.builder(
-      itemCount: availableTracks.length,
+      itemCount: tracks.length,
       itemBuilder: itemBuilder,
     );
   }

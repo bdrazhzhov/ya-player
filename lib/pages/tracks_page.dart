@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '/controls/page_loading_indicator.dart';
-import '/models/music_api/playlist.dart';
-import '/services/music_api.dart';
-import '/l10n/app_localizations.dart';
-import '/services/service_locator.dart';
 import '/controls/sliver_track_list.dart';
 import '/controls/track_list/sliver_tracks_header.dart';
+import '/l10n/app_localizations.dart';
+import '/models/music_api/playlist.dart';
+import '/services/music_api.dart';
+import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class TracksPage extends StatelessWidget {
@@ -34,9 +34,10 @@ class TracksPage extends StatelessWidget {
             if (snapshot.hasData) {
               if(!_dataLoadedFuture.isCompleted) _dataLoadedFuture.complete();
 
+              final tracks = snapshot.data!.tracks.where((t) => t.isAvailable).toList();
               return SliverTrackList(
                 playContext: snapshot.data!,
-                tracks: snapshot.data!.tracks,
+                tracks: tracks,
               );
             } else {
               return const SliverToBoxAdapter(child: PageLoadingIndicator());

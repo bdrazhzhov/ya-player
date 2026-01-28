@@ -40,7 +40,6 @@ class AppState {
   final mainPageState = ValueNotifier<UiState>(UiState.loading);
   final playButtonNotifier = PlayButtonNotifier();
   final currentStationNotifier = ValueNotifier<Station?>(null);
-  // final currentRadioNotifier = ValueNotifier<RadioSession?>(null);
   final stationsDashboardNotifier = ValueNotifier<List<Station>>([]);
   final stationsNotifier = ValueNotifier<Map<String, List<Station>>>({});
   final accountNotifier = ValueNotifier<Account?>(null);
@@ -402,8 +401,7 @@ class AppState {
             'Actual index: $index');
       }
 
-      _queue.replaceTracks(tracks);
-      _queue.moveTo(index);
+      _queue.replaceTracks(tracks, index);
       _queue.repeatMode = _prefs.repeat;
       _queue.isShuffleEnabled = _prefs.shuffle;
 
@@ -522,8 +520,7 @@ class AppState {
     canRepeat = true,
   }) async {
     _playContext = context;
-    _queue.replaceTracks(tracks);
-    _queue.moveTo(index);
+    _queue.replaceTracks(tracks, index);
     _queue.isShuffleEnabled = shuffle;
     _queue.repeatMode = repeatMode;
 

@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import '/models/ynison/player_state.dart';
-import '/services/state_enums.dart';
 import '/helpers/event.dart';
 import '/models/music_api/track.dart';
+import '/models/ynison/player_state.dart';
+import '/services/state_enums.dart';
 
 final class PlaybackQueue {
   final List<Track> _tracks = [];
@@ -14,9 +14,12 @@ final class PlaybackQueue {
 
   Track? get currentTrack => _tracks[_currentIndex];
 
-  bool get canGoNext => _tracks.isNotEmpty && (_currentIndex < (_tracks.length - 1) || repeatMode != RepeatMode.off || isShuffleEnabled);
+  bool get canGoNext =>
+      _tracks.isNotEmpty &&
+      (_currentIndex < (_tracks.length - 1) || repeatMode != RepeatMode.off || isShuffleEnabled);
 
-  bool get canGoPrevious => _tracks.isNotEmpty && (_currentIndex > 0 || repeatMode != RepeatMode.off || isShuffleEnabled);
+  bool get canGoPrevious =>
+      _tracks.isNotEmpty && (_currentIndex > 0 || repeatMode != RepeatMode.off || isShuffleEnabled);
 
   Iterable<Track> get tracks => _tracks;
 
@@ -32,10 +35,16 @@ final class PlaybackQueue {
     isShuffleEnabled = false;
   }
 
-  void replaceTracks(Iterable<Track> tracks) {
+  void replaceTracks(Iterable<Track> tracks, [int? newIndex]) {
     clear();
     _tracks.addAll(tracks);
-    _currentIndex = tracks.isNotEmpty ? 0 : -1;
+
+    if (newIndex != null) {
+      _currentIndex = newIndex;
+    } else {
+      _currentIndex = tracks.isNotEmpty ? 0 : -1;
+    }
+
     _trackListChangedEvent.emit(_tracks);
   }
 
@@ -48,13 +57,12 @@ final class PlaybackQueue {
   void next() {
     if (!canGoNext) return;
 
-    if(isShuffleEnabled) {
+    if (isShuffleEnabled) {
       _currentIndex = Random().nextInt(_tracks.length);
-    }
-    else {
-      switch(repeatMode) {
+    } else {
+      switch (repeatMode) {
         case RepeatMode.on:
-          if(_currentIndex == (_tracks.length - 1)) {
+          if (_currentIndex == (_tracks.length - 1)) {
             _currentIndex = 0;
           }
         case RepeatMode.one:
@@ -68,13 +76,12 @@ final class PlaybackQueue {
   void previous() {
     if (!canGoPrevious) return;
 
-    if(isShuffleEnabled) {
+    if (isShuffleEnabled) {
       _currentIndex = Random().nextInt(_tracks.length);
-    }
-    else {
-      switch(repeatMode) {
+    } else {
+      switch (repeatMode) {
         case RepeatMode.on:
-          if(_currentIndex == 0) {
+          if (_currentIndex == 0) {
             _currentIndex = _tracks.length - 1;
           }
         case RepeatMode.one:
@@ -100,7 +107,6 @@ final class PlaybackQueue {
         albumId: track.firstAlbumId.toString(),
         title: track.title,
         playableId: track.id,
-        coverUrl: track.coverUri
-      ));
+        coverUrl: track.coverUri));
   }
 }
