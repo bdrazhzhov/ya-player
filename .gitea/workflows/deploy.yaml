@@ -1,0 +1,73 @@
+name: Create the app release
+run-name: ${{ gitea.actor }} is building the app
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      ARCHIVE_NAME: ya-player-${{ github.ref_name }}.tar.xz
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build or update docker image
+        run: docker build --progress=plain -t ya-player-build .
+      - name: Build application in docker container
+        run: |
+          cid=""
+  
+          cleanup() {
+            if [[ -n "${cid:-}" ]]; then
+            docker rm -f "cid" >/dev/null 2>&1 || true
+            fi
+          }
+
+          trap 'rc=$?; cleanup; exit $rc' EXIT
+
+          cid=$(docker create ya-player-build:latest /bin/sh -c "cd /app && flutter pub get && flutter build linux --release --verbose")
+          docker cp -a . "$cid":/app
+          docker start -a "$cid"
+          mkdir -p build
+          docker cp "$cid":/app/build/linux/x64/release/bundle ./build
+          docker rm "$cid"
+      - name: Creating release archive
+        run: |
+          cp -v LICENCE build/bundle
+          cp -vr install/* build/bundle
+          cd build/bundle
+          strip lib/libflutter_linux_gtk.so
+          tar -cvf ../$ARCHIVE_NAME -I 'xz -9e -T2 --lzma2=dict=256M' .
+      - name: Create release on github
+        env:
+          GITHUB_TOKEN: '${{ secrets.GIT_HUB_TOKEN }}'
+        run: |
+          set -x
+          resp=$(curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/bdrazhzhov/ya-player/releases \
+            -d '{
+              "tag_name": "${{ github.ref_name }}",
+              "target_commitish": "master",
+              "name": "Релиз ${{ github.ref_name }}",
+              "body": "Release notes here...",
+              "draft": true,
+              "prerelease": false
+            }')
+          
+          upload_url=$(echo "${resp}" | jq -r .upload_url)
+
+          if [ -z "${upload_url}" ] || [ "${upload_url}" = "null" ]; then
+            exit 1
+          fi
+          
+          base_upload_url="${upload_url%\{*}"
+          echo "Uploading asset build/$ARCHIVE_NAME to ${base_upload_url}?name=$ARCHIVE_NAME"
+          
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/x-zstd-compressed-tar" \
+            --data-binary @build/$ARCHIVE_NAME \
+            "${base_upload_url}?name=$ARCHIVE_NAME"
