@@ -51,7 +51,7 @@ class _MainMenu extends State<MainMenu> {
           collapsed: _collapsed,
           onTap: () => _goToRoute('/podcasts_books'),
         ),
-        const SizedBox(height: 50),
+        const SizedBox(height: 16),
         if (!_collapsed) Text(l10n.menu_myMusic),
         MainMenuItem(
           icon: const Icon(Icons.list),
@@ -94,7 +94,7 @@ class _MainMenu extends State<MainMenu> {
                 onTap: _appState.logout,
               );
             }),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -132,7 +132,7 @@ class MainMenuItem extends StatelessWidget {
         cursor: !disabled && onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
         child: Row(
           children: [
-            SizedBox(width: 48, height: 48, child: Center(child: icon)),
+            SizedBox(width: 42, height: 42, child: Center(child: icon)),
             if (!collapsed && text.isNotEmpty)
               SizedBox(width: 164, child: Text(text, style: textStyle))
           ],

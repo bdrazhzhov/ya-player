@@ -120,7 +120,7 @@ static void my_application_activate(GApplication* application) {
   GdkGeometry hints;
   hints.min_width = 660;
   // height includes header bar
-  hints.min_height = 840;
+  hints.min_height = 720;
   gtk_window_set_geometry_hints(GTK_WINDOW(window), NULL, &hints, GDK_HINT_MIN_SIZE);
   gtk_widget_show(GTK_WIDGET(window));
   // gtk_widget_show_all(GTK_WIDGET(window));
