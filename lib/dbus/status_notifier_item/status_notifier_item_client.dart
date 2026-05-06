@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'dbus_menu_object.dart';
 
 /// Category for notifier items.
-enum StatusNotifierItemCategory {
-  applicationStatus,
-  communications,
-  systemServices,
-  hardware
-}
+enum StatusNotifierItemCategory { applicationStatus, communications, systemServices, hardware }
 
 /// Status for notifier items.
 enum StatusNotifierItemStatus { passive, active }
@@ -63,13 +59,14 @@ class _StatusNotifierItemObject extends DBusObject {
       this.onActivate,
       this.onSecondaryActivate,
       this.onScroll})
-      : _title = title, super(DBusObjectPath('/StatusNotifierItem')) {
+      : _title = title,
+        super(DBusObjectPath('/StatusNotifierItem')) {
     menu ??= DBusObjectPath('/NO_DBUSMENU');
   }
 
   String get title => _title;
   set title(String value) {
-    if(value == _title) return;
+    if (value == _title) return;
 
     _title = value;
     emitSignal('org.kde.StatusNotifierItem', 'NewTitle', []);
@@ -126,8 +123,7 @@ class _StatusNotifierItemObject extends DBusObject {
 
   /// Emits signal org.kde.StatusNotifierItem.NewStatus
   Future<void> emitNewStatus(String status) async {
-    await emitSignal(
-        'org.kde.StatusNotifierItem', 'NewStatus', [DBusString(status)]);
+    await emitSignal('org.kde.StatusNotifierItem', 'NewStatus', [DBusString(status)]);
   }
 
   @override
@@ -135,28 +131,20 @@ class _StatusNotifierItemObject extends DBusObject {
     return [
       DBusIntrospectInterface('org.freedesktop.StatusNotifierItem', methods: [
         DBusIntrospectMethod('ContextMenu', args: [
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'x'),
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'y')
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'x'),
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'y')
         ]),
         DBusIntrospectMethod('Activate', args: [
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'x'),
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'y')
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'x'),
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'y')
         ]),
         DBusIntrospectMethod('SecondaryActivate', args: [
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'x'),
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'y')
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'x'),
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'y')
         ]),
         DBusIntrospectMethod('Scroll', args: [
-          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_,
-              name: 'delta'),
-          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_,
-              name: 'orientation')
+          DBusIntrospectArgument(DBusSignature('i'), DBusArgumentDirection.in_, name: 'delta'),
+          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_, name: 'orientation')
         ]),
         // DBusIntrospectMethod('ProvideXdgActivationToken', args: [
         //   DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_,
@@ -170,22 +158,15 @@ class _StatusNotifierItemObject extends DBusObject {
         DBusIntrospectSignal('NewMenu'),
         DBusIntrospectSignal('NewToolTip'),
         DBusIntrospectSignal('NewStatus', args: [
-          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.out,
-              name: 'status')
+          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.out, name: 'status')
         ])
       ], properties: [
-        DBusIntrospectProperty('Category', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Id', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Title', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Status', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('WindowId', DBusSignature('i'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('IconName', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Category', DBusSignature('s'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Id', DBusSignature('s'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Title', DBusSignature('s'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Status', DBusSignature('s'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('WindowId', DBusSignature('i'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('IconName', DBusSignature('s'), access: DBusPropertyAccess.read),
         DBusIntrospectProperty('IconPixmap', DBusSignature('a(iiay)'),
             access: DBusPropertyAccess.read),
         DBusIntrospectProperty('OverlayIconName', DBusSignature('s'),
@@ -200,17 +181,15 @@ class _StatusNotifierItemObject extends DBusObject {
             access: DBusPropertyAccess.read),
         DBusIntrospectProperty('ToolTip', DBusSignature('(sa(iiay))'),
             access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('ItemIsMenu', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Menu', DBusSignature('o'),
-            access: DBusPropertyAccess.read)
+        DBusIntrospectProperty('ItemIsMenu', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Menu', DBusSignature('o'), access: DBusPropertyAccess.read)
       ])
     ];
   }
 
   bool isInterfaceCorrect(String? interfaceName) {
-    return interfaceName == 'org.freedesktop.StatusNotifierItem'
-        || interfaceName == 'org.kde.StatusNotifierItem';
+    return interfaceName == 'org.freedesktop.StatusNotifierItem' ||
+        interfaceName == 'org.kde.StatusNotifierItem';
   }
 
   @override
@@ -336,13 +315,19 @@ class StatusNotifierItemClient {
 
   DBusMenuObject? _menuObject;
   late final _StatusNotifierItemObject _notifierItemObject;
+  StreamSubscription<DBusNameOwnerChangedEvent>? _watcherSubscription;
+  bool _registeredWithWatcher = false;
+  String? _currentWatcherBusName;
+  static const List<String> _watcherBusNames = [
+    'org.kde.StatusNotifierWatcher',
+    'org.freedesktop.StatusNotifierWatcher'
+  ];
 
   // FIXME: status enum
   /// Creates a new status notifier item client. If [bus] is provided connect to the given D-Bus server.
   StatusNotifierItemClient(
       {required String id,
-      StatusNotifierItemCategory category =
-          StatusNotifierItemCategory.applicationStatus,
+      StatusNotifierItemCategory category = StatusNotifierItemCategory.applicationStatus,
       String title = '',
       StatusNotifierItemStatus status = StatusNotifierItemStatus.active,
       int windowId = 0,
@@ -358,7 +343,7 @@ class StatusNotifierItemClient {
       DBusClient? bus})
       : _bus = bus ?? DBusClient.session(),
         _closeBus = bus == null {
-    if(menu != null) _menuObject = DBusMenuObject(DBusObjectPath('/Menu'), menu);
+    if (menu != null) _menuObject = DBusMenuObject(DBusObjectPath('/Menu'), menu);
     _notifierItemObject = _StatusNotifierItemObject(
         id: id,
         category: category,
@@ -383,19 +368,60 @@ class StatusNotifierItemClient {
     assert(requestResult == DBusRequestNameReply.primaryOwner);
 
     // Register the menu.
-    if(_menuObject != null) await _bus.registerObject(_menuObject!);
+    if (_menuObject != null) await _bus.registerObject(_menuObject!);
 
     // Put the item on the bus.
     await _bus.registerObject(_notifierItemObject);
 
-    // Register the item.
-    await _bus.callMethod(
-        destination: 'org.kde.StatusNotifierWatcher',
-        path: DBusObjectPath('/StatusNotifierWatcher'),
-        interface: 'org.kde.StatusNotifierWatcher',
-        name: 'RegisterStatusNotifierItem',
-        values: [DBusString(name)],
-        replySignature: DBusSignature.empty);
+    // Helper to (re)register with the watcher for a specific well-known name.
+    Future<void> doRegisterFor(String watcherBusName) async {
+      try {
+        await _bus.callMethod(
+            destination: watcherBusName,
+            path: DBusObjectPath('/StatusNotifierWatcher'),
+            interface: watcherBusName,
+            name: 'RegisterStatusNotifierItem',
+            values: [DBusString(name)],
+            replySignature: DBusSignature.empty);
+        _registeredWithWatcher = true;
+        _currentWatcherBusName = watcherBusName;
+      } catch (e) {
+        // Service might not be present or call failed - leave as not registered. We'll try again when watcher appears.
+        _registeredWithWatcher = false;
+      }
+    }
+
+    // Try to register using the first available watcher name in preferred order.
+    Future<void> attemptRegistrationPreferred() async {
+      for (var watcher in _watcherBusNames) {
+        try {
+          if (await _bus.nameHasOwner(watcher)) {
+            await doRegisterFor(watcher);
+            return;
+          }
+        } catch (e) {
+          // ignore and try next
+        }
+      }
+    }
+
+    // Listen for watcher appearance/disappearance and (re)register when one appears.
+    _watcherSubscription = _bus.nameOwnerChanged.listen((event) async {
+      if (!_watcherBusNames.contains(event.name)) return;
+      if (event.newOwner != null) {
+        // When any watcher appears, prefer the first available watcher from the preferred list.
+        await attemptRegistrationPreferred();
+      } else {
+        // If the watcher that went away was the one we registered with, mark as unregistered.
+        if (event.name == _currentWatcherBusName) {
+          _registeredWithWatcher = false;
+          _currentWatcherBusName = null;
+        }
+      }
+    });
+
+    // If any watcher already present, register now (prefer KDE then freedesktop).
+    await attemptRegistrationPreferred();
   }
 
   /// Updates the menu shown.
@@ -413,6 +439,9 @@ class StatusNotifierItemClient {
 
   /// Terminates all active connections. If a client remains unclosed, the Dart process may not terminate.
   Future<void> close() async {
+    // Cancel watcher subscription if any.
+    await _watcherSubscription?.cancel();
+    _watcherSubscription = null;
     if (_closeBus) {
       await _bus.close();
     }
