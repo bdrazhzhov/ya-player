@@ -74,7 +74,8 @@ class _TrackCoverState extends State<TrackCover> {
                 height: TrackCover.size,
                 decoration: BoxDecoration(
                   color: Colors.black.withAlpha((255 * 0.75).toInt()),
-                  borderRadius: BorderRadius.circular(TrackCover.coverCornersRadius),
+                  borderRadius:
+                      BorderRadius.circular(TrackCover.coverCornersRadius),
                 ),
               ),
             // Animation of playing process
@@ -98,7 +99,8 @@ class _TrackCoverState extends State<TrackCover> {
   void onPlayBackStateChange() {
     if (!widget.isCurrent) return;
 
-    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
+    isPlaying =
+        playerState.playBackStateNotifier.value == PlayBackState.playing;
     setState(() {});
   }
 }

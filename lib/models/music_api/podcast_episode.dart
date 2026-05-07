@@ -35,7 +35,7 @@ class PodcastEpisode extends Track {
     });
 
     Duration? duration;
-    if(json['durationMs'] != null) {
+    if (json['durationMs'] != null) {
       duration = Duration(milliseconds: json['durationMs']);
     }
 

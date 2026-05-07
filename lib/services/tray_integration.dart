@@ -9,16 +9,17 @@ import '/dbus/status_notifier_item/status_notifier_item_client.dart';
 import 'service_locator.dart';
 import 'window_manager.dart';
 
-enum PlayBackChangeType {playPause, next, prev}
+enum PlayBackChangeType { playPause, next, prev }
 
-final class TrayIntegration
-{
+final class TrayIntegration {
   final _windowManager = getIt<WindowManager>();
 
   late final StatusNotifierItemClient _trayIcon;
 
-  final _playBackChangeController = StreamController<PlayBackChangeType>.broadcast();
-  Stream<PlayBackChangeType> get playBackChangeStream => _playBackChangeController.stream;
+  final _playBackChangeController =
+      StreamController<PlayBackChangeType>.broadcast();
+  Stream<PlayBackChangeType> get playBackChangeStream =>
+      _playBackChangeController.stream;
 
   final _scrollController = StreamController<int>.broadcast();
   Stream<int> get scrollStream => _scrollController.stream;
@@ -30,24 +31,30 @@ final class TrayIntegration
       title: 'YaPlayer',
       bus: getIt<DBusClient>(),
       menu: DBusMenuItem(children: [
-        DBusMenuItem(label: 'Show', onClicked: () => _windowManager.showWindow()),
+        DBusMenuItem(
+            label: 'Show', onClicked: () => _windowManager.showWindow()),
         DBusMenuItem.separator(),
         DBusMenuItem(
             label: 'Play/Pause',
-            onClicked: () async => _playBackChangeController.add(PlayBackChangeType.playPause)),
+            onClicked: () async =>
+                _playBackChangeController.add(PlayBackChangeType.playPause)),
         DBusMenuItem(
             label: 'Next',
             iconName: 'media-skip-forward',
-            onClicked: () async => _playBackChangeController.add(PlayBackChangeType.next)),
+            onClicked: () async =>
+                _playBackChangeController.add(PlayBackChangeType.next)),
         DBusMenuItem(
             label: 'Previous',
             iconName: 'media-skip-backward',
-            onClicked: () async => _playBackChangeController.add(PlayBackChangeType.prev)),
+            onClicked: () async =>
+                _playBackChangeController.add(PlayBackChangeType.prev)),
         DBusMenuItem.separator(),
         DBusMenuItem(label: 'Quit', onClicked: () => exit(0)),
       ]),
-      onActivate: (x, y) async => _playBackChangeController.add(PlayBackChangeType.playPause),
-      onSecondaryActivate: (x, y) async => debugPrint('OnSecondaryActivate: $x, $y'),
+      onActivate: (x, y) async =>
+          _playBackChangeController.add(PlayBackChangeType.playPause),
+      onSecondaryActivate: (x, y) async =>
+          debugPrint('OnSecondaryActivate: $x, $y'),
       onScroll: (delta, _) async => _scrollController.add(delta),
     );
     await _trayIcon.connect();

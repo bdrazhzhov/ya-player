@@ -11,13 +11,13 @@ class VolumeControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _audioPlayer.volumeNotifier,
-      builder: (_, value, __) {
-        return Slider(
-          value: value,
-          onChanged: (double value) => _audioPlayer.volumeNotifier.value = value,
-        );
-      }
-    );
+        valueListenable: _audioPlayer.volumeNotifier,
+        builder: (_, value, __) {
+          return Slider(
+            value: value,
+            onChanged: (double value) =>
+                _audioPlayer.volumeNotifier.value = value,
+          );
+        });
   }
 }

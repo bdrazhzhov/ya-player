@@ -13,12 +13,10 @@ class TrackTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        NavKeys.mainNav.currentState!.push(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => AlbumPage(track.firstAlbumId),
-            reverseTransitionDuration: Duration.zero,
-          )
-        );
+        NavKeys.mainNav.currentState!.push(PageRouteBuilder(
+          pageBuilder: (_, __, ___) => AlbumPage(track.firstAlbumId),
+          reverseTransitionDuration: Duration.zero,
+        ));
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,

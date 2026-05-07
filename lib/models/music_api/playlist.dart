@@ -45,7 +45,8 @@ class Playlist extends Equatable implements ContextId {
 
     List<Playlist> similarPlaylists = [];
     if (json['similarPlaylists'] != null) {
-      json['similarPlaylists'].forEach((p) => similarPlaylists.add(Playlist.fromJson(p)));
+      json['similarPlaylists']
+          .forEach((p) => similarPlaylists.add(Playlist.fromJson(p)));
     }
 
     return Playlist(

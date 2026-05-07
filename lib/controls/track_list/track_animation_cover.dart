@@ -23,10 +23,11 @@ class _TrackAnimationCoverState extends State<TrackAnimationCover>
 
   @override
   void initState() {
-    animationController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
     animationController.repeat(reverse: true);
-    animation = Tween(begin: 10.0, end: widget.radius).animate(animationController)
+    animation = Tween(begin: 10.0, end: widget.radius)
+        .animate(animationController)
       ..addListener(() => setState(() {}));
 
     if (!widget.playAnimation) animationController.stop();

@@ -22,7 +22,8 @@ class AlbumFlexibleSpace extends StatelessWidget {
       title: albumWithTracks.album.title,
       actions: Row(
         children: [
-          PlayContextButton(context: albumWithTracks.album, tracks: albumWithTracks.tracks),
+          PlayContextButton(
+              context: albumWithTracks.album, tracks: albumWithTracks.tracks),
           LikeButton(
             likeCondition: () => _appState.isLikedAlbum(albumWithTracks.album),
             onLikeClicked: () => _appState.likeAlbum(albumWithTracks.album),

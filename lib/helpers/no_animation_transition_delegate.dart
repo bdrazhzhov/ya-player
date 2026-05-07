@@ -4,8 +4,10 @@ class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
   @override
   Iterable<RouteTransitionRecord> resolve({
     required List<RouteTransitionRecord> newPageRouteHistory,
-    required Map<RouteTransitionRecord?, RouteTransitionRecord> locationToExitingPageRoute,
-    required Map<RouteTransitionRecord?, List<RouteTransitionRecord>> pageRouteToPagelessRoutes,
+    required Map<RouteTransitionRecord?, RouteTransitionRecord>
+        locationToExitingPageRoute,
+    required Map<RouteTransitionRecord?, List<RouteTransitionRecord>>
+        pageRouteToPagelessRoutes,
   }) {
     final List<RouteTransitionRecord> results = <RouteTransitionRecord>[];
 
@@ -16,7 +18,8 @@ class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
       }
       results.add(pageRoute);
     }
-    for (final RouteTransitionRecord exitingPageRoute in locationToExitingPageRoute.values) {
+    for (final RouteTransitionRecord exitingPageRoute
+        in locationToExitingPageRoute.values) {
       // Checks the isWaitingForExitingDecision before calling the markFor methods.
       if (exitingPageRoute.isWaitingForExitingDecision) {
         exitingPageRoute.markForComplete();

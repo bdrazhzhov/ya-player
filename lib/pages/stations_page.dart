@@ -19,10 +19,8 @@ class StationsPage extends StatelessWidget {
     return Navigator(
       key: _navKey,
       initialRoute: '/',
-      onGenerateRoute: (RouteSettings settings){
-        return PageRouteBuilder(
-          pageBuilder: (_, __, ___) => _StationsWidget()
-        );
+      onGenerateRoute: (RouteSettings settings) {
+        return PageRouteBuilder(pageBuilder: (_, __, ___) => _StationsWidget());
       },
     );
   }
@@ -99,7 +97,7 @@ class SliverText extends StatelessWidget {
       ),
     );
 
-    if(padding == null) return widget;
+    if (padding == null) return widget;
 
     return SliverPadding(
       padding: padding!,

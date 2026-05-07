@@ -8,13 +8,15 @@ import 'yandex_image.dart';
 
 class TrackImage extends StatelessWidget {
   final bool isExpandable;
-  TrackImage({super.key, required this.isExpandable,});
+  TrackImage({
+    super.key,
+    required this.isExpandable,
+  });
 
   final _appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
-
     return ValueListenableBuilder(
         valueListenable: _appState.trackNotifier,
         builder: (_, track, __) {
@@ -26,29 +28,28 @@ class TrackImage extends StatelessWidget {
             ),
           );
 
-          if(track != null) {
-            if(isExpandable) {
+          if (track != null) {
+            if (isExpandable) {
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: OpenContainer(
                   closedColor: Colors.transparent,
-                  closedBuilder: (BuildContext context, void Function() action) {
+                  closedBuilder:
+                      (BuildContext context, void Function() action) {
                     return image;
                   },
-                  openBuilder: (BuildContext context, void Function({Object? returnValue}) action) {
+                  openBuilder: (BuildContext context,
+                      void Function({Object? returnValue}) action) {
                     return CurrentTrackPage();
                   },
                 ),
               );
-            }
-            else {
+            } else {
               return image;
             }
-          }
-          else {
+          } else {
             return image;
           }
-        }
-    );
+        });
   }
 }

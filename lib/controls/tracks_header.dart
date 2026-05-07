@@ -6,7 +6,8 @@ class TracksHeader extends SliverPersistentHeaderDelegate {
   static const double _height = 40;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     final theme = Theme.of(context);
 
     return SizedBox(
@@ -15,24 +16,17 @@ class TracksHeader extends SliverPersistentHeaderDelegate {
           decoration: BoxDecoration(color: theme.colorScheme.surface),
           child: Row(
             children: [
-              const SizedBox(
-                  width: 50,
-                  child: Center(child: Text('#'))
-              ),
+              const SizedBox(width: 50, child: Center(child: Text('#'))),
               Expanded(
                   child: Padding(
-                    padding: EdgeInsets.only(left: 6.0),
-                    child: Text(AppLocalizations.of(context)!.tracks_headerTrack),
-                  )
-              ),
+                padding: EdgeInsets.only(left: 6.0),
+                child: Text(AppLocalizations.of(context)!.tracks_headerTrack),
+              )),
               const SizedBox(
-                  width: 50,
-                  child: Center(child: Icon(Icons.schedule))
-              )
+                  width: 50, child: Center(child: Icon(Icons.schedule)))
             ],
           ),
-        )
-    );
+        ));
   }
 
   @override
@@ -42,5 +36,6 @@ class TracksHeader extends SliverPersistentHeaderDelegate {
   double get minExtent => _height;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => false;
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      false;
 }

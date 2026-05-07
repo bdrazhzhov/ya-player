@@ -350,7 +350,7 @@ class DBusMenuObject extends DBusObject {
     if (item.label != null) {
       properties['label'] = DBusString(item.label!);
     }
-    if(item.iconName != null) {
+    if (item.iconName != null) {
       properties['icon-name'] = DBusString(item.iconName!);
     }
     if (item.toggleType != null) {

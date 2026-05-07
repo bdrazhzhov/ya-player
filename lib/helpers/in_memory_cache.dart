@@ -3,7 +3,7 @@ class InMemoryCache {
 
   void set(String key, dynamic value, {Duration? expiration}) {
     DateTime? expiresAt;
-    if(expiration != null) {
+    if (expiration != null) {
       expiresAt = DateTime.now().add(expiration);
     }
     _cache[key] = _CacheItem(value, expiresAt: expiresAt);
@@ -12,7 +12,7 @@ class InMemoryCache {
   Map<String, dynamic>? get(String key) {
     final value = _cache[key];
 
-    if(value?.expiresAt?.isBefore(DateTime.now()) == true) {
+    if (value?.expiresAt?.isBefore(DateTime.now()) == true) {
       _cache.remove(key);
       return null;
     }

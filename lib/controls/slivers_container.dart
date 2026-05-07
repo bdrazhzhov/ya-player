@@ -8,10 +8,12 @@ class SliversContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-      slivers: slivers.map((e) => SliverPadding(
-        padding: const EdgeInsets.only(left: 32, right: 32),
-        sliver: e,
-      )).toList(),
+      slivers: slivers
+          .map((e) => SliverPadding(
+                padding: const EdgeInsets.only(left: 32, right: 32),
+                sliver: e,
+              ))
+          .toList(),
     );
   }
 }

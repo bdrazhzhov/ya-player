@@ -11,7 +11,8 @@ import 'page_base.dart';
 class FeedPromotionsPage extends StatelessWidget {
   final _musicApi = getIt<MusicApi>();
   final String id;
-  late final Future<FeedPromotions> feedPromotions = _musicApi.feedPromotions(id);
+  late final Future<FeedPromotions> feedPromotions =
+      _musicApi.feedPromotions(id);
 
   FeedPromotionsPage({super.key, required this.id});
 
@@ -23,9 +24,8 @@ class FeedPromotionsPage extends StatelessWidget {
 
     return FutureBuilder<FeedPromotions>(
         future: feedPromotions,
-        builder: (_, AsyncSnapshot<FeedPromotions> snapshot){
-          if(snapshot.hasData)
-          {
+        builder: (_, AsyncSnapshot<FeedPromotions> snapshot) {
+          if (snapshot.hasData) {
             final feedPromotions = snapshot.data!;
             return PageBase(
               slivers: [
@@ -52,18 +52,15 @@ class FeedPromotionsPage extends StatelessWidget {
                   gridDelegate: CustomSliverGridDelegateExtent(
                       crossAxisSpacing: 12,
                       maxCrossAxisExtent: itemWidth,
-                      height: itemWidth + 60
-                  ),
-                  itemBuilder: (_, index) => AlbumCard(feedPromotions.albums[index], itemWidth),
+                      height: itemWidth + 60),
+                  itemBuilder: (_, index) =>
+                      AlbumCard(feedPromotions.albums[index], itemWidth),
                 )
               ],
             );
-          }
-          else
-          {
+          } else {
             return const PageLoadingIndicator();
           }
-        }
-    );
+        });
   }
 }

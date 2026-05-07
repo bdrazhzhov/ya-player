@@ -23,33 +23,31 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
   late Future<Playlist> playlistData;
-  late final StreamSubscription<(int,int)> playlistUpdatesSubscription;
+  late final StreamSubscription<(int, int)> playlistUpdatesSubscription;
   final musicApi = getIt<MusicApi>();
   final appState = getIt<AppState>();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Playlist>(
-      future: playlistData,
-      builder: (_, AsyncSnapshot<Playlist> snapshot){
-        if(snapshot.hasData) {
-          final Playlist playlist = snapshot.data!;
+        future: playlistData,
+        builder: (_, AsyncSnapshot<Playlist> snapshot) {
+          if (snapshot.hasData) {
+            final Playlist playlist = snapshot.data!;
 
-          return PageBase(
-            flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
-            slivers: [
-              SliverTrackList(
-                playContext: playlist,
-                tracks: playlist.tracks,
-              ),
-            ],
-          );
-        }
-        else {
-          return const PageLoadingIndicator();
-        }
-      }
-    );
+            return PageBase(
+              flexibleSpace: PlaylistFlexibleSpace(playlist: playlist),
+              slivers: [
+                SliverTrackList(
+                  playContext: playlist,
+                  tracks: playlist.tracks,
+                ),
+              ],
+            );
+          } else {
+            return const PageLoadingIndicator();
+          }
+        });
   }
 
   @override
@@ -60,13 +58,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
     playlistUpdatesSubscription = appState.playlistUpdatesStream.listen((data) {
       final (int uid, int kind) = data;
 
-      if(uid == widget.uid && kind == widget.kind) {
+      if (uid == widget.uid && kind == widget.kind) {
         loadData();
         setState(() {});
       }
     });
   }
-
 
   @override
   void dispose() {

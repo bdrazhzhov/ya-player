@@ -14,12 +14,12 @@ class ArtistSocialLink extends StatelessWidget {
     Widget? icon;
     String? title;
 
-    switch(link.type) {
+    switch (link.type) {
       case 'official':
         icon = const Icon(Icons.language);
         title = link.title;
       case 'social':
-        switch(link.socialNetwork!) {
+        switch (link.socialNetwork!) {
           case 'youtube':
             icon = const FaIcon(FontAwesomeIcons.youtube);
             title = 'youtube';
@@ -45,13 +45,12 @@ class ArtistSocialLink extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if(icon != null) icon,
+            if (icon != null) icon,
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(title ?? ''),
             )
           ],
-        )
-    );
+        ));
   }
 }

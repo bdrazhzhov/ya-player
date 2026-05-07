@@ -7,12 +7,8 @@ class StationOptionWidget extends StatefulWidget {
   final String? value;
   final void Function(String value)? onChange;
 
-  const StationOptionWidget({
-    super.key,
-    required this.restrictions,
-    this.value,
-    this.onChange
-  });
+  const StationOptionWidget(
+      {super.key, required this.restrictions, this.value, this.onChange});
 
   @override
   State<StationOptionWidget> createState() => _StationOptionWidgetState();
@@ -24,9 +20,11 @@ class _StationOptionWidgetState extends State<StationOptionWidget> {
   @override
   void initState() {
     super.initState();
-    final String defaultValue = (
-        widget.restrictions.possibleValues.where((i) => i.unspecified).firstOrNull
-            ?? widget.restrictions.possibleValues.last).value;
+    final String defaultValue = (widget.restrictions.possibleValues
+                .where((i) => i.unspecified)
+                .firstOrNull ??
+            widget.restrictions.possibleValues.last)
+        .value;
     selectedRestriction = <String>{widget.value ?? defaultValue};
   }
 
@@ -39,15 +37,17 @@ class _StationOptionWidgetState extends State<StationOptionWidget> {
         SegmentedButton<String>(
           selected: selectedRestriction,
           showSelectedIcon: false,
-          segments: widget.restrictions.possibleValues.map((i) => ButtonSegment(
-            value: i.value,
-            label: Text(i.name),
-          )).toList(),
+          segments: widget.restrictions.possibleValues
+              .map((i) => ButtonSegment(
+                    value: i.value,
+                    label: Text(i.name),
+                  ))
+              .toList(),
           onSelectionChanged: (Set<String> value) {
             selectedRestriction = value;
             setState(() {});
 
-            if(widget.onChange != null) {
+            if (widget.onChange != null) {
               widget.onChange!(value.single);
             }
           },

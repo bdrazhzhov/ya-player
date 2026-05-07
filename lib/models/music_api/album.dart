@@ -18,8 +18,18 @@ class Album extends Equatable implements ContextId {
   final String? version;
   late final String artist;
 
-  Album(this.id, this.title, this.year, this.releaseDate, this.coverUri, this.ogImage, this.genre,
-      this.tracksCount, this.artists, this.description, this.version) {
+  Album(
+      this.id,
+      this.title,
+      this.year,
+      this.releaseDate,
+      this.coverUri,
+      this.ogImage,
+      this.genre,
+      this.tracksCount,
+      this.artists,
+      this.description,
+      this.version) {
     artist = artists.map((artist) => artist.name).join(', ');
   }
 

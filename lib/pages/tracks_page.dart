@@ -12,7 +12,8 @@ import '/services/service_locator.dart';
 import 'page_base.dart';
 
 class TracksPage extends StatelessWidget {
-  late final Future<Playlist> _playlistData = getIt<MusicApi>().likedTracksPlaylist();
+  late final Future<Playlist> _playlistData =
+      getIt<MusicApi>().likedTracksPlaylist();
   final _dataLoadedFuture = Completer();
 
   TracksPage({super.key});
@@ -32,9 +33,10 @@ class TracksPage extends StatelessWidget {
           future: _playlistData,
           builder: (_, AsyncSnapshot<Playlist> snapshot) {
             if (snapshot.hasData) {
-              if(!_dataLoadedFuture.isCompleted) _dataLoadedFuture.complete();
+              if (!_dataLoadedFuture.isCompleted) _dataLoadedFuture.complete();
 
-              final tracks = snapshot.data!.tracks.where((t) => t.isAvailable).toList();
+              final tracks =
+                  snapshot.data!.tracks.where((t) => t.isAvailable).toList();
               return SliverTrackList(
                 playContext: snapshot.data!,
                 tracks: tracks,

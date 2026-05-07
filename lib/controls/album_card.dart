@@ -28,7 +28,8 @@ class AlbumCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            YandexImage(uriTemplate: album.ogImage, width: width, borderRadius: 8),
+            YandexImage(
+                uriTemplate: album.ogImage, width: width, borderRadius: 8),
             Text(HtmlCharacterEntities.decode(album.title),
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontWeight: FontWeight.bold)),

@@ -14,7 +14,7 @@ final class WindowManager {
   }
 
   Future<dynamic> _methodCallHandler(MethodCall methodCall) async {
-    switch(methodCall.method) {
+    switch (methodCall.method) {
       case 'onBackButtonClicked':
         debugPrint('Back button pressed');
         _backButtonStreamController.add(true);
@@ -38,8 +38,9 @@ final class WindowManager {
     return _platform.invokeMethod('showBackButton', needToShow);
   }
 
-  Future<Map<String,Color>> getThemeColors() async {
-    Map<Object?,Object?> result = await _platform.invokeMethod('getThemeColors');
+  Future<Map<String, Color>> getThemeColors() async {
+    Map<Object?, Object?> result =
+        await _platform.invokeMethod('getThemeColors');
 
     return {
       'surface': Color(result['surface'] as int),
@@ -48,7 +49,7 @@ final class WindowManager {
   }
 
   Future<Brightness> getThemeType() async {
-    final Map<String,Color> themeColors = await getThemeColors();
+    final Map<String, Color> themeColors = await getThemeColors();
     final double luminance = themeColors['surface']!.computeLuminance();
 
     return luminance < 0.5 ? Brightness.dark : Brightness.light;

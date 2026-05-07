@@ -13,13 +13,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageBase(
-      title: AppLocalizations.of(context)!.page_main,
-      slivers: [
-        ValueListenableBuilder(
-          valueListenable: _appState.landingNotifier,
-          builder: (_, List<Block> blocks, __) {
-            return SliverList.builder(
+    return PageBase(title: AppLocalizations.of(context)!.page_main, slivers: [
+      ValueListenableBuilder(
+        valueListenable: _appState.landingNotifier,
+        builder: (_, List<Block> blocks, __) {
+          return SliverList.builder(
               itemCount: blocks.length,
               itemBuilder: (BuildContext context, int index) {
                 return Column(
@@ -28,11 +26,9 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 50)
                   ],
                 );
-              }
-            );
-          },
-        )
-      ]
-    );
+              });
+        },
+      )
+    ]);
   }
 }

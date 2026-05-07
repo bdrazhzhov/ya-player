@@ -5,7 +5,6 @@ import '/services/app_state.dart';
 import '/services/service_locator.dart';
 
 class LoginPage extends StatefulWidget {
-
   const LoginPage({super.key});
 
   @override
@@ -24,11 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: TextButton(
-        onPressed: isAuthOpened ? null : startLogin,
-        child: Text('Login'),
-      )
-    );
+        child: TextButton(
+      onPressed: isAuthOpened ? null : startLogin,
+      child: Text('Login'),
+    ));
   }
 
   void startLogin() async {
@@ -38,15 +36,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<dynamic> _methodCallHandler(MethodCall methodCall) async {
-    switch(methodCall.method) {
+    switch (methodCall.method) {
       case 'onAuthCompleted':
         isAuthOpened = false;
         setState(() {});
 
+        final Map<String, String> data =
+            methodCall.arguments.cast<String, String>();
 
-        final Map<String,String> data = methodCall.arguments.cast<String,String>();
-
-        if(!data.keys.contains('accessToken')) {
+        if (!data.keys.contains('accessToken')) {
           debugPrint('Empty auth token');
           return;
         }

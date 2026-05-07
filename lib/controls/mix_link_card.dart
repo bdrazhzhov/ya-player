@@ -20,23 +20,19 @@ class MixLinkCard extends StatelessWidget {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () {
-            NavKeys.mainNav.currentState!.pushNamed(
-                '/mix_link', arguments: mixLink.url);
+            NavKeys.mainNav.currentState!
+                .pushNamed('/mix_link', arguments: mixLink.url);
           },
           child: Stack(
             children: [
               YandexImage(
-                uriTemplate: mixLink.image,
-                width: 200,
-                borderRadius: 8
-              ),
+                  uriTemplate: mixLink.image, width: 200, borderRadius: 8),
               Positioned(
                 top: width / 2,
                 child: SizedBox(
-                  width: width,
-                  height: width / 2,
-                  child: Center(child: Text(mixLink.title))
-                ),
+                    width: width,
+                    height: width / 2,
+                    child: Center(child: Text(mixLink.title))),
               )
             ],
           ),

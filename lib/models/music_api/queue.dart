@@ -8,9 +8,13 @@ class Queue extends Equatable {
   final bool? isInteractive;
   final Iterable<QueueTrack> tracks;
 
-  const Queue({this.id, required this.context,
-    this.currentIndex, this.from, this.isInteractive,
-    required this.tracks});
+  const Queue(
+      {this.id,
+      required this.context,
+      this.currentIndex,
+      this.from,
+      this.isInteractive,
+      required this.tracks});
 
   @override
   List<Object?> get props => [id];
@@ -21,12 +25,11 @@ class Queue extends Equatable {
     json['tracks'].forEach((t) => tracks.add(QueueTrack.fromJson(t)));
 
     return Queue(
-      id: json['id'],
-      context: QueueContext.fromJson(json['context']),
-      tracks: tracks,
-      currentIndex: json['currentIndex'],
-      from: json['from'] ?? tracks.firstOrNull?.from
-    );
+        id: json['id'],
+        context: QueueContext.fromJson(json['context']),
+        tracks: tracks,
+        currentIndex: json['currentIndex'],
+        from: json['from'] ?? tracks.firstOrNull?.from);
   }
 
   Map<String, dynamic> toMap() {
@@ -37,7 +40,8 @@ class Queue extends Equatable {
       'tracks': tracks
     };
 
-    if(isInteractive != null) data['isInteractive'] = (isInteractive! ? 'True' : 'False');
+    if (isInteractive != null)
+      data['isInteractive'] = (isInteractive! ? 'True' : 'False');
 
     return data;
   }
@@ -48,21 +52,18 @@ class QueueContext extends Equatable {
   final String? id;
   final String type;
 
-  const QueueContext({required this.description, required this.id, required this.type});
+  const QueueContext(
+      {required this.description, required this.id, required this.type});
 
   factory QueueContext.fromJson(Map<String, dynamic> json) {
     return QueueContext(
-      description: json['description'],
-      id: json['id'].toString(),
-      type: json['type']
-    );
+        description: json['description'],
+        id: json['id'].toString(),
+        type: json['type']);
   }
 
-  Map<String, String> toMap() => {
-    'description': description ?? '',
-    'id': id ?? '',
-    'type': type
-  };
+  Map<String, String> toMap() =>
+      {'description': description ?? '', 'id': id ?? '', 'type': type};
 
   @override
   List<Object?> get props => [type, id];
@@ -79,9 +80,6 @@ class QueueTrack {
     return QueueTrack(json['trackId'], json['albumId'], json['from']);
   }
 
-  Map<String, String> toJson() => {
-    'trackId': trackId,
-    'albumId': albumId,
-    'from': from
-  };
+  Map<String, String> toJson() =>
+      {'trackId': trackId, 'albumId': albumId, 'from': from};
 }

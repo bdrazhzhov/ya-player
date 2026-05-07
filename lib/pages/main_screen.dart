@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '/pages/search_page.dart';
@@ -22,7 +21,6 @@ class MainScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _MainScreen();
-
 }
 
 class _MainScreen extends State<MainScreen> {
@@ -36,10 +34,10 @@ class _MainScreen extends State<MainScreen> {
       key: NavKeys.mainNav,
       observers: [getIt<AppRouteObserver>()],
       initialRoute: '/',
-      onGenerateRoute: (RouteSettings settings){
+      onGenerateRoute: (RouteSettings settings) {
         Widget page;
 
-        switch(settings.name) {
+        switch (settings.name) {
           case '/search':
             page = SearchPage();
           case '/tracks':
@@ -78,7 +76,7 @@ class _MainScreen extends State<MainScreen> {
   Widget _mixLinkPage(String url) {
     final List<String> segments = url.split('/');
 
-    switch(segments[1]) {
+    switch (segments[1]) {
       case 'post':
         return FeedPromotionsPage(id: segments[2]);
       case 'tag':

@@ -19,13 +19,12 @@ class MyApp extends StatelessWidget {
           valueListenable: _appState.localeNotifier,
           builder: (_, Locale locale, __) {
             return MaterialApp(
-              title: 'YaPlayer',
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              theme: theme,
-              locale: locale,
-              home: MainPage()
-            );
+                title: 'YaPlayer',
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                theme: theme,
+                locale: locale,
+                home: MainPage());
           },
         );
       },

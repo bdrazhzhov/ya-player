@@ -38,7 +38,8 @@ class PodcastCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              YandexImage(uriTemplate: podcast.ogImage, width: 200, borderRadius: 8),
+              YandexImage(
+                  uriTemplate: podcast.ogImage, width: 200, borderRadius: 8),
               Text(
                 HtmlCharacterEntities.decode(podcast.title),
                 maxLines: 1,
@@ -56,7 +57,8 @@ class PodcastCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 Text(
-                  AppLocalizations.of(context)!.episodes_count(podcast.tracksCount),
+                  AppLocalizations.of(context)!
+                      .episodes_count(podcast.tracksCount),
                   style: TextStyle(color: theme.colorScheme.outline),
                 )
               ] else ...[

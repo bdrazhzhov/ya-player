@@ -17,10 +17,12 @@ class LanguageSelector extends StatelessWidget {
         return SegmentedButton<Locale>(
           selected: {lang},
           showSelectedIcon: false,
-          segments: AppLocalizations.supportedLocales.map((locale) => ButtonSegment(
-            value: locale,
-            label: Text(locale.languageCode),
-          )).toList(),
+          segments: AppLocalizations.supportedLocales
+              .map((locale) => ButtonSegment(
+                    value: locale,
+                    label: Text(locale.languageCode),
+                  ))
+              .toList(),
           onSelectionChanged: (Set<Locale> value) {
             _appState.localeNotifier.value = value.first;
           },

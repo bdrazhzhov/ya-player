@@ -16,26 +16,26 @@ class StationCircle extends StatelessWidget {
   final Station station;
 
   late final _image = Center(
-    child: CachedNetworkImage(
-      width: imageDimension.toDouble(),
-      height: imageDimension.toDouble(),
-      fit: BoxFit.fitWidth,
-      imageUrl: MusicApi.imageUrl(station.icon.imageUrl, '${imageSourceDimension}x$imageSourceDimension').toString(),
-      placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
-    )
-  );
+      child: CachedNetworkImage(
+    width: imageDimension.toDouble(),
+    height: imageDimension.toDouble(),
+    fit: BoxFit.fitWidth,
+    imageUrl: MusicApi.imageUrl(station.icon.imageUrl,
+            '${imageSourceDimension}x$imageSourceDimension')
+        .toString(),
+    placeholder: (context, url) => const CircularProgressIndicator(),
+    errorWidget: (context, url, error) => const Icon(Icons.error),
+  ));
 
   final _appState = getIt<AppState>();
   final _playerState = getIt<PlayerState>();
 
-  StationCircle({
-    super.key,
-    required this.dimension,
-    required this.imageDimension,
-    required this.imageSourceDimension,
-    required this.station
-  });
+  StationCircle(
+      {super.key,
+      required this.dimension,
+      required this.imageDimension,
+      required this.imageSourceDimension,
+      required this.station});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,8 @@ class StationCircle extends StatelessWidget {
         return ValueListenableBuilder(
           valueListenable: _appState.currentStationNotifier,
           builder: (_, currentStation, Widget? child) {
-            if(buttonState == PlayBackState.playing && currentStation == station) {
+            if (buttonState == PlayBackState.playing &&
+                currentStation == station) {
               return AnimatedStationCircle(
                 color: station.icon.backgroundColor.toColor(),
                 maxWidth: dimension,
@@ -57,9 +58,8 @@ class StationCircle extends StatelessWidget {
               dimension: dimension,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: station.icon.backgroundColor.toColor(),
-                  shape: BoxShape.circle
-                ),
+                    color: station.icon.backgroundColor.toColor(),
+                    shape: BoxShape.circle),
                 child: child,
               ),
             );

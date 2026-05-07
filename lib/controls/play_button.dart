@@ -6,7 +6,9 @@ import '/notifiers/play_button_notifier.dart';
 import '/services/service_locator.dart';
 
 class PlayButton extends StatelessWidget {
-  PlayButton({super.key,});
+  PlayButton({
+    super.key,
+  });
 
   final AppState _appState = getIt<AppState>();
   final _player = getIt<Player>();

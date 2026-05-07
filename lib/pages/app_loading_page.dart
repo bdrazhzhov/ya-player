@@ -6,11 +6,10 @@ class AppLoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: SizedBox(
-        width: 50,
-        height: 50,
-        child: CircularProgressIndicator(),
-      )
-    );
+        child: SizedBox(
+      width: 50,
+      height: 50,
+      child: CircularProgressIndicator(),
+    ));
   }
 }

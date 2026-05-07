@@ -32,8 +32,8 @@ class Artist extends ArtistBase {
   final List<ArtistLink> links;
   final List<ArtistExtraAction> extraActions;
 
-  const Artist(
-      super.id, super.name, this.cover, this.genres, this.counts, this.links, this.extraActions);
+  const Artist(super.id, super.name, this.cover, this.genres, this.counts,
+      this.links, this.extraActions);
 
   factory Artist.fromJson(Map<String, dynamic> json) {
     List<String> genres = [];
@@ -41,7 +41,8 @@ class Artist extends ArtistBase {
 
     List<ArtistLink> links = [];
     if (json['links'] != null) {
-      json['links'].forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
+      json['links']
+          .forEach((linkJson) => links.add(ArtistLink.fromJson(linkJson)));
     }
 
     EntityCover? cover;
@@ -49,13 +50,15 @@ class Artist extends ArtistBase {
 
     List<ArtistExtraAction> extraActions = [];
     if (json['extraActions'] != null) {
-      json['extraActions']
-          .forEach((action) => extraActions.add(ArtistExtraAction.fromJson(action)));
+      json['extraActions'].forEach(
+          (action) => extraActions.add(ArtistExtraAction.fromJson(action)));
     }
 
-    final counts = json['counts'] != null ? ArtistCounts.fromJson(json['counts']) : null;
+    final counts =
+        json['counts'] != null ? ArtistCounts.fromJson(json['counts']) : null;
 
-    return Artist(json['id'].toString(), json['name'], cover, genres, counts, links, extraActions);
+    return Artist(json['id'].toString(), json['name'], cover, genres, counts,
+        links, extraActions);
   }
 }
 
@@ -65,11 +68,12 @@ class ArtistCounts {
   final int alsoAlbums;
   final int alsoTracks;
 
-  ArtistCounts(this.tracks, this.directAlbums, this.alsoAlbums, this.alsoTracks);
+  ArtistCounts(
+      this.tracks, this.directAlbums, this.alsoAlbums, this.alsoTracks);
 
   factory ArtistCounts.fromJson(Map<String, dynamic> json) {
-    return ArtistCounts(
-        json['tracks'], json['directAlbums'], json['alsoAlbums'], json['alsoTracks']);
+    return ArtistCounts(json['tracks'], json['directAlbums'],
+        json['alsoAlbums'], json['alsoTracks']);
   }
 }
 
@@ -82,7 +86,8 @@ class ArtistLink {
   ArtistLink(this.title, this.href, this.type, this.socialNetwork);
 
   factory ArtistLink.fromJson(Map<String, dynamic> json) {
-    return ArtistLink(json['title'], json['href'], json['type'], json['socialNetwork']);
+    return ArtistLink(
+        json['title'], json['href'], json['type'], json['socialNetwork']);
   }
 }
 

@@ -1,7 +1,7 @@
 import 'album.dart';
 import 'artist.dart';
 
-enum PodcastType {podcast, audiobook}
+enum PodcastType { podcast, audiobook }
 
 class Podcast extends Album {
   final PodcastType type;
@@ -25,11 +25,15 @@ class Podcast extends Album {
 
   factory Podcast.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> data = json;
-    if(data['data'] != null && data['data']['podcast'] != null) data = data['data']['podcast'];
-    final type = data['type'] == 'audiobook' ? PodcastType.audiobook : PodcastType.podcast;
+    if (data['data'] != null && data['data']['podcast'] != null)
+      data = data['data']['podcast'];
+    final type = data['type'] == 'audiobook'
+        ? PodcastType.audiobook
+        : PodcastType.podcast;
 
     final List<ArtistBase> artists = [];
-    data['artists']?.forEach((artistJson) => artists.add(ArtistBase.fromJson(artistJson)));
+    data['artists']
+        ?.forEach((artistJson) => artists.add(ArtistBase.fromJson(artistJson)));
 
     return Podcast(
       data['id'],

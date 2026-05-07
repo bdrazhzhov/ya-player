@@ -21,16 +21,16 @@ class PopularArtistTracks extends StatelessWidget {
 
     return SliversContainer(
       slivers: [
-        SliverToBoxAdapter(child: Padding(
+        SliverToBoxAdapter(
+            child: Padding(
           padding: const EdgeInsets.only(top: 32, bottom: 56),
           child: Text(artist.name, style: theme.textTheme.displayMedium),
         )),
         SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Text('All tracks', style: theme.textTheme.titleLarge),
-          )
-        ),
+            child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Text('All tracks', style: theme.textTheme.titleLarge),
+        )),
         SliverPersistentHeader(
           delegate: SliverTracksHeader(),
           pinned: true,
@@ -38,7 +38,7 @@ class PopularArtistTracks extends StatelessWidget {
         FutureBuilder(
           future: _tracks,
           builder: (_, AsyncSnapshot<List<Track>> snapshot) {
-            if(snapshot.hasData) {
+            if (snapshot.hasData) {
               // return SliverTrackList(
               //     tracks: snapshot.data!,
               //     showAlbum: true,
@@ -46,7 +46,8 @@ class PopularArtistTracks extends StatelessWidget {
               // );
               return const SliverToBoxAdapter(child: Text('Not implemented'));
             } else {
-              return const SliverToBoxAdapter(child: CircularProgressIndicator());
+              return const SliverToBoxAdapter(
+                  child: CircularProgressIndicator());
             }
           },
         )

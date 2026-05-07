@@ -25,7 +25,7 @@ base class MenuItem {
     return 'MenuItem{id: $id, label: $label, icon: $icon, enabled: $enabled}';
   }
 
-  Map<String,dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'label': label,

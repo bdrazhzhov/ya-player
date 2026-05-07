@@ -15,8 +15,10 @@ class YnisonState {
   });
 
   YnisonState.fromJson(Map<String, dynamic> json)
-      : devices = (json['devices'] as List).map((e) => YDevice.fromJson(e)).toList(),
+      : devices =
+            (json['devices'] as List).map((e) => YDevice.fromJson(e)).toList(),
         playerState = YPlayerState.fromJson(json['player_state']),
         rid = json['rid'],
-        timestamp = DateTime.fromMillisecondsSinceEpoch(int.parse(json['timestamp_ms']));
+        timestamp = DateTime.fromMillisecondsSinceEpoch(
+            int.parse(json['timestamp_ms']));
 }

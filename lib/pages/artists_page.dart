@@ -19,42 +19,41 @@ class ArtistsPage extends StatelessWidget {
     final appState = getIt<AppState>();
 
     return PageBase(
-      title: AppLocalizations.of(context)!.page_artists,
-      slivers: [ValueListenableBuilder<List<Artist>>(
-        valueListenable: appState.artistsNotifier,
-        builder: (_, artists, __) {
-          return SliverLayoutBuilder(
-            builder: (_, SliverConstraints sliverConstraints) {
-              final constraints = sliverConstraints.asBoxConstraints();
-              final spacing = 12.0;
+        title: AppLocalizations.of(context)!.page_artists,
+        slivers: [
+          ValueListenableBuilder<List<Artist>>(
+              valueListenable: appState.artistsNotifier,
+              builder: (_, artists, __) {
+                return SliverLayoutBuilder(
+                  builder: (_, SliverConstraints sliverConstraints) {
+                    final constraints = sliverConstraints.asBoxConstraints();
+                    final spacing = 12.0;
 
-              if(constraints.maxWidth < spacing * (artists.length - 1) + artists.length * _itemWidth)
-              {
-                return SliverGrid(
-                  gridDelegate: CustomSliverGridDelegateExtent(
-                    crossAxisSpacing: spacing,
-                    maxCrossAxisExtent: _itemWidth,
-                    height: _itemWidth + 60
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (_, index) => ArtistCard(artists[index], _itemWidth),
-                    childCount: artists.length
-                  )
+                    if (constraints.maxWidth <
+                        spacing * (artists.length - 1) +
+                            artists.length * _itemWidth) {
+                      return SliverGrid(
+                          gridDelegate: CustomSliverGridDelegateExtent(
+                              crossAxisSpacing: spacing,
+                              maxCrossAxisExtent: _itemWidth,
+                              height: _itemWidth + 60),
+                          delegate: SliverChildBuilderDelegate(
+                              (_, index) =>
+                                  ArtistCard(artists[index], _itemWidth),
+                              childCount: artists.length));
+                    } else {
+                      return SliverToBoxAdapter(
+                          child: Wrap(
+                        spacing: spacing,
+                        runSpacing: spacing,
+                        children: artists
+                            .map((artist) => ArtistCard(artist, _itemWidth))
+                            .toList(),
+                      ));
+                    }
+                  },
                 );
-              }
-              else {
-                return SliverToBoxAdapter(
-                  child: Wrap(
-                    spacing: spacing,
-                    runSpacing: spacing,
-                    children: artists.map((artist) => ArtistCard(artist, _itemWidth)).toList(),
-                  )
-                );
-              }
-            },
-          );
-        }
-      )]
-    );
+              })
+        ]);
   }
 }

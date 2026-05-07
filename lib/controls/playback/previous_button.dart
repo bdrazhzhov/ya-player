@@ -16,7 +16,11 @@ class PreviousButton extends StatelessWidget {
       valueListenable: _playerState.canPrevNotifier,
       builder: (_, isEnabled, __) {
         return IconButton(
-          onPressed: isEnabled ? () { getIt<Player>().previous(); } : null,
+          onPressed: isEnabled
+              ? () {
+                  getIt<Player>().previous();
+                }
+              : null,
           icon: const FaIcon(FontAwesomeIcons.backwardStep),
           iconSize: 20,
         );

@@ -18,8 +18,13 @@ class RadioFeedback {
 }
 
 enum RadioEventType {
-  radioStarted, trackStarted, trackFinished, skip, like, unlike;
-  
+  radioStarted,
+  trackStarted,
+  trackFinished,
+  skip,
+  like,
+  unlike;
+
   factory RadioEventType.fromString(String stringValue) {
     for (RadioEventType value in values) {
       if (value.name == stringValue) {
@@ -52,11 +57,11 @@ class RadioEvent {
       'from': from,
     };
 
-    if(trackId != null) {
+    if (trackId != null) {
       json['trackId'] = trackId!;
     }
 
-    if(totalPlayed != null) {
+    if (totalPlayed != null) {
       json['totalPlayedSeconds'] = totalPlayed!.inMilliseconds / 1000.0;
     }
 

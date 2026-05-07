@@ -67,14 +67,17 @@ class _TrackListItemState extends State<TrackListItem> {
 
     String trackDuration = '';
     if (track.duration != null) {
-      trackDuration = df
-          .format(DateTime.fromMillisecondsSinceEpoch(track.duration!.inMilliseconds, isUtc: true));
+      trackDuration = df.format(DateTime.fromMillisecondsSinceEpoch(
+          track.duration!.inMilliseconds,
+          isUtc: true));
     }
 
     return GestureDetector(
       onTap: onTap,
       child: MouseRegion(
-        cursor: track.isAvailable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        cursor: track.isAvailable
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic,
         onEnter: (event) {
           if (!track.isAvailable) return;
           isHovered = true;
@@ -87,13 +90,15 @@ class _TrackListItemState extends State<TrackListItem> {
         },
         child: Container(
           decoration: BoxDecoration(
-              color:
-                  isHovered || isCurrent ? theme.colorScheme.inversePrimary : Colors.transparent),
+              color: isHovered || isCurrent
+                  ? theme.colorScheme.inversePrimary
+                  : Colors.transparent),
           padding: const EdgeInsets.only(top: 4, bottom: 4),
           child: Row(
             children: [
               if (track.chart != null)
-                SizedBox(width: 30, child: ChartPosition(chartItem: track.chart!)),
+                SizedBox(
+                    width: 30, child: ChartPosition(chartItem: track.chart!)),
               trackCover(track),
               Expanded(
                 flex: 2,
@@ -201,7 +206,8 @@ class _TrackListItemState extends State<TrackListItem> {
 
   void onTap() {
     if (appState.playContext != widget.playContext) {
-      appState.playContent(widget.playContext, widget.tracks, widget.trackIndex);
+      appState.playContent(
+          widget.playContext, widget.tracks, widget.trackIndex);
       return;
     }
 

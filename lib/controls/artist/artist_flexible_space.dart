@@ -44,7 +44,8 @@ class ArtistFlexibleSpace extends StatelessWidget {
     });
 
     return Row(spacing: 8, children: [
-      PlayContextButton(context: artistInfo.artist, tracks: artistInfo.popularTracks),
+      PlayContextButton(
+          context: artistInfo.artist, tracks: artistInfo.popularTracks),
       LikeButton(
         likeCondition: () => _appState.isLikedArtist(artistInfo.artist.id),
         onLikeClicked: () => _appState.likeArtist(artistInfo.artist.id),
@@ -52,7 +53,8 @@ class ArtistFlexibleSpace extends StatelessWidget {
       IconButton(
         icon: Icon(Icons.radio),
         tooltip: l10n.artist_station,
-        onPressed: () => _appState.playObjectStation(artistInfo.artist.stationId()),
+        onPressed: () =>
+            _appState.playObjectStation(artistInfo.artist.stationId()),
       ),
       ...extraActions
     ]);

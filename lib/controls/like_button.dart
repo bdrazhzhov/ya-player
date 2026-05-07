@@ -27,16 +27,15 @@ class _LikeButtonState extends State<LikeButton> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: appState.likedTracksNotifier,
-      builder: (_, value, __) {
-        final iconData = widget.likeCondition() ? Icons.favorite : Icons.favorite_border;
+        valueListenable: appState.likedTracksNotifier,
+        builder: (_, value, __) {
+          final iconData =
+              widget.likeCondition() ? Icons.favorite : Icons.favorite_border;
 
-        return IconButton(
-          icon: Icon(iconData),
-          onPressed: isProcessing ? null : buttonClick
-        );
-      }
-    );
+          return IconButton(
+              icon: Icon(iconData),
+              onPressed: isProcessing ? null : buttonClick);
+        });
   }
 
   void buttonClick() async {

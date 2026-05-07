@@ -38,7 +38,7 @@ class _ArtistCompilationsPageState extends State<ArtistCompilationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(isFirstLoading) return const PageLoadingIndicator();
+    if (isFirstLoading) return const PageLoadingIndicator();
 
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -66,10 +66,9 @@ class _ArtistCompilationsPageState extends State<ArtistCompilationsPage> {
         SliverGrid.builder(
           itemCount: albums.length,
           gridDelegate: CustomSliverGridDelegateExtent(
-            crossAxisSpacing: 12,
-            maxCrossAxisExtent: itemWidth,
-            height: itemWidth + 60
-          ),
+              crossAxisSpacing: 12,
+              maxCrossAxisExtent: itemWidth,
+              height: itemWidth + 60),
           itemBuilder: (_, index) => AlbumCard(albums[index], itemWidth),
         )
       ],
@@ -78,17 +77,15 @@ class _ArtistCompilationsPageState extends State<ArtistCompilationsPage> {
   }
 
   Future<void> loadData() async {
-    if(isEverythingLoaded) return;
-    if(isDataPreloading) return;
+    if (isEverythingLoaded) return;
+    if (isDataPreloading) return;
     isDataPreloading = true;
 
-    final PagedData<Album> data = await musicApi.artistAlsoAlbums(
-      artistId: widget.artist.id,
-      page: page
-    );
+    final PagedData<Album> data =
+        await musicApi.artistAlsoAlbums(artistId: widget.artist.id, page: page);
 
     isEverythingLoaded = data.total == albums.length;
-    if(!isEverythingLoaded) {
+    if (!isEverythingLoaded) {
       page += 1;
       isFirstLoading = false;
     }

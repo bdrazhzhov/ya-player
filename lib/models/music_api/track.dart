@@ -143,7 +143,8 @@ class TrackOfList {
   TrackOfList(this.id, this.albumId, this.timestamp);
 
   factory TrackOfList.fromJson(Map<String, dynamic> json) {
-    return TrackOfList(json['id'], json['albumId'], DateTime.parse(json['timestamp']));
+    return TrackOfList(
+        json['id'], json['albumId'], DateTime.parse(json['timestamp']));
   }
 }
 

@@ -5,18 +5,18 @@ class AnimatedStationCircle extends StatefulWidget {
   final Color color;
   final double maxWidth;
 
-  const AnimatedStationCircle({
-    super.key,
-    required this.child,
-    required this.color,
-    required this.maxWidth
-  });
+  const AnimatedStationCircle(
+      {super.key,
+      required this.child,
+      required this.color,
+      required this.maxWidth});
 
   @override
   State<AnimatedStationCircle> createState() => _AnimatedStationCircleState();
 }
 
-class _AnimatedStationCircleState extends State<AnimatedStationCircle> with SingleTickerProviderStateMixin {
+class _AnimatedStationCircleState extends State<AnimatedStationCircle>
+    with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation animation;
 
@@ -26,12 +26,10 @@ class _AnimatedStationCircleState extends State<AnimatedStationCircle> with Sing
     animationController = AnimationController(vsync: this, duration: duration)
       ..repeat(reverse: true);
 
-    animation =  Tween(begin: widget.maxWidth, end: widget.maxWidth * 0.85)
+    animation = Tween(begin: widget.maxWidth, end: widget.maxWidth * 0.85)
         .animate(CurvedAnimation(
-        parent: animationController,
-        curve: Curves.decelerate
-    )
-    )..addListener(() => setState(() {}));
+            parent: animationController, curve: Curves.decelerate))
+      ..addListener(() => setState(() {}));
 
     super.initState();
   }
@@ -51,10 +49,8 @@ class _AnimatedStationCircleState extends State<AnimatedStationCircle> with Sing
         child: SizedBox.square(
           dimension: animation.value,
           child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: widget.color,
-                shape: BoxShape.circle
-            ),
+            decoration:
+                BoxDecoration(color: widget.color, shape: BoxShape.circle),
             child: widget.child,
           ),
         ),

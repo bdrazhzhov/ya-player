@@ -22,11 +22,13 @@ class PodcastPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<AlbumWithTracks>(
         future: _albumWidthTracks,
-        builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot) {
           if (snapshot.hasData) {
             final albumWithTracks = snapshot.data!;
             return PageBase(
-              flexibleSpace: AlbumFlexibleSpace(albumWithTracks: albumWithTracks),
+              flexibleSpace:
+                  AlbumFlexibleSpace(albumWithTracks: albumWithTracks),
               slivers: [
                 SliverPersistentHeader(
                   delegate: TracksHeader(),

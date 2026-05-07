@@ -10,11 +10,8 @@ class PageLoadingIndicator extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: theme.colorScheme.surface),
       child: const Center(
-        child: SizedBox(
-            width: 60,
-            height: 60,
-            child: CircularProgressIndicator()
-        ),
+        child:
+            SizedBox(width: 60, height: 60, child: CircularProgressIndicator()),
       ),
     );
   }

@@ -32,7 +32,8 @@ class _BestResultWaveCardState extends State<BestResultWaveCard> {
           child: Row(
             spacing: 12,
             children: [
-              BestResultWaveCover(bestResult: widget.bestResult, isHovered: isHovered),
+              BestResultWaveCover(
+                  bestResult: widget.bestResult, isHovered: isHovered),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +62,8 @@ class _BestResultWaveCardState extends State<BestResultWaveCard> {
       onTap: () {
         final playContext = appState.playContext;
         if (playContext is RadioSession &&
-            playContext.wave.stationId == widget.bestResult.stationId.toString()) {
+            playContext.wave.stationId ==
+                widget.bestResult.stationId.toString()) {
           getIt<Player>().playPause();
           return;
         }

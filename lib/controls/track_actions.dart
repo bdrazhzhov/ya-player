@@ -13,7 +13,15 @@ import '/services/service_locator.dart';
 import 'context_menu/context_menu.dart';
 import 'context_menu/context_menu_item.dart';
 
-enum TrackActionType { download, radio, addToPlaylist, toAlbum, toArtists, share, remove }
+enum TrackActionType {
+  download,
+  radio,
+  addToPlaylist,
+  toAlbum,
+  toArtists,
+  share,
+  remove
+}
 
 class TrackActions extends StatelessWidget {
   final Track track;
@@ -23,7 +31,8 @@ class TrackActions extends StatelessWidget {
   final _appState = getIt<AppState>();
   final _musicApi = getIt<MusicApi>();
 
-  TrackActions({super.key, required this.track, this.playContext, this.trackIndex = 0});
+  TrackActions(
+      {super.key, required this.track, this.playContext, this.trackIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +69,8 @@ class TrackActions extends StatelessWidget {
         _buildArtistMenuItem(l10n),
         MenuItem(label: l10n.track_share, icon: Icons.share),
         MenuItem(label: l10n.track_remove, icon: Icons.clear),
-        if (playContext is Playlist && _appState.isPlaylistEditable(playContext as Playlist))
+        if (playContext is Playlist &&
+            _appState.isPlaylistEditable(playContext as Playlist))
           MenuItem(
             label: l10n.playlist_remove_from,
             icon: Icons.remove_circle_outline,
@@ -98,7 +108,8 @@ class TrackActions extends StatelessWidget {
         icon: Icons.person,
         onTap: () {
           NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-            pageBuilder: (_, __, ___) => ArtistPage(artistId: track.artists.first.id),
+            pageBuilder: (_, __, ___) =>
+                ArtistPage(artistId: track.artists.first.id),
             reverseTransitionDuration: Duration.zero,
           ));
         },
@@ -123,7 +134,8 @@ class TrackActions extends StatelessWidget {
         label: l10n.playlist_create,
         icon: Icons.add,
         onTap: () async {
-          final Playlist newPlaylist = await _musicApi.createPlaylist(l10n.playlist_new);
+          final Playlist newPlaylist =
+              await _musicApi.createPlaylist(l10n.playlist_new);
           await _musicApi.insertPlaylistTracks(newPlaylist, [track]);
           _appState.requestPlaylists();
           NavKeys.mainNav.currentState!.push(PageRouteBuilder(

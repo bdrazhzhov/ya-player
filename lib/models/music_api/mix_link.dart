@@ -6,6 +6,9 @@ class MixLink {
   MixLink({required this.title, required this.url, required this.image});
 
   factory MixLink.fromJson(Map<String, dynamic> json) {
-    return MixLink(title: json['title'], url: json['url'], image: json['backgroundImageUri']);
+    return MixLink(
+        title: json['title'],
+        url: json['url'],
+        image: json['backgroundImageUri']);
   }
 }

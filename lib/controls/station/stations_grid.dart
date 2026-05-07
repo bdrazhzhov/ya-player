@@ -21,33 +21,27 @@ class StationsGrid extends StatelessWidget {
     return SliverGrid.builder(
       itemCount: stations.length,
       gridDelegate: CustomSliverGridDelegateExtent(
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        maxCrossAxisExtent: _maxWidth,
-        height: 50
-      ),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          maxCrossAxisExtent: _maxWidth,
+          height: 50),
       itemBuilder: (BuildContext context, int index) {
         final station = stations[index];
 
         return GestureDetector(
-          onTap: () async {
-            if(station.subStations.isNotEmpty){
-              await NavKeys.mainNav.currentState!.push(
-                PageRouteBuilder(
+            onTap: () async {
+              if (station.subStations.isNotEmpty) {
+                await NavKeys.mainNav.currentState!.push(PageRouteBuilder(
                   pageBuilder: (_, __, ___) => GenrePage(genre: station),
                   reverseTransitionDuration: Duration.zero,
-                )
-              );
-            }
-            else {
-              _appState.playStation(station);
-            }
-          },
-          child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: StationGenre(station)
-          )
-        );
+                ));
+              } else {
+                _appState.playStation(station);
+              }
+            },
+            child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: StationGenre(station)));
       },
     );
   }

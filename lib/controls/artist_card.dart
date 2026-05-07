@@ -32,7 +32,10 @@ class ArtistCard extends StatelessWidget {
         child: Column(
           children: [
             if (artist.cover != null)
-              YandexImage(uriTemplate: artist.cover?.uri, width: width, borderRadius: 8),
+              YandexImage(
+                  uriTemplate: artist.cover?.uri,
+                  width: width,
+                  borderRadius: 8),
             Text(
               artist.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -40,8 +43,10 @@ class ArtistCard extends StatelessWidget {
             ),
             if (artist.counts != null)
               Text(
-                AppLocalizations.of(context)!.tracks_count(artist.counts!.tracks),
-                style: TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
+                AppLocalizations.of(context)!
+                    .tracks_count(artist.counts!.tracks),
+                style:
+                    TextStyle(fontSize: theme.textTheme.labelMedium?.fontSize),
               ),
             Text(
               artist.genres.map((id) => _appState.getGenreTitle(id)).join(', '),

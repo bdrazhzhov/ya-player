@@ -13,7 +13,8 @@ class BestResultWaveCover extends StatefulWidget {
   final BestResultWave bestResult;
   final bool isHovered;
 
-  const BestResultWaveCover({super.key, required this.bestResult, required this.isHovered});
+  const BestResultWaveCover(
+      {super.key, required this.bestResult, required this.isHovered});
 
   @override
   State<BestResultWaveCover> createState() => _BestResultWaveCoverState();
@@ -56,7 +57,8 @@ class _BestResultWaveCoverState extends State<BestResultWaveCover> {
     if (appState.playContext is! RadioSession) return false;
 
     final radioSession = appState.playContext as RadioSession;
-    if (radioSession.wave.stationId != widget.bestResult.stationId.toString()) return false;
+    if (radioSession.wave.stationId != widget.bestResult.stationId.toString())
+      return false;
 
     return playerState.playBackStateNotifier.value == PlayBackState.playing;
   }

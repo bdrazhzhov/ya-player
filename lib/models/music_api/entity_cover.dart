@@ -19,7 +19,8 @@ class EntityCover {
       derivedColors = DerivedColors.fromJson(json['derivedColors']);
     }
 
-    return EntityCover(uri: json['uri'], color: color, derivedColors: derivedColors);
+    return EntityCover(
+        uri: json['uri'], color: color, derivedColors: derivedColors);
   }
 }
 

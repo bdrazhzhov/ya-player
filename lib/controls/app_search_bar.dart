@@ -22,31 +22,34 @@ class _AppSearchBarState extends State<AppSearchBar> {
     final l10n = AppLocalizations.of(context)!;
     final activeColor = theme.colorScheme.secondary;
     final inactiveColor = theme.colorScheme.secondary.withAlpha(150);
-    var hintTextStyle = theme.textTheme.titleMedium!.copyWith(
-      color: inactiveColor
-    );
+    var hintTextStyle =
+        theme.textTheme.titleMedium!.copyWith(color: inactiveColor);
 
     return SearchBar(
       controller: searchTextController,
       leading: Padding(
         padding: const EdgeInsets.only(left: 8.0),
-        child: Icon(Icons.search, color: isActive ? activeColor : inactiveColor),
+        child:
+            Icon(Icons.search, color: isActive ? activeColor : inactiveColor),
       ),
-      trailing: !isLeadingHidden ? [
-        IconButton(
-          icon: Icon(Icons.clear, color: isActive ? activeColor : inactiveColor),
-          onPressed: (){
-            searchTextController.clear();
-            isLeadingHidden = true;
-            setState(() {});
-            if(widget.onChanged != null) widget.onChanged!('');
-          },
-        )
-      ] : null,
-      onChanged: (text){
+      trailing: !isLeadingHidden
+          ? [
+              IconButton(
+                icon: Icon(Icons.clear,
+                    color: isActive ? activeColor : inactiveColor),
+                onPressed: () {
+                  searchTextController.clear();
+                  isLeadingHidden = true;
+                  setState(() {});
+                  if (widget.onChanged != null) widget.onChanged!('');
+                },
+              )
+            ]
+          : null,
+      onChanged: (text) {
         isLeadingHidden = text.isEmpty;
         setState(() {});
-        if(widget.onChanged != null) widget.onChanged!(text);
+        if (widget.onChanged != null) widget.onChanged!(text);
       },
       // onTap: (){
       //   isActive = true;
@@ -59,7 +62,6 @@ class _AppSearchBarState extends State<AppSearchBar> {
       elevation: WidgetStateProperty.all<double>(0.0),
       hintText: l10n.searchbar_hint,
       hintStyle: WidgetStateProperty.all<TextStyle>(hintTextStyle),
-
     );
   }
 }

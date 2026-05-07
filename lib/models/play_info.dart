@@ -8,7 +8,11 @@ import 'music_api/radio_session.dart';
 import 'music_api/track.dart';
 
 enum PlayInfoContext {
-  various, album, artist, playlist, radio;
+  various,
+  album,
+  artist,
+  playlist,
+  radio;
 
   factory PlayInfoContext.fromString(String stringValue) {
     for (PlayInfoContext value in values) {
@@ -102,7 +106,8 @@ abstract base class PlayInfoBase {
 
   String _generateRandomDigitString(int length) {
     final Random random = Random();
-    return List<String>.generate(length, (_) => random.nextInt(10).toString()).join();
+    return List<String>.generate(length, (_) => random.nextInt(10).toString())
+        .join();
   }
 }
 

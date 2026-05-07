@@ -6,12 +6,17 @@ class TrackDownloadInfo {
   final bool direct;
   final int bitrateInKbps;
 
-  TrackDownloadInfo(this.codec, this.gain, this.preview,
-      this.downloadInfoUrl, this.direct, this.bitrateInKbps);
+  TrackDownloadInfo(this.codec, this.gain, this.preview, this.downloadInfoUrl,
+      this.direct, this.bitrateInKbps);
 
   factory TrackDownloadInfo.fromJson(Map<String, dynamic> json) {
-    return TrackDownloadInfo(json['codec'], json['gain'], json['preview'],
-        Uri.parse(json['downloadInfoUrl']), json['direct'], json['bitrateInKbps']);
+    return TrackDownloadInfo(
+        json['codec'],
+        json['gain'],
+        json['preview'],
+        Uri.parse(json['downloadInfoUrl']),
+        json['direct'],
+        json['bitrateInKbps']);
   }
 
   @override

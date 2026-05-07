@@ -45,7 +45,8 @@ class ArtistPage extends StatelessWidget {
                       title: l10n.artist_popularTracks,
                       onPressed: () {
                         NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-                          pageBuilder: (_, __, ___) => ArtistTracksPage(artist: info.artist),
+                          pageBuilder: (_, __, ___) =>
+                              ArtistTracksPage(artist: info.artist),
                           reverseTransitionDuration: Duration.zero,
                         ));
                       },
@@ -59,11 +60,13 @@ class ArtistPage extends StatelessWidget {
                 ],
                 if (info.albums.isNotEmpty) ...[
                   createSeparatedList(
-                    items: info.albums.map((album) => AlbumCard(album, _cardWidth)),
+                    items: info.albums
+                        .map((album) => AlbumCard(album, _cardWidth)),
                     title: l10n.artist_popularAlbums,
                     onHeaderTap: () {
                       NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => ArtistAlbumsPage(artist: info.artist),
+                        pageBuilder: (_, __, ___) =>
+                            ArtistAlbumsPage(artist: info.artist),
                         reverseTransitionDuration: Duration.zero,
                       ));
                     },
@@ -71,11 +74,13 @@ class ArtistPage extends StatelessWidget {
                 ],
                 if (info.alsoAlbums.isNotEmpty) ...[
                   createSeparatedList(
-                    items: info.alsoAlbums.map((album) => AlbumCard(album, _cardWidth)),
+                    items: info.alsoAlbums
+                        .map((album) => AlbumCard(album, _cardWidth)),
                     title: l10n.artist_compilations,
                     onHeaderTap: () {
                       NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => ArtistCompilationsPage(artist: info.artist),
+                        pageBuilder: (_, __, ___) =>
+                            ArtistCompilationsPage(artist: info.artist),
                         reverseTransitionDuration: Duration.zero,
                       ));
                     },
@@ -83,7 +88,8 @@ class ArtistPage extends StatelessWidget {
                 ],
                 if (info.similarArtists.isNotEmpty) ...[
                   createSeparatedList(
-                    items: info.similarArtists.map((artist) => ArtistCard(artist, _cardWidth)),
+                    items: info.similarArtists
+                        .map((artist) => ArtistCard(artist, _cardWidth)),
                     title: l10n.artist_similar,
                   ),
                 ],
@@ -95,7 +101,9 @@ class ArtistPage extends StatelessWidget {
                   ),
                   SliverToBoxAdapter(
                     child: Wrap(
-                      children: info.artist.links.map((link) => ArtistSocialLink(link)).toList(),
+                      children: info.artist.links
+                          .map((link) => ArtistSocialLink(link))
+                          .toList(),
                     ),
                   )
                 ],
@@ -124,7 +132,8 @@ class ArtistPage extends StatelessWidget {
     );
   }
 
-  Widget toSliverWithPadding({required Widget child, double? top, double? bottom}) {
+  Widget toSliverWithPadding(
+      {required Widget child, double? top, double? bottom}) {
     return SliverPadding(
       sliver: SliverToBoxAdapter(child: child),
       padding: EdgeInsetsGeometry.only(top: top ?? 0, bottom: bottom ?? 0),

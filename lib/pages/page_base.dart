@@ -47,7 +47,7 @@ class _PageBaseState extends State<PageBase> {
 
   Future<void> scrollToCurrentTrack() async {
     int index = getIt<PlaybackQueue>().currentIndex;
-    if(index == -1) return;
+    if (index == -1) return;
 
     scrollController.jumpTo(index * widget.scrollItemHeight!);
   }
@@ -58,44 +58,43 @@ class _PageBaseState extends State<PageBase> {
 
     return Container(
       decoration: BoxDecoration(color: theme.colorScheme.surface),
-      child: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          if(widget.title != null)
-            SliverPadding(
-              padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
-              sliver: SliverToBoxAdapter(
-                child: Text(widget.title!, style: theme.textTheme.displayMedium),
-              ),
+      child: CustomScrollView(controller: scrollController, slivers: [
+        if (widget.title != null)
+          SliverPadding(
+            padding:
+                const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 50),
+            sliver: SliverToBoxAdapter(
+              child: Text(widget.title!, style: theme.textTheme.displayMedium),
             ),
-          if(widget.flexibleSpace != null)
-            SliverPadding(
-              padding: const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 25),
-              sliver: SliverAppBar(
-                leading: const SizedBox.shrink(),
-                pinned: true,
-                flexibleSpace: widget.flexibleSpace,
-                toolbarHeight: 50,
-                collapsedHeight: 64,
-                expandedHeight: 200,
-                backgroundColor: theme.colorScheme.surface,
-                surfaceTintColor: Colors.transparent,
-              ),
+          ),
+        if (widget.flexibleSpace != null)
+          SliverPadding(
+            padding:
+                const EdgeInsets.only(left: 32, right: 32, top: 25, bottom: 25),
+            sliver: SliverAppBar(
+              leading: const SizedBox.shrink(),
+              pinned: true,
+              flexibleSpace: widget.flexibleSpace,
+              toolbarHeight: 50,
+              collapsedHeight: 64,
+              expandedHeight: 200,
+              backgroundColor: theme.colorScheme.surface,
+              surfaceTintColor: Colors.transparent,
             ),
-          ...widget.slivers.map((sliver) => SliverPadding(
+          ),
+        ...widget.slivers.map((sliver) => SliverPadding(
               padding: const EdgeInsets.only(left: 32, right: 32),
               sliver: sliver,
-            )
-          )
-        ]
-      ),
+            ))
+      ]),
     );
   }
 
   void initDataPreload() {
-    scrollController.addListener((){
-      if(widget.onDataPreload == null || scrollController.position.outOfRange) return;
-      if(scrollController.offset <
+    scrollController.addListener(() {
+      if (widget.onDataPreload == null || scrollController.position.outOfRange)
+        return;
+      if (scrollController.offset <
           scrollController.position.maxScrollExtent - 1000) {
         return;
       }
@@ -105,14 +104,15 @@ class _PageBaseState extends State<PageBase> {
   }
 
   void initPageScrolling() {
-    if(widget.scrollItemHeight == null) return;
+    if (widget.scrollItemHeight == null) return;
 
     getIt<Player>().trackLoadedEvent.addHandler(trackLoadedHandler);
 
-    if(widget.onScrollPrepare != null) {
+    if (widget.onScrollPrepare != null) {
       widget.onScrollPrepare!.then((_) => scrollToCurrentTrack());
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) => scrollToCurrentTrack());
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => scrollToCurrentTrack());
     }
   }
 }

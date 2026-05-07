@@ -23,10 +23,10 @@ class Tree {
   }
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'navigationId': navigationId,
-    'leaves': leaves.map((leaf) => leaf.toJson()).toList(),
-  };
+        'title': title,
+        'navigationId': navigationId,
+        'leaves': leaves.map((leaf) => leaf.toJson()).toList(),
+      };
 }
 
 class Leaf {
@@ -44,18 +44,14 @@ class Leaf {
     List<Leaf> leaves = [];
     json['leaves']?.forEach((leafJson) => leaves.add(Leaf.fromJson(leafJson)));
 
-    return Leaf(
-      tag: json['tag'],
-      title: json['title'],
-      leaves: leaves
-    );
+    return Leaf(tag: json['tag'], title: json['title'], leaves: leaves);
   }
 
   Map<String, dynamic> toJson() => {
-    'tag': tag,
-    'title': title,
-    'leaves': leaves.map((leaf) => leaf.toJson()).toList(),
-  };
+        'tag': tag,
+        'title': title,
+        'leaves': leaves.map((leaf) => leaf.toJson()).toList(),
+      };
 }
 
 class MetaTags {
@@ -108,8 +104,9 @@ class MetaTags {
     json['albums'].forEach((album) => albums.add(Album.fromJson(album)));
 
     List<Playlist> playlists = [];
-    json['playlists'].forEach((playlist) => playlists.add(Playlist.fromJson(playlist)));
-    
+    json['playlists']
+        .forEach((playlist) => playlists.add(Playlist.fromJson(playlist)));
+
     return MetaTags(
       id: json['id'],
       coverUri: json['coverUri'],

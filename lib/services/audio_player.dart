@@ -16,7 +16,8 @@ final class AudioPlayer {
 
   final trackDurationNotifier = TrackDurationNotifier();
   late final volumeNotifier = ValueNotifier<double>(_linearVolume);
-  late final playingStateNotifier = ValueNotifier<PlayingState>(PlayingState.unknown);
+  late final playingStateNotifier =
+      ValueNotifier<PlayingState>(PlayingState.unknown);
 
   final _seekStreamController = StreamController<Duration>.broadcast();
   Stream<Duration> get seekStream => _seekStreamController.stream;
@@ -27,7 +28,7 @@ final class AudioPlayer {
 
   void _listenToEventsStream() {
     _platformPlayer.eventsStream().listen((EventBase event) {
-      switch(event) {
+      switch (event) {
         case DurationEvent durationEvent:
           _duration = durationEvent.duration;
           _notifyPositionUpdate();
@@ -37,26 +38,25 @@ final class AudioPlayer {
           _position = positionEvent.position;
           _notifyPositionUpdate();
         case BufferingEvent bufferingEvent:
-          if(_duration.inMilliseconds == 0) break;
-          _buffered = Duration(microseconds: (_duration.inMicroseconds * bufferingEvent.percent).round());
+          if (_duration.inMilliseconds == 0) break;
+          _buffered = Duration(
+              microseconds:
+                  (_duration.inMicroseconds * bufferingEvent.percent).round());
           _notifyPositionUpdate();
         case VolumeEvent volumeEvent:
-          _linearVolume = pow(volumeEvent.value, 1.0/3).toDouble();
+          _linearVolume = pow(volumeEvent.value, 1.0 / 3).toDouble();
           volumeNotifier.value = _linearVolume;
         case UnknownEvent():
-          // TODO: Handle this case.
+        // TODO: Handle this case.
       }
     });
   }
 
   void _notifyPositionUpdate() {
-    if(_isPositionUpdateStopped) return;
+    if (_isPositionUpdateStopped) return;
 
     trackDurationNotifier.value = TrackDurationState(
-      position: _position,
-      buffered: _buffered,
-      duration: _duration
-    );
+        position: _position, buffered: _buffered, duration: _duration);
   }
 
   Future<void> play() => _platformPlayer.play();
@@ -66,6 +66,7 @@ final class AudioPlayer {
     _position = Duration.zero;
     playingStateNotifier.value = PlayingState.idle;
   }
+
   Future<void> seek(Duration position) async {
     _isPositionUpdateStopped = true;
     await _platformPlayer.seek(position);
@@ -79,7 +80,7 @@ final class AudioPlayer {
   double _linearVolume = 1;
   double get volume => _linearVolume;
 
-  Future<void> setVolume(double value){
+  Future<void> setVolume(double value) {
     _linearVolume = value;
     value = pow(value, 3).toDouble();
 

@@ -49,8 +49,10 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
                 ),
               ),
               LikeButton(
-                likeCondition: () => appState.isLikedArtist(widget.bestResult.artist.id),
-                onLikeClicked: () => appState.likeArtist(widget.bestResult.artist.id),
+                likeCondition: () =>
+                    appState.isLikedArtist(widget.bestResult.artist.id),
+                onLikeClicked: () =>
+                    appState.likeArtist(widget.bestResult.artist.id),
               ),
               const Icon(Icons.chevron_right)
             ],
@@ -67,7 +69,8 @@ class _BestResultArtistCardState extends State<BestResultArtistCard> {
       ),
       onTap: () {
         NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ArtistPage(artistId: widget.bestResult.artist.id),
+          pageBuilder: (_, __, ___) =>
+              ArtistPage(artistId: widget.bestResult.artist.id),
           reverseTransitionDuration: Duration.zero,
         ));
       },

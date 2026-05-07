@@ -16,10 +16,9 @@ class PodcastsPage extends StatelessWidget {
 
   PodcastsPage({super.key, required this.items}) {
     for (Object item in items) {
-      if(item is Podcast) {
+      if (item is Podcast) {
         podcasts.add(item);
-      }
-      else if(item is PodcastEpisode) {
+      } else if (item is PodcastEpisode) {
         podcastEpisodes.add(item);
       }
     }
@@ -30,30 +29,26 @@ class PodcastsPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return MultiSliver(
-      children: [
-        SliverGrid(
+    return MultiSliver(children: [
+      SliverGrid(
           gridDelegate: CustomSliverGridDelegateExtent(
-            crossAxisSpacing: 12,
-            maxCrossAxisExtent: _itemWidth,
-            height: _itemWidth + 60
-          ),
+              crossAxisSpacing: 12,
+              maxCrossAxisExtent: _itemWidth,
+              height: _itemWidth + 60),
           delegate: SliverChildBuilderDelegate(
-            (_, index) => PodcastCard(podcasts[index], _itemWidth),
-            childCount: podcasts.length
-          )
-        ),
-        if(podcastEpisodes.isNotEmpty) SliverToBoxAdapter(
-          child: Text(
-            l10n.podcast_episodes,
-            style: theme.textTheme.titleLarge,
-          )
-        ),
-        if (podcastEpisodes.isNotEmpty) SliverTrackList(
+              (_, index) => PodcastCard(podcasts[index], _itemWidth),
+              childCount: podcasts.length)),
+      if (podcastEpisodes.isNotEmpty)
+        SliverToBoxAdapter(
+            child: Text(
+          l10n.podcast_episodes,
+          style: theme.textTheme.titleLarge,
+        )),
+      if (podcastEpisodes.isNotEmpty)
+        SliverTrackList(
           playContext: podcastEpisodes.first.albums.first,
           tracks: podcastEpisodes,
         ),
-      ]
-    );
+    ]);
   }
 }

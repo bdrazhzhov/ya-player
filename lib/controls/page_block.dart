@@ -38,7 +38,10 @@ class PageBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
       children: [
-        if (block.type == 'chart') ...[_buildEntityTitle(context), _createChartBlock()] else
+        if (block.type == 'chart') ...[
+          _buildEntityTitle(context),
+          _createChartBlock()
+        ] else
           HorizontalListWithTitle(
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

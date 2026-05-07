@@ -11,7 +11,7 @@ class YPlayerState {
       : playerQueue = YPlayerQueue.fromJson(json['player_queue']),
         status = PlayerStateStatus.fromJson(json['status']);
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'player_queue': playerQueue.toJson(),
       'status': status.toJson(),
@@ -54,12 +54,14 @@ class YPlayerQueue {
             ? AddingOptions.fromJson(json['adding_options_optional'])
             : null,
         options = QueueOptions.fromJson(json['options']),
-        playableList = (json['playable_list'] as List).map((e) => Playable.fromJson(e)).toList(),
+        playableList = (json['playable_list'] as List)
+            .map((e) => Playable.fromJson(e))
+            .toList(),
         queue = QueueInfo.fromJson(json['queue']),
         version = Version.fromJson(json['version']);
 
-  Map<String,dynamic> toJson() {
-    Map<String,dynamic> json = {
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {
       'current_playable_index': currentPlayableIndex,
       'entity_context': entityContext,
       'entity_id': entityId,
@@ -70,11 +72,11 @@ class YPlayerQueue {
       'version': version.toJson(),
     };
 
-    if(addingOptions != null) {
+    if (addingOptions != null) {
       json['adding_options_optional'] = addingOptions!.toJson();
     }
 
-    if(queue != null) {
+    if (queue != null) {
       json['queue'] = queue!.toJson();
     }
 
@@ -90,7 +92,7 @@ class AddingOptions {
   AddingOptions.fromJson(Map<String, dynamic> json)
       : radioOptions = RadioOptions.fromJson(json['radio_options']);
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'radio_options': radioOptions.toJson(),
     };
@@ -102,9 +104,10 @@ class RadioOptions {
 
   RadioOptions({required this.sessionId});
 
-  RadioOptions.fromJson(Map<String, dynamic> json) : sessionId = json['session_id'];
+  RadioOptions.fromJson(Map<String, dynamic> json)
+      : sessionId = json['session_id'];
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'session_id': sessionId,
     };
@@ -116,9 +119,10 @@ class QueueOptions {
 
   QueueOptions({required this.repeatMode});
 
-  QueueOptions.fromJson(Map<String, dynamic> json) : repeatMode = json['repeat_mode'];
+  QueueOptions.fromJson(Map<String, dynamic> json)
+      : repeatMode = json['repeat_mode'];
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'repeat_mode': repeatMode,
     };
@@ -151,25 +155,27 @@ class Playable {
         playableId = json['playable_id'],
         playableType = json['playable_type'],
         title = json['title'],
-        trackInfo = json['track_info'] != null ? PlayableTrackInfo.fromJson(json['track_info']) : null;
+        trackInfo = json['track_info'] != null
+            ? PlayableTrackInfo.fromJson(json['track_info'])
+            : null;
 
-  Map<String,dynamic> toJson() {
-    Map<String,dynamic> json = {
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {
       'from': from,
       'playable_id': playableId,
       'playable_type': playableType,
       'title': title,
     };
 
-    if(albumId != null) {
+    if (albumId != null) {
       json['album_id_optional'] = albumId;
     }
 
-    if(coverUrl != null) {
+    if (coverUrl != null) {
       json['cover_url_optional'] = coverUrl;
     }
 
-    if(trackInfo != null) {
+    if (trackInfo != null) {
       json['track_info'] = trackInfo!.toJson();
     }
 
@@ -182,9 +188,10 @@ class PlayableTrackInfo {
 
   PlayableTrackInfo({required this.trackSourceKey});
 
-  PlayableTrackInfo.fromJson(Map<String, dynamic> json) : trackSourceKey = json['track_source_key'];
+  PlayableTrackInfo.fromJson(Map<String, dynamic> json)
+      : trackSourceKey = json['track_source_key'];
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'track_source_key': trackSourceKey,
     };
@@ -199,7 +206,7 @@ class QueueInfo {
   QueueInfo.fromJson(Map<String, dynamic> json)
       : waveQueue = WaveQueue.fromJson(json['wave_queue']);
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'wave_queue': waveQueue.toJson(),
     };
@@ -224,11 +231,12 @@ class WaveQueue {
             .map((e) => Playable.fromJson(e))
             .toList();
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'entity_options': entityOptions.toJson(),
       'live_playable_index': livePlayableIndex,
-      'recommended_playable_list': recommendedPlayableList.map((e) => e.toJson()).toList(),
+      'recommended_playable_list':
+          recommendedPlayableList.map((e) => e.toJson()).toList(),
     };
   }
 }
@@ -247,7 +255,8 @@ class EntityOptions {
         ? RadioOptions.fromJson(json['wave_entity_optional'])
         : null;
     final List<TrackSource> trackSources = [];
-    json['track_sources']?.forEach((e) => trackSources.add(TrackSource.fromJson(e)));
+    json['track_sources']
+        ?.forEach((e) => trackSources.add(TrackSource.fromJson(e)));
 
     return EntityOptions(
       trackSources: trackSources,
@@ -255,7 +264,7 @@ class EntityOptions {
     );
   }
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'track_sources': trackSources.map((e) => e.toJson()).toList(),
       'wave_entity_optional': waveEntity?.toJson(),
@@ -272,19 +281,23 @@ class TrackSource {
 
   TrackSource.fromJson(Map<String, dynamic> json)
       : key = json['key'],
-        waveSource = json['wave_source'] != null ? WaveSource.fromJson(json['wave_source']) : null,
-        phonotekaSource = json['phonoteka_source'] != null ? PhonotekaSource.fromJson(json['phonoteka_source']) : null;
+        waveSource = json['wave_source'] != null
+            ? WaveSource.fromJson(json['wave_source'])
+            : null,
+        phonotekaSource = json['phonoteka_source'] != null
+            ? PhonotekaSource.fromJson(json['phonoteka_source'])
+            : null;
 
-  Map<String,dynamic> toJson() {
-    Map<String,dynamic> json = {
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {
       'key': key,
     };
 
-    if(waveSource != null) {
+    if (waveSource != null) {
       json['wave_source'] = waveSource!.toJson();
     }
 
-    if(phonotekaSource != null) {
+    if (phonotekaSource != null) {
       json['phonoteka_source'] = phonotekaSource!.toJson();
     }
 
@@ -294,7 +307,7 @@ class TrackSource {
 
 class WaveSource {
   WaveSource.fromJson(Map<String, dynamic> json);
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {};
   }
 }
@@ -306,44 +319,44 @@ class PhonotekaSource {
   final PhonotekaSourceType type;
   final String id;
 
-  PhonotekaSource({required this.entityContext, required this.type, required this.id,});
+  PhonotekaSource({
+    required this.entityContext,
+    required this.type,
+    required this.id,
+  });
 
   factory PhonotekaSource.fromJson(Map<String, dynamic> json) {
     var type = PhonotekaSourceType.unknown;
     String id = '';
-    if(json['playlist_id'] != null) {
+    if (json['playlist_id'] != null) {
       type = PhonotekaSourceType.playlist;
       id = json['playlist_id']['id'];
-    }
-    else if(json['album_id'] != null) {
+    } else if (json['album_id'] != null) {
       type = PhonotekaSourceType.album;
       id = json['album_id']['id'];
-    }
-    else if(json['artist_id'] != null) {
+    } else if (json['artist_id'] != null) {
       type = PhonotekaSourceType.artist;
       id = json['artist_id']['id'];
-    }
-    else {
+    } else {
       print('Unknown PhonotekaSource type: $json');
     }
 
-    return PhonotekaSource(entityContext: json['entity_context'], type: type, id: id);
+    return PhonotekaSource(
+        entityContext: json['entity_context'], type: type, id: id);
   }
 
-  Map<String,dynamic> toJson() {
-    Map<String,dynamic> json = {
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = {
       'entity_context': entityContext,
       'type': type.toString(),
       'id': id,
     };
 
-    if(type == PhonotekaSourceType.playlist) {
+    if (type == PhonotekaSourceType.playlist) {
       json['playlist_id'] = {'id': id};
-    }
-    else if(type == PhonotekaSourceType.album) {
+    } else if (type == PhonotekaSourceType.album) {
       json['album_id'] = {'id': id};
-    }
-    else if(type == PhonotekaSourceType.artist) {
+    } else if (type == PhonotekaSourceType.artist) {
       json['artist_id'] = {'id': id};
     }
 
@@ -373,7 +386,7 @@ class PlayerStateStatus {
         progress = Duration(milliseconds: int.parse(json['progress_ms'])),
         version = Version.fromJson(json['version']);
 
-  Map<String,dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'duration_ms': duration.inMilliseconds,
       'paused': isPaused,

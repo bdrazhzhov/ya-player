@@ -58,7 +58,9 @@ class RadioSession extends Equatable implements ContextId {
         batchId = json['batchId'],
         isPumpkin = json['pumpkin'],
         isTerminated = json['terminated'],
-        acceptedSeeds = (json['acceptedSeeds'] as List).map((e) => RadioSeed.fromJson(e)).toList(),
+        acceptedSeeds = (json['acceptedSeeds'] as List)
+            .map((e) => RadioSeed.fromJson(e))
+            .toList(),
         descriptionSeed = RadioSeed.fromJson(json['descriptionSeed']),
         sequence = (json['sequence'] as List)
             .map((e) => SequenceEntry.fromJson(e, json['batchId']))

@@ -27,7 +27,8 @@ class SleepInhibitor {
   Future<void> unblockSleep() async {
     if (_blockCookie == null) return;
 
-    await _inhibitorObject.callMethod(interfaceName, 'UnInhibit', [_blockCookie!]);
+    await _inhibitorObject
+        .callMethod(interfaceName, 'UnInhibit', [_blockCookie!]);
 
     _blockCookie = null;
   }

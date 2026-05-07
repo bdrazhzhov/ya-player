@@ -129,7 +129,9 @@ class MainMenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: MouseRegion(
-        cursor: !disabled && onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+        cursor: !disabled && onTap != null
+            ? SystemMouseCursors.click
+            : MouseCursor.defer,
         child: Row(
           children: [
             SizedBox(width: 42, height: 42, child: Center(child: icon)),

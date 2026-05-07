@@ -11,16 +11,19 @@ class Preferences {
   Preferences(this._prefs);
 
   String? get authToken => _prefs.getString('authToken');
-  Future<void> setAuthToken(String value) async => await _prefs.setString('authToken', value);
+  Future<void> setAuthToken(String value) async =>
+      await _prefs.setString('authToken', value);
 
   int? get uid => _prefs.getInt('uid');
   Future<void> setUid(int value) async => await _prefs.setInt('uid', value);
 
   int? get expiresIn => _prefs.getInt('expiresAt');
-  Future<void> setExpiresAt(int value) async => await _prefs.setInt('expiresAt', value);
+  Future<void> setExpiresAt(int value) async =>
+      await _prefs.setInt('expiresAt', value);
 
   double get volume => _prefs.getDouble('volume')?.clamp(0, 1) ?? 1;
-  Future<void> setVolume(double value) async => await _prefs.setDouble('volume', value);
+  Future<void> setVolume(double value) async =>
+      await _prefs.setDouble('volume', value);
 
   List<String> get likedTracks {
     return (_prefs.getString('likedTracks') ?? '').split(',');

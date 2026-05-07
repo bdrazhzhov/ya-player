@@ -24,44 +24,40 @@ class HistoryPage extends StatelessWidget {
         FutureBuilder(
           future: _musicApi.searchHistory(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if(!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+            if (!snapshot.hasData ||
+                snapshot.connectionState == ConnectionState.waiting) {
               return SliverToBoxAdapter(child: const Text('Loading...'));
             }
 
             final items = snapshot.data;
 
-            if(items.isEmpty) {
+            if (items.isEmpty) {
               return SliverToBoxAdapter(child: const Text('Nothing found'));
             }
 
             return SliverGrid(
-              gridDelegate: CustomSliverGridDelegateExtent(
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                maxCrossAxisExtent: 680,
-                height: 60
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (_, index) => buildItem(items[index]),
-                childCount: items.length
-              )
-            );
+                gridDelegate: CustomSliverGridDelegateExtent(
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    maxCrossAxisExtent: 680,
+                    height: 60),
+                delegate: SliverChildBuilderDelegate(
+                    (_, index) => buildItem(items[index]),
+                    childCount: items.length));
           },
         ),
         SliverPadding(
           sliver: SliverToBoxAdapter(
-            child: OutlinedButton(
-              onPressed: (){},
-              child: const Text('Clear history')
-            )
-          ), padding: EdgeInsets.only(top: 50),
+              child: OutlinedButton(
+                  onPressed: () {}, child: const Text('Clear history'))),
+          padding: EdgeInsets.only(top: 50),
         ),
       ],
     );
   }
 
   Widget buildItem(Object item) {
-    switch(item) {
+    switch (item) {
       case Track():
         return ListTile(
           minTileHeight: 60,
@@ -104,15 +100,14 @@ class HistoryPage extends StatelessWidget {
         return ListTile(
           minTileHeight: 60,
           leading: YandexImage(
-            width: 50,
-            uriTemplate: item.coverUri,
-            borderRadius: 4
-          ),
+              width: 50, uriTemplate: item.coverUri, borderRadius: 4),
           title: Text(item.name),
-          subtitle: Row(children: [
-            const Icon(Icons.favorite_border, size: 14),
-            Text(' ${item.likesCount}'),
-          ],),
+          subtitle: Row(
+            children: [
+              const Icon(Icons.favorite_border, size: 14),
+              Text(' ${item.likesCount}'),
+            ],
+          ),
           trailing: const Icon(Icons.arrow_forward_ios_outlined),
         );
       default:

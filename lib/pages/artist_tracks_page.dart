@@ -11,7 +11,8 @@ import 'page_base.dart';
 class ArtistTracksPage extends StatelessWidget {
   final Artist artist;
   final _musicApi = getIt<MusicApi>();
-  late final Future<List<Track>> tracksFuture = _musicApi.artistPopularTracks(artist.id);
+  late final Future<List<Track>> tracksFuture =
+      _musicApi.artistPopularTracks(artist.id);
 
   ArtistTracksPage({super.key, required this.artist});
 
@@ -22,9 +23,8 @@ class ArtistTracksPage extends StatelessWidget {
 
     return FutureBuilder<List<Track>>(
         future: tracksFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<Track>> snapshot){
-          if(snapshot.hasData)
-          {
+        builder: (BuildContext context, AsyncSnapshot<List<Track>> snapshot) {
+          if (snapshot.hasData) {
             final tracks = snapshot.data!;
             return PageBase(
               slivers: [
@@ -59,12 +59,9 @@ class ArtistTracksPage extends StatelessWidget {
                 )
               ],
             );
-          }
-          else
-          {
+          } else {
             return const PageLoadingIndicator();
           }
-        }
-    );
+        });
   }
 }

@@ -86,7 +86,8 @@ class ControlsBar extends StatelessWidget {
             ValueListenableBuilder(
               valueListenable: _appState.trackNotifier,
               builder: (_, Track? track, __) {
-                if (track?.type == TrackType.podcast || track?.type == TrackType.audiobook) {
+                if (track?.type == TrackType.podcast ||
+                    track?.type == TrackType.audiobook) {
                   return PlayingSpeedButton();
                 } else {
                   return SizedBox.shrink();

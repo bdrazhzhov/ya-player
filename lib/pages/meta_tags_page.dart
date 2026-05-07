@@ -20,8 +20,7 @@ class MetaTagsPage extends StatelessWidget {
     return FutureBuilder(
       future: _metatagsFuture,
       builder: (_, AsyncSnapshot<MetaTags> snapshot) {
-        if(snapshot.hasData)
-        {
+        if (snapshot.hasData) {
           final metatags = snapshot.data!;
 
           return PageBase(
@@ -35,7 +34,6 @@ class MetaTagsPage extends StatelessWidget {
                   ),
                 ),
               ),
-
             ],
           );
         }

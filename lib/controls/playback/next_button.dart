@@ -16,7 +16,11 @@ class NextButton extends StatelessWidget {
       valueListenable: _playerState.canNextNotifier,
       builder: (_, isEnabled, __) {
         return IconButton(
-          onPressed: isEnabled ? () { getIt<Player>().next(); } : null,
+          onPressed: isEnabled
+              ? () {
+                  getIt<Player>().next();
+                }
+              : null,
           icon: const FaIcon(FontAwesomeIcons.forwardStep),
           iconSize: 20,
         );

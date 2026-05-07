@@ -66,7 +66,8 @@ class PlaylistFlexibleSpace extends StatelessWidget {
       duration += '${playlist.duration.inHours} ${l10n.date_hoursShort}';
     }
     if (playlist.duration.inMinutes > 0) {
-      final remainingMinutes = playlist.duration.inMinutes - playlist.duration.inHours * 60;
+      final remainingMinutes =
+          playlist.duration.inMinutes - playlist.duration.inHours * 60;
       duration += ' $remainingMinutes ${l10n.date_minutesShort}';
     }
     return duration;

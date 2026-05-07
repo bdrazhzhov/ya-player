@@ -22,27 +22,28 @@ class AlbumPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<AlbumWithTracks>(
-        future: _albumInfo,
-        builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot) {
-          if (snapshot.hasData) {
-            final albumWithTracks = snapshot.data!;
-            return PageBase(
-              flexibleSpace: AlbumFlexibleSpace(albumWithTracks: albumWithTracks),
-              slivers: [
-                SliverPersistentHeader(
-                  delegate: TracksHeader(),
-                  pinned: true,
-                ),
-                SliverTrackList(
-                  playContext: albumWithTracks.album,
-                  tracks: albumWithTracks.tracks,
-                  albumMode: true,
-                ),
-              ],
-            );
-          } else {
-            return const PageLoadingIndicator();
-          }
-        });
+      future: _albumInfo,
+      builder: (BuildContext context, AsyncSnapshot<AlbumWithTracks> snapshot) {
+        if (snapshot.hasData) {
+          final albumWithTracks = snapshot.data!;
+          return PageBase(
+            flexibleSpace: AlbumFlexibleSpace(albumWithTracks: albumWithTracks),
+            slivers: [
+              SliverPersistentHeader(
+                delegate: TracksHeader(),
+                pinned: true,
+              ),
+              SliverTrackList(
+                playContext: albumWithTracks.album,
+                tracks: albumWithTracks.tracks,
+                albumMode: true,
+              ),
+            ],
+          );
+        } else {
+          return const PageLoadingIndicator();
+        }
+      },
+    );
   }
 }

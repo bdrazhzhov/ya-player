@@ -25,7 +25,8 @@ class PlayerState {
   final canShuffleNotifier = ValueNotifier<bool>(false);
   final canRepeatNotifier = ValueNotifier<bool>(false);
   final canSeekNotifier = ValueNotifier<bool>(false);
-  final playBackStateNotifier = ValueNotifier<PlayBackState>(PlayBackState.stopped);
+  final playBackStateNotifier =
+      ValueNotifier<PlayBackState>(PlayBackState.stopped);
   final repeatModeNotifier = ValueNotifier<RepeatMode>(RepeatMode.off);
   final rateNotifier = ValueNotifier<double>(1.0);
   final shuffleNotifier = ValueNotifier<bool>(false);

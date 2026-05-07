@@ -22,7 +22,8 @@ class PlaylistCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         NavKeys.mainNav.currentState!.push(PageRouteBuilder(
-          pageBuilder: (_, __, ___) => PlaylistPage(uid: playlist.uid, kind: playlist.kind),
+          pageBuilder: (_, __, ___) =>
+              PlaylistPage(uid: playlist.uid, kind: playlist.kind),
           reverseTransitionDuration: Duration.zero,
         ));
       },
@@ -36,7 +37,9 @@ class PlaylistCard extends StatelessWidget {
             children: [
               (playlist.image != null && playlist.image!.isNotEmpty)
                   ? YandexImage(
-                      uriTemplate: playlist.image, width: width, borderRadius: _borderRadius)
+                      uriTemplate: playlist.image,
+                      width: width,
+                      borderRadius: _borderRadius)
                   : _buildNoImage(theme),
               Text(
                 HtmlCharacterEntities.decode(playlist.title),
@@ -47,13 +50,16 @@ class PlaylistCard extends StatelessWidget {
               if (playlist.description != null)
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 40),
-                  child: Text(HtmlCharacterEntities.decode(playlist.description!),
+                  child: Text(
+                      HtmlCharacterEntities.decode(playlist.description!),
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(color: theme.colorScheme.outline)),
                 ),
-              Text(AppLocalizations.of(context)!.tracks_count(playlist.tracksCount),
+              Text(
+                  AppLocalizations.of(context)!
+                      .tracks_count(playlist.tracksCount),
                   style: TextStyle(color: theme.colorScheme.outline))
             ],
           ),

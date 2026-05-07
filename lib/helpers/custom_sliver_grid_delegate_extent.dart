@@ -14,10 +14,11 @@ class CustomSliverGridDelegateExtent extends SliverGridDelegate {
     required this.height,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
-  }) : assert(maxCrossAxisExtent > 0),
+  })  : assert(maxCrossAxisExtent > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         assert(height > 0);
+
   /// The maximum extent of tiles in the cross axis.
   ///
   /// This delegate will select a cross-axis extent for the tiles that is as
@@ -50,7 +51,9 @@ class CustomSliverGridDelegateExtent extends SliverGridDelegate {
   @override
   SliverGridLayout getLayout(SliverConstraints constraints) {
     assert(_debugAssertIsValid(constraints.crossAxisExtent));
-    int crossAxisCount = (constraints.crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing)).ceil();
+    int crossAxisCount =
+        (constraints.crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing))
+            .ceil();
     // Ensure a minimum count of 1, can be zero and result in an infinite extent
     // below when the window size is 0.
     crossAxisCount = max(1, crossAxisCount);
@@ -71,9 +74,9 @@ class CustomSliverGridDelegateExtent extends SliverGridDelegate {
 
   @override
   bool shouldRelayout(CustomSliverGridDelegateExtent oldDelegate) {
-    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent
-        || oldDelegate.mainAxisSpacing != mainAxisSpacing
-        || oldDelegate.crossAxisSpacing != crossAxisSpacing
-        || oldDelegate.height != height;
+    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent ||
+        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
+        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.height != height;
   }
 }

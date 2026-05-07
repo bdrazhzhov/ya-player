@@ -34,7 +34,8 @@ class _BestResultAlbumCoverState extends State<BestResultAlbumCover> {
   @override
   void initState() {
     super.initState();
-    albumOperation = CancelableOperation.fromFuture(musicApi.albumWithTracks(widget.bestResult.id));
+    albumOperation = CancelableOperation.fromFuture(
+        musicApi.albumWithTracks(widget.bestResult.id));
     albumOperation?.value.then((album) {
       albumWithTracks = album;
       updateState();

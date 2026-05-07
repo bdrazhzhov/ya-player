@@ -18,10 +18,8 @@ class AlbumsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = getIt<AppState>();
 
-    return PageBase(
-      title: AppLocalizations.of(context)!.page_albums,
-      slivers: [
-        ValueListenableBuilder<List<Album>>(
+    return PageBase(title: AppLocalizations.of(context)!.page_albums, slivers: [
+      ValueListenableBuilder<List<Album>>(
           valueListenable: appState.albumsNotifier,
           builder: (_, albums, __) {
             return SliverLayoutBuilder(
@@ -29,16 +27,17 @@ class AlbumsPage extends StatelessWidget {
                 final constraints = sliverConstraints.asBoxConstraints();
                 final spacing = 12.0;
 
-                if(constraints.maxWidth < spacing * (albums.length - 1) + albums.length * _itemWidth)
-                {
+                if (constraints.maxWidth <
+                    spacing * (albums.length - 1) +
+                        albums.length * _itemWidth) {
                   return SliverGrid.builder(
                     itemCount: albums.length,
                     gridDelegate: CustomSliverGridDelegateExtent(
                         crossAxisSpacing: spacing,
                         maxCrossAxisExtent: _itemWidth,
-                        height: _itemWidth + 60
-                    ),
-                    itemBuilder: (_, index) => AlbumCard(albums[index], _itemWidth),
+                        height: _itemWidth + 60),
+                    itemBuilder: (_, index) =>
+                        AlbumCard(albums[index], _itemWidth),
                   );
                 }
 
@@ -46,14 +45,14 @@ class AlbumsPage extends StatelessWidget {
                   child: Wrap(
                     spacing: spacing,
                     runSpacing: spacing,
-                    children: albums.map((album) => AlbumCard(album, _itemWidth)).toList(),
+                    children: albums
+                        .map((album) => AlbumCard(album, _itemWidth))
+                        .toList(),
                   ),
                 );
               },
             );
-          }
-        )
-      ]
-    );
+          })
+    ]);
   }
 }

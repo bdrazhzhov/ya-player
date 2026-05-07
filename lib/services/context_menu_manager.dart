@@ -10,7 +10,7 @@ final class ContextMenuManager {
   }
 
   Future<dynamic> _methodCallHandler(MethodCall methodCall) async {
-    switch(methodCall.method) {
+    switch (methodCall.method) {
       case 'onMenuItemClicked':
         final [menuIndex, itemIndex] = methodCall.arguments as List<int>;
         _itemClickHandlers[menuIndex]!(itemIndex);
@@ -24,7 +24,8 @@ final class ContextMenuManager {
     return _platform.invokeMethod('showMenu', index);
   }
 
-  Future<int> createMenu(List<Map<String, dynamic>> menuItems, void Function(int) itemClickHandler) async {
+  Future<int> createMenu(List<Map<String, dynamic>> menuItems,
+      void Function(int) itemClickHandler) async {
     final index = await _platform.invokeMethod('createMenu', menuItems);
     _itemClickHandlers[index] = itemClickHandler;
 

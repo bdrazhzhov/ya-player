@@ -26,7 +26,9 @@ class YDevice {
         volume = json['volume'],
         capabilities = DeviceCapabilities.fromJson(json['capabilities']),
         info = DeviceInfo.fromJson(json['info']),
-        session = json['session'] != null ? DeviceSession.fromJson(json['session']) : null,
+        session = json['session'] != null
+            ? DeviceSession.fromJson(json['session'])
+            : null,
         volumeInfo = VolumeInfo.fromJson(json['volume_info']),
         isShadow = json['is_shadow'];
 
@@ -147,7 +149,8 @@ class VolumeInfo {
 
   VolumeInfo.fromJson(Map<String, dynamic> json)
       : volume = json['volume'],
-        version = json['version'] != null ? Version.fromJson(json['version']) : null;
+        version =
+            json['version'] != null ? Version.fromJson(json['version']) : null;
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {

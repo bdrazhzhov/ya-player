@@ -12,7 +12,8 @@ class StationSettingsWidget extends StatelessWidget {
   final _appState = getIt<AppState>();
   final Function()? onCloseRequested;
 
-  StationSettingsWidget({super.key, required this.station, this.onCloseRequested});
+  StationSettingsWidget(
+      {super.key, required this.station, this.onCloseRequested});
 
   @override
   Widget build(BuildContext context) {

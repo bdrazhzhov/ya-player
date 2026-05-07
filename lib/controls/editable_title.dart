@@ -19,8 +19,10 @@ class _EditableTitleState extends State<EditableTitle> {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle? style =
-        Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold);
+    final TextStyle? style = Theme.of(context)
+        .textTheme
+        .displayMedium
+        ?.copyWith(fontWeight: FontWeight.bold);
 
     if (widget.onSubmitted == null) {
       return buildTitleText(style);
@@ -64,7 +66,8 @@ class _EditableTitleState extends State<EditableTitle> {
   }
 
   Widget buildTitleText(TextStyle? style) {
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
       final effectiveStyle = style ?? DefaultTextStyle.of(context).style;
 
       final tp = TextPainter(
@@ -75,9 +78,10 @@ class _EditableTitleState extends State<EditableTitle> {
       );
 
       tp.layout(maxWidth: constraints.maxWidth);
-      final textWidget = Text(controller.text, style: effectiveStyle, overflow: TextOverflow.ellipsis);
+      final textWidget = Text(controller.text,
+          style: effectiveStyle, overflow: TextOverflow.ellipsis);
 
-      if(tp.didExceedMaxLines) {
+      if (tp.didExceedMaxLines) {
         return Tooltip(
           message: controller.text,
           child: textWidget,
@@ -100,7 +104,8 @@ class _EditableTitleState extends State<EditableTitle> {
   }
 
   KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape) {
       cancelEdit();
       return KeyEventResult.handled;
     }

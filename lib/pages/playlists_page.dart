@@ -63,7 +63,8 @@ class PlaylistsPage extends StatelessWidget {
                 final spacing = 12.0;
 
                 if (constraints.maxWidth <
-                    spacing * (playlists.length - 1) + playlists.length * _itemWidth) {
+                    spacing * (playlists.length - 1) +
+                        playlists.length * _itemWidth) {
                   return SliverGrid.builder(
                     itemCount: playlists.length,
                     gridDelegate: CustomSliverGridDelegateExtent(
@@ -71,7 +72,8 @@ class PlaylistsPage extends StatelessWidget {
                       maxCrossAxisExtent: _itemWidth,
                       height: _itemWidth + 60,
                     ),
-                    itemBuilder: (_, index) => PlaylistCard(playlists[index], width: _itemWidth),
+                    itemBuilder: (_, index) =>
+                        PlaylistCard(playlists[index], width: _itemWidth),
                   );
                 }
 
@@ -80,7 +82,8 @@ class PlaylistsPage extends StatelessWidget {
                     spacing: spacing,
                     runSpacing: spacing,
                     children: playlists
-                        .map((playlist) => PlaylistCard(playlist, width: _itemWidth))
+                        .map((playlist) =>
+                            PlaylistCard(playlist, width: _itemWidth))
                         .toList(),
                   ),
                 );

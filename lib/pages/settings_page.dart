@@ -23,40 +23,39 @@ class _SettingsPageState extends State<SettingsPage> {
     return PageBase(
       title: l10n.page_settings,
       slivers: [
-        SliverList.list(
-          children: [
-            ListTile(
-              title: Text(l10n.settings_closeToTray),
-              trailing: ValueListenableBuilder(
-                valueListenable: appState.closeToTrayEnabledNotifier,
-                builder: (_, bool isEnabled, __) {
-                  return Switch(
-                    value: isEnabled,
-                    onChanged: (bool value) {
-                      appState.closeToTrayEnabledNotifier.value = value;
-                    },
-                  );
-                },
-              ),
-              onTap: () {
-                appState.closeToTrayEnabledNotifier.value = !appState.closeToTrayEnabledNotifier.value;
+        SliverList.list(children: [
+          ListTile(
+            title: Text(l10n.settings_closeToTray),
+            trailing: ValueListenableBuilder(
+              valueListenable: appState.closeToTrayEnabledNotifier,
+              builder: (_, bool isEnabled, __) {
+                return Switch(
+                  value: isEnabled,
+                  onChanged: (bool value) {
+                    appState.closeToTrayEnabledNotifier.value = value;
+                  },
+                );
               },
             ),
-            ListTile(
-              title: Text(l10n.settings_language),
-              trailing: LanguageSelector(),
-              // onTap: () {
-              //
-              // },
-            ),
-            ListTile(
-              title: const Text('About'),
-              // onTap: () {
-              //
-              // },
-            ),
-          ]
-        )
+            onTap: () {
+              appState.closeToTrayEnabledNotifier.value =
+                  !appState.closeToTrayEnabledNotifier.value;
+            },
+          ),
+          ListTile(
+            title: Text(l10n.settings_language),
+            trailing: LanguageSelector(),
+            // onTap: () {
+            //
+            // },
+          ),
+          ListTile(
+            title: const Text('About'),
+            // onTap: () {
+            //
+            // },
+          ),
+        ])
       ],
     );
   }

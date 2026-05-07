@@ -14,7 +14,7 @@ class PromotionCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: (){},
+      onTap: () {},
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: SizedBox(
@@ -29,7 +29,8 @@ class PromotionCard extends StatelessWidget {
                 width: width,
                 borderRadius: 8,
               ),
-              Text(promotion.heading?.toUpperCase() ?? ' ', style: const TextStyle(color: Colors.red)),
+              Text(promotion.heading?.toUpperCase() ?? ' ',
+                  style: const TextStyle(color: Colors.red)),
               Text(
                 promotion.title,
                 style: theme.textTheme.bodyLarge,
@@ -37,7 +38,7 @@ class PromotionCard extends StatelessWidget {
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
               ),
-              if(promotion.subtitle != null)
+              if (promotion.subtitle != null)
                 Text(
                   promotion.subtitle!,
                   style: TextStyle(color: theme.colorScheme.outline),

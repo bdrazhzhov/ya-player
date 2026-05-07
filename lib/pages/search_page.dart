@@ -141,7 +141,8 @@ class _SearchPageState extends State<SearchPage> {
       //   ),
       // );
     } else {
-      final borderColor = filter == null ? theme.colorScheme.primary : Colors.transparent;
+      final borderColor =
+          filter == null ? theme.colorScheme.primary : Colors.transparent;
       items.add(OutlinedButton(
         onPressed: () {
           filter = null;

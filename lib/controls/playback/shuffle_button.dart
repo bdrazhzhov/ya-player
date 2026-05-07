@@ -11,24 +11,21 @@ class ShuffleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: _playerState.canShuffleNotifier,
-      builder: (_, isEnabled, __) {
-        return IconButton(
-          iconSize: 26,
-          onPressed: isEnabled ? _onButtonPress : null,
-          icon: ValueListenableBuilder<bool>(
-            valueListenable: _playerState.shuffleNotifier,
-            builder: (_, bool isEnabled, __) {
-              if(isEnabled) {
-                return const Icon(Icons.shuffle_on_outlined);
-              }
+        valueListenable: _playerState.canShuffleNotifier,
+        builder: (_, isEnabled, __) {
+          return IconButton(
+              iconSize: 26,
+              onPressed: isEnabled ? _onButtonPress : null,
+              icon: ValueListenableBuilder<bool>(
+                  valueListenable: _playerState.shuffleNotifier,
+                  builder: (_, bool isEnabled, __) {
+                    if (isEnabled) {
+                      return const Icon(Icons.shuffle_on_outlined);
+                    }
 
-              return const Icon(Icons.shuffle_outlined);
-            }
-          )
-        );
-      }
-    );
+                    return const Icon(Icons.shuffle_outlined);
+                  }));
+        });
   }
 
   void _onButtonPress() {

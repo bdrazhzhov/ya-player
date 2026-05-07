@@ -42,19 +42,18 @@ class NonMusicAlbum {
 
     final int likesCount = json['likesCount'] ?? 0;
     json = json['album'];
-    
+
     return NonMusicAlbum(
-      id: json['id'].toString(),
-      name: json['title'],
-      coverUri: json['cover']['uri'],
-      artists: artists,
-      likesCount: likesCount
-    );
+        id: json['id'].toString(),
+        name: json['title'],
+        coverUri: json['cover']['uri'],
+        artists: artists,
+        likesCount: likesCount);
   }
 }
 
 Object getHistoryItem(Map<String, dynamic> json) {
-  switch(json['type']) {
+  switch (json['type']) {
     case 'track_item':
       return Track.fromJson(json['data']['track'], '');
     case 'artist_item':

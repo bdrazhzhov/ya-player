@@ -63,7 +63,8 @@ class TrackCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                     child: Text(
                       l10n.track_card_track,
                       style: TextStyle(
@@ -127,8 +128,12 @@ class TrackCard extends StatelessWidget {
 
   Widget _buildAnimatedCover() {
     return MultiValueListenableBuilder(
-      valuesListenable: [_appState.trackNotifier, _playerState.playBackStateNotifier],
-      builder: (BuildContext context, List<ValueNotifier<dynamic>> values, Widget? child) {
+      valuesListenable: [
+        _appState.trackNotifier,
+        _playerState.playBackStateNotifier
+      ],
+      builder: (BuildContext context, List<ValueNotifier<dynamic>> values,
+          Widget? child) {
         final theme = Theme.of(context);
         bool isPlaying = values.get<PlayBackState>() == PlayBackState.playing;
         bool isCurrent = values.get<Track?>() == track;

@@ -11,7 +11,8 @@ import '/services/service_locator.dart';
 class PlayContextButton extends StatefulWidget {
   final Equatable context;
   final Iterable<Track> tracks;
-  const PlayContextButton({super.key, required this.context, required this.tracks});
+  const PlayContextButton(
+      {super.key, required this.context, required this.tracks});
 
   @override
   State<PlayContextButton> createState() => _PlayContextButtonState();
@@ -51,7 +52,8 @@ class _PlayContextButtonState extends State<PlayContextButton> {
   }
 
   void onPlaybackStateChange() {
-    final isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
+    final isPlaying =
+        playerState.playBackStateNotifier.value == PlayBackState.playing;
 
     if (isCurrent) {
       this.isPlaying = isPlaying;

@@ -44,7 +44,8 @@ class _PlayPauseButtonState extends State<PlayPauseButton> {
   void onStateChange() {
     if (appState.trackNotifier.value != widget.track) return;
 
-    isPlaying = playerState.playBackStateNotifier.value == PlayBackState.playing;
+    isPlaying =
+        playerState.playBackStateNotifier.value == PlayBackState.playing;
     setState(() {});
   }
 }

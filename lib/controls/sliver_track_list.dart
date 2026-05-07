@@ -61,8 +61,8 @@ class SliverTrackList extends StatelessWidget {
             final item = tracks.removeAt(oldIndex);
             tracks.insert(newIndex, item);
 
-            playlist =
-                await getIt<MusicApi>().movePlaylistTracks(playlist, [track], oldIndex, newIndex);
+            playlist = await getIt<MusicApi>()
+                .movePlaylistTracks(playlist, [track], oldIndex, newIndex);
             getIt<AppState>().requestPlaylists();
           },
         );

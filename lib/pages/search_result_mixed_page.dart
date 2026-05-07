@@ -25,8 +25,10 @@ class SearchResultMixedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _musicApi.searchMixed(text: text, filter: filter),
-      builder: (BuildContext context, AsyncSnapshot<SearchResultMixed> snapshot) {
-        if (!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+      builder:
+          (BuildContext context, AsyncSnapshot<SearchResultMixed> snapshot) {
+        if (!snapshot.hasData ||
+            snapshot.connectionState == ConnectionState.waiting) {
           return SliverToBoxAdapter(child: const Text('Searching...'));
         }
 
@@ -38,11 +40,13 @@ class SearchResultMixedPage extends StatelessWidget {
 
         switch (snapshot.data!.filter) {
           case null:
-            return SearchTopPage(items: items, bestResults: snapshot.data!.bestResults);
+            return SearchTopPage(
+                items: items, bestResults: snapshot.data!.bestResults);
           case SearchFilter.artist:
             return buildResultsWidget(items);
           case SearchFilter.track:
-            return SliverToBoxAdapter(child: const Text('Is not implemented yet'));
+            return SliverToBoxAdapter(
+                child: const Text('Is not implemented yet'));
           // return SliverTrackList(
           //   tracks: items.map((i) => i as Track).toList(),
           // );
@@ -65,8 +69,11 @@ class SearchResultMixedPage extends StatelessWidget {
 
     return SliverGrid(
         gridDelegate: CustomSliverGridDelegateExtent(
-            crossAxisSpacing: 12, maxCrossAxisExtent: itemWidth, height: itemWidth + 60),
-        delegate: SliverChildBuilderDelegate((_, index) => buildResultItem(data[index], itemWidth),
+            crossAxisSpacing: 12,
+            maxCrossAxisExtent: itemWidth,
+            height: itemWidth + 60),
+        delegate: SliverChildBuilderDelegate(
+            (_, index) => buildResultItem(data[index], itemWidth),
             childCount: data.length));
   }
 

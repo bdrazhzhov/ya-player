@@ -20,7 +20,7 @@ class _CreatePlaylistButtonState extends State<CreatePlaylistButton> {
 
   @override
   Widget build(BuildContext context) {
-    if(isCreating) {
+    if (isCreating) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: CircularProgressIndicator(),
@@ -33,17 +33,18 @@ class _CreatePlaylistButtonState extends State<CreatePlaylistButton> {
       tooltip: AppLocalizations.of(context)!.playlist_create,
     );
   }
-  
+
   void createPlaylist() async {
     isCreating = true;
     setState(() {});
 
-    final Playlist playlist = await getIt<MusicApi>().createPlaylist('Новый плейлист');
+    final Playlist playlist =
+        await getIt<MusicApi>().createPlaylist('Новый плейлист');
     getIt<AppState>().requestPlaylists();
 
     isCreating = false;
     setState(() {});
 
-    if(widget.onCreated != null) widget.onCreated!(playlist);
+    if (widget.onCreated != null) widget.onCreated!(playlist);
   }
 }

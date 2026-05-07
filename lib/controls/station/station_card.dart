@@ -24,16 +24,15 @@ class StationCard extends StatelessWidget {
       child: Column(
         children: [
           Flexible(
-            child: StationCircle(
-              dimension: width,
-              imageDimension: 150 / 1.3,
-              imageSourceDimension: 150,
-              station: station
-            )
-          ),
+              child: StationCircle(
+                  dimension: width,
+                  imageDimension: 150 / 1.3,
+                  imageSourceDimension: 150,
+                  station: station)),
           Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 10),
-            child: Text(station.name,
+            child: Text(
+              station.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           )

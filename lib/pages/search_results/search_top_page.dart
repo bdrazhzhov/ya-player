@@ -22,7 +22,8 @@ class SearchTopPage extends StatelessWidget {
   final Iterable<Object> bestResults;
   final double _itemWidth = 200;
 
-  const SearchTopPage({super.key, required this.items, required this.bestResults});
+  const SearchTopPage(
+      {super.key, required this.items, required this.bestResults});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,8 @@ class SearchTopPage extends StatelessWidget {
                 } else if (result is BestResultRecentRelease) {
                   return BestResultRecentReleaseCard(bestResult: result);
                 } else {
-                  return Text('Unknown best result type: ${result.runtimeType.toString()}');
+                  return Text(
+                      'Unknown best result type: ${result.runtimeType.toString()}');
                 }
               },
               childCount: bestResults.length,

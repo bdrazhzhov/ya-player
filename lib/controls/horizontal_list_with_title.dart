@@ -15,7 +15,8 @@ class HorizontalListWithTitle extends StatefulWidget {
   });
 
   @override
-  State<HorizontalListWithTitle> createState() => _HorizontalListWithTitleState();
+  State<HorizontalListWithTitle> createState() =>
+      _HorizontalListWithTitleState();
 }
 
 class _HorizontalListWithTitleState extends State<HorizontalListWithTitle> {
@@ -53,11 +54,13 @@ class _HorizontalListWithTitleState extends State<HorizontalListWithTitle> {
                 children: [
                   buildScrollButton(
                     icon: Icons.chevron_left,
-                    onPressed: enableLeft ? () => scrollBy(-scrollAmount) : null,
+                    onPressed:
+                        enableLeft ? () => scrollBy(-scrollAmount) : null,
                   ),
                   buildScrollButton(
                     icon: Icons.chevron_right,
-                    onPressed: enableRight ? () => scrollBy(scrollAmount) : null,
+                    onPressed:
+                        enableRight ? () => scrollBy(scrollAmount) : null,
                   ),
                 ],
               ),

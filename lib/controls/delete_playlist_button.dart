@@ -9,7 +9,8 @@ import '/services/service_locator.dart';
 class DeletePlaylistButton extends StatefulWidget {
   final Playlist playlist;
   final void Function()? onDeleted;
-  const DeletePlaylistButton({super.key, required this.playlist, this.onDeleted});
+  const DeletePlaylistButton(
+      {super.key, required this.playlist, this.onDeleted});
 
   @override
   State<DeletePlaylistButton> createState() => _DeletePlaylistButtonState();

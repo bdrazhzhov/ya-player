@@ -19,8 +19,12 @@ final class PlayerUpdateStateMessage {
   });
 
   PlayerUpdateStateMessage.fromJson(Map<String, dynamic> json)
-      : updateFullState = json['update_full_state'] != null ? UpdateFullState.fromJson(json['update_full_state']) : null,
-        playerState = json['player_state'] != null ? YPlayerState.fromJson(json['player_state']) : null,
+      : updateFullState = json['update_full_state'] != null
+            ? UpdateFullState.fromJson(json['update_full_state'])
+            : null,
+        playerState = json['player_state'] != null
+            ? YPlayerState.fromJson(json['player_state'])
+            : null,
         rid = json['rid'],
         playerActionTimeStamptpMs = json['player_action_timestamp_ms'],
         activityInterceptionType = json['activity_interception_type'];
@@ -37,7 +41,7 @@ final class PlayerUpdateStateMessage {
     }
 
     if (playerState != null) {
-      json['update_player_state'] = { 'player_state': playerState!.toJson()};
+      json['update_player_state'] = {'player_state': playerState!.toJson()};
     }
 
     return json;

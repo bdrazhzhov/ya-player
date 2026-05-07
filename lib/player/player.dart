@@ -25,14 +25,17 @@ class Player {
   final _beforeNextTrackEvent = Event<Track>();
 
   EventProxy<Track> get trackLoadedEvent => EventProxy(_trackLoadedEvent);
-  EventProxy<Track> get beforeNewTrackStartedEvent => EventProxy(_beforeNewTrackStartedEvent);
+  EventProxy<Track> get beforeNewTrackStartedEvent =>
+      EventProxy(_beforeNewTrackStartedEvent);
   EventProxy<Track> get playingStartedEvent => EventProxy(_playingStartedEvent);
   EventProxy<Track> get trackFinishedEvent => EventProxy(_trackFinishedEvent);
-  EventProxy<Track> get beforeNextTrackEvent => EventProxy(_beforeNextTrackEvent);
+  EventProxy<Track> get beforeNextTrackEvent =>
+      EventProxy(_beforeNextTrackEvent);
 
   Player() {
     _audioPlayer.playingStateNotifier.addListener(() async {
-      if (_audioPlayer.playingStateNotifier.value != PlayingState.completed) return;
+      if (_audioPlayer.playingStateNotifier.value != PlayingState.completed)
+        return;
 
       await _trackFinishedEvent.emit(_queue.currentTrack!);
       await next();

@@ -10,22 +10,26 @@ class ArtistInfo {
   final List<Track> popularTracks;
   final List<Artist> similarArtists;
 
-  ArtistInfo(this.artist, this.albums, this.alsoAlbums, this.popularTracks, this.similarArtists);
+  ArtistInfo(this.artist, this.albums, this.alsoAlbums, this.popularTracks,
+      this.similarArtists);
 
   factory ArtistInfo.fromJson(Map<String, dynamic> json) {
     List<Album> albums = [];
     json['albums'].forEach((album) => albums.add(Album.fromJson(album)));
 
     List<Album> alsoAlbums = [];
-    json['alsoAlbums'].forEach((album) => alsoAlbums.add(Album.fromJson(album)));
+    json['alsoAlbums']
+        .forEach((album) => alsoAlbums.add(Album.fromJson(album)));
 
     List<Track> popularTracks = [];
-    json['popularTracks'].forEach((track) => popularTracks.add(Track.fromJson(track, '')));
+    json['popularTracks']
+        .forEach((track) => popularTracks.add(Track.fromJson(track, '')));
 
     List<Artist> similarArtists = [];
-    json['similarArtists'].forEach((artist) => similarArtists.add(Artist.fromJson(artist)));
+    json['similarArtists']
+        .forEach((artist) => similarArtists.add(Artist.fromJson(artist)));
 
-    return ArtistInfo(
-        Artist.fromJson(json['artist']), albums, alsoAlbums, popularTracks, similarArtists);
+    return ArtistInfo(Artist.fromJson(json['artist']), albums, alsoAlbums,
+        popularTracks, similarArtists);
   }
 }

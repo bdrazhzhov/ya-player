@@ -16,14 +16,18 @@ final class PlaybackQueue {
 
   bool get canGoNext =>
       _tracks.isNotEmpty &&
-      (_currentIndex < (_tracks.length - 1) || repeatMode != RepeatMode.off || isShuffleEnabled);
+      (_currentIndex < (_tracks.length - 1) ||
+          repeatMode != RepeatMode.off ||
+          isShuffleEnabled);
 
   bool get canGoPrevious =>
-      _tracks.isNotEmpty && (_currentIndex > 0 || repeatMode != RepeatMode.off || isShuffleEnabled);
+      _tracks.isNotEmpty &&
+      (_currentIndex > 0 || repeatMode != RepeatMode.off || isShuffleEnabled);
 
   Iterable<Track> get tracks => _tracks;
 
-  EventProxy<Iterable<Track>> get trackListChanged => EventProxy(_trackListChangedEvent);
+  EventProxy<Iterable<Track>> get trackListChanged =>
+      EventProxy(_trackListChangedEvent);
 
   var repeatMode = RepeatMode.off;
   bool isShuffleEnabled = false;

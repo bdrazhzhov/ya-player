@@ -136,11 +136,13 @@ class OrgMprisMediaPlayer2 extends DBusObject {
     if (!canRepeat || value == _repeat) return;
     emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
-      changedProperties: {"LoopStatus": DBusString(_loopStatuses[value] ?? 'None')},
+      changedProperties: {
+        "LoopStatus": DBusString(_loopStatuses[value] ?? 'None')
+      },
     );
     _repeat = value;
   }
-  
+
   /// Gets value of property org.mpris.MediaPlayer2.Player.LoopStatus
   DBusString _getLoopStatus() {
     final String value = _loopStatuses[_repeat] ?? 'None';
@@ -150,8 +152,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.LoopStatus
   Future<DBusMethodResponse> _setLoopStatus(String value) async {
-    _loopStatuses.forEach((repeatState, repeatStateString){
-      if(repeatStateString == value) {
+    _loopStatuses.forEach((repeatState, repeatStateString) {
+      if (repeatStateString == value) {
         _repeatStreamController.add(repeatState);
         repeat = repeatState;
       }
@@ -185,7 +187,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   double get rate => _rate;
   set rate(double value) {
-    if(value == _rate) return;
+    if (value == _rate) return;
 
     _rate = value;
 
@@ -227,7 +229,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   double get volume => _volume;
   set volume(double value) {
-    if(value == _volume) return;
+    if (value == _volume) return;
 
     _volume = value;
 
@@ -266,7 +268,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get canGoNext => _canGoNext;
   set canGoNext(bool value) {
-    if(value == _canGoNext) return;
+    if (value == _canGoNext) return;
 
     _canGoNext = value;
 
@@ -283,7 +285,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get canGoPrevious => _canGoPrevious;
   set canGoPrevious(bool value) {
-    if(value == _canGoPrevious) return;
+    if (value == _canGoPrevious) return;
 
     _canGoPrevious = value;
 
@@ -300,7 +302,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get canPlay => _canPlay;
   set canPlay(bool value) {
-    if(value == _canPlay) return;
+    if (value == _canPlay) return;
 
     _canPlay = value;
 
@@ -309,7 +311,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       changedProperties: {"CanPlay": DBusBoolean(value)},
     );
   }
-  
+
   /// Gets value of property org.mpris.MediaPlayer2.Player.CanPlay
   DBusBoolean _getCanPlay() {
     return const DBusBoolean(true);
@@ -317,7 +319,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get canPause => _canPause;
   set canPause(bool value) {
-    if(value == _canPause) return;
+    if (value == _canPause) return;
 
     _canPause = value;
 
@@ -334,7 +336,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   bool get canSeek => _canSeek;
   set canSeek(bool value) {
-    if(value == _canSeek) return;
+    if (value == _canSeek) return;
 
     _canSeek = value;
 
@@ -392,8 +394,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Seek()
   Future<DBusMethodResponse> doSeek(int offset) async {
-    log('org.mpris.MediaPlayer2.Player.Seek() not implemented',
-        name: 'mpris');
+    log('org.mpris.MediaPlayer2.Player.Seek() not implemented', name: 'mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -619,13 +620,14 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       }
     }
 
-    if(value == null) return DBusMethodErrorResponse.unknownProperty();
+    if (value == null) return DBusMethodErrorResponse.unknownProperty();
 
     return DBusGetPropertyResponse(value);
   }
 
   @override
-  Future<DBusMethodResponse> setProperty(String interface, String name, DBusValue value) async {
+  Future<DBusMethodResponse> setProperty(
+      String interface, String name, DBusValue value) async {
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         return DBusMethodErrorResponse.propertyReadOnly();

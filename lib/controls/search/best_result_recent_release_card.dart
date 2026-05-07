@@ -16,10 +16,12 @@ class BestResultRecentReleaseCard extends StatefulWidget {
   const BestResultRecentReleaseCard({super.key, required this.bestResult});
 
   @override
-  State<BestResultRecentReleaseCard> createState() => _BestResultRecentReleaseCardState();
+  State<BestResultRecentReleaseCard> createState() =>
+      _BestResultRecentReleaseCardState();
 }
 
-class _BestResultRecentReleaseCardState extends State<BestResultRecentReleaseCard> {
+class _BestResultRecentReleaseCardState
+    extends State<BestResultRecentReleaseCard> {
   bool isHovered = false;
   final appState = getIt<AppState>();
 

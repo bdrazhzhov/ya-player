@@ -44,7 +44,7 @@ final class Genre extends Equatable {
     }
 
     final Map<String, String> images = {};
-    if(json['images'] != null) {
+    if (json['images'] != null) {
       for (final String key in json['images'].keys) {
         images[key] = json['images'][key];
       }

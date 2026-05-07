@@ -43,7 +43,9 @@ class _QueuePageState extends State<QueuePage> {
             padding: const EdgeInsets.only(bottom: 24, top: 20),
             child: Row(
               children: [
-                Expanded(child: Text('Playback queue', style: theme.textTheme.displayMedium)),
+                Expanded(
+                    child: Text('Playback queue',
+                        style: theme.textTheme.displayMedium)),
                 RepeatButton(),
                 ShuffleButton()
               ],
@@ -57,7 +59,8 @@ class _QueuePageState extends State<QueuePage> {
         ValueListenableBuilder(
           valueListenable: _appState.queueTracks,
           builder: (_, List<Track> tracks, __) {
-            return SliverTrackList(playContext: _appState.playContext, tracks: tracks);
+            return SliverTrackList(
+                playContext: _appState.playContext, tracks: tracks);
           },
         ),
       ],

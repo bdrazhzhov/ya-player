@@ -34,7 +34,8 @@ class _BestResultArtistCoverState extends State<BestResultArtistCover> {
   @override
   void initState() {
     super.initState();
-    artistInfoOperation = CancelableOperation.fromFuture(musicApi.artistInfo(widget.bestResult.id));
+    artistInfoOperation = CancelableOperation.fromFuture(
+        musicApi.artistInfo(widget.bestResult.id));
     artistInfoOperation?.value.then((info) {
       artistInfo = info;
       updateState();

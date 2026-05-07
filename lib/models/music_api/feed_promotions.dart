@@ -36,19 +36,18 @@ class FeedPromotions {
     json['albums'].forEach((item) => albums.add(Album.fromJson(item)));
 
     return FeedPromotions(
-      promoId: json['promoId'],
-      title: json['title'],
-      subtitle: json['subtitle'],
-      heading: json['heading'],
-      category: json['category'],
-      titleUrl: json['titleUrl'],
-      subtitleUrl: json['subtitleUrl'],
-      description: json['description'],
-      background: json['background'],
-      imagePosition: json['imagePosition'],
-      promotionType: json['promotionType'],
-      startDate: json['startDate'],
-      albums: albums
-    );
+        promoId: json['promoId'],
+        title: json['title'],
+        subtitle: json['subtitle'],
+        heading: json['heading'],
+        category: json['category'],
+        titleUrl: json['titleUrl'],
+        subtitleUrl: json['subtitleUrl'],
+        description: json['description'],
+        background: json['background'],
+        imagePosition: json['imagePosition'],
+        promotionType: json['promotionType'],
+        startDate: json['startDate'],
+        albums: albums);
   }
 }

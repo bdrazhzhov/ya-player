@@ -9,8 +9,12 @@ class Version {
 
   Version.fromJson(Map<String, dynamic> json)
       : deviceId = json['device_id'],
-        timestampMs = json['timestamp_ms'] is String ? int.parse(json['timestamp_ms']) : json['timestamp_ms'],
-        version = json['version'] is String ? int.parse(json['version']) : json['version'];
+        timestampMs = json['timestamp_ms'] is String
+            ? int.parse(json['timestamp_ms'])
+            : json['timestamp_ms'],
+        version = json['version'] is String
+            ? int.parse(json['version'])
+            : json['version'];
 
   Map<String, dynamic> toJson() {
     return {
