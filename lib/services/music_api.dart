@@ -38,14 +38,11 @@ class MusicApi {
   Future<Iterable<Station>> stationsList() async {
     List<dynamic> json = await _http.get('/rotor/stations/list');
 
-    return json
-        .map((item) => Station.fromJson(item['station'], item['settings2']));
+    return json.map((item) => Station.fromJson(item['station'], item['settings2']));
   }
 
-  Future<Iterable<Track>> stationTacks(
-      StationId stationId, Iterable<String> queueTracks) async {
-    String url =
-        '/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
+  Future<Iterable<Track>> stationTacks(StationId stationId, Iterable<String> queueTracks) async {
+    String url = '/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
     if (queueTracks.isNotEmpty) {
       url += '&queue=${queueTracks.join('%2C')}';
     }
@@ -67,8 +64,7 @@ class MusicApi {
     return Station.fromJson(json.first['station'], json.first['settings2']);
   }
 
-  Future<void> updateStationSettings2(
-      StationId stationId, Map<String, String> settings2) async {
+  Future<void> updateStationSettings2(StationId stationId, Map<String, String> settings2) async {
     final url = '/rotor/station/${stationId.type}:${stationId.tag}/settings2';
     await _http.postJson(url, data: settings2);
   }
@@ -78,21 +74,12 @@ class MusicApi {
     print(json);
   }
 
-  static const _formats = [
-    'flac',
-    'aac',
-    'he-aac',
-    'mp3',
-    'flac-mp4',
-    'aac-mp4',
-    'he-aac-mp4'
-  ];
+  static const _formats = ['flac', 'aac', 'he-aac', 'mp3', 'flac-mp4', 'aac-mp4', 'he-aac-mp4'];
 
   Future<UrlData> trackDownloadUrl(String trackId) async {
     final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
     final Uint8List key = utf8.encode(_newMagicSalt);
-    final Uint8List data =
-        utf8.encode('$ts${trackId}lossless${_formats.join()}encraw');
+    final Uint8List data = utf8.encode('$ts${trackId}lossless${_formats.join()}encraw');
     final Digest digest = Hmac(sha256, key).convert(data);
     final String sign = base64.encode(digest.bytes);
     final query = {
@@ -105,26 +92,22 @@ class MusicApi {
     };
 
     Map<String, dynamic> json = await _http.get('/get-file-info',
-        headers: {
-          'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'
-        },
+        headers: {'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'},
         queryParameters: query);
 
     String? encryptionKey;
     if (json['downloadInfo']['key'] != null) {
       encryptionKey = json['downloadInfo']['key'].toString();
     }
-    return UrlData(
-        url: json['downloadInfo']['url'].toString(),
-        encryptionKey: encryptionKey);
+    return UrlData(url: json['downloadInfo']['url'].toString(), encryptionKey: encryptionKey);
   }
 
   static String imageUrl(String placeholder, String dimensions) {
     return 'https://${placeholder.replaceAll('%%', dimensions)}';
   }
 
-  Future<void> sendStationTrackFeedback(StationId stationId, Track? track,
-      String feedbackType, Duration? totalPlayedSeconds) async {
+  Future<void> sendStationTrackFeedback(
+      StationId stationId, Track? track, String feedbackType, Duration? totalPlayedSeconds) async {
     final data = {
       'type': feedbackType,
       // известны следующие значения: radioStarted, trackStarted, trackFinished, skip, like, unlike
@@ -141,8 +124,7 @@ class MusicApi {
     }
 
     if (totalPlayedSeconds != null && totalPlayedSeconds.inSeconds > 0) {
-      data['totalPlayedSeconds'] =
-          (totalPlayedSeconds.inMilliseconds / 1000.0).toString();
+      data['totalPlayedSeconds'] = (totalPlayedSeconds.inMilliseconds / 1000.0).toString();
     }
 
     await _http.postJson(url, data: data);
@@ -164,8 +146,7 @@ class MusicApi {
     await _http.postForm('/users/$uid/likes/tracks/remove', data: data);
   }
 
-  Future<({Iterable<String> ids, int? revision})> likedTrackIds(
-      {int revision = 0}) async {
+  Future<({Iterable<String> ids, int? revision})> likedTrackIds({int revision = 0}) async {
     final url = '/users/$uid/likes/tracks?if-modified-since-revision=$revision';
     final result = await _http.get(url);
 
@@ -184,8 +165,8 @@ class MusicApi {
   }
 
   Future<Playlist> likedTracksPlaylist() async {
-    Map<String, dynamic> json = await _http
-        .get('/landing-blocks/collection/playlist-with-likes?count=1');
+    Map<String, dynamic> json =
+        await _http.get('/landing-blocks/collection/playlist-with-likes?count=1');
     final int kind = json['playlist']['kind'];
 
     return playlist(uid, kind);
@@ -213,16 +194,15 @@ class MusicApi {
   }
 
   Future<List<Artist>> likedArtists() async {
-    List<dynamic> json =
-        await _http.get('/users/$uid/likes/artists?with-timestamps=true');
+    List<dynamic> json = await _http.get('/users/$uid/likes/artists?with-timestamps=true');
 
     return json.map((item) => Artist.fromJson(item['artist'])).toList();
   }
 
   Future<List<Playlist>> playlistsWithTracks() async {
     Iterable<int> kinds = await _playlistKinds();
-    List<dynamic> json = await _http
-        .postForm('/users/$uid/playlists', data: {'kinds': kinds.join(',')});
+    List<dynamic> json =
+        await _http.postForm('/users/$uid/playlists', data: {'kinds': kinds.join(',')});
 
     return json.map((item) => Playlist.fromJson(item)).toList();
   }
@@ -277,8 +257,7 @@ class MusicApi {
     return AccountStatus(account);
   }
 
-  Future<void> updateQueuePosition(
-      String queueId, int position, bool isInteractive) async {
+  Future<void> updateQueuePosition(String queueId, int position, bool isInteractive) async {
     final isInteractiveString = isInteractive ? 'True' : 'False';
     final url = '/queues/$queueId/update-position?currentIndex=$position'
         '&isInteractive=$isInteractiveString';
@@ -288,8 +267,7 @@ class MusicApi {
       if (e.response == null) rethrow;
 
       final resp = e.response!;
-      if (resp.statusCode == 400 &&
-          resp.data['message'] == 'currentIndex is invalid') {
+      if (resp.statusCode == 400 && resp.data['message'] == 'currentIndex is invalid') {
         throw QueueIndexInvalid();
       } else {
         rethrow;
@@ -297,15 +275,11 @@ class MusicApi {
     }
   }
 
-  Future<Queue> createQueueForStation(
-      Station station, List<QueueTrack> tracks) {
-    final from = station.id.type == 'user'
-        ? station.id.tag
-        : "${station.id.type}_${station.id.tag}";
+  Future<Queue> createQueueForStation(Station station, List<QueueTrack> tracks) {
+    final from =
+        station.id.type == 'user' ? station.id.tag : "${station.id.type}_${station.id.tag}";
     final context = QueueContext(
-        description: station.name,
-        id: '${station.id.type}:${station.id.tag}',
-        type: 'radio');
+        description: station.name, id: '${station.id.type}:${station.id.tag}', type: 'radio');
 
     return createQueue(
         context: context,
@@ -315,23 +289,16 @@ class MusicApi {
         tracks: tracks);
   }
 
-  Future<Queue> createQueueForLikedTracks(
-      List<QueueTrack> tracks, int currentIndex) {
-    const context =
-        QueueContext(description: '', id: 'fonoteca', type: 'my_music');
+  Future<Queue> createQueueForLikedTracks(List<QueueTrack> tracks, int currentIndex) {
+    const context = QueueContext(description: '', id: 'fonoteca', type: 'my_music');
 
     return createQueue(
-        context: context,
-        currentIndex: currentIndex,
-        isInteractive: true,
-        tracks: tracks);
+        context: context, currentIndex: currentIndex, isInteractive: true, tracks: tracks);
   }
 
-  Future<Queue> createQueueForAlbum(
-      Album album, List<QueueTrack> tracks, int currentIndex) {
+  Future<Queue> createQueueForAlbum(Album album, List<QueueTrack> tracks, int currentIndex) {
     return createQueue(
-        context: QueueContext(
-            description: album.title, id: album.id.toString(), type: 'album'),
+        context: QueueContext(description: album.title, id: album.id.toString(), type: 'album'),
         currentIndex: currentIndex,
         isInteractive: true,
         tracks: tracks);
@@ -341,9 +308,7 @@ class MusicApi {
       Playlist playlist, List<QueueTrack> tracks, int currentIndex) {
     return createQueue(
         context: QueueContext(
-            description: playlist.title,
-            id: '${playlist.uid}:${playlist.kind}',
-            type: 'my_music'),
+            description: playlist.title, id: '${playlist.uid}:${playlist.kind}', type: 'my_music'),
         currentIndex: currentIndex,
         isInteractive: true,
         tracks: tracks);
@@ -360,8 +325,7 @@ class MusicApi {
   }
 
   Future<ArtistInfo> artistInfo(String artistId) async {
-    Map<String, dynamic> json =
-        await _http.get('/artists/$artistId/brief-info');
+    Map<String, dynamic> json = await _http.get('/artists/$artistId/brief-info');
     final result = ArtistInfo.fromJson(json);
 
     return result;
@@ -383,8 +347,7 @@ class MusicApi {
     return SearchResult.fromJson(json);
   }
 
-  Future<SearchResultMixed> searchMixed(
-      {required String text, SearchFilter? filter}) async {
+  Future<SearchResultMixed> searchMixed({required String text, SearchFilter? filter}) async {
     var query = {
       'text': text,
       'type': 'album,artist,playlist,track,wave,podcast,podcast_episode',
@@ -413,13 +376,11 @@ class MusicApi {
     if (json['bestResults'] != null) {
       json['bestResults'].forEach((item) {
         if (item['type'] == 'best_result_artist') {
-          bestResults
-              .add(BestResultArtist.fromJson(item['best_result_artist']));
+          bestResults.add(BestResultArtist.fromJson(item['best_result_artist']));
         } else if (item['type'] == 'best_result_wave') {
           bestResults.add(BestResultWave.fromJson(item['best_result_wave']));
         } else if (item['type'] == 'best_result_recent_release') {
-          bestResults.add(BestResultRecentRelease.fromJson(
-              item['best_result_recent_release']));
+          bestResults.add(BestResultRecentRelease.fromJson(item['best_result_recent_release']));
         }
       });
     }
@@ -427,7 +388,7 @@ class MusicApi {
     return SearchResultMixed(
       page: 0,
       perPage: 36,
-      total: json['total'],
+      total: json['total'] ?? 0,
       filter: filter,
       items: items,
       bestResults: bestResults,
@@ -488,8 +449,7 @@ class MusicApi {
   }
 
   Future<List<String>> trackIdsByRating(String artistId) async {
-    Map<String, dynamic> json =
-        await _http.get('/artists/$artistId/track-ids-by-rating');
+    Map<String, dynamic> json = await _http.get('/artists/$artistId/track-ids-by-rating');
 
     return json['tracks'];
   }
@@ -512,8 +472,7 @@ class MusicApi {
 
   Future<PagedData<Album>> artistAlsoAlbums(
       {required String artistId, page = 0, perPage = 50}) async {
-    final String url =
-        '/artists/$artistId/also-albums?page=$page&page-size=$perPage';
+    final String url = '/artists/$artistId/also-albums?page=$page&page-size=$perPage';
     Map<String, dynamic> json = await _http.get(url);
     final albums = json['albums'].map<Album>((a) => Album.fromJson(a));
 
@@ -571,45 +530,33 @@ class MusicApi {
     return json['items'].map((item) => getHistoryItem(item));
   }
 
-  Future<String> getLyrics(String trackId,
-      [LyricsFormat format = LyricsFormat.lrc]) async {
+  Future<String> getLyrics(String trackId, [LyricsFormat format = LyricsFormat.lrc]) async {
     final int ts = (DateTime.now().millisecondsSinceEpoch / 1000).toInt();
     final Uint8List key = utf8.encode(_newMagicSalt);
     final Uint8List data = utf8.encode('$trackId$ts');
     final Digest digest = Hmac(sha256, key).convert(data);
     final String sign = base64.encode(digest.bytes);
-    final query = {
-      'format': format.name.toUpperCase(),
-      'timeStamp': ts,
-      'sign': sign
-    };
+    final query = {'format': format.name.toUpperCase(), 'timeStamp': ts, 'sign': sign};
 
     Map<String, dynamic> json = await _http.get('/tracks/$trackId/lyrics',
-        headers: {
-          'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'
-        },
+        headers: {'X-Yandex-Music-Client': 'YandexMusicDesktopAppWindows/5.34.1'},
         queryParameters: query,
         cacheDuration: const Duration(days: 365));
 
-    return await _http.get(json['downloadUrl'],
-        cacheDuration: const Duration(days: 365));
+    return await _http.get(json['downloadUrl'], cacheDuration: const Duration(days: 365));
   }
 
   Future<void> sendPlayInfo(PlayInfoBase playInfo) async {
     final data = {
       'plays': [playInfo.toJson()]
     };
-    final clientDate =
-        '${DateFormat('y-MM-ddTHH:mm:ss.S').format(playInfo.timestamp.toUtc())}Z';
+    final clientDate = '${DateFormat('y-MM-ddTHH:mm:ss.S').format(playInfo.timestamp.toUtc())}Z';
 
-    await _http.postJson(
-        '/plays?clientNow=${Uri.encodeQueryComponent(clientDate)}',
-        data: data);
+    await _http.postJson('/plays?clientNow=${Uri.encodeQueryComponent(clientDate)}', data: data);
   }
 
   Future<List<Album>> newReleases() async {
-    final json = await _http.get('/landing3/new-releases',
-        cacheDuration: const Duration(days: 1));
+    final json = await _http.get('/landing3/new-releases', cacheDuration: const Duration(days: 1));
     final albumIds = json['newReleases'];
     final albumsJson = await _http.postForm(
       '/albums',
@@ -622,14 +569,12 @@ class MusicApi {
   }
 
   Future<List<Playlist>> newPlaylists() async {
-    final json = await _http.get('/landing3/new-playlists',
-        cacheDuration: const Duration(days: 1));
+    final json = await _http.get('/landing3/new-playlists', cacheDuration: const Duration(days: 1));
     final playlistsIds = json['newPlaylists'];
     final playlistsJson = await _http.postForm(
       '/playlists/list',
       data: {
-        'playlistIds':
-            playlistsIds.map((i) => '${i['uid']}:${i['kind']}').join(','),
+        'playlistIds': playlistsIds.map((i) => '${i['uid']}:${i['kind']}').join(','),
       },
     );
 
@@ -670,8 +615,7 @@ class MusicApi {
     return RadioSession.fromJson(json);
   }
 
-  Future<RadioSession> cloneRadioSession(
-      String sessionId, NewRadioSessionRequest session) async {
+  Future<RadioSession> cloneRadioSession(String sessionId, NewRadioSessionRequest session) async {
     Map<String, dynamic> json = await _http.postJson(
       '/rotor/session/$sessionId/clone',
       data: session.toJson(),
@@ -717,25 +661,21 @@ class MusicApi {
   }
 
   Future<void> deletePlaylist(Playlist playlist) async {
-    await _http
-        .postForm('/users/${playlist.uid}/playlists/${playlist.kind}/delete');
+    await _http.postForm('/users/${playlist.uid}/playlists/${playlist.kind}/delete');
   }
 
-  Future<TrackUploaderInfo> createPlaylistTracksLoader(
-      Playlist playlist, String filename) async {
+  Future<TrackUploaderInfo> createPlaylistTracksLoader(Playlist playlist, String filename) async {
     final result = await _http.postForm('/loader/upload-url?uid=$uid'
         '&playlist-id=${playlist.kind}%3A${playlist.kind}&path=${Uri.encodeComponent(filename)}');
 
     return TrackUploaderInfo.fromJson(result);
   }
 
-  Stream<double> uploadPlaylistTrack(
-      Playlist playlist, String filepath) async* {
+  Stream<double> uploadPlaylistTrack(Playlist playlist, String filepath) async* {
     yield 0;
 
     final String filename = basename(filepath);
-    final TrackUploaderInfo uploaderInfo =
-        await createPlaylistTracksLoader(playlist, filename);
+    final TrackUploaderInfo uploaderInfo = await createPlaylistTracksLoader(playlist, filename);
 
     yield* _http.uploadFile(uploaderInfo.postTarget, filepath);
   }
@@ -750,24 +690,20 @@ class MusicApi {
     return Playlist.fromJson(json);
   }
 
-  Future<Playlist> insertPlaylistTracks(
-      Playlist playlist, Iterable<Track> tracks,
+  Future<Playlist> insertPlaylistTracks(Playlist playlist, Iterable<Track> tracks,
       [int position = 0]) async {
     final diff = [
       {
         'op': 'insert',
         'at': position,
-        'tracks': tracks
-            .map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId})
-            .toList(),
+        'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}).toList(),
       }
     ];
 
     return _playlistChangeRelative(playlist.kind, diff, playlist.revision!);
   }
 
-  Future<Playlist> deletePlaylistTracks(
-      Playlist playlist, Iterable<int> positions) async {
+  Future<Playlist> deletePlaylistTracks(Playlist playlist, Iterable<int> positions) async {
     final diff = positions
         .map((i) => {
               'op': 'delete',
@@ -786,17 +722,14 @@ class MusicApi {
         'op': 'move',
         'from': from,
         'to': to,
-        'tracks': tracks
-            .map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId})
-            .toList(),
+        'tracks': tracks.map((e) => {'id': e.id.toString(), 'albumId': e.firstAlbumId}).toList(),
       }
     ];
 
     return _playlistChangeRelative(playlist.kind, diff, playlist.revision!);
   }
 
-  Future<Playlist> changePlaylistTitle(
-      Playlist playlist, String newTitle) async {
+  Future<Playlist> changePlaylistTitle(Playlist playlist, String newTitle) async {
     final json = await _http.postForm(
       '/users/${playlist.uid}/playlists/${playlist.kind}/name',
       data: {'value': newTitle},
