@@ -60,10 +60,8 @@ class AppState {
   late final localeNotifier = ValueNotifier<Locale>(_prefs.locale);
   bool isQueueShown = false;
 
-  final _playlistUpdatesController =
-      StreamController<(int uid, int kind)>.broadcast();
-  Stream<(int uid, int kind)> get playlistUpdatesStream =>
-      _playlistUpdatesController.stream;
+  final _playlistUpdatesController = StreamController<(int uid, int kind)>.broadcast();
+  Stream<(int uid, int kind)> get playlistUpdatesStream => _playlistUpdatesController.stream;
 
   final _musicApi = getIt<MusicApi>();
   final _prefs = getIt<Preferences>();
@@ -128,8 +126,7 @@ class AppState {
 
   static const yaColor = Color.fromARGB(255, 254, 218, 76);
   Future<ThemeData> getTheme() async {
-    final Map<String, Color> themeColors =
-        await _windowManager.getThemeColors();
+    final Map<String, Color> themeColors = await _windowManager.getThemeColors();
 
     return ThemeData(
       primaryColor: yaColor,
@@ -149,15 +146,13 @@ class AppState {
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor:
-              WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
             if (states.contains(WidgetState.selected)) {
               return yaColor;
             }
             return themeColors['surface']!;
           }),
-          foregroundColor:
-              WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+          foregroundColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
             if (states.contains(WidgetState.selected)) {
               return themeColors['surface']!;
             }
@@ -200,8 +195,7 @@ class AppState {
   Future<void> _requestLikedTracks() async {
     if (_prefs.authToken == null) return;
 
-    final resultTuple =
-        await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
+    final resultTuple = await _musicApi.likedTrackIds(revision: _prefs.likedTracksRevision);
 
     if (resultTuple.revision != null) {
       _likedTrackIds.clear();
@@ -276,8 +270,7 @@ class AppState {
     });
 
     _trayIntegration.scrollStream.listen((int delta) {
-      double volume =
-          (_audioPlayer.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
+      double volume = (_audioPlayer.volumeNotifier.value + delta / 5000.0).clamp(0, 1.0);
       _audioPlayer.volumeNotifier.value = volume;
     });
   }
@@ -301,8 +294,7 @@ class AppState {
 
   void _listenToRouteChanges() {
     getIt<AppRouteObserver>().popNotifier.addListener(() {
-      final bool isBackButtonVisible =
-          NavKeys.mainNav.currentState?.canPop() == true;
+      final bool isBackButtonVisible = NavKeys.mainNav.currentState?.canPop() == true;
       _windowManager.showBackButton(isBackButtonVisible);
     });
   }
@@ -324,8 +316,7 @@ class AppState {
 
   late StreamSubscription _ynisonStateSubscription;
   void _listenToYnisonState() {
-    _ynisonStateSubscription =
-        _ynisonClient.stateStream.listen((YnisonState state) async {
+    _ynisonStateSubscription = _ynisonClient.stateStream.listen((YnisonState state) async {
       // отписываемся от обновлений состояния плеера, кроме 1-го,
       // т.к. еще не умеем корректно работать с обновлениями
       _ynisonStateSubscription.cancel();
@@ -354,15 +345,14 @@ class AppState {
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.album:
           final albumId = int.parse(state.playerState.playerQueue.entityId);
-          final AlbumWithTracks albumWithTracks =
-              await _musicApi.albumWithTracks(albumId);
+          final AlbumWithTracks albumWithTracks = await _musicApi.albumWithTracks(albumId);
           tracks = albumWithTracks.tracks;
           _playContext = albumWithTracks.album;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.artist:
-          final ArtistInfo artistInfo = await _musicApi
-              .artistInfo(state.playerState.playerQueue.entityId);
+          final ArtistInfo artistInfo =
+              await _musicApi.artistInfo(state.playerState.playerQueue.entityId);
           final ids = playerQueue.playableList.map((i) => i.playableId);
           tracks = await _musicApi.tracksByIds(ids);
           _playContext = artistInfo.artist;
@@ -370,28 +360,23 @@ class AppState {
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.playlist:
           final [uid, kind] = playerQueue.entityId.split(':');
-          final Playlist playlist =
-              await _musicApi.playlist(int.parse(uid), int.parse(kind));
+          final Playlist playlist = await _musicApi.playlist(int.parse(uid), int.parse(kind));
           _playContext = playlist;
           tracks = playlist.tracks;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.radio:
           _musicApi.myWaveSettings();
-          final sessionId =
-              playerQueue.queue!.waveQueue.entityOptions.waveEntity!.sessionId;
-          final playables =
-              playerQueue.playableList.take(playerQueue.currentPlayableIndex);
+          final sessionId = playerQueue.queue!.waveQueue.entityOptions.waveEntity!.sessionId;
+          final playables = playerQueue.playableList.take(playerQueue.currentPlayableIndex);
           final RadioSession session = await _radioManager.restore(
             sessionId: sessionId,
-            queue:
-                playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
+            queue: playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
             seeds: playerQueue.entityId.split(','),
           );
           _playContext = session;
           // currentRadioNotifier.value = session;
-          currentStationNotifier.value =
-              await _musicApi.station(session.wave.stationId);
+          currentStationNotifier.value = await _musicApi.station(session.wave.stationId);
           _playerState.shuffleNotifier.value = false;
           _playerState.repeatModeNotifier.value = RepeatMode.off;
 
@@ -571,8 +556,7 @@ class AppState {
     Track: 'web-search-search_open_best_results-default',
   };
 
-  Future<void> playContent(Object contextObject, Iterable<Track> tracks,
-      [int? index]) async {
+  Future<void> playContent(Object contextObject, Iterable<Track> tracks, [int? index]) async {
     if (_playContext is RadioSession) _radioManager.stop();
 
     playButtonNotifier.value = ButtonState.loading;
@@ -597,9 +581,7 @@ class AppState {
         entityType: _entityTypes[_playContext.runtimeType]!,
         from: _entityFroms[_playContext.runtimeType]!,
         options: QueueOptions(repeatMode: 'NONE'),
-        playableList: _queue
-            .toPlayableList(_entityFroms[_playContext.runtimeType]!)
-            .toList(),
+        playableList: _queue.toPlayableList(_entityFroms[_playContext.runtimeType]!).toList(),
         version: Version(deviceId: _prefs.deviceId),
       ),
       status: PlayerStateStatus(
@@ -663,8 +645,7 @@ class AppState {
 
     final List<String> lastTracksIds =
         _queue.tracks.skip(_queue.currentIndex).map((t) => t.id).toList();
-    final Iterable<Track> tracks =
-        await _musicApi.stationTacks(stationId, lastTracksIds);
+    final Iterable<Track> tracks = await _musicApi.stationTacks(stationId, lastTracksIds);
 
     _queue.replaceTracksLeft(tracks);
   }
@@ -681,8 +662,7 @@ class AppState {
     return playStation(station);
   }
 
-  bool isLikedTrack(Track track) =>
-      binarySearch(_likedTrackIds, track.id) != -1;
+  bool isLikedTrack(Track track) => binarySearch(_likedTrackIds, track.id) != -1;
 
   Future<void> likeTrack(Track track) async {
     int likedIndex = binarySearch(_likedTrackIds, track.id);
@@ -692,15 +672,13 @@ class AppState {
     if (isLiked) {
       await _musicApi.unlikeTrack(track);
       if (station != null) {
-        await _musicApi.sendStationTrackFeedback(
-            station.id, track, 'unlike', null);
+        await _musicApi.sendStationTrackFeedback(station.id, track, 'unlike', null);
       }
       _likedTrackIds.removeAt(likedIndex);
     } else {
       await _musicApi.likeTrack(track);
       if (station != null) {
-        await _musicApi.sendStationTrackFeedback(
-            station.id, track, 'like', null);
+        await _musicApi.sendStationTrackFeedback(station.id, track, 'like', null);
       }
       _likedTrackIds.add(track.id);
     }
@@ -710,8 +688,7 @@ class AppState {
     return _requestLikedTracks();
   }
 
-  bool isLikedArtist(String artistId) =>
-      binarySearch(_likedArtistIds, artistId) != -1;
+  bool isLikedArtist(String artistId) => binarySearch(_likedArtistIds, artistId) != -1;
 
   Future<void> likeArtist(String artistId) async {
     int likedIndex = binarySearch(_likedArtistIds, artistId);
@@ -742,18 +719,15 @@ class AppState {
 
   Tree? getTree(String id) {
     if (id == 'newbies') {
-      return _landing3Metatags
-          .firstWhereOrNull((i) => i.navigationId == 'genres');
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'genres');
     }
 
     if (id == 'in the mood') {
-      return _landing3Metatags
-          .firstWhereOrNull((i) => i.navigationId == 'moods');
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'moods');
     }
 
     if (id == 'background') {
-      return _landing3Metatags
-          .firstWhereOrNull((i) => i.navigationId == 'activities');
+      return _landing3Metatags.firstWhereOrNull((i) => i.navigationId == 'activities');
     }
 
     return null;
@@ -818,8 +792,7 @@ class AppState {
     for (Station station in genres) {
       if (station.parentId == null) continue;
 
-      Station? parent =
-          genres.firstWhereOrNull((genre) => genre.id == station.parentId);
+      Station? parent = genres.firstWhereOrNull((genre) => genre.id == station.parentId);
       if (parent != null) parent.subStations.add(station);
     }
     genres.removeWhere((station) => station.parentId != null);
@@ -842,8 +815,7 @@ class AppState {
     await getIt<AppState>().requestPlaylists();
   }
 
-  Future<void> deletePlaylistTracks(
-      Playlist playlist, List<int> trackIndices) async {
+  Future<void> deletePlaylistTracks(Playlist playlist, List<int> trackIndices) async {
     await getIt<MusicApi>().deletePlaylistTracks(playlist, trackIndices);
     _playlistUpdatesController.add((playlist.uid, playlist.kind));
     await requestPlaylists();

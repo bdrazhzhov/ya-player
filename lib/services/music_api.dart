@@ -42,7 +42,7 @@ class MusicApi {
   }
 
   Future<Iterable<Track>> stationTacks(StationId stationId, Iterable<String> queueTracks) async {
-    String url = '/rotor/station/${stationId.type}:${stationId.tag}/tracks?settings2=true';
+    String url = '/rotor/station/$stationId.type}:${stationId.tag}/tracks?settings2=true';
     if (queueTracks.isNotEmpty) {
       url += '&queue=${queueTracks.join('%2C')}';
     }

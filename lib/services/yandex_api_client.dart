@@ -26,8 +26,7 @@ class YandexApiClient {
 
   set locale(Locale value) {
     _locale = value;
-    _dio.options.headers[HttpHeaders.acceptLanguageHeader] =
-        _locale.languageCode;
+    _dio.options.headers[HttpHeaders.acceptLanguageHeader] = _locale.languageCode;
   }
 
   YandexApiClient(
@@ -48,8 +47,7 @@ class YandexApiClient {
 
   void _addInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(onError: (e, handler) {
-      debugPrint(
-          'Request error: ${e.requestOptions.path}?${e.requestOptions.queryParameters}');
+      debugPrint('Request error: ${e.requestOptions.path}?${e.requestOptions.queryParameters}');
       debugPrint('Request headers: ${e.requestOptions.headers}');
 
       if (e.response != null) {
@@ -61,8 +59,7 @@ class YandexApiClient {
 
       return handler.next(e);
     }, onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-      options.headers['X-Yandex-Music-Client-Now'] =
-          DateTime.now().toUtcString();
+      options.headers['X-Yandex-Music-Client-Now'] = DateTime.now().toUtcString();
 
       return handler.next(options);
     }));
@@ -73,11 +70,10 @@ class YandexApiClient {
       HttpHeaders.acceptLanguageHeader: _locale.languageCode,
       HttpHeaders.userAgentHeader: 'Windows 10',
       'X-Yandex-Music-Client': 'WindowsPhone/4.54',
-      'X-Yandex-Music-Device':
-          'os=Windows.Desktop; os_version=10.0.22621.1992; '
-              'manufacturer=Micro-Star International Co., Ltd.; model=MS-0A00; '
-              'clid=WindowsPhone; device_id=$deviceId; '
-              'uuid=generated-by-music-$deviceUuid',
+      'X-Yandex-Music-Device': 'os=Windows.Desktop; os_version=10.0.22621.1992; '
+          'manufacturer=Micro-Star International Co., Ltd.; model=MS-0A00; '
+          'clid=WindowsPhone; device_id=$deviceId; '
+          'uuid=generated-by-music-$deviceUuid',
       'X-Yandex-Music-Without-Invocation-Info': '1'
     };
 
@@ -96,8 +92,8 @@ class YandexApiClient {
     final cacheValue = _cache.get(cacheKey);
     if (cacheValue != null) return cacheValue;
 
-    Response resp = await _dio.get(path,
-        options: Options(headers: headers), queryParameters: queryParameters);
+    Response resp =
+        await _dio.get(path, options: Options(headers: headers), queryParameters: queryParameters);
 
     if (cacheDuration != null) {
       _cache.set(cacheKey, resp.data, expiration: cacheDuration);
@@ -106,11 +102,9 @@ class YandexApiClient {
     return resp.data;
   }
 
-  Future<dynamic> postJson(String path,
-      {required Map<String, dynamic> data}) async {
+  Future<dynamic> postJson(String path, {required Map<String, dynamic> data}) async {
     Response resp = await _dio.post(path,
-        options: Options(
-            headers: {HttpHeaders.contentTypeHeader: Headers.jsonContentType}),
+        options: Options(headers: {HttpHeaders.contentTypeHeader: Headers.jsonContentType}),
         data: jsonEncode(data));
 
     return resp.data;
@@ -118,8 +112,7 @@ class YandexApiClient {
 
   Future<dynamic> postForm(String path, {Map<String, dynamic>? data}) async {
     Response resp = await _dio.post(path,
-        options: Options(contentType: Headers.formUrlEncodedContentType),
-        data: data);
+        options: Options(contentType: Headers.formUrlEncodedContentType), data: data);
 
     return resp.data;
   }
