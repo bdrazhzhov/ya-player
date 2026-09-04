@@ -1,11 +1,15 @@
 import 'dart:convert';
 
-import 'player_state.dart';
 import 'device.dart';
+import 'player_state.dart';
 
 final class PlayerUpdateStateMessage {
   final UpdateFullState? updateFullState;
   final YPlayerState? playerState;
+
+  /// Response ID — идентификатор сообщения, которое придет от сервера
+  /// клиенту в ответ на это сообщение. Используется для того,
+  /// чтобы клиент мог сопоставить ответ сервера с отправленным сообщением.
   final String rid;
   final int playerActionTimeStamptpMs;
   final String activityInterceptionType;
@@ -22,9 +26,8 @@ final class PlayerUpdateStateMessage {
       : updateFullState = json['update_full_state'] != null
             ? UpdateFullState.fromJson(json['update_full_state'])
             : null,
-        playerState = json['player_state'] != null
-            ? YPlayerState.fromJson(json['player_state'])
-            : null,
+        playerState =
+            json['player_state'] != null ? YPlayerState.fromJson(json['player_state']) : null,
         rid = json['rid'],
         playerActionTimeStamptpMs = json['player_action_timestamp_ms'],
         activityInterceptionType = json['activity_interception_type'];

@@ -332,6 +332,9 @@ class AppState {
         _ynisonState.playerQueue.queue = null;
       }
 
+      Object? playContext;
+      void Function(Track)? updateFunc;
+
       switch (playerQueue.entityType) {
         case PlayInfoContext.various:
           final trackOfList = TrackOfList(
@@ -340,14 +343,14 @@ class AppState {
             DateTime.now(),
           );
           tracks = await _musicApi.tracks([trackOfList]);
-          _playContext = tracks.first;
+          playContext = tracks.first;
           _playerState.canShuffleNotifier.value = false;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.album:
           final albumId = int.parse(state.playerState.playerQueue.entityId);
           final AlbumWithTracks albumWithTracks = await _musicApi.albumWithTracks(albumId);
           tracks = albumWithTracks.tracks;
-          _playContext = albumWithTracks.album;
+          playContext = albumWithTracks.album;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.artist:
@@ -355,63 +358,82 @@ class AppState {
               await _musicApi.artistInfo(state.playerState.playerQueue.entityId);
           final ids = playerQueue.playableList.map((i) => i.playableId);
           tracks = await _musicApi.tracksByIds(ids);
-          _playContext = artistInfo.artist;
+          playContext = artistInfo.artist;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.playlist:
           final [uid, kind] = playerQueue.entityId.split(':');
           final Playlist playlist = await _musicApi.playlist(int.parse(uid), int.parse(kind));
-          _playContext = playlist;
+          playContext = playlist;
           tracks = playlist.tracks;
           _playerState.canShuffleNotifier.value = true;
           _playerState.canRepeatNotifier.value = true;
         case PlayInfoContext.radio:
-          _musicApi.myWaveSettings();
-          final sessionId = playerQueue.queue!.waveQueue.entityOptions.waveEntity!.sessionId;
-          final playables = playerQueue.playableList.take(playerQueue.currentPlayableIndex);
-          final RadioSession session = await _radioManager.restore(
-            sessionId: sessionId,
-            queue: playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
-            seeds: playerQueue.entityId.split(','),
-          );
-          _playContext = session;
+          // _musicApi.myWaveSettings();
+          late final RadioSession session;
+          final String sessionId =
+              playerQueue.queue?.waveQueue.entityOptions.waveEntity?.sessionId ?? "user:onyourwave";
+          if (playerQueue.playableList.isEmpty || playerQueue.currentPlayableIndex < 0) {
+            session = await _radioManager.start(StationId.fromString(sessionId));
+            tracks = session.sequence.map((e) => e.track).toList();
+            updateFunc = (Track track) {
+              _sendPlayerUpdate(
+                track: track,
+                entityId: track.id.toString(),
+                entityType: RadioSession,
+                from: PlayInfoRadio.defaultFrom,
+                radioSession: session,
+              );
+            };
+          } else {
+            final playables = playerQueue.playableList.take(playerQueue.currentPlayableIndex);
+            session = await _radioManager.restore(
+              sessionId: sessionId,
+              queue: playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
+              seeds: playerQueue.entityId.split(','),
+            );
+            final ids = playerQueue.playableList.map((i) => i.playableId);
+            tracks = await _musicApi.tracksByIds(ids, session.batchId);
+
+            if (ids.length != tracks.length) {
+              logger.i('Received track ids are not the same as Requested ids:\n'
+                  '${ids.sorted().join(', ')}\n${tracks.map((t) => t.id).sorted().join(', ')}');
+            }
+          }
+
+          playContext = session;
           // currentRadioNotifier.value = session;
           currentStationNotifier.value = await _musicApi.station(session.wave.stationId);
           _playerState.shuffleNotifier.value = false;
           _playerState.repeatModeNotifier.value = RepeatMode.off;
-
-          final ids = playerQueue.playableList.map((i) => i.playableId);
-          tracks = await _musicApi.tracksByIds(ids, session.batchId);
-
-          if (ids.length != tracks.length) {
-            logger.i('Received track ids are not the same as Requested ids:\n'
-                '${ids.sorted().join(', ')}\n${tracks.map((t) => t.id).sorted().join(', ')}');
-          }
       }
 
       // print(state.playerState.playerQueue.entityType.toString());
       // print('Tracks count: ${tracks.length}');
 
       tracks = tracks.where((t) => t.isAvailable).toList();
+
       int index = playerQueue.currentPlayableIndex;
-      final selectedPlayable = playerQueue.playableList[index];
-      index = tracks.indexWhere((t) => t.id == selectedPlayable.playableId);
-      if (playerQueue.currentPlayableIndex != index) {
-        logger.w('Queue indices differs!\n'
-            'Saved index: ${playerQueue.currentPlayableIndex}\n'
-            'Actual index: $index');
+      if (playerQueue.playableList.isNotEmpty && index >= 0) {
+        final selectedPlayable = playerQueue.playableList[index];
+        index = tracks.indexWhere((t) => t.id == selectedPlayable.playableId);
+        if (playerQueue.currentPlayableIndex != index) {
+          logger.w('Queue indices differs!\n'
+              'Saved index: ${playerQueue.currentPlayableIndex}\n'
+              'Actual index: $index');
+        }
       }
 
-      _queue.replaceTracks(tracks, index);
-      _queue.repeatMode = _prefs.repeat;
-      _queue.isShuffleEnabled = _prefs.shuffle;
+      final Track? track = await _prepare(
+        context: playContext,
+        tracks: tracks,
+        canRepeat: false,
+        canShuffle: false,
+      );
 
-      final Track? track = _queue.currentTrack;
-      if (track == null) return;
-
-      await _newPlayer.loadTrack(track);
-      _playerState.canPlayNotifier.value = true;
-      _playerState.canPauseNotifier.value = true;
+      if (track != null && updateFunc != null) {
+        updateFunc(track);
+      }
 
       logger.i('Player state restored from ynison: context: '
           '$_playContext, track: ${trackNotifier.value}');
@@ -508,7 +530,7 @@ class AppState {
 
   String? getGenreTitle(String id) => _genres[id];
 
-  Future<Track?> _prepareAndPlay({
+  Future<Track?> _prepare({
     required Object context,
     required Iterable<Track> tracks,
     int index = 0,
@@ -528,7 +550,6 @@ class AppState {
     _playerState.canPlayNotifier.value = true;
 
     await _newPlayer.loadTrack(track);
-    await _newPlayer.play();
     _playerState.canPauseNotifier.value = true;
     _playerState.canShuffleNotifier.value = canShuffle;
     _playerState.canRepeatNotifier.value = canRepeat;
@@ -563,7 +584,7 @@ class AppState {
     _playerState.rateNotifier.value = 1.0;
     index ??= 0;
 
-    final Track? track = await _prepareAndPlay(
+    final Track? track = await _prepare(
       context: contextObject,
       tracks: tracks,
       index: index,
@@ -573,36 +594,23 @@ class AppState {
 
     if (track == null) return;
 
-    _ynisonState = YPlayerState(
-      playerQueue: YPlayerQueue(
-        currentPlayableIndex: _queue.currentIndex,
-        entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
-        entityId: (_playContext as ContextId).contextId,
-        entityType: _entityTypes[_playContext.runtimeType]!,
-        from: _entityFroms[_playContext.runtimeType]!,
-        options: QueueOptions(repeatMode: 'NONE'),
-        playableList: _queue.toPlayableList(_entityFroms[_playContext.runtimeType]!).toList(),
-        version: Version(deviceId: _prefs.deviceId),
-      ),
-      status: PlayerStateStatus(
-        duration: track.duration!,
-        isPaused: false,
-        playbackSpeed: 1,
-        progress: Duration.zero,
-        version: Version(deviceId: _prefs.deviceId),
-      ),
+    await _newPlayer.play();
+
+    _sendPlayerUpdate(
+      track: track,
+      entityId: (_playContext as ContextId).contextId,
+      entityType: _playContext.runtimeType,
+      from: _entityFroms[_playContext.runtimeType]!,
     );
-    _ynisonClient.sendPlayerUpdate(_ynisonState);
   }
 
   Future<void> playStation(Station station) async {
     playButtonNotifier.value = ButtonState.loading;
     _playerState.rateNotifier.value = 1.0;
 
-    final RadioSession radioSession = await _radioManager.start(station);
-    // currentRadioNotifier.value = radioSession;
+    final RadioSession radioSession = await _radioManager.start(station.id);
     currentStationNotifier.value = station;
-    final Track? track = await _prepareAndPlay(
+    final Track? track = await _prepare(
       context: radioSession,
       tracks: radioSession.sequence.map((i) => i.track),
       canRepeat: false,
@@ -611,18 +619,40 @@ class AppState {
 
     if (track == null) return;
 
+    await _newPlayer.play();
+
+    _sendPlayerUpdate(
+      track: track,
+      entityId: track.id.toString(),
+      entityType: RadioSession,
+      from: PlayInfoRadio.defaultFrom,
+      radioSession: radioSession,
+    );
+  }
+
+  // TODO: убрать неявную зависимость от _queue, _prefs
+  void _sendPlayerUpdate({
+    required Track track,
+    required String entityId,
+    required Type entityType,
+    required String from,
+    RadioSession? radioSession,
+  }) {
+    AddingOptions? addingOptions;
+    if (radioSession != null) {
+      addingOptions = AddingOptions(radioOptions: RadioOptions(sessionId: radioSession.id));
+    }
+
     _ynisonState = YPlayerState(
       playerQueue: YPlayerQueue(
         currentPlayableIndex: _queue.currentIndex,
         entityContext: 'BASED_ON_ENTITY_BY_DEFAULT',
-        entityId: track.id.toString(),
-        entityType: _entityTypes[_playContext.runtimeType]!,
-        from: PlayInfoRadio.defaultFrom,
+        entityId: entityId,
+        entityType: _entityTypes[entityType]!,
+        from: from,
         options: QueueOptions(repeatMode: 'NONE'),
-        playableList: _queue.toPlayableList(PlayInfoRadio.defaultFrom).toList(),
-        addingOptions: AddingOptions(
-          radioOptions: RadioOptions(sessionId: radioSession.id),
-        ),
+        playableList: _queue.toPlayableList(from).toList(),
+        addingOptions: addingOptions,
         version: Version(deviceId: _prefs.deviceId),
       ),
       status: PlayerStateStatus(
@@ -633,6 +663,7 @@ class AppState {
         version: Version(deviceId: _prefs.deviceId),
       ),
     );
+
     _ynisonClient.sendPlayerUpdate(_ynisonState);
   }
 

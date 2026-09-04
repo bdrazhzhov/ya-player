@@ -28,11 +28,11 @@ class RadioManager {
     getIt<Player>().beforeNextTrackEvent.addHandler(_onBeforeNextTrack);
   }
 
-  Future<RadioSession> start(Station station) async {
+  Future<RadioSession> start(StationId stationId) async {
     final session = NewRadioSessionRequest(
       includeTracksInResponse: true,
       includeWaveModel: true,
-      seeds: [station.id.toString()],
+      seeds: [stationId.toString()],
     );
     _session = await _musicApi.startRadioSession(session);
 
@@ -60,9 +60,7 @@ class RadioManager {
   }
 
   void stop() {
-    getIt<Player>()
-        .beforeNewTrackStartedEvent
-        .removeHandler(_onBeforeTrackStart);
+    getIt<Player>().beforeNewTrackStartedEvent.removeHandler(_onBeforeTrackStart);
     getIt<Player>().trackFinishedEvent.removeHandler(_onTrackFinished);
     // getIt<NewPlayer>().trackLoadedEvent.removeHandler(_onTrackLoaded);
     getIt<Player>().beforeNextTrackEvent.removeHandler(_onBeforeNextTrack);
@@ -93,8 +91,7 @@ class RadioManager {
       ),
     );
 
-    await _musicApi.sendRadioFeedback(
-        sessionId: _session.id, feedback: feedback);
+    await _musicApi.sendRadioFeedback(sessionId: _session.id, feedback: feedback);
     logger.i('Radio feedback: ${jsonEncode(feedback.toJson())}');
   }
 
@@ -103,8 +100,7 @@ class RadioManager {
 
     final currentPosition = _audioPlayer.trackDurationNotifier.value.position;
     final Duration diff = track.duration! - currentPosition;
-    final eventType =
-        diff.inSeconds > 1 ? RadioEventType.skip : RadioEventType.trackFinished;
+    final eventType = diff.inSeconds > 1 ? RadioEventType.skip : RadioEventType.trackFinished;
 
     _radioFeedbacks.add(RadioFeedback(
       batchId: track.batchId,

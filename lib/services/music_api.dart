@@ -71,7 +71,8 @@ class MusicApi {
 
   Future<void> myWaveSettings() async {
     Map<String, dynamic> json = await _http.get('/rotor/wave/settings');
-    print(json);
+    // print(json);
+    print(jsonEncode(json));
   }
 
   static const _formats = ['flac', 'aac', 'he-aac', 'mp3', 'flac-mp4', 'aac-mp4', 'he-aac-mp4'];

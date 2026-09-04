@@ -86,7 +86,7 @@ class YnisonClient {
     _wsPutState.pingInterval = redirect.keepAliveParams.time;
     _wsPutState.listen(
       (message) {
-        // print('State received message: $message');
+        print('State received message: $message');
         final json = jsonDecode(message);
         try {
           final stateUpdate = YnisonState.fromJson(json);
