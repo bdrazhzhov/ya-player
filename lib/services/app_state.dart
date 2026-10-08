@@ -386,13 +386,8 @@ class AppState {
               );
             };
           } else {
-            final playables = playerQueue.playableList.take(playerQueue.currentPlayableIndex);
-            session = await _radioManager.restore(
-              sessionId: sessionId,
-              queue: playables.map((i) => '${i.playableId}:${i.albumId}').toList(),
-              seeds: playerQueue.entityId.split(','),
-            );
-            final ids = playerQueue.playableList.map((i) => i.playableId);
+            session = await _radioManager.restore(sessionId: sessionId);
+            final ids = playerQueue.playableList.map((i) => '${i.playableId}:${i.albumId}');
             tracks = await _musicApi.tracksByIds(ids, session.batchId);
 
             if (ids.length != tracks.length) {
@@ -427,6 +422,7 @@ class AppState {
       final Track? track = await _prepare(
         context: playContext,
         tracks: tracks,
+        index: index,
         canRepeat: false,
         canShuffle: false,
       );

@@ -7,28 +7,36 @@ import 'track.dart';
 class NewRadioSessionRequest {
   final bool includeTracksInResponse;
   final bool includeWaveModel;
-  final List<String> seeds;
+  final List<String>? seeds;
   final List<String>? queue;
 
   NewRadioSessionRequest({
     required this.includeTracksInResponse,
     required this.includeWaveModel,
-    required this.seeds,
+    this.seeds,
     this.queue,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> result = {
       'includeTracksInResponse': includeTracksInResponse,
       'includeWaveModel': includeWaveModel,
-      'seeds': seeds,
     };
+
+    if (seeds != null) {
+      result['seeds'] = seeds;
+    }
+    if (queue != null) {
+      result['queue'] = queue;
+    }
+
+    return result;
   }
 
   NewRadioSessionRequest.fromJson(Map<String, dynamic> json)
       : includeTracksInResponse = json['includeTracksInResponse'],
         includeWaveModel = json['includeWaveModel'],
-        seeds = List<String>.from(json['seeds']),
+        seeds = json['seeds'] != null ? List<String>.from(json['seeds']) : null,
         queue = json['queue'] != null ? List<String>.from(json['queue']) : null;
 }
 
@@ -58,9 +66,7 @@ class RadioSession extends Equatable implements ContextId {
         batchId = json['batchId'],
         isPumpkin = json['pumpkin'],
         isTerminated = json['terminated'],
-        acceptedSeeds = (json['acceptedSeeds'] as List)
-            .map((e) => RadioSeed.fromJson(e))
-            .toList(),
+        acceptedSeeds = (json['acceptedSeeds'] as List).map((e) => RadioSeed.fromJson(e)).toList(),
         descriptionSeed = RadioSeed.fromJson(json['descriptionSeed']),
         sequence = (json['sequence'] as List)
             .map((e) => SequenceEntry.fromJson(e, json['batchId']))

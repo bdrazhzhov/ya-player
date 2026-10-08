@@ -48,7 +48,7 @@ class YnisonClient {
             // print('Redirect received message: $message');
             final json = jsonDecode(message);
             final redirect = RedirectAnswer.fromJson(json);
-            _connectToPutState(redirect);
+            _connectToPlayerState(redirect);
           },
           onError: (error) {
             print('Error: $error');
@@ -64,7 +64,7 @@ class YnisonClient {
     );
   }
 
-  void _connectToPutState(RedirectAnswer redirect) async {
+  void _connectToPlayerState(RedirectAnswer redirect) async {
     print('Connecting to the player state service...');
 
     try {
@@ -86,7 +86,7 @@ class YnisonClient {
     _wsPutState.pingInterval = redirect.keepAliveParams.time;
     _wsPutState.listen(
       (message) {
-        print('State received message: $message');
+        // print('State received message: $message');
         final json = jsonDecode(message);
         try {
           final stateUpdate = YnisonState.fromJson(json);

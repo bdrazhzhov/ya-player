@@ -43,8 +43,8 @@ class RadioManager {
 
   Future<RadioSession> restore({
     required String sessionId,
-    required List<String> queue,
-    required List<String> seeds,
+    List<String>? queue = const [],
+    List<String>? seeds,
   }) async {
     final newRequest = NewRadioSessionRequest(
       includeWaveModel: true,

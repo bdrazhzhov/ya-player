@@ -180,9 +180,18 @@ class MusicApi {
     return json.map((item) => Track.fromJson(item, batchId)).toList();
   }
 
-  Future<List<Track>> tracks(Iterable<TrackOfList> ids, [batchId = '']) async {
+  Future<List<Track>> tracks(Iterable<TrackOfList> ids,
+      {String batchId = '',
+      bool removeDuplicates = false,
+      bool withProgress = true,
+      bool withMixData = true}) async {
     final String trackIds = ids.map((e) => '${e.id}:${e.albumId}').join(',');
-    final data = {'track-ids': trackIds, 'with-positions': 'True'};
+    final data = {
+      'track-ids': trackIds,
+      'removeDuplicates': removeDuplicates.toString(),
+      'withProgress': withProgress.toString(),
+      'withMixData': withMixData.toString()
+    };
     List<dynamic> json = await _http.postForm('/tracks', data: data);
 
     return json.map((item) => Track.fromJson(item, batchId)).toList();
