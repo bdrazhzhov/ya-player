@@ -1,6 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 #include "my_application.h"
 
 #include <flutter_linux/flutter_linux.h>
@@ -180,6 +177,22 @@ static gboolean my_application_local_command_line(GApplication* application, gch
 
 // Implements GObject::dispose.
 static void my_application_dispose(GObject* object) {
+  if(authManager != nullptr)
+  {
+    delete authManager;
+    authManager = nullptr;
+  }
+  if(windowManager != nullptr)
+  {
+    delete windowManager;
+    windowManager = nullptr;
+  }
+  if(contextMenuManager != nullptr)
+  {
+    delete contextMenuManager;
+    contextMenuManager = nullptr;
+  }
+
   MyApplication* self = MY_APPLICATION(object);
   g_clear_pointer(&self->dart_entrypoint_arguments, g_strfreev);
   G_OBJECT_CLASS(my_application_parent_class)->dispose(object);
