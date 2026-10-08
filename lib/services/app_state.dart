@@ -83,7 +83,7 @@ class AppState {
   final List<String> _likedArtistIds = [];
   final List<Tree> _landing3Metatags = [];
 
-  Equatable get playContext => _playContext as Equatable;
+  Equatable? get playContext => _playContext as Equatable?;
 
   Future<void> initTheme() async {
     final ThemeData theme = await getTheme();
